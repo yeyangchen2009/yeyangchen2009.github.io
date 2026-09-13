@@ -10,17 +10,17 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="# 一个博客除了评论还需要什么：我的博客基础功能建设清单
+<meta name="description" content="# 一个博客除了评论还需要什么：叶扬的博客基础功能建设清单
 
 > 博客能打开、能发文、能评论，只是'活着'；要让文章在十年后还能被人搜到、读到、读得舒服，需要一整套基础功能。">
-<meta property="og:title" content="一个博客除了评论还需要什么：我的博客基础功能建设清单">
-<meta property="og:description" content="# 一个博客除了评论还需要什么：我的博客基础功能建设清单
+<meta property="og:title" content="一个博客除了评论还需要什么：叶扬的博客基础功能建设清单">
+<meta property="og:description" content="# 一个博客除了评论还需要什么：叶扬的博客基础功能建设清单
 
 > 博客能打开、能发文、能评论，只是'活着'；要让文章在十年后还能被人搜到、读到、读得舒服，需要一整套基础功能。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://yeyangchen2009.github.io/post/4.html">
 <meta property="og:image" content="https://github.com/yeyangchen2009.png">
-<title>一个博客除了评论还需要什么：我的博客基础功能建设清单</title>
+<title>一个博客除了评论还需要什么：叶扬的博客基础功能建设清单</title>
 
 
 
@@ -53,7 +53,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 
 <body>
     <div id="header">
-<h1 class="postTitle">一个博客除了评论还需要什么：我的博客基础功能建设清单</h1>
+<h1 class="postTitle">一个博客除了评论还需要什么：叶扬的博客基础功能建设清单</h1>
 <div class="title-right">
     <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
         <svg class="octicon" width="16" height="16">
@@ -77,13 +77,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"><h1>一个博客除了评论还需要什么：我的博客基础功能建设清单</h1>
+<div class="markdown-body" id="postBody"><h1>一个博客除了评论还需要什么：叶扬的博客基础功能建设清单</h1>
 <blockquote>
-<p>博客能打开、能发文、能评论，只是"活着"；要让文章在十年后还能被人搜到、读到、读得舒服，需要一整套基础功能。这篇文章做一次系统盘点：一个完整博客应该具备哪些功能，我的博客已经有什么、缺什么，以及接下来的建设路线图。</p>
+<p>博客能打开、能发文、能评论，只是"活着"；要让文章在十年后还能被人搜到、读到、读得舒服，需要一整套基础功能。这篇文章做一次系统盘点：一个完整博客应该具备哪些功能，叶扬的博客已经有什么、缺什么，以及接下来的建设路线图。</p>
 </blockquote>
 <h2>为什么要先列清单再动手</h2>
 <p>刚把博客搭起来的时候，很容易看到别人有什么就往自己站上搬：今天加个看板娘，明天加个音乐播放器，后台挂三四个统计脚本。几年后回头看，这些"装饰"大多随第三方服务倒闭而失效，真正支撑博客运转的基础功能反而一直欠债。</p>
-<p>所以我先按"读者从站外到读完一篇文章"的完整路径，把功能分成五类：</p>
+<p>所以叶扬先按"读者从站外到读完一篇文章"的完整路径，把功能分成五类：</p>
 <ol>
 <li><strong>内容组织与导航</strong>——读者进来之后怎么找到内容；</li>
 <li><strong>阅读体验</strong>——找到之后能不能舒服地读完；</li>
@@ -198,7 +198,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
-<p>阅读体验类功能有一个共同原则：<strong>只在长内容上才体现价值，所以宁可后补，不要提前污染短文章</strong>。这也是我把"上下篇导航"和"阅读时长"排在 TOC 之后的原因——先解决"文章内部找不到路"，再解决"读完往哪走"。</p>
+<p>阅读体验类功能有一个共同原则：<strong>只在长内容上才体现价值，所以宁可后补，不要提前污染短文章</strong>。这也是叶扬把"上下篇导航"和"阅读时长"排在 TOC 之后的原因——先解决"文章内部找不到路"，再解决"读完往哪走"。</p>
 <h2>三、订阅与传播</h2>
 <markdown-accessiblity-table><table role="table">
 <thead>
@@ -226,7 +226,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
-<p>我把 RSS 看得比一切分享按钮都重。微博、X、公众号都可能封号或倒闭，RSS 是互联网上唯一一个<strong>订阅关系完全属于读者自己</strong>的协议：读者拿着一个 XML 地址，用任何阅读器都能订阅，博主关站之外没有任何人能切断它。Gmeek 默认生成 RSS，这是选框架时的加分项。</p>
+<p>叶扬把 RSS 看得比一切分享按钮都重。微博、X、公众号都可能封号或倒闭，RSS 是互联网上唯一一个<strong>订阅关系完全属于读者自己</strong>的协议：读者拿着一个 XML 地址，用任何阅读器都能订阅，博主关站之外没有任何人能切断它。Gmeek 默认生成 RSS，这是选框架时的加分项。</p>
 <p>OG 标签则是最被低估的传播功能：同样一条链接丢进聊天框，带封面摘要的卡片和一条光秃秃的 URL，点击率差距非常明显。</p>
 <h2>四、SEO 与收录</h2>
 <p>这是五类里<strong>唯一"做了会持续带来陌生读者"的类别</strong>，也是 GitHub Pages 博客最容易欠债的地方。</p>
@@ -324,10 +324,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
-<p>统计这块我刻意保持克制：Vercount 只记数字，不追踪个人身份。博客不是商业产品，"读者从哪个关键词来"这种数据的价值，撑不起让 Google 等第三方在页面上挂追踪脚本的代价。</p>
+<p>统计这块叶扬刻意保持克制：Vercount 只记数字，不追踪个人身份。博客不是商业产品，"读者从哪个关键词来"这种数据的价值，撑不起让 Google 等第三方在页面上挂追踪脚本的代价。</p>
 <p>运维里最想强调的是<strong>备份策略</strong>。这个博客的文章虽然写在 GitHub Issues 里，但构建时会把每篇 Markdown 原文自动提交回仓库的 <code class="notranslate">backup/</code> 目录——文章、页面、配置同处一个 Git 仓库，<code class="notranslate">git clone</code> 下来就是整站的完整离线副本。建议定期再镜像一份到私有仓库，做到双保险。</p>
 <h2>路线图：按什么顺序建</h2>
-<p>功能很多，但不能同时开工。按"投入产出比"而不是"实现难度"排，我的顺序是：</p>
+<p>功能很多，但不能同时开工。按"投入产出比"而不是"实现难度"排，叶扬的顺序是：</p>
 <p><strong>P0（立刻做，半天内全部完成）</strong></p>
 <ol>
 <li>接入文章目录 TOC —— ✅ 已完成（<a href="/post/3.html">过程见此</a>）；</li>
@@ -354,7 +354,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <ol>
 <li><strong>静态优先，零依赖优先</strong>。能用一个本地 JS 文件解决的，不引第三方服务；能靠 HTML/CSS 解决的，不加载库。第三方服务会死，自己仓库里的文件不会。</li>
 <li><strong>走插件机制，不改上游模板</strong>。所有自定义通过 <code class="notranslate">static/</code> 目录加资源、<code class="notranslate">config.json</code> 注入脚本来实现，Gmeek 升级时不产生冲突，删一行配置即可回退。</li>
-<li><strong>为长期写作服务，不为"显得专业"服务</strong>。每加一个功能先问：我写到第 100 篇文章时它还在发挥作用吗？答不上来就先不加。</li>
+<li><strong>为长期写作服务，不为"显得专业"服务</strong>。每加一个功能先问：叶扬写到第 100 篇文章时它还在发挥作用吗？答不上来就先不加。</li>
 </ol>
 <h2>小结</h2>
 <p>盘点完可以看到，Gmeek 框架已经替个人博客覆盖了骨架的大部分：发文、标签、搜索、RSS、评论、暗色模式、备份都在开箱之列。真正需要自己补的，集中在<strong>SEO 收录</strong>、<strong>About 等固定页面</strong>和<strong>长文阅读辅助</strong>三处。</p>
