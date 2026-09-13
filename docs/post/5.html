@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://github.com/yeyangchen2009.png"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# Gmeek 插件与功能全景调研：系列教程总揽（第 0 篇）
+
+> 这是 Gmeek 系列教程的**第 0 篇**：一张完整的功能地图。">
+<meta property="og:title" content="Gmeek 插件与功能全景调研：系列教程总揽（第 0 篇）">
+<meta property="og:description" content="# Gmeek 插件与功能全景调研：系列教程总揽（第 0 篇）
+
+> 这是 Gmeek 系列教程的**第 0 篇**：一张完整的功能地图。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/5.html">
+<meta property="og:image" content="https://github.com/yeyangchen2009.png">
+<title>Gmeek 插件与功能全景调研：系列教程总揽（第 0 篇）</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">Gmeek 插件与功能全景调研：系列教程总揽（第 0 篇）</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/5" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>Gmeek 插件与功能全景调研：系列教程总揽（第 0 篇）</h1>
+<blockquote>
+<p>这是 Gmeek 系列教程的<strong>第 0 篇</strong>：一张完整的功能地图。本文不教具体操作，而是回答两个问题——Gmeek 到底还藏着哪些能力？哪些值得搬、哪些不值得搬？文中每个结论都附了一手出处（官方源码、作者博客、社区 issue、原始教程），后续每动手复现一个功能，就会发一篇编号教程并在文末路线图里打勾。博客现阶段的内容方向也由此确定：<strong>先把 Gmeek 本身玩透</strong>。</p>
+</blockquote>
+<h2>怎么读这篇文章</h2>
+<ul>
+<li><strong>想抄作业</strong>：直接跳到文末「系列教程路线图」，按编号等后续教程；</li>
+<li><strong>想自己深挖</strong>：每个功能都附了出处链接，优先看源码而不是二手转述；</li>
+<li><strong>想看结论</strong>：每节末尾都有"我的判断"。</li>
+</ul>
+<p>本系列的编号约定：第 0 篇是总揽，之后每篇教程以 G01、G02…… 编号，文末路线图会持续更新。前面三篇相关文章是本系列的前传：</p>
+<ul>
+<li><a href="/post/1.html">用 GitHub Issues 写博客：Gmeek 搭建全过程与原理</a></li>
+<li><a href="/post/3.html">Gmeek 右侧"文章目录"导航栏：插件原理与接入全过程</a></li>
+<li><a href="/post/4.html">一个博客除了评论还需要什么：我的博客基础功能建设清单</a></li>
+</ul>
+<h2>调查的一手来源</h2>
+<p>结论不是凭印象，全部来自以下材料交叉验证：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>来源</th>
+<th>链接</th>
+<th>价值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gmeek 源码仓库</td>
+<td><a href="https://github.com/Meekdai/Gmeek">Meekdai/Gmeek</a></td>
+<td><code class="notranslate">plugins/</code>、<code class="notranslate">templates/</code>、<code class="notranslate">Gmeek.py</code> 是最终事实依据</td>
+</tr>
+<tr>
+<td>官方插件目录</td>
+<td><a href="https://github.com/Meekdai/Gmeek/tree/main/plugins">plugins/</a></td>
+<td>官方全部 5 个插件</td>
+</tr>
+<tr>
+<td>构建脚本</td>
+<td><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py">Gmeek.py</a></td>
+<td>所有配置项的默认值与解析逻辑</td>
+</tr>
+<tr>
+<td>官方插件进阶教程</td>
+<td>《<a href="https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-cha-jian-gong-neng-de-shi-yong.html" rel="nofollow">【Gmeek 进阶】插件功能的使用</a>》</td>
+<td>作者亲自维护的插件收录文，好插件会被收入</td>
+</tr>
+<tr>
+<td>作者本人博客配置</td>
+<td><a href="https://github.com/Meekdai/meekdai.github.io/blob/main/config.json">meekdai.github.io/config.json</a></td>
+<td>官方"最佳实践"样本</td>
+</tr>
+<tr>
+<td>Issue #167</td>
+<td><a href="https://github.com/Meekdai/Gmeek/issues/167" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/167/hovercard">插件分享基地</a></td>
+<td>社区插件集散地</td>
+</tr>
+<tr>
+<td>Issue #145</td>
+<td><a href="https://github.com/Meekdai/Gmeek/issues/145" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/145/hovercard">SEO 优化相关问题</a></td>
+<td>作者确认 RSS 可直接当 sitemap 提交</td>
+</tr>
+<tr>
+<td>Issue #186</td>
+<td><a href="https://github.com/Meekdai/Gmeek/issues/186" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/186/hovercard">提一些需求</a></td>
+<td>外链新窗口、数字分页条等社区需求出处</td>
+</tr>
+<tr>
+<td>Issue #100 / #134</td>
+<td><a href="https://github.com/Meekdai/Gmeek/issues/100" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/100/hovercard">目录需求</a>、<a href="https://github.com/Meekdai/Gmeek/issues/134" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/134/hovercard">代码复制建议</a></td>
+<td>功能演进的来龙去脉</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>一、官方插件全档案</h2>
+<p>官方插件一共 5 个，全部位于源码仓库 <code class="notranslate">plugins/</code> 目录，机制完全一致：<strong>一个自包含 JS，放进 <code class="notranslate">static/</code> 目录，用配置字段注入页面，CSS 自己动态注入</strong>。这是 Gmeek 插件哲学的核心——不改上游模板，升级零冲突，删掉一行配置即回退。</p>
+<h3>1. GmeekVercount.js —— 访问统计（已装）</h3>
+<ul>
+<li><strong>功能</strong>：站点总 PV/UV、文章页 PV，数据自存在 <a href="https://vercount.one/" rel="nofollow">Vercount</a> 服务，无需注册。</li>
+<li><strong>出处</strong>：<a href="https://github.com/Meekdai/Gmeek/blob/main/plugins/GmeekVercount.js">插件源码</a></li>
+<li><strong>官方态度</strong>：进阶教程里<strong>首推</strong>。替代的不蒜子（busuanzi）已长期无人维护，且在 Safari 下计数不准。</li>
+<li><strong>我的判断</strong>：保留。只记数字、不追踪个人身份，符合<a href="/post/4.html">第 4 篇</a>立的统计克制原则。另一个统计插件 <code class="notranslate">GmeekBSZ.js</code>（不蒜子）<strong>不要装</strong>。</li>
+</ul>
+<h3>2. GmeekTOC.js —— 右侧文章目录（已装）</h3>
+<ul>
+<li><strong>功能</strong>：扫描正文 <code class="notranslate">h1~h6</code> 生成固定在右侧的目录，按标题级别缩进，窄屏自动收为文章内块，附 Top 回顶按钮。零依赖，100 行。</li>
+<li><strong>出处</strong>：<a href="https://github.com/Meekdai/Gmeek/blob/main/plugins/GmeekTOC.js">插件源码</a>；接入全过程见本站<a href="/post/3.html">第 3 篇教程</a>。</li>
+<li><strong>关键坑</strong>：只能走 <code class="notranslate">script</code> 字段（仅文章页注入），<strong>不能放 <code class="notranslate">allHead</code></strong>——首页没有 <code class="notranslate">id="content"</code> 元素，会抛 TypeError。</li>
+<li><strong>我的判断</strong>：官方文档站自己在用，配色全走 Primer CSS 变量自动适配暗色，已装。</li>
+</ul>
+<h3>3. lightbox.js —— 图片灯箱（强烈推荐，待装）</h3>
+<ul>
+<li><strong>功能</strong>：文章图片点击放大，支持滚轮缩放、左右键切换上一张/下一张、触屏滑动、相邻图片预加载、毛玻璃遮罩、点遮罩关闭。</li>
+<li><strong>出处</strong>：<a href="https://github.com/Meekdai/Gmeek/blob/main/plugins/lightbox.js">插件源码</a>（357 行，零外部依赖，所有样式与 DOM 都由插件自建）；官方进阶教程收录，由社区用户 <strong>Tiengming</strong> 贡献。</li>
+<li><strong>我的判断</strong>：官方插件里完成度最高的一个。本站目前文章几乎无图，但只要开始贴图（比如 Gmeek 操作截图教程）立刻需要，列入 G05。</li>
+</ul>
+<h3>4. articletoc.js —— 悬浮按钮式目录（移动端备选）</h3>
+<ul>
+<li><strong>功能</strong>：不在正文里占位置，而是在右下角放一个 ☰ 圆形按钮，点击弹出目录浮层，再点外部关闭；自带亮/暗两套 CSS 变量。</li>
+<li><strong>出处</strong>：<a href="https://github.com/Meekdai/Gmeek/blob/main/plugins/articletoc.js">插件源码</a>，同为 Tiengming 贡献。</li>
+<li><strong>我的判断</strong>：它与 GmeekTOC 解决同一个问题，<strong>桌面端二选一</strong>。它的价值在手机：GmeekTOC 窄屏时会在文章开头占一整块，而它只占一个按钮。可选方案：桌面保留现有 GmeekTOC，小屏用媒体查询隐藏之、换挂这个——属于体验优化，不急。</li>
+</ul>
+<h3>5. GmeekTocBot.js —— tocbot 版目录（不建议）</h3>
+<ul>
+<li><strong>功能</strong>：封装成熟库 <a href="https://tscanlin.github.io/tocbot/" rel="nofollow">tocbot</a>，视觉层级更好，独有<strong>滚动时高亮当前章节</strong>能力。</li>
+<li><strong>出处</strong>：<a href="https://github.com/Meekdai/Gmeek/blob/main/plugins/GmeekTocBot.js">插件源码</a>；依赖 <code class="notranslate">cdnjs.cloudflare.com</code> 上的 tocbot 4.27.4。</li>
+<li><strong>我的判断</strong>：功能最强但依赖第三方 CDN，与本站"静态资源全部本地化"的原则冲突。真想要"当前章节高亮"，未来可把 tocbot 的 JS/CSS 下载到 <code class="notranslate">static/</code> 再改注入地址，列入远期备选。</li>
+</ul>
+<blockquote>
+<p><strong>插件组合用法</strong>（官方进阶教程原文给出的方式）：多个插件可以直接拼在同一个字段里：<br>
+<code class="notranslate">"script":"&lt;script src='...GmeekTOC.js'&gt;&lt;/script&gt;&lt;script src='...lightbox.js'&gt;&lt;/script&gt;"</code></p>
+</blockquote>
+<h2>二、改一行配置就能解锁的框架能力</h2>
+<p>读 <code class="notranslate">Gmeek.py</code> 第 91 行的默认配置字典和作者本人博客的 <code class="notranslate">config.json</code>，发现一大批<strong>框架早就支持、但本站配置里没写</strong>的能力。这是性价比最高的一层：不用写任何代码。</p>
+<h3>固定页面与导航</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>配置项</th>
+<th>作用</th>
+<th>出处/样本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">singlePage</code></td>
+<td><strong>固定页面机制</strong>：值是 label 名数组，如 <code class="notranslate">["about"]</code>。新建一个带 <code class="notranslate">about</code> 标签的 issue，框架会生成根路径下的独立页 <code class="notranslate">about.html</code>，<strong>不进文章列表</strong>，页头自动出现入口按钮</td>
+<td>作者配置 <code class="notranslate">"singlePage":["link","about"]</code>，对应 <a href="https://blog.meekdai.com/about.html" rel="nofollow">about 页</a></td>
+</tr>
+<tr>
+<td><code class="notranslate">iconList</code></td>
+<td>定义页头按钮的 SVG 路径（16px）。内置 sun/moon/sync/search/rss/upload/post/home/github/copy/check，自定义页面按钮需在此配图标</td>
+<td><code class="notranslate">Gmeek.py:215</code> 按钮渲染逻辑</td>
+</tr>
+<tr>
+<td><code class="notranslate">exlink</code></td>
+<td>页头外部链接按钮，如作者的 <code class="notranslate">"music":"https://music.meekdai.com"</code></td>
+<td>作者配置实测</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>这正是<a href="/post/4.html">第 4 篇</a>路线图里 P0「About 页面」的官方正解，列入 <strong>G01</strong>。</p>
+<h3>页脚信息</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>配置项</th>
+<th>作用</th>
+<th>出处</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">bottomText</code></td>
+<td>全站页脚底部追加一行自定义文字，作者写的是 <code class="notranslate">❤️ 转载文章请注明出处，谢谢！❤️</code></td>
+<td><a href="https://github.com/Meekdai/Gmeek/blob/main/templates/footer.html">footer.html</a></td>
+</tr>
+<tr>
+<td><code class="notranslate">startSite</code></td>
+<td>建站日期（如 <code class="notranslate">"02/16/2015"</code>），页脚自动显示"本站已运行 N 天"</td>
+<td>footer.html 内联脚本</td>
+</tr>
+<tr>
+<td><code class="notranslate">filingNum</code></td>
+<td>ICP 备案号，自动链到工信部备案系统</td>
+<td>绑定国内备案域名后才有用</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><code class="notranslate">bottomText</code> 一举解决路线图里的「文末版权声明」，列入 <strong>G02</strong>。</p>
+<h3>身份与分享</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>配置项</th>
+<th>作用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">faviconUrl</code></td>
+<td>浏览器标签页图标；不配置时默认复用 <code class="notranslate">avatarUrl</code></td>
+<td>作者用的是自制 SVG</td>
+</tr>
+<tr>
+<td><code class="notranslate">ogImage</code></td>
+<td>Open Graph 分享卡片封面；不配置时默认头像</td>
+<td>文章级还能单独覆盖</td>
+</tr>
+<tr>
+<td><code class="notranslate">displayTitle</code></td>
+<td>页头显示标题，默认与 <code class="notranslate">title</code> 一致</td>
+<td>想让站名短、标题完整时用</td>
+</tr>
+<tr>
+<td><code class="notranslate">homeUrl</code></td>
+<td>站点绝对地址</td>
+<td><strong>绑定自定义域名后必须配</strong>，否则分页/RSS 链接错乱</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>favicon + ogImage 列入 <strong>G03</strong>。</p>
+<h3>注入与自定义（插件体系的另一半）</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>配置项</th>
+<th>注入位置</th>
+<th>加载范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">allHead</code></td>
+<td>所有页面 <code class="notranslate">&lt;head&gt;</code></td>
+<td>全站（统计脚本用它）</td>
+</tr>
+<tr>
+<td><code class="notranslate">head</code></td>
+<td>文章页 <code class="notranslate">{% block head %}</code></td>
+<td>仅文章页头部</td>
+</tr>
+<tr>
+<td><code class="notranslate">script</code></td>
+<td>文章页底部</td>
+<td><strong>文章级插件</strong>（TOC、lightbox）</td>
+</tr>
+<tr>
+<td><code class="notranslate">style</code></td>
+<td>文章页</td>
+<td>文章级 CSS</td>
+</tr>
+<tr>
+<td><code class="notranslate">indexScript</code> / <code class="notranslate">indexStyle</code></td>
+<td>首页与列表页</td>
+<td>仅列表页</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>出处：模板 <a href="https://github.com/Meekdai/Gmeek/blob/main/templates/base.html">base.html</a>、<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/post.html">post.html</a>、<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/plist.html">plist.html</a> 中的注入点，以及 <code class="notranslate">Gmeek.py:91</code> 默认值。</p>
+<h3>外观与排版</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>配置项</th>
+<th>作用</th>
+<th>默认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">themeMode</code></td>
+<td><code class="notranslate">manual</code>（亮/暗/跟随系统三态手动切换）或 <code class="notranslate">fix</code> 固定</td>
+<td><code class="notranslate">manual</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">dayTheme</code> / <code class="notranslate">nightTheme</code></td>
+<td>GitHub 主题名，可换 <code class="notranslate">dark_dimmed</code>、<code class="notranslate">dark_colorblind</code> 等</td>
+<td><code class="notranslate">light</code> / <code class="notranslate">dark</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">commentLabelColor</code></td>
+<td>标签颜色</td>
+<td><code class="notranslate">#006b75<span class="ml-1 d-inline-block border circle color-border-subtle" style="background-color: #006b75; height: 8px; width: 8px;"></span></code></td>
+</tr>
+<tr>
+<td><code class="notranslate">yearColorList</code></td>
+<td>按年份轮换的日期标签色，作者博客四种颜色</td>
+<td>四色数组</td>
+</tr>
+<tr>
+<td><code class="notranslate">onePageListNum</code></td>
+<td>首页每页文章数，超过自动分页</td>
+<td>15</td>
+</tr>
+<tr>
+<td><code class="notranslate">primerCSS</code></td>
+<td>Primer CSS 地址，<strong>默认已是南科大国内镜像</strong>，国内访问无需折腾</td>
+<td><code class="notranslate">mirrors.sustech.edu.cn</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">i18n</code></td>
+<td><code class="notranslate">CN</code> / <code class="notranslate">EN</code> / <code class="notranslate">RU</code> 界面语言</td>
+<td><code class="notranslate">CN</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">showPostSource</code></td>
+<td><code class="notranslate">1</code> 显示文末"Issue 原文"按钮，<code class="notranslate">0</code> 隐藏</td>
+<td>1</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3>URL 与订阅</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>配置项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">urlMode</code></td>
+<td>文章 URL 模式：<code class="notranslate">pinyin</code>（标题转拼音，默认）/ <code class="notranslate">issue</code>（本站使用，<code class="notranslate">/post/编号.html</code>，永久不受改标题影响）/ <code class="notranslate">ru_translit</code></td>
+</tr>
+<tr>
+<td><code class="notranslate">rssSplit</code></td>
+<td>RSS 摘要截断规则：<code class="notranslate">sentence</code>（第一句句号）或其他自定义分隔符</td>
+</tr>
+<tr>
+<td><code class="notranslate">needComment</code></td>
+<td><code class="notranslate">1</code> 开评论 / <code class="notranslate">0</code> 全站关闭 utterances</td>
+</tr>
+<tr>
+<td><code class="notranslate">UTC</code></td>
+<td>时区偏移，默认 <code class="notranslate">+8</code></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>三、单篇文章的"隐藏语法"</h2>
+<p><code class="notranslate">Gmeek.py:355</code> 会解析每篇 issue 正文<strong>最后一行</strong>的特殊 HTML 注释，实现文章级配置，这是官方进阶教程里明确支持、但很多人不知道的功能：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-c">&lt;!-- ##{"script":"&lt;script src='...'&gt;&lt;/script&gt;","style":"...","ogImage":"https://.../cover.png","timestamp":1700000000}## --&gt;</span></pre></div>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>字段</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">script</code> / <code class="notranslate">style</code> / <code class="notranslate">head</code></td>
+<td>只给这一篇注入插件和样式（如只有一篇多图文章需要 lightbox）</td>
+</tr>
+<tr>
+<td><code class="notranslate">ogImage</code></td>
+<td>单篇专属分享封面</td>
+</tr>
+<tr>
+<td><code class="notranslate">timestamp</code></td>
+<td><strong>自定义发布时间戳</strong>，补发旧文、迁移文章时让排序归位</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>列入 <strong>G06</strong>，是"单篇插件"和"补发旧文"两个场景的关键。</p>
+<h2>四、你可能没意识到的开箱功能</h2>
+<p>以下能力不用配置、不用插件，写 Markdown 时直接存在：</p>
+<ol>
+<li><strong>代码块一键复制</strong>：GitHub 同款 copy/check 图标按钮，<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/post.html">post.html</a> 内置（对应早期社区 issue #134 的诉求，现已官方解决）。</li>
+<li><strong>数学公式按需加载</strong>：正文中用 <code class="notranslate">&lt;math-renderer&gt;$E=mc^2$&lt;/math-renderer&gt;</code> 包裹公式，框架检测到该标签才注入 MathJax，不写公式的文章零开销（<code class="notranslate">Gmeek.py:154</code>）。</li>
+<li><strong>GitHub Alert 提示块</strong>：<code class="notranslate">&gt; [!NOTE]</code>、<code class="notranslate">&gt; [!TIP]</code>、<code class="notranslate">&gt; [!IMPORT]</code>、<code class="notranslate">&gt; [!WARNING]</code>、<code class="notranslate">&gt; [!CAUTION]</code> 自动渲染成 GitHub 官网同款彩色边框块，框架自动补样式（<code class="notranslate">Gmeek.py:159</code> 起）。</li>
+<li><strong>三态主题与评论联动</strong>：亮 → 暗 → 跟随系统循环；切换时通过 <code class="notranslate">postMessage</code> 让 utterances 评论 iframe 同步换肤（<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/base.html">base.html:54</a>）。</li>
+<li><strong>列表分页</strong>：文章数超过 <code class="notranslate">onePageListNum</code>，首页自动出现上一页/下一页。</li>
+<li><strong>每日定时重建</strong>：工作流除了监听 issue 事件，还有一条 <code class="notranslate">schedule: cron("0 16 * * *")</code>，即<strong>北京时间每天 0:00 自动全量重建</strong>一次。Webhook 丢失、改了配置忘记手动构建，第二天都会自愈。</li>
+<li><strong>Markdown 原文自动备份</strong>：每次构建把 issue 正文存进仓库 <code class="notranslate">backup/</code> 目录，<code class="notranslate">git clone</code> 即整站离线副本。</li>
+<li><strong>RSS 即 sitemap</strong>：见下节，单独说。</li>
+</ol>
+<p>写作技巧（Alert、公式、Mermaid 本站已配）单独成篇，列入 <strong>G07</strong>。</p>
+<h2>五、SEO：被问得最多，答案却最简单</h2>
+<p>社区 issue <a href="https://github.com/Meekdai/Gmeek/issues/145" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/145/hovercard">#145</a> 里有人建议生成 <code class="notranslate">sitemap.xml</code>，作者的回复是：<strong><code class="notranslate">rss.xml</code> 已包含全站所有重要页面链接，他自己就是把 rss.xml 提交给 Google 的</strong>；提问者随后验证，必应和谷歌都能正常识别 RSS 作为站点地图。</p>
+<p>因此路线图里的"sitemap.xml"可以划掉，正确做法零代码：</p>
+<ul>
+<li>Google Search Console 添加资源后，站点地图直接填 <code class="notranslate">https://用户名.github.io/rss.xml</code>；</li>
+<li>Bing 站长工具同样提交该地址（国内环境下 Bing/必应的收录价值远高于 Google）；</li>
+<li>RSS 之外，<code class="notranslate">robots.txt</code> 和自定义 <code class="notranslate">404.html</code> 直接放进 <code class="notranslate">static/</code> 根目录即可，构建时原样复制到站点根，GitHub Pages 原生识别。</li>
+</ul>
+<p>这组操作列入 <strong>G04</strong> 与 <strong>G11</strong>。</p>
+<h2>六、社区生态盘点：有宝贝，也有大坑</h2>
+<p>Gmeek 没有独立插件市场，<a href="https://github.com/Meekdai/Gmeek/issues/167" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/167/hovercard">issue #167「插件分享基地」</a>事实上承担了这个角色。翻遍社区代码后：</p>
+<p><strong>值得借鉴的：</strong></p>
+<ul>
+<li><strong>数字分页条</strong>：把"上一页/下一页"换成 1/2/3 页码，文章几十篇以后有用。作者在 <a href="https://github.com/Meekdai/Gmeek/issues/186" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/186/hovercard">issue #186</a> 中确认可由插件实现，社区已有教程：李轶凡《<a href="https://blog.liyifan.xyz/post/gei-bo-ke-tian-jia-shu-zi-fen-ye-tiao.html" rel="nofollow">给博客添加数字分页条</a>》。列入 <strong>G13</strong>（文章多了再做）。</li>
+<li><strong>外链新窗口打开</strong>：同 issue #186 的头号需求，十几行 JS 给正文外链加 <code class="notranslate">target="_blank" rel="noopener"</code>，可顺手加 <code class="notranslate">rel="nofollow"</code> 的 SEO 讨论（见 issue #145）。列入 <strong>G12</strong>。</li>
+</ul>
+<p><strong>看看就好、不要搬的：</strong></p>
+<ul>
+<li>社区用户 luliy6 的 <code class="notranslate">enhance.js</code>：约 5884 行的整站换肤方案——开屏动画、全屏 Hero、六张分类卡片、APlayer 音乐播放器、抽屉式菜单。代码本身值得学习"一个 JS 能做到什么程度"，但它与本系列<a href="/post/4.html">第 4 篇</a>立的三条规矩（静态优先、走插件机制不改模板、为长期写作服务）全部冲突，<strong>明确不借鉴</strong>。</li>
+<li>GitHub 代码搜索能找到的其他"插件"，90% 是把官方 5 个 JS 复制改名，无新东西。</li>
+</ul>
+<h2>七、框架的空白：需要自研的功能</h2>
+<p>对照<a href="/post/4.html">第 4 篇</a>的清单，以下功能官方与社区都没有可靠现成方案，需要自己写插件。好在 Gmeek 把数据都放在了 <code class="notranslate">postList.json</code>，自研难度不高，这也会是本系列最"硬核"的几篇：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>功能</th>
+<th>实现思路</th>
+<th>编号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>文章末尾上一篇/下一篇</td>
+<td>读取 <code class="notranslate">postList.json</code> 按 issue 编号取相邻文章，注入到 <code class="notranslate">#postBody</code> 之后</td>
+<td>G08</td>
+</tr>
+<tr>
+<td>字数统计与预计阅读时长</td>
+<td>统计 <code class="notranslate">.markdown-body</code> 文本长度，按中文约 400 字/分钟估算</td>
+<td>G09</td>
+</tr>
+<tr>
+<td>时间线归档页</td>
+<td>读 <code class="notranslate">postList.json</code> 按年份分组渲染；可挂 <code class="notranslate">singlePage</code> 机制做成固定页</td>
+<td>G10</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>这三篇会完整演示"如何写一个自己的 Gmeek 插件"，而不只是抄配置。</p>
+<h2>八、系列教程路线图</h2>
+<p>总揽即 roadmap。每完成一篇，这里会更新链接；状态图例：✅ 已发布 / ⏳ 计划中 / 💤 远期再说。</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>编号</th>
+<th>教程</th>
+<th>功能</th>
+<th>类型</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>前传</td>
+<td><a href="/post/1.html">搭建全过程与原理</a></td>
+<td>建站</td>
+<td>教程</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>前传</td>
+<td><a href="/post/4.html">博客基础功能建设清单</a></td>
+<td>规划</td>
+<td>清单</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>G00</td>
+<td>本文</td>
+<td>全景调研</td>
+<td>总揽</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>——</td>
+<td><a href="/post/3.html">右侧文章目录插件</a></td>
+<td>GmeekTOC</td>
+<td>教程</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>G01</td>
+<td>固定页面机制：做一个不进列表的 About 页</td>
+<td><code class="notranslate">singlePage</code> + <code class="notranslate">iconList</code></td>
+<td>配置</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G02</td>
+<td>页脚装修：版权声明与"本站已运行 N 天"</td>
+<td><code class="notranslate">bottomText</code> + <code class="notranslate">startSite</code></td>
+<td>配置</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G03</td>
+<td>favicon 与社交分享封面 ogImage</td>
+<td><code class="notranslate">faviconUrl</code> + <code class="notranslate">ogImage</code></td>
+<td>配置</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G04</td>
+<td>不写 sitemap：把 RSS 提交给 Google 和 Bing</td>
+<td>Search Console / 站长工具</td>
+<td>SEO</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G05</td>
+<td>图片灯箱：lightbox 插件接入</td>
+<td>官方插件</td>
+<td>教程</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G06</td>
+<td>文章末尾的隐藏 JSON：单篇插件、自定义封面、补发旧文</td>
+<td>文章级配置</td>
+<td>原理</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G07</td>
+<td>写作增强：GitHub Alert 块、数学公式、Mermaid</td>
+<td>内置语法</td>
+<td>教程</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G08</td>
+<td>自研插件（一）：文章末尾上一篇/下一篇</td>
+<td><code class="notranslate">postList.json</code></td>
+<td>自研</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G09</td>
+<td>自研插件（二）：字数统计与阅读时长</td>
+<td>DOM 统计</td>
+<td>自研</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G10</td>
+<td>自研插件（三）：时间线归档页</td>
+<td><code class="notranslate">singlePage</code> + 数据渲染</td>
+<td>自研</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G11</td>
+<td>robots.txt 与自定义 404 页</td>
+<td><code class="notranslate">static/</code> 直出</td>
+<td>运维</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G12</td>
+<td>外链自动新窗口打开</td>
+<td>小插件</td>
+<td>自研</td>
+<td>💤</td>
+</tr>
+<tr>
+<td>G13</td>
+<td>数字分页条</td>
+<td>社区插件</td>
+<td>借鉴</td>
+<td>💤</td>
+</tr>
+<tr>
+<td>G14</td>
+<td>移动端目录：articletoc 与响应式策略</td>
+<td>官方插件</td>
+<td>体验</td>
+<td>💤</td>
+</tr>
+<tr>
+<td>G15</td>
+<td>tocbot 本地化：当前章节滚动高亮</td>
+<td>CDN 资源本地化</td>
+<td>进阶</td>
+<td>💤</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>更新方式：每篇教程发布后，作者会回来编辑本文（Gmeek 监听 issue 的 <code class="notranslate">edited</code> 事件，编辑即自动重建），所以这张表会一直是最新的。</p>
+<h2>参考资料汇总</h2>
+<ul>
+<li>Gmeek 源码：<a href="https://github.com/Meekdai/Gmeek">https://github.com/Meekdai/Gmeek</a></li>
+<li>官方进阶插件教程：<a href="https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-cha-jian-gong-neng-de-shi-yong.html" rel="nofollow">https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-cha-jian-gong-neng-de-shi-yong.html</a></li>
+<li>官方快速上手：<a href="https://blog.meekdai.com/post/Gmeek-kuai-su-shang-shou.html" rel="nofollow">https://blog.meekdai.com/post/Gmeek-kuai-su-shang-shou.html</a></li>
+<li>Primer CSS（GitHub 同源设计系统）：<a href="https://primer.style/css" rel="nofollow">https://primer.style/css</a></li>
+<li>utterances 评论系统：<a href="https://utteranc.es/" rel="nofollow">https://utteranc.es/</a></li>
+<li>tocbot 目录库：<a href="https://tscanlin.github.io/tocbot/" rel="nofollow">https://tscanlin.github.io/tocbot/</a></li>
+<li>Vercount 计数服务：<a href="https://vercount.one/" rel="nofollow">https://vercount.one/</a></li>
+<li>插件分享基地（issue #167）：<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="2459528816" data-permission-text="Title is private" data-url="https://github.com/Meekdai/Gmeek/issues/167" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/167/hovercard" href="https://github.com/Meekdai/Gmeek/issues/167">Meekdai/Gmeek#167</a></li>
+</ul>
+<h2>小结</h2>
+<p>调研结论可以浓缩成三句话：</p>
+<ol>
+<li><strong>配置层的红利还没吃完</strong>——About 页、版权声明、运行天数、favicon、分享封面全是一行配置的事，这是接下来 G01–G03 的内容；</li>
+<li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
+<li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
+</ol>
+<p>下一篇 G01，从固定页面机制开始。</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script>
+
+</html>
