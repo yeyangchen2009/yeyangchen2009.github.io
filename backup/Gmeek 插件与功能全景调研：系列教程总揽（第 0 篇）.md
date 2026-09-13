@@ -6,13 +6,13 @@
 
 - **想抄作业**：直接跳到文末「系列教程路线图」，按编号等后续教程；
 - **想自己深挖**：每个功能都附了出处链接，优先看源码而不是二手转述；
-- **想看结论**：每节末尾都有"我的判断"。
+- **想看结论**：每节末尾都有"叶扬的判断"。
 
 本系列的编号约定：第 0 篇是总揽，之后每篇教程以 G01、G02…… 编号，文末路线图会持续更新。前面三篇相关文章是本系列的前传：
 
 - [用 GitHub Issues 写博客：Gmeek 搭建全过程与原理](/post/1.html)
 - [Gmeek 右侧"文章目录"导航栏：插件原理与接入全过程](/post/3.html)
-- [一个博客除了评论还需要什么：我的博客基础功能建设清单](/post/4.html)
+- [一个博客除了评论还需要什么：叶扬的博客基础功能建设清单](/post/4.html)
 
 ## 调查的一手来源
 
@@ -39,32 +39,32 @@
 - **功能**：站点总 PV/UV、文章页 PV，数据自存在 [Vercount](https://vercount.one/) 服务，无需注册。
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/GmeekVercount.js)
 - **官方态度**：进阶教程里**首推**。替代的不蒜子（busuanzi）已长期无人维护，且在 Safari 下计数不准。
-- **我的判断**：保留。只记数字、不追踪个人身份，符合[第 4 篇](/post/4.html)立的统计克制原则。另一个统计插件 `GmeekBSZ.js`（不蒜子）**不要装**。
+- **叶扬的判断**：保留。只记数字、不追踪个人身份，符合[第 4 篇](/post/4.html)立的统计克制原则。另一个统计插件 `GmeekBSZ.js`（不蒜子）**不要装**。
 
 ### 2. GmeekTOC.js —— 右侧文章目录（已装）
 
 - **功能**：扫描正文 `h1~h6` 生成固定在右侧的目录，按标题级别缩进，窄屏自动收为文章内块，附 Top 回顶按钮。零依赖，100 行。
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/GmeekTOC.js)；接入全过程见本站[第 3 篇教程](/post/3.html)。
 - **关键坑**：只能走 `script` 字段（仅文章页注入），**不能放 `allHead`**——首页没有 `id="content"` 元素，会抛 TypeError。
-- **我的判断**：官方文档站自己在用，配色全走 Primer CSS 变量自动适配暗色，已装。
+- **叶扬的判断**：官方文档站自己在用，配色全走 Primer CSS 变量自动适配暗色，已装。
 
 ### 3. lightbox.js —— 图片灯箱（强烈推荐，待装）
 
 - **功能**：文章图片点击放大，支持滚轮缩放、左右键切换上一张/下一张、触屏滑动、相邻图片预加载、毛玻璃遮罩、点遮罩关闭。
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/lightbox.js)（357 行，零外部依赖，所有样式与 DOM 都由插件自建）；官方进阶教程收录，由社区用户 **Tiengming** 贡献。
-- **我的判断**：官方插件里完成度最高的一个。本站目前文章几乎无图，但只要开始贴图（比如 Gmeek 操作截图教程）立刻需要，列入 G05。
+- **叶扬的判断**：官方插件里完成度最高的一个。本站目前文章几乎无图，但只要开始贴图（比如 Gmeek 操作截图教程）立刻需要，列入 G05。
 
 ### 4. articletoc.js —— 悬浮按钮式目录（移动端备选）
 
 - **功能**：不在正文里占位置，而是在右下角放一个 ☰ 圆形按钮，点击弹出目录浮层，再点外部关闭；自带亮/暗两套 CSS 变量。
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/articletoc.js)，同为 Tiengming 贡献。
-- **我的判断**：它与 GmeekTOC 解决同一个问题，**桌面端二选一**。它的价值在手机：GmeekTOC 窄屏时会在文章开头占一整块，而它只占一个按钮。可选方案：桌面保留现有 GmeekTOC，小屏用媒体查询隐藏之、换挂这个——属于体验优化，不急。
+- **叶扬的判断**：它与 GmeekTOC 解决同一个问题，**桌面端二选一**。它的价值在手机：GmeekTOC 窄屏时会在文章开头占一整块，而它只占一个按钮。可选方案：桌面保留现有 GmeekTOC，小屏用媒体查询隐藏之、换挂这个——属于体验优化，不急。
 
 ### 5. GmeekTocBot.js —— tocbot 版目录（不建议）
 
 - **功能**：封装成熟库 [tocbot](https://tscanlin.github.io/tocbot/)，视觉层级更好，独有**滚动时高亮当前章节**能力。
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/GmeekTocBot.js)；依赖 `cdnjs.cloudflare.com` 上的 tocbot 4.27.4。
-- **我的判断**：功能最强但依赖第三方 CDN，与本站"静态资源全部本地化"的原则冲突。真想要"当前章节高亮"，未来可把 tocbot 的 JS/CSS 下载到 `static/` 再改注入地址，列入远期备选。
+- **叶扬的判断**：功能最强但依赖第三方 CDN，与本站"静态资源全部本地化"的原则冲突。真想要"当前章节高亮"，未来可把 tocbot 的 JS/CSS 下载到 `static/` 再改注入地址，列入远期备选。
 
 > **插件组合用法**（官方进阶教程原文给出的方式）：多个插件可以直接拼在同一个字段里：
 > `"script":"<script src='...GmeekTOC.js'></script><script src='...lightbox.js'></script>"`
@@ -81,7 +81,7 @@
 | `iconList` | 定义页头按钮的 SVG 路径（16px）。内置 sun/moon/sync/search/rss/upload/post/home/github/copy/check，自定义页面按钮需在此配图标 | `Gmeek.py:215` 按钮渲染逻辑 |
 | `exlink` | 页头外部链接按钮，如作者的 `"music":"https://music.meekdai.com"` | 作者配置实测 |
 
-这正是[第 4 篇](/post/4.html)路线图里 P0「About 页面」的官方正解，列入 **G01**。
+这正是[第 4 篇](/post/4.html)路线图里 P0「About 页面」的官方正解，已由 **[G01](/post/7.html)** 完成（含一个真实踩坑：新增 singlePage 后必须手动全局重建）。
 
 ### 页脚信息
 
@@ -163,7 +163,7 @@ favicon + ogImage 列入 **G03**。
 3. **GitHub Alert 提示块**：`> [!NOTE]`、`> [!TIP]`、`> [!IMPORT]`、`> [!WARNING]`、`> [!CAUTION]` 自动渲染成 GitHub 官网同款彩色边框块，框架自动补样式（`Gmeek.py:159` 起）。
 4. **三态主题与评论联动**：亮 → 暗 → 跟随系统循环；切换时通过 `postMessage` 让 utterances 评论 iframe 同步换肤（[base.html:54](https://github.com/Meekdai/Gmeek/blob/main/templates/base.html)）。
 5. **列表分页**：文章数超过 `onePageListNum`，首页自动出现上一页/下一页。
-6. **每日定时重建**：工作流除了监听 issue 事件，还有一条 `schedule: cron("0 16 * * *")`，即**北京时间每天 0:00 自动全量重建**一次。Webhook 丢失、改了配置忘记手动构建，第二天都会自愈。
+6. **每日定时重建**：工作流除了监听 issue 事件，还有一条 `schedule: cron("0 16 * * *")`，即**北京时间每天 0:00 自动全量重建**一次。Webhook 丢失、改了配置忘记手动构建，第二天都会自愈。注意：Issue 事件只触发**增量构建**，`config.json` 的结构性变更（如新增 singlePage）不会被加载，必须手动跑一次全局重建——G01 实操时踩过这个坑。
 7. **Markdown 原文自动备份**：每次构建把 issue 正文存进仓库 `backup/` 目录，`git clone` 即整站离线副本。
 8. **RSS 即 sitemap**：见下节，单独说。
 
@@ -217,7 +217,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | 前传 | [博客基础功能建设清单](/post/4.html) | 规划 | 清单 | ✅ |
 | G00 | 本文 | 全景调研 | 总揽 | ✅ |
 | —— | [右侧文章目录插件](/post/3.html) | GmeekTOC | 教程 | ✅ |
-| G01 | 固定页面机制：做一个不进列表的 About 页 | `singlePage` + `iconList` | 配置 | ⏳ |
+| G01 | [固定页面机制：做一个不进文章流的 About 页](/post/7.html) | `singlePage` + `iconList` | 配置 | ✅ |
 | G02 | 页脚装修：版权声明与"本站已运行 N 天" | `bottomText` + `startSite` | 配置 | ⏳ |
 | G03 | favicon 与社交分享封面 ogImage | `faviconUrl` + `ogImage` | 配置 | ⏳ |
 | G04 | 不写 sitemap：把 RSS 提交给 Google 和 Bing | Search Console / 站长工具 | SEO | ⏳ |
@@ -233,7 +233,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G14 | 移动端目录：articletoc 与响应式策略 | 官方插件 | 体验 | 💤 |
 | G15 | tocbot 本地化：当前章节滚动高亮 | CDN 资源本地化 | 进阶 | 💤 |
 
-更新方式：每篇教程发布后，作者会回来编辑本文（Gmeek 监听 issue 的 `edited` 事件，编辑即自动重建），所以这张表会一直是最新的。
+更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 `edited` 事件，编辑即自动重建），所以这张表会一直是最新的。
 
 ## 参考资料汇总
 
@@ -254,4 +254,4 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-下一篇 G01，从固定页面机制开始。
+G01 已完成，下一篇 G02，从页脚装修（版权声明与运行天数）继续。
