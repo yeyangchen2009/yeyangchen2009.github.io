@@ -92,13 +92,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>长文没有目录，读者只能靠滚动条判断自己读到了哪。Gmeek 官方文档页右侧挂着一个随滚随用的"文章目录"，本文拆解它的实现原理，并记录把它接入自己博客的完整过程——看完这篇文章时，你可以直接在右侧观察它的实际效果。</p>
 </blockquote>
 <h2>为什么长文需要一个目录</h2>
-<p>上一篇 <a href="/post/1.html">《用 GitHub Issues 写博客》</a> 讲完整个搭建过程后，我自己回头查资料时先遇到的问题就是：文章一长，想跳到某个小节只能 Ctrl+F。成熟博客一般都会在正文旁侧放一个 <strong>TOC（Table of Contents，文章目录）</strong>，作用有三个：</p>
+<p>上一篇 <a href="/post/1.html">《用 GitHub Issues 写博客》</a> 讲完整个搭建过程后，叶扬回头查资料时先遇到的问题就是：文章一长，想跳到某个小节只能 Ctrl+F。成熟博客一般都会在正文旁侧放一个 <strong>TOC（Table of Contents，文章目录）</strong>，作用有三个：</p>
 <ol>
 <li><strong>导航</strong>：点击标题直接跳转到对应章节；</li>
 <li><strong>定位</strong>：滚动时知道自己处在文章的什么位置；</li>
 <li><strong>预览</strong>：点开文章先扫一遍目录，就知道这篇值不值得读完。</li>
 </ol>
-<p>Gmeek 官方文档站（blog.meekdai.com）的文章页右侧就有一个，我打开开发者工具扒了一遍，发现它正是 Gmeek 源码仓库 <code class="notranslate">plugins/</code> 目录里自带的插件——<code class="notranslate">GmeekTOC.js</code>。整个插件只有 100 行原生 JavaScript，零依赖。</p>
+<p>Gmeek 官方文档站（blog.meekdai.com）的文章页右侧就有一个，叶扬打开开发者工具扒了一遍，发现它正是 Gmeek 源码仓库 <code class="notranslate">plugins/</code> 目录里自带的插件——<code class="notranslate">GmeekTOC.js</code>。整个插件只有 100 行原生 JavaScript，零依赖。</p>
 <h2>两个候选插件</h2>
 <p>官方仓库的 <a href="https://github.com/Meekdai/Gmeek/tree/main/plugins">plugins 目录</a> 里其实有两个目录插件：</p>
 <markdown-accessiblity-table><table role="table">
@@ -130,7 +130,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li>想要"零依赖、不挂任何第三方 CDN"——选 <code class="notranslate">GmeekTOC.js</code>，断网或者 CDN 被墙都不影响；</li>
 <li>想要"滚动跟随高亮当前标题"——选 <code class="notranslate">GmeekTocBot.js</code>，代价是多加载一个第三方 JS/CSS。</li>
 </ul>
-<p>我选择了前者。本博客所有静态资源都坚持放在自己仓库里（连 Mermaid 都是本地化的），不把可用性押在第三方 CDN 上。</p>
+<p>叶扬选择前者。这个博客所有静态资源都坚持放在自己仓库里（连 Mermaid 都是本地化的），不把可用性押在第三方 CDN 上。</p>
 <h2>实现原理：100 行代码做了什么</h2>
 <p>读完源码，它一共干了四件事。</p>
 <h3>一、扫描标题，生成目录树</h3>
@@ -241,7 +241,7 @@ gh run list --limit 3          <span class="pl-c"><span class="pl-c">#</span> �
 </ul>
 <h2>小结</h2>
 <p>这个插件值得拆开看一遍，因为它体现了 Gmeek 生态里"插件"的标准形态：<strong>一个自包含的 JS 文件，放 <code class="notranslate">static/</code> 目录，用 <code class="notranslate">script</code>/<code class="notranslate">allHead</code> 字段注入，自己注入所需 CSS，不改动上游模板</strong>。这种方式的好处是 Gmeek 本身升级时，你的自定义功能不受影响——删掉那一行配置就能完整回退。</p>
-<p>下一篇准备系统盘点一下：一个博客除了评论和互动，还需要哪些基础功能，以及我给这个博客定下的建设路线图。</p></div>
+<p>下一篇准备系统盘点一下：一个博客除了评论和互动，还需要哪些基础功能，以及叶扬给这个博客定下的建设路线图。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
