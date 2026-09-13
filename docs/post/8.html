@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://github.com/yeyangchen2009.png"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# G02 页脚装修：版权小字与'本站已运行 N 天'
+
+> 上一期 [G01](/post/7.html) 搞定了 About 页，博客终于能回答'你是谁'。">
+<meta property="og:title" content="G02 页脚装修：版权小字与"本站已运行 N 天"">
+<meta property="og:description" content="# G02 页脚装修：版权小字与'本站已运行 N 天'
+
+> 上一期 [G01](/post/7.html) 搞定了 About 页，博客终于能回答'你是谁'。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/8.html">
+<meta property="og:image" content="https://github.com/yeyangchen2009.png">
+<title>G02 页脚装修：版权小字与"本站已运行 N 天"</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G02 页脚装修：版权小字与"本站已运行 N 天"</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/8" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>G02 页脚装修：版权小字与"本站已运行 N 天"</h1>
+<blockquote>
+<p>上一期 <a href="/post/7.html">G01</a> 搞定了 About 页，博客终于能回答"你是谁"。但叶扬低头看了一眼页脚——光秃秃一个年份加 Powered by Gmeek，像刚交钥匙的毛坯房。这期给它添两样小东西：文章末尾的版权小字，和那个很多老博客都有的"本站已运行 N 天"。全程只改 <code class="notranslate">config.json</code>，不写一行代码。</p>
+</blockquote>
+<h2>最终效果</h2>
+<p>先看成品，就在你现在这篇文章的右下角和页面最底部：</p>
+<ul>
+<li>每篇文章正文结束后，右下方多了一行小字：<code class="notranslate">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</code>；</li>
+<li>全站页脚多了"网站运行 N 天"，从建站那天开始自己往上加数，永不停电，比养电子宠物省心。</li>
+</ul>
+<h2>配置：就两行</h2>
+<p>打开仓库根目录的 <code class="notranslate">config.json</code>，加上：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate">{
+    <span class="pl-ent">"startSite"</span>: <span class="pl-s"><span class="pl-pds">"</span>09/13/2026<span class="pl-pds">"</span></span>,
+    <span class="pl-ent">"bottomText"</span>: <span class="pl-s"><span class="pl-pds">"</span>✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️<span class="pl-pds">"</span></span>
+}</pre></div>
+<ul>
+<li><code class="notranslate">startSite</code>：建站日期，页脚从此开始数日子；</li>
+<li><code class="notranslate">bottomText</code>：文章正文末尾的自定义小字，写版权声明、口号、甚至"今天天气真好"都行（但建议还是写版权）。</li>
+</ul>
+<p>改完老规矩——<code class="notranslate">config.json</code> 的改动不触发自动构建，手动跑一次全局重建：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">gh workflow run <span class="pl-s"><span class="pl-pds">"</span>build Gmeek<span class="pl-pds">"</span></span></pre></div>
+<p>约一分钟，收工。</p>
+<h2>bottomText 到底出现在哪</h2>
+<p>很多人（包括叶扬）第一反应是：这行字该在页脚吧？</p>
+<p>不在。看模板 <a href="https://github.com/Meekdai/Gmeek/blob/main/templates/post.html">post.html:72</a>，它紧跟在正文 <code class="notranslate">#postBody</code> 的后面，还是右浮动：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">id</span>="<span class="pl-s">postBody</span>"<span class="pl-kos">&gt;</span><span class="pl-c">&lt;!-- 文章正文 --&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span>
+<span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">style</span>="<span class="pl-s">font-size:small;margin-top:8px;float:right;</span>"<span class="pl-kos">&gt;</span>
+  {{ blogBase['bottomText'] }}
+<span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span></pre></div>
+<p>所以它的真实位置是<strong>每篇文章正文的右下角、评论按钮的上方</strong>——正好是读者读完准备划走时目光落的位置。版权声明放这里，比放页脚有效得多。</p>
+<p>两个容易疑惑的行为，源码里都有答案：</p>
+<ol>
+<li><strong>首页和列表页看不到它。</strong> <code class="notranslate">bottomText</code> 只在文章模板 <code class="notranslate">post.html</code> 里渲染，列表页模板 <code class="notranslate">plist.html</code> 压根没有这个变量。</li>
+<li><strong>About 等固定页也看不到它。</strong> <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L197">Gmeek.py:197</a> 里写得很直白：识别到 singlePage 时 <code class="notranslate">postBase["bottomText"]=''</code>——框架主动把它清空了。想想也合理："转载请注明出处"挂在自我介绍页确实莫名其妙。</li>
+</ol>
+<h2>"运行 N 天"是怎么算出来的</h2>
+<p>机制在 <a href="https://github.com/Meekdai/Gmeek/blob/main/templates/footer.html">footer.html</a>，一个十几行的内联脚本：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">if</span><span class="pl-kos">(</span><span class="pl-s">"{{ blogBase['startSite'] }}"</span><span class="pl-c1">!=</span><span class="pl-s">""</span><span class="pl-kos">)</span><span class="pl-kos">{</span>
+    <span class="pl-k">var</span> <span class="pl-s1">startSite</span><span class="pl-c1">=</span><span class="pl-k">new</span> <span class="pl-v">Date</span><span class="pl-kos">(</span><span class="pl-s">"{{ blogBase['startSite'] }}"</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">var</span> <span class="pl-s1">diff</span><span class="pl-c1">=</span><span class="pl-s1">now</span><span class="pl-kos">.</span><span class="pl-en">getTime</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-c1">-</span><span class="pl-s1">startSite</span><span class="pl-kos">.</span><span class="pl-en">getTime</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">var</span> <span class="pl-s1">diffDay</span><span class="pl-c1">=</span><span class="pl-v">Math</span><span class="pl-kos">.</span><span class="pl-en">floor</span><span class="pl-kos">(</span><span class="pl-s1">diff</span><span class="pl-c1">/</span><span class="pl-kos">(</span><span class="pl-c1">1000</span><span class="pl-c1">*</span><span class="pl-c1">60</span><span class="pl-c1">*</span><span class="pl-c1">60</span><span class="pl-c1">*</span><span class="pl-c1">24</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">"runday"</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-c1">innerHTML</span><span class="pl-c1">=</span><span class="pl-s">"网站运行 "</span><span class="pl-c1">+</span><span class="pl-s1">diffDay</span><span class="pl-c1">+</span><span class="pl-s">" 天"</span><span class="pl-c1">+</span><span class="pl-s">" • "</span><span class="pl-kos">;</span>
+<span class="pl-kos">}</span></pre></div>
+<p>构建时模板把日期字符串填进去，剩下的计算发生在<strong>每个访客的浏览器里</strong>。所以它不需要服务器、不需要定时任务，打开页面的瞬间现算，N 永远是最新的。</p>
+<p>中文文案"网站运行 / 天"来自 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L20">Gmeek.py:20</a> 的 <code class="notranslate">i18nCN</code> 字典；英文版是 <code class="notranslate">run / day(s)</code>，俄语版也有。把 <code class="notranslate">config.json</code> 里的 <code class="notranslate">"i18n"</code> 改成 <code class="notranslate">EN</code> 或 <code class="notranslate">RU</code> 能切换。</p>
+<h2>踩坑预警：日期千万别写 2026-09-13</h2>
+<p>这是本期最值得停下来看的一段。叶扬一开始本能地想把日期写成 ISO 格式 <code class="notranslate">"2026-09-13"</code>，顺手在 Node 里做了个实验：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">new</span> <span class="pl-v">Date</span><span class="pl-kos">(</span><span class="pl-s">'2026-09-13'</span><span class="pl-kos">)</span>   <span class="pl-c">// Sun Sep 13 2026 08:00:00 GMT+0800（中国标准时间）</span>
+<span class="pl-k">new</span> <span class="pl-v">Date</span><span class="pl-kos">(</span><span class="pl-s">'09/13/2026'</span><span class="pl-kos">)</span>   <span class="pl-c">// Sun Sep 13 2026 00:00:00 GMT+0800（中国标准时间）</span></pre></div>
+<p>看出区别了吗：</p>
+<ul>
+<li>短横线的 <code class="notranslate">2026-09-13</code> 是 ISO 格式，JavaScript 按 <strong>UTC 零点</strong>解析，落到北京时间是<strong>早上 8 点</strong>；</li>
+<li>斜杠的 <code class="notranslate">09/13/2026</code> 是非标准但全浏览器兼容的写法，按<strong>本地时区零点</strong>解析，是北京时间凌晨 0 点。</li>
+</ul>
+<p>这个 8 小时的时差会闹出喜剧效果：建站第一天，如果有读者在早上 8 点之前访问，<code class="notranslate">now - startSite</code> 算出来是负数，<code class="notranslate">Math.floor</code> 一取整——</p>
+<blockquote>
+<p><strong>网站运行 -1 天</strong></p>
+</blockquote>
+<p>一个还没出生就已经运行了一天的网站，赛博玄学。官方作者用的 <code class="notranslate">"02/16/2015"</code> 正是美式斜杠格式（月/日/年），看起来随意，其实是唯一安全的写法。照抄这个格式就对了。</p>
+<h2>顺带认识一下邻居：filingNum</h2>
+<p>翻页脚模板时还会看到一个配置项 <code class="notranslate">filingNum</code>，填上 ICP 备案号后会显示在页脚并自动链接到工信部备案系统：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate">{%- if blogBase['filingNum']!='' -%}
+<span class="pl-kos">&lt;</span><span class="pl-ent">span</span> <span class="pl-c1">id</span>="<span class="pl-s">filingNum</span>"<span class="pl-kos">&gt;</span><span class="pl-kos">&lt;</span><span class="pl-ent">a</span> <span class="pl-c1">href</span>="<span class="pl-s">https://beian.miit.gov.cn/</span>"<span class="pl-kos">&gt;</span>{{ blogBase['filingNum'] }}<span class="pl-kos">&lt;/</span><span class="pl-ent">a</span><span class="pl-kos">&gt;</span> • <span class="pl-kos">&lt;/</span><span class="pl-ent">span</span><span class="pl-kos">&gt;</span>
+{%- endif -%}</pre></div>
+<p>这是国内绑定自定义域名、完成备案后才用得上的东西。GitHub Pages 的免费域名碰不到备案，先知道有这扇门就行，钥匙以后再说。</p>
+<h2>一个时序小插曲</h2>
+<p>最后分享一个和框架无关、但叶扬真实踩到的坑：把配置 <code class="notranslate">git push</code> 之后<strong>立刻</strong>触发全局重建，那一次构建 checkout 到的居然还是旧配置，页面什么都没变。</p>
+<p>原因是 push 的 ref 更新与 workflow 调度之间存在短暂竞态，dispatch 抢在了新提交生效的前一秒。重新触发一次构建即恢复正常。教训写进操作手册：<strong>push 之后深呼吸几秒，再 <code class="notranslate">gh workflow run</code></strong>，急不得。</p>
+<h2>验证清单</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> 任意文章正文右下角出现 <code class="notranslate">bottomText</code> 小字，首页和 About 页没有；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> 页脚显示"网站运行 N 天"，数字每天自己涨；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> 日期使用 <code class="notranslate">MM/DD/YYYY</code> 斜杠格式，不会出现运行 -1 天；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> 修改配置后跑过手动全局重建（且是 push 完几秒之后跑的）。</li>
+</ul>
+<h2>小结</h2>
+<p>Gmeek 的配置项像宜家家具：零件都给你切好了，拧上螺丝就行。<code class="notranslate">bottomText</code> 和 <code class="notranslate">startSite</code> 一个管"文章的尾巴"，一个管"站点的年龄"，两行配置，博客立刻从"样板间"有了点"自己家"的味道。</p>
+<p>下一期 G03，搞点面子工程：favicon 和社交分享封面 <code class="notranslate">ogImage</code>——让博客出现在浏览器标签页和聊天框里时，不再是灰扑扑的默认图标。</p>
+<h2>参考</h2>
+<ul>
+<li>页脚模板：<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/footer.html">https://github.com/Meekdai/Gmeek/blob/main/templates/footer.html</a></li>
+<li>文章模板 bottomText 位置：<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/post.html">https://github.com/Meekdai/Gmeek/blob/main/templates/post.html</a></li>
+<li>配置默认值与 i18n 字典：<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py">https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py</a></li>
+<li>作者本人配置样本：<a href="https://github.com/Meekdai/meekdai.github.io/blob/main/config.json">https://github.com/Meekdai/meekdai.github.io/blob/main/config.json</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script>
+
+</html>
