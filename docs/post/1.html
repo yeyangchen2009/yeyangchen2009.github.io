@@ -89,7 +89,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <div id="content">
 <div class="markdown-body" id="postBody"><h1>用 GitHub Issues 写博客：Gmeek 搭建全过程与原理</h1>
 <blockquote>
-<p>把博客托管在 GitHub 上，写作却不用碰 Git——新建一个 Issue、打个标签，文章自动上线。本文记录我把原有文档站替换成 Gmeek 的完整过程、背后的运行原理，以及踩过的坑。</p>
+<p>把博客托管在 GitHub 上，写作却不用碰 Git——新建一个 Issue、打个标签，文章自动上线。本文记录叶扬把原有文档站替换成 Gmeek 的完整过程、背后的运行原理，以及踩过的坑。</p>
 </blockquote>
 <h2>为什么是 GitHub</h2>
 <p>一个问题：如果你想写一段文字，让 100 年后的人还能访问到，你会写在哪里？</p>
@@ -180,11 +180,11 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p><code class="notranslate">GMEEK_VERSION</code> 保持 <code class="notranslate">"last"</code> 即每次构建自动使用 Gmeek 最新 release，也可以锁定具体版本号。头像直接填 <code class="notranslate">https://github.com/用户名.png</code> 就能用 GitHub 头像。</p>
 <p><strong>改完 config.json 不会自动重新构建</strong>（它不是 Issue 事件），需要去 <code class="notranslate">Actions → build Gmeek → Run workflow</code> 手动跑一次全局生成。</p>
 <h3>4. 建一个文章标签</h3>
-<p>Issues 里写文章，<strong>必须至少打一个 Label</strong>，没有标签的 Issue 不会被生成成页面。我建的标签叫 <code class="notranslate">Document</code>。标签还有两个特殊用途：标签的颜色会成为文章的主题色标记；标签名写进 config 的 <code class="notranslate">singlePage</code> 数组后，该标签的 Issue 会生成独立单页（比如"关于"页）。</p>
+<p>Issues 里写文章，<strong>必须至少打一个 Label</strong>，没有标签的 Issue 不会被生成成页面。叶扬建的标签叫 <code class="notranslate">Document</code>。标签还有两个特殊用途：标签的颜色会成为文章的主题色标记；标签名写进 config 的 <code class="notranslate">singlePage</code> 数组后，该标签的 Issue 会生成独立单页（比如"关于"页）。</p>
 <h3>5. 写第一篇文章</h3>
 <p><code class="notranslate">Issues → New issue</code>，标题随意，正文用 Markdown，右侧勾上 <code class="notranslate">Document</code>，提交。等 Actions 跑完打勾，刷新博客首页即可看到。</p>
 <h2>一个特殊需求：怎样保住仓库里已有的静态页面</h2>
-<p>我替换旧站时有个约束：原来的 <code class="notranslate">lengyanzhou.html</code>（楞严咒）页面必须保留，链接最好也不变。</p>
+<p>叶扬替换旧站时有个约束：原来的 <code class="notranslate">lengyanzhou.html</code>（楞严咒）页面必须保留，链接最好也不变。</p>
 <p>读了一遍 Gmeek 的构建脚本，它每次生成前会<strong>清空 <code class="notranslate">docs/</code> 目录</strong>，所以把 HTML 直接丢进 docs 是活不过下次构建的。但脚本里有这样一段逻辑：</p>
 <div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">if</span> <span class="pl-s1">os</span>.<span class="pl-c1">path</span>.<span class="pl-c1">exists</span>(<span class="pl-s1">self</span>.<span class="pl-c1">static_dir</span>):   <span class="pl-c"># static/</span>
     <span class="pl-k">for</span> <span class="pl-s1">item</span> <span class="pl-c1">in</span> <span class="pl-s1">os</span>.<span class="pl-c1">listdir</span>(<span class="pl-s1">self</span>.<span class="pl-c1">static_dir</span>):
