@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://github.com/yeyangchen2009.png"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# 一个博客除了评论还需要什么：我的博客基础功能建设清单
+
+> 博客能打开、能发文、能评论，只是'活着'；要让文章在十年后还能被人搜到、读到、读得舒服，需要一整套基础功能。">
+<meta property="og:title" content="一个博客除了评论还需要什么：我的博客基础功能建设清单">
+<meta property="og:description" content="# 一个博客除了评论还需要什么：我的博客基础功能建设清单
+
+> 博客能打开、能发文、能评论，只是'活着'；要让文章在十年后还能被人搜到、读到、读得舒服，需要一整套基础功能。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/4.html">
+<meta property="og:image" content="https://github.com/yeyangchen2009.png">
+<title>一个博客除了评论还需要什么：我的博客基础功能建设清单</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">一个博客除了评论还需要什么：我的博客基础功能建设清单</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/4" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>一个博客除了评论还需要什么：我的博客基础功能建设清单</h1>
+<blockquote>
+<p>博客能打开、能发文、能评论，只是"活着"；要让文章在十年后还能被人搜到、读到、读得舒服，需要一整套基础功能。这篇文章做一次系统盘点：一个完整博客应该具备哪些功能，我的博客已经有什么、缺什么，以及接下来的建设路线图。</p>
+</blockquote>
+<h2>为什么要先列清单再动手</h2>
+<p>刚把博客搭起来的时候，很容易看到别人有什么就往自己站上搬：今天加个看板娘，明天加个音乐播放器，后台挂三四个统计脚本。几年后回头看，这些"装饰"大多随第三方服务倒闭而失效，真正支撑博客运转的基础功能反而一直欠债。</p>
+<p>所以我先按"读者从站外到读完一篇文章"的完整路径，把功能分成五类：</p>
+<ol>
+<li><strong>内容组织与导航</strong>——读者进来之后怎么找到内容；</li>
+<li><strong>阅读体验</strong>——找到之后能不能舒服地读完；</li>
+<li><strong>订阅与传播</strong>——读完愿不愿意订你、分享你；</li>
+<li><strong>SEO 与收录</strong>——新读者怎么从搜索引擎走进来；</li>
+<li><strong>统计与运维</strong>——博主自己怎么知道站还活着、谁在读。</li>
+</ol>
+<p>下面逐类盘点，并标注本站现状。</p>
+<h2>一、内容组织与导航</h2>
+<p>这是博客的骨架，决定一篇老文章半年后还能不能被翻出来。</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>功能</th>
+<th>作用</th>
+<th>本站现状</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>文章列表 / 分页</td>
+<td>首页按时间倒序展示，数量多了分页</td>
+<td>✅ 框架自带（每页 15 篇）</td>
+</tr>
+<tr>
+<td>标签聚合</td>
+<td>同主题文章互相关联</td>
+<td>✅ 已有标签页</td>
+</tr>
+<tr>
+<td>站内搜索</td>
+<td>按关键词找旧文</td>
+<td>✅ 框架自带</td>
+</tr>
+<tr>
+<td>时间线归档</td>
+<td>按年月浏览全部文章，写久了价值越高</td>
+<td>⬜ 待建</td>
+</tr>
+<tr>
+<td>关于页 About</td>
+<td>博主是谁、怎么联系，建立信任的第一页</td>
+<td>⬜ 待建，优先级最高</td>
+</tr>
+<tr>
+<td>友情链接</td>
+<td>博主社交与互相引流</td>
+<td>⬜ 可选，后期再说</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>这里有个认知：<strong>标签是"按主题找"，归档是"按时间找"，搜索是"按关键词找"，三者不可互相替代</strong>。文章上了几十篇之后，归档页会成为自己回顾写作历程最常用的入口。</p>
+<h2>二、阅读体验</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>功能</th>
+<th>作用</th>
+<th>本站现状</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>文章目录 TOC</td>
+<td>长文导航与定位</td>
+<td>✅ 刚接入，见<a href="/post/3.html">上一篇</a></td>
+</tr>
+<tr>
+<td>评论系统</td>
+<td>读者互动、博主反馈通道</td>
+<td>✅ utterances（基于 GitHub Issues）</td>
+</tr>
+<tr>
+<td>图表支持</td>
+<td>技术文画流程图、时序图</td>
+<td>✅ Mermaid 已本地部署</td>
+</tr>
+<tr>
+<td>代码高亮 + 复制按钮</td>
+<td>技术博客刚需</td>
+<td>✅ 框架自带 GitHub 同源高亮</td>
+</tr>
+<tr>
+<td>暗色模式</td>
+<td>夜间阅读，GitHub 同源配色</td>
+<td>✅ 框架自带</td>
+</tr>
+<tr>
+<td>上一篇 / 下一篇</td>
+<td>文末连续阅读引导</td>
+<td>⬜ 待建</td>
+</tr>
+<tr>
+<td>字数与阅读时长</td>
+<td>读者决定"要不要现在读完"的参考</td>
+<td>⬜ 待建</td>
+</tr>
+<tr>
+<td>图片灯箱 / 懒加载</td>
+<td>点击看大图、节省流量</td>
+<td>⬜ 待建（官方有 lightbox 插件）</td>
+</tr>
+<tr>
+<td>文末版权声明</td>
+<td>声明转载规则，固定一块 CC 协议</td>
+<td>⬜ 待建</td>
+</tr>
+<tr>
+<td>回到顶部</td>
+<td>长文回退导航</td>
+<td>✅ TOC 插件附带 Top 按钮</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>阅读体验类功能有一个共同原则：<strong>只在长内容上才体现价值，所以宁可后补，不要提前污染短文章</strong>。这也是我把"上下篇导航"和"阅读时长"排在 TOC 之后的原因——先解决"文章内部找不到路"，再解决"读完往哪走"。</p>
+<h2>三、订阅与传播</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>功能</th>
+<th>作用</th>
+<th>本站现状</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RSS 订阅</td>
+<td>不依赖平台的长期订阅方式，博客的灵魂功能</td>
+<td>✅ 框架自动生成 <code class="notranslate">rss.xml</code></td>
+</tr>
+<tr>
+<td>Open Graph / Twitter Card</td>
+<td>链接发到社交平台时展示标题、摘要、封面</td>
+<td>⬜ 待核查框架支持度</td>
+</tr>
+<tr>
+<td>分享按钮</td>
+<td>复制链接 / 分享到社交平台</td>
+<td>⬜ 低优先级</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>我把 RSS 看得比一切分享按钮都重。微博、X、公众号都可能封号或倒闭，RSS 是互联网上唯一一个<strong>订阅关系完全属于读者自己</strong>的协议：读者拿着一个 XML 地址，用任何阅读器都能订阅，博主关站之外没有任何人能切断它。Gmeek 默认生成 RSS，这是选框架时的加分项。</p>
+<p>OG 标签则是最被低估的传播功能：同样一条链接丢进聊天框，带封面摘要的卡片和一条光秃秃的 URL，点击率差距非常明显。</p>
+<h2>四、SEO 与收录</h2>
+<p>这是五类里<strong>唯一"做了会持续带来陌生读者"的类别</strong>，也是 GitHub Pages 博客最容易欠债的地方。</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sitemap.xml</td>
+<td>把全部文章 URL 主动交给搜索引擎</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>Google Search Console</td>
+<td>提交 sitemap、查看收录与搜索词</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>Bing 站长工具</td>
+<td>国内环境下必应收录远好于 Google，值得同步提交</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>description / 结构化数据</td>
+<td>每篇文章摘要、JSON-LD，影响搜索结果摘要</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>canonical 链接</td>
+<td>避免多 URL 重复收录</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>robots.txt</td>
+<td>爬虫规则入口</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>favicon 与站点封面</td>
+<td>浏览器标签页、收藏夹里的辨识度</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>百度收录</td>
+<td>对 github.io 域名极不友好，需要独立域名才有意义</td>
+<td>P2，暂缓</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>对静态博客来说，SEO 是一次性投入、长期收益的典型：sitemap 配好、提交一次，之后每次发文搜索引擎都会自己来抓。这件事比任何"引流技巧"都管用。</p>
+<h2>五、统计与运维</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+<th>本站现状</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>访问统计 PV/UV</td>
+<td>看每篇文章被读了多少次</td>
+<td>✅ Vercount</td>
+</tr>
+<tr>
+<td>来源与行为分析</td>
+<td>读者从哪来、读多久</td>
+<td>⬜ 暂不接 Google Analytics，隐私换数据不划算</td>
+</tr>
+<tr>
+<td>自定义 404 页</td>
+<td>输错链接时给读者出路而不是白页</td>
+<td>⬜ 待建</td>
+</tr>
+<tr>
+<td>HTTPS</td>
+<td>传输加密、搜索引擎加分</td>
+<td>✅ GitHub Pages 默认开启</td>
+</tr>
+<tr>
+<td>Markdown 原文备份</td>
+<td>防止"账号没了文章也没了"</td>
+<td>✅ 构建时自动备份到仓库 <code class="notranslate">backup/</code></td>
+</tr>
+<tr>
+<td>静态资源本地化</td>
+<td>第三方 CDN 挂掉时页面不残缺</td>
+<td>✅ Mermaid 等资源全部放自己仓库</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>统计这块我刻意保持克制：Vercount 只记数字，不追踪个人身份。博客不是商业产品，"读者从哪个关键词来"这种数据的价值，撑不起让 Google 等第三方在页面上挂追踪脚本的代价。</p>
+<p>运维里最想强调的是<strong>备份策略</strong>。这个博客的文章虽然写在 GitHub Issues 里，但构建时会把每篇 Markdown 原文自动提交回仓库的 <code class="notranslate">backup/</code> 目录——文章、页面、配置同处一个 Git 仓库，<code class="notranslate">git clone</code> 下来就是整站的完整离线副本。建议定期再镜像一份到私有仓库，做到双保险。</p>
+<h2>路线图：按什么顺序建</h2>
+<p>功能很多，但不能同时开工。按"投入产出比"而不是"实现难度"排，我的顺序是：</p>
+<p><strong>P0（立刻做，半天内全部完成）</strong></p>
+<ol>
+<li>接入文章目录 TOC —— ✅ 已完成（<a href="/post/3.html">过程见此</a>）；</li>
+<li>About 页面 + favicon —— 博客完整度的最低门槛；</li>
+<li>sitemap.xml + 提交 Google / Bing 站长平台 —— 唯一持续带来新读者的投入。</li>
+</ol>
+<p><strong>P1（文章写多起来之前做）</strong></p>
+<ol start="4">
+<li>自定义 404 页面；</li>
+<li>文末版权声明；</li>
+<li>上一篇 / 下一篇导航 + 字数与阅读时长；</li>
+<li>时间线归档页；</li>
+<li>核查并补全 OG 标签、robots.txt、canonical。</li>
+</ol>
+<p><strong>P2（有实际需求再做）</strong></p>
+<ol start="9">
+<li>图片灯箱（开始大量贴图时）；</li>
+<li>分享按钮（文章开始被转发时）；</li>
+<li>友链页（认识的博主多起来时）；</li>
+<li>独立域名 + 百度收录（愿意承担年费和备案问题时）。</li>
+</ol>
+<h2>建设原则</h2>
+<p>最后立三条规矩，约束以后的自己不乱加东西：</p>
+<ol>
+<li><strong>静态优先，零依赖优先</strong>。能用一个本地 JS 文件解决的，不引第三方服务；能靠 HTML/CSS 解决的，不加载库。第三方服务会死，自己仓库里的文件不会。</li>
+<li><strong>走插件机制，不改上游模板</strong>。所有自定义通过 <code class="notranslate">static/</code> 目录加资源、<code class="notranslate">config.json</code> 注入脚本来实现，Gmeek 升级时不产生冲突，删一行配置即可回退。</li>
+<li><strong>为长期写作服务，不为"显得专业"服务</strong>。每加一个功能先问：我写到第 100 篇文章时它还在发挥作用吗？答不上来就先不加。</li>
+</ol>
+<h2>小结</h2>
+<p>盘点完可以看到，Gmeek 框架已经替个人博客覆盖了骨架的大部分：发文、标签、搜索、RSS、评论、暗色模式、备份都在开箱之列。真正需要自己补的，集中在<strong>SEO 收录</strong>、<strong>About 等固定页面</strong>和<strong>长文阅读辅助</strong>三处。</p>
+<p>这个系列接下来就按 P0 → P1 的顺序，每完成一项写一篇记录，清单即 roadmap。等这个清单全部打勾的那天，这个博客才算真正"建成"。</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script>
+
+</html>
