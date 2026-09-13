@@ -57,7 +57,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     font-size: 12px;
 }
 </style>
-
+#postBody>p:last-of-type{display:none;}.mermaid-wrap{margin:18px 0;overflow-x:auto;}
 
 
 
@@ -120,23 +120,31 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tbody>
 </table></markdown-accessiblity-table>
 <p>三者都是 GitHub 原生功能，零费用，唯一的"成本"是每次构建占用 Actions 的免费额度（公开仓库不计费）。</p>
+<h3>一张图看懂三者的关系</h3>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">flowchart</span> <span class="pl-c1">LR</span>
+    <span class="pl-ent">U</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">([</span></span><span class="pl-s"><span class="pl-pds">"</span>你<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">])</span></span></span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"新建 / 编辑 Issue"</span><span class="pl-k">|</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[(</span></span><span class="pl-s"><span class="pl-pds">"</span>GitHub Issues&lt;<span class="pl-ent">br</span>/&gt;写作编辑器<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">)]</span></span></span>
+    <span class="pl-ent">I</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"opened / edited 事件"</span><span class="pl-k">|</span> <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>GitHub Actions&lt;<span class="pl-ent">br</span>/&gt;运行 Gmeek.py<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">A</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"渲染产物提交回仓库"</span><span class="pl-k">|</span> <span class="pl-ent">R</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[(</span></span><span class="pl-s"><span class="pl-pds">"</span>仓库 docs/ 页面&lt;<span class="pl-ent">br</span>/&gt;+ backup/ Markdown 原文<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">)]</span></span></span>
+    <span class="pl-ent">A</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"上传 artifact"</span><span class="pl-k">|</span> <span class="pl-ent">P</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>GitHub Pages&lt;<span class="pl-ent">br</span>/&gt;静态托管<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">P</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">V</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>读者访问&lt;<span class="pl-ent">br</span>/&gt;用户名.github.io<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
 <h2>一次发文背后发生了什么</h2>
 <p>理解这张链路，后面所有操作和排错都不用死记：</p>
-<pre class="notranslate"><code class="notranslate">新建 Issue(带 Document 标签)
-        │  issues: opened 事件
-        ▼
-GitHub Actions 触发 Gmeek.yml
-        │  1. 拉取最新版 Gmeek 源码
-        │  2. pip 安装依赖(jinja2 等)
-        │  3. 运行 Gmeek.py,通过 API 读取这篇 Issue
-        │  4. 用 Jinja2 模板把 Markdown 渲染成 HTML
-        │  5. 生成首页、标签页、RSS、文章列表 JSON
-        │  6. 自动 commit 回仓库的 docs/ 目录
-        ▼
-upload-pages-artifact 打包 docs/
-        ▼
-deploy-pages 发布上线
-</code></pre>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">sequenceDiagram</span>
+    <span class="pl-k">autonumber</span>
+    <span class="pl-k">actor</span> <span class="pl-ent">你</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">I</span> <span class="pl-k">as</span> <span class="pl-ent">GitHub Issues</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">A</span> <span class="pl-k">as</span> <span class="pl-ent">GitHub Actions</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">G</span> <span class="pl-k">as</span> <span class="pl-ent">Gmeek.py</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">R</span> <span class="pl-k">as</span> <span class="pl-ent">仓库</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">P</span> <span class="pl-k">as</span> <span class="pl-ent">GitHub Pages</span>
+    <span class="pl-ent">你</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">I</span><span class="pl-k">:</span> <span class="pl-s">新建 Issue 并打上标签</span>
+    <span class="pl-ent">I</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">A</span><span class="pl-k">:</span> <span class="pl-s">opened 事件触发工作流</span>
+    <span class="pl-ent">A</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">G</span><span class="pl-k">:</span> <span class="pl-s">拉取最新源码、安装依赖后运行</span>
+    <span class="pl-ent">G</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">I</span><span class="pl-k">:</span> <span class="pl-s">通过 API 读取 Issue 正文</span>
+    <span class="pl-ent">G</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">G</span><span class="pl-k">:</span> <span class="pl-s">Jinja2 模板把 Markdown 渲染成 HTML</span>
+    <span class="pl-ent">G</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">R</span><span class="pl-k">:</span> <span class="pl-s">提交 docs/ 页面与 backup/ 原文</span>
+    <span class="pl-ent">G</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">P</span><span class="pl-k">:</span> <span class="pl-s">打包 artifact 并部署</span>
+    <span class="pl-ent">P</span><span class="pl-k">--&gt;&gt;</span><span class="pl-ent">你</span><span class="pl-k">:</span> <span class="pl-s">约 1 分钟后文章上线</span></pre></div>
 <p>大约一分钟，文章就能在 <code class="notranslate">https://用户名.github.io</code> 访问。每篇 Issue 对应 <code class="notranslate">docs/post/</code> 下一个 HTML 文件，正文同时备份在仓库的 <code class="notranslate">backup/</code> 目录——也就是说，<strong>你的文章不依赖 Gmeek 项目本身，Markdown 原件一直在你自己的仓库里</strong>。</p>
 <p>每天还会有一次定时构建兜底，也可以在 Actions 页面手动 Run workflow 做全局重建。</p>
 <h2>实操步骤（2026 年当前版本核对过）</h2>
@@ -153,6 +161,13 @@ deploy-pages 发布上线
 <li><strong>workflow（从 Actions 发布）</strong>：部署由工作流产出的 artifact，Gmeek 必须用这种。</li>
 </ul>
 <p>选错了模式，Action 显示构建成功但页面不更新，是新手最容易困惑的地方。</p>
+<p>两种模式的区别：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">S</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Settings → Pages → Source<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Deploy from a branch&lt;<span class="pl-ent">br</span>/&gt;旧模式<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">S</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>GitHub Actions&lt;<span class="pl-ent">br</span>/&gt;新模式 ✅<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>直接托管分支上的现成文件&lt;<span class="pl-ent">br</span>/&gt;没有构建步骤<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>工作流构建 → artifact → deploy-pages<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C1</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Gmeek 必须选这个<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
 <h3>3. 配置 config.json</h3>
 <p>模板仓库里唯一需要改的文件：</p>
 <div class="highlight highlight-source-json"><pre class="notranslate">{
@@ -174,7 +189,17 @@ deploy-pages 发布上线
 <div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">if</span> <span class="pl-s1">os</span>.<span class="pl-c1">path</span>.<span class="pl-c1">exists</span>(<span class="pl-s1">self</span>.<span class="pl-c1">static_dir</span>):   <span class="pl-c"># static/</span>
     <span class="pl-k">for</span> <span class="pl-s1">item</span> <span class="pl-c1">in</span> <span class="pl-s1">os</span>.<span class="pl-c1">listdir</span>(<span class="pl-s1">self</span>.<span class="pl-c1">static_dir</span>):
         <span class="pl-c"># 原样复制到 docs/</span></pre></div>
-<p><strong>仓库根目录的 <code class="notranslate">static/</code> 会在每次构建时被原样拷贝到站点根目录。</strong> 于是把 <code class="notranslate">lengyanzhou.html</code> 放进 <code class="notranslate">static/</code>，它就在每次自动构建后依然出现在 <code class="notranslate">https://用户名.github.io/lengyanzhou.html</code>，链接完全不变。要放 favicon、robots.txt、自定义页面，都是同一个位置。</p>
+<p>每次构建时 <code class="notranslate">static/</code> 的命运：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">([</span></span><span class="pl-s"><span class="pl-pds">"</span>每次构建开始<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">])</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>清空 docs/&lt;<span class="pl-ent">br</span>/&gt;旧页面全部删除<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>根据所有 Issue 重新生成页面<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>static/ 目录存在？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"是"</span><span class="pl-k">|</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>static/ 内的文件&lt;<span class="pl-ent">br</span>/&gt;原样复制进 docs/<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"否"</span><span class="pl-k">|</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>跳过这一步<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>部署 docs/ 到 Pages<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span>
+    <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>favicon、计数器脚本、mermaid 库等&lt;<span class="pl-ent">br</span>/&gt;自定义静态文件<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">-.-&gt;</span> <span class="pl-ent">E</span></pre></div>
+<p><strong>仓库根目录的 <code class="notranslate">static/</code> 会在每次构建时被原样拷贝到站点根目录。</strong> 于是把 <code class="notranslate">lengyanzhou.html</code> 放进 <code class="notranslate">static/</code>，它就在每次自动构建后依然出现在 <code class="notranslate">https://用户名.github.io/lengyanzhou.html</code>，链接完全不变。要放 favicon、robots.txt、自定义 JS（本文的图表库和浏览量统计脚本就是这样放的），都是同一个位置。</p>
 <h2>日常使用</h2>
 <ul>
 <li><strong>写文</strong>：New issue + Document 标签</li>
@@ -184,6 +209,11 @@ deploy-pages 发布上线
 <li><strong>评论</strong>：内置 utteranc.es，评论本身也是 Issue</li>
 <li><strong>自定义域名</strong>：Settings → Pages 填域名；子域名只需在 DNS 加一条 CNAME 指向 <code class="notranslate">用户名.github.io</code>。若域名托管在 Cloudflare，HTTPS 由它负责，GitHub 这边的 Enforce HTTPS 要取消勾选</li>
 </ul>
+<p>什么时候自动、什么时候要手动：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">flowchart</span> <span class="pl-c1">LR</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>想更新博客<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>改了什么？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"写新文章 / 修改正文"</span><span class="pl-k">|</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>新建或编辑 Issue<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>保存即自动构建<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"改 config.json / static/"</span><span class="pl-k">|</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Actions 页手动 Run workflow<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span></pre></div>
 <h2>排错清单</h2>
 <markdown-accessiblity-table><table role="table">
 <thead>
@@ -217,7 +247,8 @@ deploy-pages 发布上线
 </table></markdown-accessiblity-table>
 <h2>小结</h2>
 <p>这套方案的本质是：<strong>用 GitHub 的 Issue 系统"借用"了一个带 Markdown 编辑器、登录体系和评论系统的后台</strong>，用 Actions 替代服务器定时任务，用 Pages 替代虚拟主机。牺牲的是国内访问速度和一点上手配置，得到的是零成本、无广告、数据完全在自己仓库里的博客。</p>
-<p>写作这件事，最重要的永远是开始写。</p></div>
+<p>写作这件事，最重要的永远是开始写。</p>
+<p>##{"style":"#postBody&gt;p:last-of-type{display:none;}.mermaid-wrap{margin:18px 0;overflow-x:auto;}","script":"&lt;script src='/mermaid.min.js'&gt;&lt;/script&gt;&lt;script src='/mermaid-init.js'&gt;&lt;/script&gt;"}</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -382,6 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-
+<script src='/mermaid.min.js'></script><script src='/mermaid-init.js'></script>
 
 </html>

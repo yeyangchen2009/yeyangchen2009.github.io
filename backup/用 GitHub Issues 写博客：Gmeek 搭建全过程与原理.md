@@ -22,25 +22,39 @@ Gmeek 不是一个需要安装的博客程序，它是一套"配置文件 + 一�
 
 三者都是 GitHub 原生功能，零费用，唯一的"成本"是每次构建占用 Actions 的免费额度（公开仓库不计费）。
 
+### 一张图看懂三者的关系
+
+```mermaid
+flowchart LR
+    U(["你"]) -->|"新建 / 编辑 Issue"| I[("GitHub Issues<br/>写作编辑器")]
+    I -->|"opened / edited 事件"| A["GitHub Actions<br/>运行 Gmeek.py"]
+    A -->|"渲染产物提交回仓库"| R[("仓库 docs/ 页面<br/>+ backup/ Markdown 原文")]
+    A -->|"上传 artifact"| P["GitHub Pages<br/>静态托管"]
+    P --> V["读者访问<br/>用户名.github.io"]
+```
+
+
 ## 一次发文背后发生了什么
 
 理解这张链路，后面所有操作和排错都不用死记：
 
-```
-新建 Issue(带 Document 标签)
-        │  issues: opened 事件
-        ▼
-GitHub Actions 触发 Gmeek.yml
-        │  1. 拉取最新版 Gmeek 源码
-        │  2. pip 安装依赖(jinja2 等)
-        │  3. 运行 Gmeek.py,通过 API 读取这篇 Issue
-        │  4. 用 Jinja2 模板把 Markdown 渲染成 HTML
-        │  5. 生成首页、标签页、RSS、文章列表 JSON
-        │  6. 自动 commit 回仓库的 docs/ 目录
-        ▼
-upload-pages-artifact 打包 docs/
-        ▼
-deploy-pages 发布上线
+```mermaid
+sequenceDiagram
+    autonumber
+    actor 你
+    participant I as GitHub Issues
+    participant A as GitHub Actions
+    participant G as Gmeek.py
+    participant R as 仓库
+    participant P as GitHub Pages
+    你->>I: 新建 Issue 并打上标签
+    I->>A: opened 事件触发工作流
+    A->>G: 拉取最新源码、安装依赖后运行
+    G->>I: 通过 API 读取 Issue 正文
+    G->>G: Jinja2 模板把 Markdown 渲染成 HTML
+    G->>R: 提交 docs/ 页面与 backup/ 原文
+    G->>P: 打包 artifact 并部署
+    P-->>你: 约 1 分钟后文章上线
 ```
 
 大约一分钟，文章就能在 `https://用户名.github.io` 访问。每篇 Issue 对应 `docs/post/` 下一个 HTML 文件，正文同时备份在仓库的 `backup/` 目录——也就是说，**你的文章不依赖 Gmeek 项目本身，Markdown 原件一直在你自己的仓库里**。
@@ -69,6 +83,17 @@ deploy-pages 发布上线
 - **workflow（从 Actions 发布）**：部署由工作流产出的 artifact，Gmeek 必须用这种。
 
 选错了模式，Action 显示构建成功但页面不更新，是新手最容易困惑的地方。
+
+两种模式的区别：
+
+```mermaid
+flowchart TD
+    S["Settings → Pages → Source"] --> B["Deploy from a branch<br/>旧模式"]
+    S --> C["GitHub Actions<br/>新模式 ✅"]
+    B --> B1["直接托管分支上的现成文件<br/>没有构建步骤"]
+    C --> C1["工作流构建 → artifact → deploy-pages"]
+    C1 --> C2["Gmeek 必须选这个"]
+```
 
 ### 3. 配置 config.json
 
@@ -108,7 +133,21 @@ if os.path.exists(self.static_dir):   # static/
         # 原样复制到 docs/
 ```
 
-**仓库根目录的 `static/` 会在每次构建时被原样拷贝到站点根目录。** 于是把 `lengyanzhou.html` 放进 `static/`，它就在每次自动构建后依然出现在 `https://用户名.github.io/lengyanzhou.html`，链接完全不变。要放 favicon、robots.txt、自定义页面，都是同一个位置。
+每次构建时 `static/` 的命运：
+
+```mermaid
+flowchart TD
+    A(["每次构建开始"]) --> B["清空 docs/<br/>旧页面全部删除"]
+    B --> C["根据所有 Issue 重新生成页面"]
+    C --> D{"static/ 目录存在？"}
+    D -->|"是"| E["static/ 内的文件<br/>原样复制进 docs/"]
+    D -->|"否"| F["跳过这一步"]
+    E --> G["部署 docs/ 到 Pages"]
+    F --> G
+    H["favicon、计数器脚本、mermaid 库等<br/>自定义静态文件"] -.-> E
+```
+
+**仓库根目录的 `static/` 会在每次构建时被原样拷贝到站点根目录。** 于是把 `lengyanzhou.html` 放进 `static/`，它就在每次自动构建后依然出现在 `https://用户名.github.io/lengyanzhou.html`，链接完全不变。要放 favicon、robots.txt、自定义 JS（本文的图表库和浏览量统计脚本就是这样放的），都是同一个位置。
 
 ## 日常使用
 
@@ -118,6 +157,15 @@ if os.path.exists(self.static_dir):   # static/
 - **插图**：Issue 编辑器里直接粘贴/拖拽图片，自动上传
 - **评论**：内置 utteranc.es，评论本身也是 Issue
 - **自定义域名**：Settings → Pages 填域名；子域名只需在 DNS 加一条 CNAME 指向 `用户名.github.io`。若域名托管在 Cloudflare，HTTPS 由它负责，GitHub 这边的 Enforce HTTPS 要取消勾选
+
+什么时候自动、什么时候要手动：
+
+```mermaid
+flowchart LR
+    A["想更新博客"] --> B{"改了什么？"}
+    B -->|"写新文章 / 修改正文"| C["新建或编辑 Issue"] --> E["保存即自动构建"]
+    B -->|"改 config.json / static/"| D["Actions 页手动 Run workflow"] --> E
+```
 
 ## 排错清单
 
@@ -134,3 +182,5 @@ if os.path.exists(self.static_dir):   # static/
 这套方案的本质是：**用 GitHub 的 Issue 系统"借用"了一个带 Markdown 编辑器、登录体系和评论系统的后台**，用 Actions 替代服务器定时任务，用 Pages 替代虚拟主机。牺牲的是国内访问速度和一点上手配置，得到的是零成本、无广告、数据完全在自己仓库里的博客。
 
 写作这件事，最重要的永远是开始写。
+
+##{"style":"#postBody>p:last-of-type{display:none;}.mermaid-wrap{margin:18px 0;overflow-x:auto;}","script":"<script src='/mermaid.min.js'></script><script src='/mermaid-init.js'></script>"}
