@@ -359,7 +359,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <h2>小结</h2>
 <p>盘点完可以看到，Gmeek 框架已经替个人博客覆盖了骨架的大部分：发文、标签、搜索、RSS、评论、暗色模式、备份都在开箱之列。真正需要自己补的，集中在<strong>SEO 收录</strong>、<strong>About 等固定页面</strong>和<strong>长文阅读辅助</strong>三处。</p>
 <p>这个系列接下来就按 P0 → P1 的顺序，每完成一项写一篇记录，清单即 roadmap。等这个清单全部打勾的那天，这个博客才算真正"建成"。</p></div>
-<div style="font-size:small;margin-top:8px;float:right;"></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
 <div class="comments" id="comments"></div>
@@ -374,8 +374,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 var now=new Date();
 document.getElementById("copyrightYear").innerHTML=now.getFullYear();
 
-if(""!=""){
-    var startSite=new Date("");
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
     var diff=now.getTime()-startSite.getTime();
     var diffDay=Math.floor(diff/(1000*60*60*24));
     document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";

@@ -242,7 +242,7 @@ gh run list --limit 3          <span class="pl-c"><span class="pl-c">#</span> �
 <h2>小结</h2>
 <p>这个插件值得拆开看一遍，因为它体现了 Gmeek 生态里"插件"的标准形态：<strong>一个自包含的 JS 文件，放 <code class="notranslate">static/</code> 目录，用 <code class="notranslate">script</code>/<code class="notranslate">allHead</code> 字段注入，自己注入所需 CSS，不改动上游模板</strong>。这种方式的好处是 Gmeek 本身升级时，你的自定义功能不受影响——删掉那一行配置就能完整回退。</p>
 <p>下一篇准备系统盘点一下：一个博客除了评论和互动，还需要哪些基础功能，以及叶扬给这个博客定下的建设路线图。</p></div>
-<div style="font-size:small;margin-top:8px;float:right;"></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
 <div class="comments" id="comments"></div>
@@ -257,8 +257,8 @@ gh run list --limit 3          <span class="pl-c"><span class="pl-c">#</span> �
 var now=new Date();
 document.getElementById("copyrightYear").innerHTML=now.getFullYear();
 
-if(""!=""){
-    var startSite=new Date("");
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
     var diff=now.getTime()-startSite.getTime();
     var diffDay=Math.floor(diff/(1000*60*60*24));
     document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
