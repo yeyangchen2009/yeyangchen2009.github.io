@@ -1,8 +1,11 @@
 {
     "title": "叶扬的博客",
-    "subTitle": "学习与记录",
+    "subTitle": "人生苦短，我用AI～",
     "avatarUrl": "https://github.com/yeyangchen2009.png",
     "email": "vipbigdata@qq.com",
     "urlMode": "issue",
+    "singlePage": ["lengyanzhou"],
+    "exlink": {"github": "https://github.com/yeyangchen2009/yeyangchen2009.github.io"},
+    "allHead": "<script src='/GmeekVercount.js'></script>",
     "GMEEK_VERSION": "last"
 }
