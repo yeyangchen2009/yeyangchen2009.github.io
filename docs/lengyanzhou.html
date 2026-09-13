@@ -1,0 +1,2642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>楞严咒全文及意译</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5A2B',
+                        secondary: '#D2B48C',
+                        accent: '#CD853F',
+                        light: '#F5F5DC',
+                        dark: '#3E2723'
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans SC', 'sans-serif'],
+                        serif: ['Noto Serif SC', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            }
+            .bg-paper {
+                background-image: url('https://picsum.photos/id/106/1000/1000');
+                background-size: cover;
+                background-attachment: fixed;
+                background-color: rgba(255, 255, 240, 0.9);
+                background-blend-mode: overlay;
+            }
+            .scroll-smooth {
+                scroll-behavior: smooth;
+            }
+            .table-row-hover {
+                transition: all 0.3s ease;
+            }
+            .table-row-hover:hover {
+                background-color: rgba(210, 180, 140, 0.2);
+                transform: translateX(5px);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-paper text-dark font-serif scroll-smooth">
+    <!-- 顶部导航 -->
+    <header class="sticky top-0 z-50 bg-dark/90 text-light shadow-lg backdrop-blur-sm">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-shadow">
+                <i class="fa fa-book mr-2"></i>楞严咒
+            </h1>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#intro" class="hover:text-secondary transition-colors"><i class="fa fa-info-circle mr-1"></i>简介</a></li>
+                    <li><a href="#content" class="hover:text-secondary transition-colors"><i class="fa fa-text-height mr-1"></i>全文</a></li>
+                    <li><a href="#chapters" class="hover:text-secondary transition-colors"><i class="fa fa-list-ol mr-1"></i>分章</a></li>
+                </ul>
+            </nav>
+            <button id="menuToggle" class="md:hidden text-light focus:outline-none">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobileMenu" class="hidden md:hidden bg-dark/95 backdrop-blur-sm">
+            <ul class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <li><a href="#intro" class="block py-2 hover:text-secondary transition-colors"><i class="fa fa-info-circle mr-1"></i>简介</a></li>
+                <li><a href="#content" class="block py-2 hover:text-secondary transition-colors"><i class="fa fa-text-height mr-1"></i>全文</a></li>
+                <li><a href="#chapters" class="block py-2 hover:text-secondary transition-colors"><i class="fa fa-list-ol mr-1"></i>分章</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- 简介部分 -->
+        <section id="intro" class="mb-12 bg-light/80 rounded-lg p-6 md:p-8 shadow-xl transform transition-all duration-500 hover:shadow-2xl">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6 text-primary text-center border-b-2 border-secondary pb-2">楞严咒简介</h2>
+            <div class="prose lg:prose-xl max-w-none text-dark/90 leading-relaxed">
+                <p class="mb-4">《楞严咒》出自《大佛顶如来密因修证了义诸菩萨万行首楞严经》，又称"大佛顶首楞严神咒"，是佛教中极为重要的咒语。</p>
+                <p class="mb-4">此咒包含佛教一切法门，被誉为"咒中之王"，具有消灾免难、增福增慧、破除障碍等功德。持诵楞严咒，能得诸佛菩萨护持，远离一切恶缘，增长善根。</p>
+                <p>楞严咒全文分为五会，内容博大精深，蕴含无穷智慧与力量。本页面提供楞严咒全文及其意译，方便学习者参考。</p>
+            </div>
+        </section>
+
+        <!-- 章节导航 -->
+        <section id="chapters" class="mb-12 bg-light/70 rounded-lg p-6 shadow-lg">
+            <h2 class="text-2xl md:text-3xl font-bold mb-4 text-primary border-b border-secondary pb-2">
+                <i class="fa fa-list-ol mr-2"></i>咒文分章
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <a href="#chapter1" class="bg-primary/10 hover:bg-primary/20 text-center py-3 px-2 rounded transition-all hover:shadow-md">
+                    <i class="fa fa-bookmark mr-1"></i>第一会
+                </a>
+                <a href="#chapter2" class="bg-primary/10 hover:bg-primary/20 text-center py-3 px-2 rounded transition-all hover:shadow-md">
+                    <i class="fa fa-bookmark mr-1"></i>第二会
+                </a>
+                <a href="#chapter3" class="bg-primary/10 hover:bg-primary/20 text-center py-3 px-2 rounded transition-all hover:shadow-md">
+                    <i class="fa fa-bookmark mr-1"></i>第三会
+                </a>
+                <a href="#chapter4" class="bg-primary/10 hover:bg-primary/20 text-center py-3 px-2 rounded transition-all hover:shadow-md">
+                    <i class="fa fa-bookmark mr-1"></i>第四会
+                </a>
+                <a href="#chapter5" class="bg-primary/10 hover:bg-primary/20 text-center py-3 px-2 rounded transition-all hover:shadow-md">
+                    <i class="fa fa-bookmark mr-1"></i>第五会
+                </a>
+            </div>
+        </section>
+
+        <!-- 主要内容区 -->
+        <section id="content" class="bg-light/90 rounded-lg shadow-xl overflow-hidden">
+            <div class="sticky top-16 bg-dark/80 text-light p-4 backdrop-blur-sm">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl md:text-2xl font-bold">
+                        <i class="fa fa-text-height mr-2"></i>楞严咒全文及意译
+                    </h2>
+                    <div class="flex space-x-2">
+                        <button id="fontSizeDecrease" class="p-2 hover:bg-primary/50 rounded transition-colors">
+                            <i class="fa fa-font text-sm"></i>
+                        </button>
+                        <button id="fontSizeIncrease" class="p-2 hover:bg-primary/50 rounded transition-colors">
+                            <i class="fa fa-font text-lg"></i>
+                        </button>
+                        <button id="scrollToTop" class="p-2 hover:bg-primary/50 rounded transition-colors">
+                            <i class="fa fa-arrow-up"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse" id="mainTable">
+                    <thead>
+                        <tr class="bg-primary/20">
+                            <th class="p-4 border-b-2 border-primary text-left text-lg md:text-xl font-bold w-1/2">楞严咒</th>
+                            <th class="p-4 border-b-2 border-primary text-left text-lg md:text-xl font-bold w-1/2">意译</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-secondary/30 table-row-hover">
+                            <td id="chapter1" class="p-4 border-b border-secondary font-bold text-xl md:text-2xl" colspan="2">第一会</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō sà dàn tuō. sū qié duō  yē. e là hē dì. sān miǎo sān pú tuó xiě.<br>
+                                南无萨怛他 苏伽多耶 阿罗诃帝 三藐三菩陀写
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">我今礼敬皈命，一切如来应正等觉</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō sà dàn tuō. fó tuó  jù zhī. sěi ní shàn.<br>
+                                南无萨怛他 佛陀俱胝 瑟尼钐
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命一切诸佛大佛顶首</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō sà pó. bó tuó bó dì. sà  duō pí bì.<br>
+                                南无萨婆 勃陀勃地 萨跢鞞弊
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命诸大菩萨至心承事贤圣</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō sà duō nán. sān miǎo sān  pú tuó. jù zhī nán.<br>
+                                南无萨多南 三藐三菩陀 俱知南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命一切圣众、三世正遍知觉</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                suō shě là pó jiā. sēng qié  nán.<br>
+                                娑舍啰婆迦 僧伽喃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼大辟支佛</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō lú jīe. e luó hàn duō  nán.<br>
+                                南无卢鸡 阿罗汉跢喃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼大阿罗汉</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō sū lú. duō bō nuó  nán.<br>
+                                南无苏卢 多波那喃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼须陀洹</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō suō jié lì tuó. qié mí  nán.<br>
+                                南无娑羯唎陀 伽弥喃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼斯陀含</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō lú jī. sān miǎo qié duō  nán.<br>
+                                南无卢鸡 三藐伽跢喃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼阿那含</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sān miǎo qié bō là. dǐ bō duō  nuó nán.<br>
+                                三藐伽波啰 底波多那喃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼过去未来现在诸圣贤众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō tí pó lí sěi  nǎn.<br>
+                                南无提婆离瑟赧
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼色界天众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō xī tuó yē. pí dì yē. tuó  là lí sěi nǎn.<br>
+                                南无悉陀耶 毗地耶 陀啰离瑟赧
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼兜率天众、四天王天众、化乐天众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shě bō nú. jiē là hē. suō hē  suō là. mó tuō nán.<br>
+                                舍波奴 揭啰诃 娑诃娑啰 摩他喃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">广果天众、他化自在天众等大千世界一切天仙众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō bá là hē mó  ní.<br>
+                                南无跋啰诃摩尼
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼大梵天众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō yīn tuó là  yē.<br>
+                                南无因陀啰耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼帝释天王</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó  dì.<br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                lú tuó là yē.<br>
+                                嚧陀啰耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">地天神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                wū mó bō dì.<br>
+                                乌摩般帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">风天神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                suō xī yè yē.<br>
+                                娑醯夜耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">火天神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó  dì.<br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nuó là yě. ná yē.<br>
+                                那啰野 拏耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">水天神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bō zhē mó hē. sān mù tuó  là.<br>
+                                槃遮摩诃 三慕陀啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">空天神、歌乐天神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō xī jié lì duō  yē<br>
+                                南无悉羯唎多耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼上述诸天神众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó  dì.<br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē jiā là  yē.<br>
+                                摩诃迦罗耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">大梵天王众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                dì lì bō lá nà qié  là.<br>
+                                地唎般剌那伽啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">无量光天众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí tuó là. bō ná jiā là  yē.<br>
+                                毗陀啰 波拏迦啰耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">五不还天众、摩醯首众天众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e dì mù dì.<br>
+                                阿地目帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">善见天众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shī mó shě nuó ní pó xī  ní.<br>
+                                尸摩舍那泥婆悉泥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">尸弃大梵、无想天众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó dá lì qié  ná.<br>
+                                摩怛唎伽拏
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">忉利天众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō xī jié lì duō  yē.<br>
+                                南无悉羯唎多耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼上述诸天神众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó  dì.<br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                duō tuō qié duō jù là  yē.<br>
+                                多他伽跢俱啰耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">中央佛部种族众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō bō tóu mó jù là  yē.<br>
+                                南无般头摩俱啰耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命西方莲花部种族众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō bá shé là jù là  yē.<br>
+                                南无跋阇啰俱啰耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命东方金刚部种族众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō mó ní jù là  yē.<br>
+                                南无摩尼俱啰耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命南方宝生部种族众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō qié shé jù là  yē.<br>
+                                南无伽阇俱啰耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命北方羯磨部种族众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó  dì.<br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                dì  lì chá. shū là xī nà.<br>
+                                帝唎茶 输啰西那
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bō  là hē là ná là shé yē.   <br>
+                                波啰诃啰拏啰阇耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                duò tuō qié duō yē. <br>
+                                跢他伽多耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">各持器杖 大力猛将 坚猛极啖尽王如来</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó  dì.<br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō e mí duō pó  yē.<br>
+                                南无阿弥多婆耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命无量寿佛</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                duō tuō qié duō  yē.<br>
+                                跢他伽多耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">如来</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e là hē dì.<br>
+                                阿啰诃帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">普礼应真一切王族</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sān miǎo sān pú tuó  yē.<br>
+                                三藐三菩陀耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命正觉一切圣贤</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó  dì.<br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e chú pí yē.<br>
+                                阿刍鞞耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">阿閦如来</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                duō tuō qié duō  yē.<br>
+                                跢他伽多耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">如来</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e là hē dì.<br>
+                                阿啰诃帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">普礼应真一切王族</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sān miǎo sān pú tuó  yē.<br>
+                                三藐三菩陀耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命正觉一切圣贤</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó dì. <br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí shā shé yē. jù lú fèi zhù  lì yē.<br>
+                                鞞沙阇耶 俱嚧吠柱唎耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">药师琉璃光佛 如来一切门人</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bō là pó là shé  yē.<br>
+                                般啰婆啰阇耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                duò tuō qié duō yē. <br>
+                                跢他伽多耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">如来</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó  dì.<br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sān bǔ shī bì  duò.<br>
+                                三补师毖多
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">普光娑罗王佛</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà lián nà là lá shé  yē.<br>
+                                萨怜捺啰剌阇耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">普礼如来一切门人</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                duò tuō qié duō yē. <br>
+                                跢他伽多耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">如来</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e là hē dì.<br>
+                                阿啰诃帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">普礼应真一切王族</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sān miǎo sān pú tuó  yē.<br>
+                                三藐三菩陀耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命正觉一切圣贤</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó  dì.<br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shě jī yě mǔ nuó  yè.<br>
+                                舍鸡野母那曳
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">释迦牟尼佛</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                duò tuō qié duō  yē.<br>
+                                跢他伽多耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">普礼如来一切门人</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e là hē dì.<br>
+                                阿啰诃帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">普礼应真一切王族</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sān miǎo sān pú tuó  yē.<br>
+                                三藐三菩陀耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命正觉一切圣贤</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō pó qié pó  dì.<br>
+                                南无婆伽婆帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命薄伽梵</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                là dàn nà jī dū là shé  yē.<br>
+                                剌怛那鸡都啰阇耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼宝幢王佛众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                duò tuō qié duō  yē.<br>
+                                跢他伽多耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">普礼如来一切门人</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e là hē dì.<br>
+                                阿啰诃帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">普礼应真一切王族</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sān miǎo sān pú tuó  yē.<br>
+                                三藐三菩陀耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命正觉一切圣贤</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                dì piáo. nā mō sà jié lì  duō.<br>
+                                帝瓢 南无萨羯唎多
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">最上三宝我今皈依敬礼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                yì tán pó qié pó  duō.<br>
+                                翳昙婆伽婆多
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">此 世尊</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà dàn tuō qié dū. sěi ní  shàn.<br>
+                                萨怛他伽都 瑟尼钐
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">如来 佛顶</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà dàn duō bō dá  lán.<br>
+                                萨怛多般怛篮
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">我今敬礼宝伞华盖佛顶心咒</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nā mō e pó là shì  dān.<br>
+                                南无阿婆啰视耽
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命。无能胜波罗密多</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bō là dì. yáng qí  là.<br>
+                                般啰帝 扬岐啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">摧伏怨魔，起观照智，令到彼岸成等正觉</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà là pó. bù duō jiē là  hē.<br>
+                                萨啰婆 部多揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">一切大乘种性</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                ní jié là hē. jié jiā là hē  ní.<br>
+                                尼羯啰诃 揭迦啰诃尼
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">三乘内上首种性...等诸圣众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bá là bì dì yē.<br>
+                                跋啰毖地耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">般若菩提道果.</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                chì tuó nǐ.<br>
+                                叱陀你
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">依西方莲花部心咒</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e jiā là. <br>
+                                阿迦啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">观音如意心咒、大悲咒.</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mì lì zhù.<br>
+                                密唎柱
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">依东方金刚部心咒</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bō lì dàn là  yē. <br>
+                                般唎怛啰耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">依南方宝生部心咒.</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                níng jié lì.<br>
+                                儜揭唎
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">依北方羯磨部心咒</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà là pó. pán tuó nuó. mù chā  ní.<br>
+                                萨啰婆 槃陀那 目叉尼
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">一切结界道场，解除诸难苦缚</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà là pó. tù sěi  zhà.<br>
+                                萨啰婆 突瑟吒
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">一切别见</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                tù xī fá. bō nà nǐ. fá là  ní.<br>
+                                突悉乏 般那你 伐啰尼
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">烦恼，转为智慧</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                zhě dū là. shì dì  nán.<br>
+                                赭都啰 失帝南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">一切冤家不祥，皆令平息解脱</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jié là hē. suō hē sà là ruò  shé.<br>
+                                羯啰诃 娑诃萨啰若阇
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">娑婆大千界内</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí duō bēng suō nà jié  lì.<br>
+                                毗多崩娑那羯唎
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">八万四千诸天金刚护法众普皆来集</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e sěi zhà bìng shě dì  nán.<br>
+                                阿瑟吒冰舍帝南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">一切神众普去破怨，折伏魔害，令钦伏也</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nà chā chà dàn là ruò  shé.<br>
+                                那叉刹怛啰若阇
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">金刚力士放光解厄，以摄受也</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bō là sà tuó nà jié  lì.<br>
+                                波啰萨陀那羯唎
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">金刚萨埵发猛到岸，以折伏也</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e sěi zhà nán.<br>
+                                阿瑟吒南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">大乘金刚手</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē jié là hē ruò  shé.<br>
+                                摩诃揭啰诃若阇
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">光面引进之</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí duō bēng sà nà jié  lì.<br>
+                                毗多崩萨那羯唎
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">金刚将种种诃责而降伏之</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà pó shě dū lú. nǐ pó là ruò  shé.<br>
+                                萨婆舍都嚧 你婆啰若阇
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">一切金刚首主，引皈三宝，治诸怨害，流注病难，令生善喜也</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                hū lán tù xī fá. nàn zhē nà  shě ní.<br>
+                                呼蓝突悉乏 难遮那舍尼
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">消灭一切诸恶.诸水神众，解除水毒</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bì shā shě. xī dàn  là.<br>
+                                毖沙舍 悉怛啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">诸虚空神，解时气病.诸地神众，解地大损病</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e jí ní. wū tuó jiā là ruò  shé.<br>
+                                阿吉尼 乌陀迦啰若阇
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">解除火毒.诸风神众，解除风难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e bō là. shì duō jū  là.<br>
+                                阿般啰 视多具啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">弥勒菩萨等诸圣众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē bō là. zhàn  chí.<br>
+                                摩诃般啰 战持
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">月光菩萨</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē dié duō.<br>
+                                摩诃叠多
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">乌刍瑟摩火头金刚</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē dì shé.<br>
+                                摩诃帝阇
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">虚空藏菩萨</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē shu ìduō. shé pó  là.<br>
+                                摩诃税多 阇婆啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">观自在菩萨</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē bá là. pán tuó là. pó xī  nǐ.<br>
+                                摩诃跋啰 槃陀啰 婆悉你
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">跋陀婆罗菩萨、普贤菩萨、周梨盘特迦尊者 波斯匿王</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e lì yē duō là.<br>
+                                阿唎耶多啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">持地菩萨</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí lì jù zhī.<br>
+                                毗唎俱知
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">琉璃光法王子</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shì pó pí shé  yē.<br>
+                                誓婆毗阇耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">药王药上菩萨</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bá shé là. mó lǐ  dǐ.<br>
+                                跋阇啰 摩礼底
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">护羯摩部金刚神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí shě lú duō.<br>
+                                毗舍嚧多
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">护佛部</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bó téng wǎng  jiā.<br>
+                                勃腾罔迦
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">金刚神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bá shé là. zhì hè nuó e  zhē.<br>
+                                跋阇啰 制喝那阿遮
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">护金刚部 金刚神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó là zhì pó. bō là zhì  duō.<br>
+                                摩啰制婆 般啰质多
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">护灌顶部金刚神.护莲花部金刚神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bá shé là. shàn  chí.<br>
+                                跋阇啰 擅持
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">解脱诸大法门：</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí shě là zhē.<br>
+                                毗舍啰遮
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏法、</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shàn duō shě.   <br>
+                                扇多舍
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">息灾法、</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí tí pó.<br>
+                                鞞提婆
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">钩召法、</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bǔ shì duō.<br>
+                                补视多
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">增益法、</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sū mó lú bō.<br>
+                                苏摩嚧波
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬爱法</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē shuì duō.<br>
+                                摩诃税多
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">大日月宫</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e lì yē duō là.<br>
+                                阿唎耶多啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">天子</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē pó là. e bō  là.<br>
+                                摩诃婆啰 阿般啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">大星宫天子、五星、九曜、二十八宿等八万四千诸星眷属</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bá shé là. shāng jiē là zhì  pó.<br>
+                                跋阇啰 商羯啰制婆
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">金刚连锁甲</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bá shé là. jù mó  lì.<br>
+                                跋阇啰 俱摩唎
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">金刚童男众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jù lán tuó lì.<br>
+                                俱蓝陀唎
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">金刚神女众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bá shé là. hè sà duō zhē. pí  dì yē. qián zhē nuó.<br>
+                                跋阇啰 喝萨多遮 毗地耶 乾遮那
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">阿閦佛坛神众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó lì jiā. kù sū  mǔ.<br>
+                                摩唎迦 啒苏母
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">弥陀佛坛神众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pó jié là duō  nà.<br>
+                                婆羯啰跢那
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">成就佛坛神众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí  lú zhē nà. jù lì yē. <br>
+                                鞞嚧遮那 俱唎耶
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                yè là tù. sěi ní  shàn.<br>
+                                夜啰菟瑟尼钐
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">毗卢佛坛神众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí zhé lán pó. mó ní  zhē.<br>
+                                毗折蓝婆 摩尼遮
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">宝生佛坛神众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bá shé là. jiā nà jiā. bō là  pó. lú shé nà.<br>
+                                跋阇啰 迦那迦 波啰婆 嚧阇那
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守护中方界神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bá  shé là. dùn zhì zhē.<br>
+                                跋阇啰 顿稚遮
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shuì duō zhē. jiā mó  là.<br>
+                                税多遮 迦摩啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守护西方界神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                chà shē shī. bō là  pó.<br>
+                                刹奢尸 波啰婆
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守护南方界神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                yì dì yí dì.<br>
+                                翳帝夷帝
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守护东方界神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mǔ tuó là. jié  ná.<br>
+                                母陀啰 羯拏
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守护北方界神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                suō pí là chàn.<br>
+                                娑鞞啰忏
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">身礼忏口请悔心</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jué fàn dū.<br>
+                                掘梵都
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">三业忏悔</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                yìn tù nà mó mó  xiě.<br>
+                                印兔那么么写
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">求佛印证，我所作者尽皆成就，圆满菩提</td>
+                        </tr>
+                        
+                        <tr class="bg-secondary/30 table-row-hover">
+                            <td id="chapter2" class="p-4 border-b border-secondary font-bold text-xl md:text-2xl" colspan="2">第二会</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                ong.（注） <br>
+                                乌𤙖
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">嗡 警觉一切</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                lī sè jiē ná.<br>
+                                唎瑟揭拏
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">押领一切部众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bō là shě xī  duō.<br>
+                                般剌舍悉多
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">善圆成我等天仙</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà dá tuō. qié dū sè ní  shān.<br>
+                                萨怛他 伽都瑟尼钐
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">今当敬礼如来大佛顶咒</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                hong.<br>
+                                虎𤙖
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">吽</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bù. lòng.（注）<br>
+                                都嚧雍
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛种子字</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                zhān pó nuó.<br>
+                                瞻婆那
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">各领镇中三宝圣贤</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                hong.（注）<br>
+                                虎𤙖
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">吽</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bù. lòng.<br>
+                                都嚧雍
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛种子字</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                xī dān pó nuó.<br>
+                                悉耽婆那
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">成就吉祥</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                hong.<br>
+                                虎𤙖
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">吽</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bù. lòng.<br>
+                                都嚧雍
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛种子字</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bō là sè dì yē. sān bō chā. ná  jié là. <br>
+                                波罗瑟地耶 三般叉 拏羯啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">成就解脱彼岸</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                hong.<br>
+                                虎𤙖
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">吽</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bù. lòng.<br>
+                                都嚧雍
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛种子字</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà pó yào chā. hē là chà  suō.<br>
+                                萨婆药叉 喝啰刹娑
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">一切空行药叉、</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jiē là hē ruò  shé.<br>
+                                揭啰诃若阇
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">地行罗刹众等</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí téng bēng sà nuó jié  là.<br>
+                                毗腾崩萨那羯啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">破怨除难，度去一切苦厄</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                hong.<br>
+                                虎𤙖
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">吽</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bù. lòng.<br>
+                                都嚧雍
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛种子字</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                zhě dū là. shī dǐ  nán.<br>
+                                者都啰 尸底南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">金刚宝剑神将</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jiē là hē. suō hē sà là  nán.<br>
+                                揭啰诃 娑诃萨啰南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">妙吉祥神将等大千界中金刚神将眷属众、</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí téng bēng sà nuó  là.<br>
+                                毗腾崩萨那啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">屏除魔障，施以安宁</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                hong.<br>
+                                虎𤙖
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">吽</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bù. lòng.<br>
+                                都嚧雍
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛种子字</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                là chā.<br>
+                                啰叉
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">金刚天仙各令守护</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pó qié fàn.<br>
+                                婆伽梵
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">惟仗世尊威神力故、</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà dá tuō. qié dū sè ní  shān.<br>
+                                萨怛他 伽都瑟尼钐
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">皈命大佛顶光明神咒</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bō là diǎn. shé jí  lī.<br>
+                                波啰点 阇吉唎
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">我今作礼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē suō hē sà  là.<br>
+                                摩诃娑诃萨啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">千臂大神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bó shù suō hē sà  là. <br>
+                                勃树娑诃萨啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">千头大神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shì lī shā.  jù zhī suō  hē sà ní.<br>
+                                室唎沙 俱知娑诃萨泥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">千百眼大神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                dì líā. bì tí shì pó lī  duō.<br>
+                                帝隶 阿弊提视婆唎多
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">敬礼大轮金刚神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                zhà zhà yīng  jiā.<br>
+                                吒吒甖迦
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">离障</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē bá shé lú tuó  là.<br>
+                                摩诃跋阇嚧陀啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除大障碍</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                dì lī pú pó  nuó.<br>
+                                帝唎菩婆那
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">三世诸佛设此</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                màn chá là.<br>
+                                曼茶啰
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">坛场</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                ong. <br>
+                                乌𤙖
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">嗡 警觉一切</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                suō xī dì. bù pó  dū.<br>
+                                莎悉帝 薄婆都
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó mó. <br>
+                                么么
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                yìn tù nuó mó mó xiě. <br>
+                                印兔那么么写
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">一切诸部大力金刚神王众，承佛威力，率诸眷属，常随护我，所作诸法皆悉究竟</td>
+                        </tr>
+                        
+                        <tr class="bg-secondary/30 table-row-hover">
+                            <td id="chapter3" class="p-4 border-b border-secondary font-bold text-xl md:text-2xl" colspan="2">第三会</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                là shé pó yè.<br>
+                                啰阇婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除王难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                zhǔ là bá yè.<br>
+                                主啰跋夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除贼难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e qí ní pó yè.<br>
+                                阿祇尼婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除火难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                wū tuó jiā pó  yè.<br>
+                                乌陀迦婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除水难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí shā pó yè.<br>
+                                毗沙婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除毒难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shě sà duō là pó  yè.<br>
+                                舍萨多啰婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除刀杖难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pó là zhuó jié là pó  yè.<br>
+                                婆啰斫羯啰婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除诸兵难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                tù sěi chā pó  yè.<br>
+                                突瑟叉婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除饥馑难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e shě nǐ pó yè.<br>
+                                阿舍你婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除雷电难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e jiā là mì lì zhū pó  yè.<br>
+                                阿迦啰密唎柱婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除大小诸横难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                tuó là ní bù mí jiàn. bō qié  bō tuó pó yè.<br>
+                                陀啰尼部弥剑 波伽波陀婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">承佛咒力、除一切金毒银毒</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                wū là jiā pó duō pó  yè.<br>
+                                乌啰迦婆多婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除险阻难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                là shé tán chá pó  yè.<br>
+                                剌阇檀茶婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除毒蛇难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nuó qié pó yè.<br>
+                                那伽婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除毒龙难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí tiáo dàn pó  yè.<br>
+                                毗条怛婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除电雷难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sū bō là ná pó  yè.<br>
+                                苏波啰拏婆夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">除恶禽金翅鸟难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                yào chā jiē là  hē.<br>
+                                药叉揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守魂鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                là chā sī jiē là  hē.<br>
+                                啰叉私揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守宫妇女鬼，除非命难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bì lì duō jiē là  hē.<br>
+                                毕唎多揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守尸鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí shě zhē jiē là  hē.<br>
+                                毗舍遮揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守谷鬼，除毒药难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bù duō jiē là  hē.<br>
+                                部多揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">大神鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jiū pán chá jiē là  hē.<br>
+                                鸠槃茶揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">骑坐鬼，除城郭车骑难</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bǔ dān nà jiē là  hē.<br>
+                                补丹那揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守形鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jiā zhà bǔ dān nà jiē là  hē.<br>
+                                迦吒补丹那揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">守魄鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                xī qián dù jiē là  hè.<br>
+                                悉乾度揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">童子神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e bō xī mó là jiē là  hè.<br>
+                                阿播悉摩啰揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">羊头神</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                wū tán mó tuó jiē là  hē.<br>
+                                乌檀摩陀揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">热鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                chē yè jiē là  hē.<br>
+                                车夜揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">影鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                xī lì pó dì jiē là  hē.<br>
+                                醯唎婆帝揭啰诃
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">音鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shè duō hē lì  nán.<br>
+                                社多诃唎南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食精气鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jiē pó hē lì  nán.<br>
+                                揭婆诃唎南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食胎藏鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                lú dì là hē lì  nán.<br>
+                                嚧地啰诃唎南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食血鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                máng suō hē lì  nán.<br>
+                                忙娑诃唎南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食油鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mí tuó hē lì  nán.<br>
+                                谜陀诃唎南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食产鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó shé hē lì  nán.<br>
+                                摩阇诃唎南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食命鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shé duō hē  lì nǚ.<br>
+                                阇多诃唎女
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食垢腻鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                shì bǐ duō hē lì  nán.<br>
+                                视比多诃唎南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食祭鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí duō hē lì  nán.<br>
+                                毗多诃唎南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食花鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pó duō hē lì  nán.<br>
+                                婆多诃唎南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食果鬼食</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                e shū zhē hē lì  nǚ.<br>
+                                阿输遮诃唎女
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">五谷种子鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                zhì duō hē lì  nǚ.<br>
+                                质多诃唎女
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">食灯鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                dì shàn sà pí  shàn.<br>
+                                帝钐萨鞞钐
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">如是等众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                sà pó jiē là hē  nán.<br>
+                                萨婆揭啰诃南
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">如是等众一切热恼祖父神鬼</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí  tuó yē shé. chēn tuó yè mí.<br>
+                                毗陀耶阇 瞋陀夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jī là yè mí.<br>
+                                鸡啰夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                bō lì bá là zhě jiā. qì lì  dān.<br>
+                                波唎跋啰者迦 讫唎担
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒三神将押领二十八万军众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí  tuó yē shé. chēn tuó yè mí.<br>
+                                毗陀夜阇 瞋陀夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jī là yè mí.<br>
+                                鸡啰夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                chá yǎn ní. qì lì  dān.<br>
+                                茶演尼 讫唎担
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒押领狐媚鬼众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí  tuó yē shé. chēn tuó yè mí.<br>
+                                毗陀夜阇 瞋陀夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jī là yè mí.<br>
+                                鸡啰夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó  hē bō shū bō dàn yè.<br>
+                                摩诃般输般怛夜
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                lú tuó là. qì lì  dān.<br>
+                                嚧陀啰 讫唎担
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒押领大自在天众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí  tuó yē shé. chēn tuó yè mí.<br>
+                                毗陀夜阇 瞋陀夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jī là  yè  mí.<br>
+                                鸡啰夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                nuó lā yè ná. qì lì  dān.<br>
+                                那啰夜拏 讫唎担
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒押领自在天众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí  tuó yē shé. chēn tuó yè mí.<br>
+                                毗陀夜阇 瞋陀夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jī là yè mí.<br>
+                                鸡啰夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                dàn duǒ qié. lú chá xī. qì lì  dàn.<br>
+                                怛埵伽 嚧茶西 讫唎担
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒押领金翅鸟王神众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí  tuó yē shé. chēn tuó yè mí.<br>
+                                毗陀夜阇 瞋陀夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jī là yè mí.<br>
+                                鸡啰夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                mó hē jiā là. mó dàn lì qié  ná. qì li dàn.<br>
+                                摩诃迦啰 摩怛唎伽拏 讫唎担
+                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒押领大小黑天神众</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                pí  tuó yē shé. chēn tuó yè mí.<br>
+                                毗陀夜阇 瞋陀夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">
+                                jī là yè mí.<br>
+                                鸡啰夜弥
+                            </td>
+                            <td class="p-4 border-b border-secondary/50"></td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jiā bō lì jiā. qì lì  dàn.<br>迦波唎迦 讫唎担                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒押领髑髅外道神仙众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí  tuó yē shé. chēn tuó yè mí.<br>毗陀夜阇 瞋陀夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jī là yè mí.<br>鸡啰夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shé  yè jié là. mó dù jié là.<br>阇耶羯啰 摩度羯啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó là tuō. suō dá nà. qì lì  dàn.<br>萨婆啰他 娑达那 讫唎担                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒执持一切人物神王军将                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí  tuó yē shé. chēn tuó yè mí.<br>毗陀夜阇 瞋陀夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jī là yè mí.<br>鸡啰夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">zhě duō là. pó qí nǐ. qì lì  dàn.<br>赭咄啰 婆耆你 讫唎担                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒执领一切神女姊妹                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí  tuó yē shé. chēn tuó yè mí.<br>毗陀夜阇 瞋陀夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jī là yè mí.<br>鸡啰夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí lì yáng. qì lì  zhī.<br>毗唎羊 讫唎知                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">nàn  tuó jī shā là. qié ná bō dì.<br>难陀鸡沙啰 伽拏般帝                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">suǒ xī yè. qì lì  dàn.<br>索醯夜 讫唎担                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒执持斗战胜神将前器仗并及孔雀明王器仗                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí  tuó yē shé. chēn tuó yè mí.<br>毗陀夜阇 瞋陀夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jī là yè mí.<br>鸡啰夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">nà jiē nà shě là pó ná. qì li  dàn.<br>那揭那舍啰婆拏 讫唎担                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒押领裸形外道神众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí  tuó yē shé. chēn tuó yè mí.<br>毗陀夜阇 瞋陀夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jī là yè mí.<br>鸡啰夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">a luó hàn. qì lì  dàn.<br>阿罗汉 讫唎担                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒降伏罗刹王众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí  tuó yē shé. chēn tuó yè mí.<br>毗陀夜阇 瞋陀夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jī là yè mí.<br>鸡啰夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí duō là qié. qì lì  dàn.<br>毗多啰伽 讫唎担                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒带领大力神王                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí  tuó yē shé. chēn tuó yè mí.<br>毗陀夜阇 瞋陀夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jī  là yè mí.  bá shé là bō nǐ.<br>鸡啰夜弥 跋阇啰波你                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jù xī yè.  jù xī  yè.<br>具醯夜 具醯夜                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jiā dì bō dì. qì lì  dàn.<br>迦地般帝 讫唎担                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛部大明咒、莲花部斩依罪者咒、金刚部捕捉夜叉王咒，依咒带领执剑金刚神王及密迹力士                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí  tuó yē shé. chēn tuó yè mí.<br>毗陀夜阇 瞋陀夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jī là yè mí.<br>鸡啰夜弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">là chā wǎng.<br>啰叉罔                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pó qié fàn.<br>婆伽梵                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">yìn tù nà mó mó  xiě.<br>印兔那么么写                            </td>
+                            <td class="p-4 border-b border-secondary/50">容恕我罪，仰自世尊，愿仗神力，普令一切众生常蒙加护，作法已竟妙觉心圆                            </td>
+                        </tr>
+						
+                        
+                        <tr class="bg-secondary/30 table-row-hover">
+                            <td id="chapter4" class="p-4 border-b border-secondary font-bold text-xl md:text-2xl" colspan="2">第四会</td>
+                        </tr>						
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pó qié fàn.<br>婆伽梵                            </td>
+                            <td class="p-4 border-b border-secondary/50">佛                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà dàn duō. bō dá  là.<br>萨怛多 般怛啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">再仰佛力华盖                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">nā mō cuì dū  dì.<br>南无粹都帝                            </td>
+                            <td class="p-4 border-b border-secondary/50">我今敬礼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e xī duō nà là là  jiā.<br>阿悉多那啰剌迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">赤光缭绕                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bō là pó. xī pǔ  zhà.<br>波啰婆 悉普吒                            </td>
+                            <td class="p-4 border-b border-secondary/50">紫光盘簇                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí jiā sà dàn. duō bō dì  lì.<br>毗迦萨怛 多钵帝唎                            </td>
+                            <td class="p-4 border-b border-secondary/50">白光旋转                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shí fó là. shí fó  là.<br>什佛啰 什佛啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">光焰遍照、光焰遍照                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">tuó là. tuó là.<br>陀啰 陀啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">云盖、云盖                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pín tuó là. pín tuó là. chēn  tuó. chēn tuó.<br>频陀啰 频陀啰  瞋陀 瞋陀                            </td>
+                            <td class="p-4 border-b border-secondary/50">香盖、香盖  珠盖、珠盖  遍满法界、遍满法界                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">hong.<br>虎𤙖                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">hong.<br>虎𤙖                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pà zhà.<br>泮吒                            </td>
+                            <td class="p-4 border-b border-secondary/50">摧碎                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pà zhà. pà zhà. pà zhà. pà  zhà.<br>泮吒 泮吒 泮吒 泮吒                            </td>
+                            <td class="p-4 border-b border-secondary/50">摧碎、摧碎、摧碎、摧碎                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">suō hē.<br>娑诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">灾恶顿消，吉祥成就                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">xī xī pà.<br>醯醯泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">解脱一切                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e móu jiā yē  pà.<br>阿牟迦耶泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">不空我愿                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e bō là tí hē duō  pà.<br>阿波啰提诃多泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">愿无障碍                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pó là bō là tuó  pà.<br>婆啰波啰陀泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">所愿随心                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e sù là. pí tuó là. bō jiā  pà.<br>阿素啰 毗陀啰 波迦泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">破碎修罗                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. tí pí bì  pà.<br>萨婆 提鞞弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏一切天神众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. nà qié bì  pà.<br>萨婆那伽弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏一切毒龙众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. yào chā bì  pà.<br>萨婆 药叉弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏一切勇猛鬼神                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. qián tà pó bì  pà.<br>萨婆 乾闼婆弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏一切音乐众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. bǔ dān nà bì  pà.<br>萨婆 补丹那弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏一切臭饿鬼众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jiā zhà. bǔ dān nà bì  pà.<br>迦吒 补丹那弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏一切奇臭饿鬼众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. tù láng zhī dì bì  pà.<br>萨婆 突狼枳帝弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏一切诸魔                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. tù sè bǐ lí. qì sěi dì  bì pà.<br>萨婆 突涩比犁 讫瑟帝弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏一切诸恶                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. shí pó lì bì  pà.<br>萨婆 什婆犁弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">破诸幽暗                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. e bō xī mó lí bì  pà.<br>萨婆 阿播悉摩犁弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">破诸冤业                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. shě là pó ná bì  pà.<br>萨婆 舍啰婆拏弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">破诸灾厄                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. dì dì jī bì pàn  pà.<br>萨婆 地帝鸡弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">破诸冤害                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. dàn mó tuó jì bì  pà.<br>萨婆 怛摩陀继弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">破一切非命                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. pí tuó yē. là shì zhē  lí bì pà<br>萨婆 毗陀耶 啰誓遮犁弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">破一切毒气                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shé  yè jié là. mó dù jié là .<br>阇夜羯啰 摩度羯啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó. là tuō suō tuó jī bì  pà. <br>萨婆 啰他娑陀鸡弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">解诸重难                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí dì yè. zhē lì bì  pà.<br>毗地夜 遮唎弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">解疟壮热                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">zhě dū là. fù qí nǐ bì  pà<br>者都啰 缚耆你弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏外道                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bá shé là. jù mó  lì.<br>跋阇啰 俱摩唎                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí tuó yè. là shì bì  pà<br>毗陀夜 啰誓弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">解诸恶毒                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mó hē bō là dīng yáng. yì qí  lì bì pà.<br>摩诃波啰丁羊 乂耆唎弊泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">伏诸厄难                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bá  shé là. shāng jié là yè.<br>跋阇啰 商羯啰夜                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bō là zhàng qí. là shé yē  pà.<br>波啰丈耆 啰阇耶泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏一切恶道                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mó hē. jiā là yè.<br>摩诃  迦啰夜                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mó  hē. mò dàn lì jiā ná.<br>摩诃 末怛唎迦拏                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">nā mō. suō jié lì duō yè  pà.<br>南无 娑羯唎多夜泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏一切苦毒                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bì sěi ná bì yè  pà.<br>毖瑟拏婢曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降服诸恶毒师                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bó là hē. móu ní yè  pà<br>勃啰诃 牟尼曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏恶毒咒王                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e qí ní yè pà.<br>阿耆尼曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏火天神                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mó hē. jié lì yè  pà.<br>摩诃  羯唎曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏大黑天神女                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jié là tán chí yè  pà.<br>羯啰檀迟曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏黑面神玉女众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">miè dàn lì yè  pà.<br>蔑怛唎曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏天帝释众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">lào dàn lì yè  pà.<br>唠怛唎曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏瞋怒神王                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">zhē wén chá yè  pà.<br>遮文茶曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏噉人大神                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jié luó là. dàn lì yè  pà.<br>羯逻啰 怛唎曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏喝山大神                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jiā bō lì yè  pà.<br>迦般唎曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏食光大神                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e  dì mù zhì duō.  jiā shī mó shě nuó.<br>阿地目质多 迦尸摩舍那                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pó sī nǐ yè pà.<br>婆私你曳泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">降伏诸持作大鬼帅，一切有力鬼神                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">yǎn jí zhì.<br>演吉质                            </td>
+                            <td class="p-4 border-b border-secondary/50">普令诸恶鬼神                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà duǒ pó xiě.<br>萨埵婆写                            </td>
+                            <td class="p-4 border-b border-secondary/50">皆悉摧碎                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mó mó. yìn tù nà mó mó  xiě.<br>么么 印兔那么么写                            </td>
+                            <td class="p-4 border-b border-secondary/50">我今所作心咒法，三宝印知，所作究竟圆满                            </td>
+                        </tr>
+						
+                        
+                        <tr class="bg-secondary/30 table-row-hover">
+                            <td id="chapter5" class="p-4 border-b border-secondary font-bold text-xl md:text-2xl" colspan="2">第五会</td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">tù sěi zhà zhì  duō.<br>突瑟吒质多                            </td>
+                            <td class="p-4 border-b border-secondary/50">恶心鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e mò dàn lì zhì  duō.<br>阿末怛唎质多                            </td>
+                            <td class="p-4 border-b border-secondary/50">恶毒鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">wū shé hē là.<br>乌阇诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食精鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">qié pó hē là.<br>伽婆诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食胎鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">lú dì là hē là.<br>嚧地啰诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食血鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pó suō hē là.<br>婆娑诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食油鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mó shé hē là.<br>摩阇诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食产鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shé duō hē là.<br>阇多诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食肉鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shì bì duō hē  là.<br>视毖多诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食命鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bá lüè yè hē  là.<br>跋略夜诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食祭鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">qián tuó hē là.<br>乾陀诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食香鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bù shǐ bō hē  là.<br>布史波诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食花鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pō là hē là.<br>颇啰诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食果鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pó xiě hē là.<br>婆写诃啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">食种子鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bō bō zhì duō.<br>般波质多                            </td>
+                            <td class="p-4 border-b border-secondary/50">恶形鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">tù sěi zhà zhì  duō.<br>突瑟吒质多                            </td>
+                            <td class="p-4 border-b border-secondary/50">恶眼鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">lào tuó là zhì  duō.<br>唠陀啰质多                            </td>
+                            <td class="p-4 border-b border-secondary/50">巨头鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">yào chā jiē là  hē.<br>药叉揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">吞火鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">là chà suō jiē là  hē.<br>啰刹娑揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">吞水鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bì lì duō jiē là  hē.<br>闭隶多揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">交手鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí shě zhē jiē là  hē.<br>毗舍遮揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">交足鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bù duō jiē là  hē.<br>部多揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">交身鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jiū pán chá jiē là  hē.<br>鸠槃茶揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">分形鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">xī qián tuó jiē là  hē.<br>悉乾陀揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">吐烟鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">wū dàn mó tuó jiē là  hē.<br>乌怛摩陀揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">吐火鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">chē yè jiē là  hē.<br>车夜揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">形影鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e bō sà mó là jiē là  hē.<br>阿播萨摩啰揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">羊头瞋鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">zhái qū gé. chá qí ní jiē là  hē.<br>宅袪革 茶耆尼揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">刑人狐鬼、狸魅女鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">lì fó dì jiē là  hē.<br>唎佛帝揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">恼小儿鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shé mí jiā jiē là  hē.<br>阇弥迦揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">如乌鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shě jù ní jiē là  hē.<br>舍俱尼揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">如鸟鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">lǎo tuó là. nán dì jiā   jiē là hē.<br>姥陀啰 难地迦揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">如猫鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e lán pó jiē là  hē.<br>阿蓝婆揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">如蛇鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">qián dù bō ní jiē là  hē.<br>乾度波尼揭啰诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">如鸡鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shí fá là. yīn jiā xī  jiā.<br>什伐啰  堙迦醯迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">壮热鬼、一日疟鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">zhuì dì yào jiā.<br>坠帝药迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">二日疟鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">dá lì dì yào  jiā.<br>怛隶帝药迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">三日疟鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">zhě tù tuō jiā.<br>者突托迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">五日疟鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">ní tí shí fá là. bì shān mó  shí fá là.<br>昵提什伐啰  毖钐摩什伐啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">常热鬼、增寒鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bó dǐ jiā.<br>薄底迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">风病鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bí dǐ jiā.<br>鼻底迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">黄病鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shì lì sěi mì  jiā.<br>室隶瑟密迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">疫病鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">suō nǐ bō dì  jiā.<br>娑你般帝迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">痢病鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó shí fá  là.<br>萨婆什伐啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">一切热病                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shì lú jí dì.<br>室嚧吉帝                            </td>
+                            <td class="p-4 border-b border-secondary/50">头病鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mò tuó pí dá lú zhì  jiàn.<br>末陀鞞达嚧制剑                            </td>
+                            <td class="p-4 border-b border-secondary/50">不食鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e qǐ lú qián.<br>阿绮嚧钳                            </td>
+                            <td class="p-4 border-b border-secondary/50">口痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mu qié lú qián.<br>目佉嚧钳                            </td>
+                            <td class="p-4 border-b border-secondary/50">齿痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jié lì tù lú  qián.<br>羯唎突嚧钳                            </td>
+                            <td class="p-4 border-b border-secondary/50">唇痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jiē là hē jiē  lán.<br>揭啰诃揭蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">身病鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jié ná shū lán.<br>羯拏输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">耳痛                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">dàn duō shū lán.<br>惮多输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">颐颔痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">qì lì yè shū  lán.<br>迄唎夜输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">心痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mò mò shū lán.<br>末么输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">头痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bá lì shì pó shū  lán.<br>跋唎室婆输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">两胁痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bì lì sěi zhà shū  lán.<br>毖栗瑟吒输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">背痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">wū tuó là shū  lán.<br>乌陀啰输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">腹痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">jié zhī shū lán.<br>羯知输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">腰痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bá xī dì shū  lán.<br>跋悉帝输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">踝痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">wū lú shū lán.<br>邬嚧输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">腿痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">cháng qié shū  lán.<br>常伽输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">腕痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">hè xī duō shū  lán.<br>喝悉多输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">两手痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bá tuó shū lán.<br>跋陀输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">四肢骨节痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">suō fáng yàng qié. bō là zhàng  qié shū lán.<br>娑房盎伽  般啰丈伽输蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">两膊痛鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bù duō bì duō  chá.<br>部多毖跢茶                            </td>
+                            <td class="p-4 border-b border-secondary/50">尸林鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">chá qí ní. shí pó  là.<br>茶耆尼 什婆啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">魅鬼、一切疮鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">tuó tù lú jiā. jiàn duō lú jí  zhī. pó lù duō pí.<br>陀突嚧迦  建咄嚧吉知  婆路多毗                            </td>
+                            <td class="p-4 border-b border-secondary/50">疮鬼 蜘蛛疮鬼  疔疮鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà bō là. hē ling  qié.<br>萨般嚧 诃凌伽                            </td>
+                            <td class="p-4 border-b border-secondary/50">漫淫疮鬼、赤疮鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">shū shā dàn là. suō nà jié  là.<br>输沙怛啰  娑那羯啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">小儿疮鬼、颠狂鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí shā yù jiā.<br>毗沙喻迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">癞疮鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e qí ní. wū tuó  jiā.<br>阿耆尼  乌陀迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">火毒鬼 水毒鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mò là pí là. jiàn duò  là.<br>末啰鞞啰 建跢啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">女死鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">e jiā là. mì lì duō. dàn liǎn  bù jiā.<br>阿迦啰 蜜唎咄 怛敛部迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">横死鬼 药草毒鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">dì lì là zhà.<br>地栗剌吒                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bì lì sěi zhì jiā. <br>毖唎瑟质迦                            </td>
+                            <td class="p-4 border-b border-secondary/50">蝎毒鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sà pó nà jù là.<br>萨婆那俱啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">蛇毒鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">sì yǐn qié bì. jiē là lì yào  chā. dàn là chú.<br>肆引伽弊  揭啰唎药叉  怛啰刍                            </td>
+                            <td class="p-4 border-b border-secondary/50">虎狼毒鬼  狮子毒鬼  一切恶毒鬼                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mò là shì. fèi dì shàn. suō pí  shàn.<br>末啰视 吠帝钐 娑鞞钐                            </td>
+                            <td class="p-4 border-b border-secondary/50">熊罴毒鬼用制此类一切恶鬼，悉皆畏伏                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">xī dàn duō bō dá  là.<br>悉怛多钵怛啰                            </td>
+                            <td class="p-4 border-b border-secondary/50">依此大白伞盖心咒                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mó hē. bá shé là. sěi ní  shān.<br>摩诃 跋阇嚧 瑟尼钐                            </td>
+                            <td class="p-4 border-b border-secondary/50">启请火头金刚藏王                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">mó hē. bō lài zhàng qí  lán.<br>摩诃 般赖丈耆蓝                            </td>
+                            <td class="p-4 border-b border-secondary/50">诸护法大力士神王圣众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">yè  bō tù tuó. shě yù shé nuó.<br>夜波突陀  舍喻阇那                            </td>
+                            <td class="p-4 border-b border-secondary/50">                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">biàn dá lì nú.<br>辫怛隶拏                            </td>
+                            <td class="p-4 border-b border-secondary/50">至此尽庆圆成                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí tuó yē. pán tán jiā lú  mí.<br>毗陀耶 槃昙迦嚧弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">依此佛顶光聚大明心咒，不得入我结缚界内                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">dì shú. pán tán jiā lú  mí.<br>帝殊 槃昙迦嚧弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">十二由旬结界地面，禁缚诸恶一切邪魔恶鬼神王，不能进入扰害                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bō là pí tuó. pán tán jiā lú  mí.<br>般啰毗陀 槃昙迦嚧弥                            </td>
+                            <td class="p-4 border-b border-secondary/50">依此咒缚诸恶鬼神众                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">duō zhí tuō.<br>跢侄他                            </td>
+                            <td class="p-4 border-b border-secondary/50">即说咒曰                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">ong.<br>唵                            </td>
+                            <td class="p-4 border-b border-secondary/50">警觉、归命                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">ā nà lì.<br>阿那隶                            </td>
+                            <td class="p-4 border-b border-secondary/50">竖高                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí shě tí.<br>毗舍提                            </td>
+                            <td class="p-4 border-b border-secondary/50">横遍                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pí là. bá shé là. tuó  lì.<br>鞞啰 跋阇啰 陀唎                            </td>
+                            <td class="p-4 border-b border-secondary/50">忿怒金刚持尊                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">pán tuó. pán tuó  nǐ.<br>槃陀 槃陀你                            </td>
+                            <td class="p-4 border-b border-secondary/50">结界  再结界                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">bá shé là. bàng ní  pà.<br>跋阇啰 谤尼泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">以金刚手摧毁一切                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">hong. bù  lòng pà.<br>虎𤙖 都嚧瓮泮                            </td>
+                            <td class="p-4 border-b border-secondary/50">摧毁一切                            </td>
+                        </tr>
+                        <tr class="table-row-hover">
+                            <td class="p-4 border-b border-secondary/50">suō pó hē.<br>娑婆诃                            </td>
+                            <td class="p-4 border-b border-secondary/50">疾速成就。--我今说此咒心，乃宣佛敕，一切众类，仰如来力，闻诵此咒悉当合掌恭敬顶礼。汝等承佛威力，各来卫护，行住坐卧不相舍离，再严伏一切朋党眷属。汝等谛听，各归其所，向无上道，直至菩提。                            </td>
+                        </tr>
+</tbody>
+</table>
