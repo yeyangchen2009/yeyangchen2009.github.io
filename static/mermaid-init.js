@@ -1,14 +1,17 @@
-/* Gmeek mermaid 加载器：把 GitHub 风格的 ```mermaid 代码块转成图表，主题跟随站点明暗切换 */
+/* Gmeek mermaid 加载器：把 mermaid 代码块（GitHub API 会高亮成 div.highlight-source-mermaid）转成图表，主题跟随站点明暗切换 */
 (function () {
-    var codes = Array.prototype.slice.call(document.querySelectorAll('code.language-mermaid'));
-    if (!codes.length || typeof mermaid === 'undefined') return;
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('div.highlight-source-mermaid, code.language-mermaid'));
+    if (!nodes.length || typeof mermaid === 'undefined') return;
 
-    var blocks = codes.map(function (code) {
-        var pre = code.closest('pre');
+    var blocks = nodes.map(function (node) {
+        var pre = node.querySelector ? node.querySelector('pre') : node.closest('pre');
+        var holder = node.classList.contains('highlight-source-mermaid') ? node : pre;
+        var src = (pre ? pre.textContent : node.textContent).replace(/\n+$/g, '').replace(/^\n+/, '');
+
         var wrap = document.createElement('div');
         wrap.className = 'mermaid-wrap';
-        pre.parentNode.replaceChild(wrap, pre);
-        return { wrap: wrap, src: code.textContent };
+        holder.parentNode.replaceChild(wrap, holder);
+        return { wrap: wrap, src: src };
     });
 
     function currentTheme() {
