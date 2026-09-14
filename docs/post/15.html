@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# G09 自研插件（二）：标题下的字数与阅读时长
+
+> G08 的'上一篇 / 下一篇'在文章**末尾**留人，这一期叶扬把目光挪到文章**开头**。">
+<meta property="og:title" content="G09 自研插件（二）：标题下的字数与阅读时长">
+<meta property="og:description" content="# G09 自研插件（二）：标题下的字数与阅读时长
+
+> G08 的'上一篇 / 下一篇'在文章**末尾**留人，这一期叶扬把目光挪到文章**开头**。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/15.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G09 自研插件（二）：标题下的字数与阅读时长</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+<style>.markdown-alert{padding:0.5rem 1rem;margin-bottom:1rem;border-left:.25em solid var(--borderColor-default,var(--color-border-default));}.markdown-alert .markdown-alert-title {display:flex;font-weight:var(--base-text-weight-medium,500);align-items:center;line-height:1;}.markdown-alert>:first-child {margin-top:0;}.markdown-alert>:last-child {margin-bottom:0;}</style><style>.markdown-alert.markdown-alert-note {border-left-color:var(--borderColor-accent-emphasis, var(--color-accent-emphasis));background-color:var(--color-accent-subtle);}.markdown-alert.markdown-alert-note .markdown-alert-title {color: var(--fgColor-accent,var(--color-accent-fg));}</style><style>.markdown-alert.markdown-alert-tip {border-left-color:var(--borderColor-success-emphasis, var(--color-success-emphasis));background-color:var(--color-success-subtle);}.markdown-alert.markdown-alert-tip .markdown-alert-title {color: var(--fgColor-success,var(--color-success-fg));}</style>
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G09 自研插件（二）：标题下的字数与阅读时长</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/15" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>G09 自研插件（二）：标题下的字数与阅读时长</h1>
+<blockquote>
+<p>G08 的"上一篇 / 下一篇"在文章<strong>末尾</strong>留人，这一期叶扬把目光挪到文章<strong>开头</strong>。读者点进一篇教程，第一个问题往往是"这玩意要读多久？三分钟能看完我现在就看，三十分钟我先收藏"——Medium、知乎、掘金都在标题旁边挂着阅读时长，就是给读者一个心理预算。G09 就做这个：标题下方一行小字，"📖 全文约 N 字 · 阅读约 M 分钟"。自研插件第二弹，套路大半是 G08 的熟脸。</p>
+</blockquote>
+<h2>先看现场</h2>
+<p>不用找别的文章，<strong>你现在抬头看本文大标题的正下方</strong>，应该已经躺着一行灰色小字了。数字不是叶扬手写填进正文的，是插件在你打开页面的瞬间，现数正文算出来的——所以它永远不会和实际篇幅对不上，哪怕文章以后再编辑增补。</p>
+<p>再顺手点进 <a href="/post/7.html">G01</a> 或 <a href="/post/13.html">G07</a> 看看，每篇头顶都有，数字各不相同；而 <a href="/about.html">About 页</a> 干干净净，一个字都没有。</p>
+<h2>设计决策一：插在哪个缝里</h2>
+<p>先看 Gmeek 文章页的骨架：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">id</span>="<span class="pl-s">header</span>"<span class="pl-kos">&gt;</span>
+  <span class="pl-kos">&lt;</span><span class="pl-ent">h1</span> <span class="pl-c1">class</span>="<span class="pl-s">postTitle</span>"<span class="pl-kos">&gt;</span>文章标题<span class="pl-kos">&lt;/</span><span class="pl-ent">h1</span><span class="pl-kos">&gt;</span>
+  <span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">class</span>="<span class="pl-s">title-right</span>"<span class="pl-kos">&gt;</span>首页 / Issue / 主题切换 三个按钮<span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span>
+<span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span>
+<span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">id</span>="<span class="pl-s">content</span>"<span class="pl-kos">&gt;</span>
+  <span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">class</span>="<span class="pl-s">markdown-body</span>" <span class="pl-c1">id</span>="<span class="pl-s">postBody</span>"<span class="pl-kos">&gt;</span> …正文… <span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span>
+  <span class="pl-c">&lt;!-- 版权小字、评论按钮 --&gt;</span>
+<span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span></pre></div>
+<p><code class="notranslate">#header</code> 是 <code class="notranslate">display:flex</code> 的横排容器，标题和按钮组左右分居，往这里塞东西会直接挤进横排，不好惹。而 <code class="notranslate">#content</code> 的第一个子元素正好就是正文 <code class="notranslate">#postBody</code>——在它前面插一行，是最干净的缝隙：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">var</span> <span class="pl-s1">content</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'content'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">content</span><span class="pl-kos">.</span><span class="pl-en">insertBefore</span><span class="pl-kos">(</span><span class="pl-s1">meta</span><span class="pl-kos">,</span> <span class="pl-s1">content</span><span class="pl-kos">.</span><span class="pl-c1">firstChild</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>脚本本身通过 config 的 <code class="notranslate">script</code> 字段注入在页面<strong>底部</strong>（G06 讲过的机制），执行时 DOM 早已就绪，连 <code class="notranslate">DOMContentLoaded</code> 监听都省了。</p>
+<h2>设计决策二：字数到底怎么数</h2>
+<p>最朴素的想法是 <code class="notranslate">textContent.length</code>，在中文博客上它错得离谱：</p>
+<ul>
+<li>空白、换行、每一个标点都被算成"字"；</li>
+<li>英文更冤，<code class="notranslate">Markdown</code> 一个词要算 8 个字。</li>
+</ul>
+<p>中文和英文得用两套规则：<strong>汉字一个算一个，连续的拉丁字母/数字串算一个词</strong>，标点和空白一律不计。</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">var</span> <span class="pl-s1">text</span> <span class="pl-c1">=</span> <span class="pl-s1">body</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">||</span> <span class="pl-s">''</span><span class="pl-kos">;</span>
+<span class="pl-k">var</span> <span class="pl-s1">count</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span><span class="pl-kos">;</span>
+
+<span class="pl-c">// CJK 统一表意文字：基本区、扩展A、兼容区三个区段</span>
+<span class="pl-k">var</span> <span class="pl-s1">cjk</span> <span class="pl-c1">=</span> <span class="pl-s1">text</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-kos">[</span><span class="pl-cce">\u4e00</span><span class="pl-c1">-</span><span class="pl-cce">\u9fff</span><span class="pl-cce">\u3400</span><span class="pl-c1">-</span><span class="pl-cce">\u4dbf</span><span class="pl-cce">\uf900</span><span class="pl-c1">-</span><span class="pl-cce">\ufaff</span><span class="pl-kos">]</span><span class="pl-c1">/</span>g</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">cjk</span><span class="pl-kos">)</span> <span class="pl-s1">count</span> <span class="pl-c1">+=</span> <span class="pl-s1">cjk</span><span class="pl-kos">.</span><span class="pl-c1">length</span><span class="pl-kos">;</span>
+
+<span class="pl-c">// 拉丁单词：连续字母/数字，允许词内撇号与连字符（don't / well-known）</span>
+<span class="pl-k">var</span> <span class="pl-s1">words</span> <span class="pl-c1">=</span> <span class="pl-s1">text</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-kos">[</span><span class="pl-c1">A</span><span class="pl-c1">-</span><span class="pl-c1">Z</span><span class="pl-c1">a</span><span class="pl-c1">-</span><span class="pl-c1">z</span><span class="pl-c1">0</span><span class="pl-c1">-</span><span class="pl-c1">9</span><span class="pl-kos">]</span><span class="pl-c1">+</span><span class="pl-kos">(?:</span><span class="pl-kos">[</span><span class="pl-c1">'</span><span class="pl-c1">’</span><span class="pl-c1">-</span><span class="pl-kos">]</span><span class="pl-kos">[</span><span class="pl-c1">A</span><span class="pl-c1">-</span><span class="pl-c1">Z</span><span class="pl-c1">a</span><span class="pl-c1">-</span><span class="pl-c1">z</span><span class="pl-c1">0</span><span class="pl-c1">-</span><span class="pl-c1">9</span><span class="pl-kos">]</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-c1">*</span><span class="pl-c1">/</span>g</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">words</span><span class="pl-kos">)</span> <span class="pl-s1">count</span> <span class="pl-c1">+=</span> <span class="pl-s1">words</span><span class="pl-kos">.</span><span class="pl-c1">length</span><span class="pl-kos">;</span></pre></div>
+<p>教程展示里写汉字区间很直观，但插件源码里叶扬最终用的是纯 ASCII 的码位写法 <code class="notranslate">\u4e00-\u9fff</code>——原因是这一期真踩到一个<strong>同形字</strong>的坑，放到下一节单独说。</p>
+<p>两个边界规则顺便交代：</p>
+<ul>
+<li><strong>代码块算字数</strong>。<code class="notranslate">#postBody</code> 的 textContent 包含所有代码块，变量名按拉丁词计入。技术教程读代码比读散文慢，把代码算进去反而更诚实；</li>
+<li><strong>正文不足 10 个计数就不显示</strong>，给错误页、占位页留个退路。</li>
+</ul>
+<h2>插曲：一个长得一模一样的错字</h2>
+<p>CJK 第三个区段是兼容表意区，范围 <code class="notranslate">U+F900</code>–<code class="notranslate">U+FAFF</code>。坑在于：<code class="notranslate">U+F900</code> 这个码位对应的字形就是"<strong>豈</strong>"（岂的繁体），而常用字里 <code class="notranslate">U+8C48</code> 长的也是"<strong>豈</strong>"——两个码位，肉眼完全同形。</p>
+<p>叶扬在正则里写区间边界时，工具链层层转译，落进文件的边界字悄悄变成了 U+8C48。于是区间从 <code class="notranslate">F900–FAFF</code> 错成了 <code class="notranslate">8C48–FAFF</code>：除了覆盖一大片重复的汉字区，还把 <code class="notranslate">A000–F8FF</code> 之间的彝文音节、彝文部首等文字也划进了"汉字"，中文博客里虽然永远撞不上，但这就是错的。</p>
+<p>排查办法是别相信眼睛，让 node 把码位打出来：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-kos">[</span>...<span class="pl-s">'豈-﫿'</span><span class="pl-kos">]</span><span class="pl-kos">.</span><span class="pl-en">forEach</span><span class="pl-kos">(</span><span class="pl-s1">c</span> <span class="pl-c1">=&gt;</span> <span class="pl-smi">console</span><span class="pl-kos">.</span><span class="pl-en">log</span><span class="pl-kos">(</span><span class="pl-s">'U+'</span> <span class="pl-c1">+</span> <span class="pl-s1">c</span><span class="pl-kos">.</span><span class="pl-en">codePointAt</span><span class="pl-kos">(</span><span class="pl-c1">0</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">toString</span><span class="pl-kos">(</span><span class="pl-c1">16</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// 期望看到 f900 和 faff；看到 8c48 就是被同形字偷换了</span></pre></div>
+<p>修复后的规矩也简单：<strong>字符类的边界一律写 <code class="notranslate">\uXXXX</code> 码位转义</strong>。它是纯 ASCII，git diff 里可读，复制到任何编辑器、任何语言的字符串里都不会被"智能"转换：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">var</span> <span class="pl-s1">cjk</span> <span class="pl-c1">=</span> <span class="pl-s1">text</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-kos">[</span><span class="pl-cce">\u4e00</span><span class="pl-c1">-</span><span class="pl-cce">\u9fff</span><span class="pl-cce">\u3400</span><span class="pl-c1">-</span><span class="pl-cce">\u4dbf</span><span class="pl-cce">\uf900</span><span class="pl-c1">-</span><span class="pl-cce">\ufaff</span><span class="pl-kos">]</span><span class="pl-c1">/</span>g</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<div class="markdown-alert markdown-alert-tip"><p class="markdown-alert-title"><svg data-component="Octicon" class="octicon octicon-light-bulb mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p><p>凡是依赖生僻 Unicode 字符当边界的代码（各种分词、emoji 匹配同理），都写码位、都打印码位验收。同形字是这一类 bug 里最难缠的，因为代码"看起来完全正确"。</p>
+</div>
+<h2>设计决策三：400 字/分钟从哪来的</h2>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg data-component="Octicon" class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p>关于中文默读速度，各类语言文字研究给出的成人均值大约在 <strong>300–500 字/分钟</strong>；屏幕阅读偏慢端，技术文章还要边读边想代码，所以叶扬取 <strong>400 字/分钟</strong> 这个略宽松的值，只给数量级、不装精确。</p>
+</div>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">var</span> <span class="pl-s1">minutes</span> <span class="pl-c1">=</span> <span class="pl-v">Math</span><span class="pl-kos">.</span><span class="pl-en">max</span><span class="pl-kos">(</span><span class="pl-c1">1</span><span class="pl-kos">,</span> <span class="pl-v">Math</span><span class="pl-kos">.</span><span class="pl-en">round</span><span class="pl-kos">(</span><span class="pl-s1">count</span> <span class="pl-c1">/</span> <span class="pl-c1">400</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>两个小处理：<code class="notranslate">Math.round</code> 四舍五入，再用 <code class="notranslate">Math.max(1, …)</code> 兜底——再短的文章也显示"约 1 分钟"，不会出现"阅读约 0 分钟"这种滑稽结果。</p>
+<h2>主题与手机：这一期难得没翻车</h2>
+<p>颜色照旧全部借 Primer 变量（G08 已拿到 <a href="https://github.com/Meekdai/Gmeek/issues/196" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/196/hovercard">issue #196</a> 的官方背书）：次要文字用 <code class="notranslate">--color-fg-muted</code>，中间的分钟数字加粗并用 <code class="notranslate">--color-fg-default</code> 提亮，明暗三态自动跟随，一行媒体查询都不用写。</p>
+<div class="highlight highlight-source-css"><pre class="notranslate">.<span class="pl-c1">gmeek-rt</span>{<span class="pl-c1">display</span><span class="pl-kos">:</span>flex;<span class="pl-c1">align-items</span><span class="pl-kos">:</span>center;<span class="pl-c1">gap</span><span class="pl-kos">:</span><span class="pl-c1">8<span class="pl-smi">px</span></span>;<span class="pl-c1">flex-wrap</span><span class="pl-kos">:</span>wrap;
+  <span class="pl-c1">margin</span><span class="pl-kos">:</span><span class="pl-c1">0</span> <span class="pl-c1">0</span> <span class="pl-c1">14<span class="pl-smi">px</span></span>;<span class="pl-c1">font-size</span><span class="pl-kos">:</span><span class="pl-c1">13<span class="pl-smi">px</span></span>;<span class="pl-c1">line-height</span><span class="pl-kos">:</span><span class="pl-c1">1.6</span>;
+  <span class="pl-c1">color</span><span class="pl-kos">:</span><span class="pl-en">var</span>(<span class="pl-s1">--color-fg-muted</span><span class="pl-kos">,</span><span class="pl-pds"><span class="pl-kos">#</span>656d76</span>);}
+.<span class="pl-c1">gmeek-rt</span> <span class="pl-ent">b</span>{<span class="pl-c1">font-weight</span><span class="pl-kos">:</span><span class="pl-c1">600</span>;<span class="pl-c1">color</span><span class="pl-kos">:</span><span class="pl-en">var</span>(<span class="pl-s1">--color-fg-default</span><span class="pl-kos">,</span><span class="pl-pds"><span class="pl-kos">#</span>1f2328</span>);}
+<span class="pl-k">@media</span> (<span class="pl-c1">max-width</span><span class="pl-kos">:</span><span class="pl-c1">600<span class="pl-smi">px</span></span>){.<span class="pl-c1">gmeek-rt</span>{<span class="pl-c1">font-size</span><span class="pl-kos">:</span><span class="pl-c1">12<span class="pl-smi">px</span></span>;<span class="pl-c1">margin-bottom</span><span class="pl-kos">:</span><span class="pl-c1">12<span class="pl-smi">px</span></span>;}}</pre></div>
+<p>手机端这次叶扬学乖了。G08 的教训是"响应式不能靠想象"，但反过来也要记住：<strong>不是什么元素都需要在手机上重排</strong>。这行 meta 满打满算二十来个字符（📖 全文约 2,927 字 · 阅读约 7 分钟），375px 宽的屏幕上只占小半行，纵排、通栏、放大热区统统不需要——小屏只把字号从 13px 收到 12px。先想内容会不会真的放不下，再决定要不要动布局。</p>
+<h2>完整代码</h2>
+<p>新建 <code class="notranslate">static/plugins/GmeekReadTime.js</code>，五十多行，零依赖：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-c">/* GmeekReadTime —— 文章标题下的"字数 · 阅读时长"</span>
+<span class="pl-c"> * 数据源：#postBody 渲染后正文（构建期 GitHub gfm 渲染，运行时统计）</span>
+<span class="pl-c"> * 计数规则：CJK 汉字按字计；连续拉丁字母/数字串按 1 个词计；标点空白不计</span>
+<span class="pl-c"> * 估算速度：中文约 400 字/分钟，不足 1 分钟按 1 分钟</span>
+<span class="pl-c"> * 边界：仅 /post/N.html 生效；about 等固定页虽注入脚本但正则自退</span>
+<span class="pl-c"> */</span>
+<span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">var</span> <span class="pl-s1">match</span> <span class="pl-c1">=</span> <span class="pl-s1">location</span><span class="pl-kos">.</span><span class="pl-c1">pathname</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">\/</span><span class="pl-s">p</span><span class="pl-s">o</span><span class="pl-s">s</span><span class="pl-s">t</span><span class="pl-cce">\/</span><span class="pl-kos">(</span><span class="pl-cce">\d</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-cce">\.</span><span class="pl-s">h</span><span class="pl-s">t</span><span class="pl-s">m</span><span class="pl-s">l</span><span class="pl-c1">/</span></span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">match</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">body</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'postBody'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">body</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">text</span> <span class="pl-c1">=</span> <span class="pl-s1">body</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">||</span> <span class="pl-s">''</span><span class="pl-kos">;</span>
+    <span class="pl-k">var</span> <span class="pl-s1">count</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">cjk</span> <span class="pl-c1">=</span> <span class="pl-s1">text</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-kos">[</span><span class="pl-cce">\u4e00</span><span class="pl-c1">-</span><span class="pl-cce">\u9fff</span><span class="pl-cce">\u3400</span><span class="pl-c1">-</span><span class="pl-cce">\u4dbf</span><span class="pl-cce">\uf900</span><span class="pl-c1">-</span><span class="pl-cce">\ufaff</span><span class="pl-kos">]</span><span class="pl-c1">/</span>g</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">cjk</span><span class="pl-kos">)</span> <span class="pl-s1">count</span> <span class="pl-c1">+=</span> <span class="pl-s1">cjk</span><span class="pl-kos">.</span><span class="pl-c1">length</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">words</span> <span class="pl-c1">=</span> <span class="pl-s1">text</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-kos">[</span><span class="pl-c1">A</span><span class="pl-c1">-</span><span class="pl-c1">Z</span><span class="pl-c1">a</span><span class="pl-c1">-</span><span class="pl-c1">z</span><span class="pl-c1">0</span><span class="pl-c1">-</span><span class="pl-c1">9</span><span class="pl-kos">]</span><span class="pl-c1">+</span><span class="pl-kos">(?:</span><span class="pl-kos">[</span><span class="pl-c1">'</span><span class="pl-c1">’</span><span class="pl-c1">-</span><span class="pl-kos">]</span><span class="pl-kos">[</span><span class="pl-c1">A</span><span class="pl-c1">-</span><span class="pl-c1">Z</span><span class="pl-c1">a</span><span class="pl-c1">-</span><span class="pl-c1">z</span><span class="pl-c1">0</span><span class="pl-c1">-</span><span class="pl-c1">9</span><span class="pl-kos">]</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-c1">*</span><span class="pl-c1">/</span>g</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">words</span><span class="pl-kos">)</span> <span class="pl-s1">count</span> <span class="pl-c1">+=</span> <span class="pl-s1">words</span><span class="pl-kos">.</span><span class="pl-c1">length</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">count</span> <span class="pl-c1">&lt;</span> <span class="pl-c1">10</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">minutes</span> <span class="pl-c1">=</span> <span class="pl-v">Math</span><span class="pl-kos">.</span><span class="pl-en">max</span><span class="pl-kos">(</span><span class="pl-c1">1</span><span class="pl-kos">,</span> <span class="pl-v">Math</span><span class="pl-kos">.</span><span class="pl-en">round</span><span class="pl-kos">(</span><span class="pl-s1">count</span> <span class="pl-c1">/</span> <span class="pl-c1">400</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">meta</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'div'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">meta</span><span class="pl-kos">.</span><span class="pl-c1">className</span> <span class="pl-c1">=</span> <span class="pl-s">'gmeek-rt'</span><span class="pl-kos">;</span>
+    <span class="pl-s1">meta</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-label'</span><span class="pl-kos">,</span> <span class="pl-s">'字数与阅读时长'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">meta</span><span class="pl-kos">.</span><span class="pl-c1">innerHTML</span> <span class="pl-c1">=</span>
+        <span class="pl-s">'&lt;span class="gmeek-rt-item"&gt;📖 全文约 '</span> <span class="pl-c1">+</span> <span class="pl-s1">count</span><span class="pl-kos">.</span><span class="pl-en">toLocaleString</span><span class="pl-kos">(</span><span class="pl-s">'en-US'</span><span class="pl-kos">)</span> <span class="pl-c1">+</span> <span class="pl-s">' 字&lt;/span&gt;'</span>
+        <span class="pl-c1">+</span> <span class="pl-s">'&lt;span class="gmeek-rt-sep" aria-hidden="true"&gt;·&lt;/span&gt;'</span>
+        <span class="pl-c1">+</span> <span class="pl-s">'&lt;span class="gmeek-rt-item"&gt;阅读约 &lt;b&gt;'</span> <span class="pl-c1">+</span> <span class="pl-s1">minutes</span> <span class="pl-c1">+</span> <span class="pl-s">'&lt;/b&gt; 分钟&lt;/span&gt;'</span><span class="pl-kos">;</span>
+
+    <span class="pl-en">injectStyle</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">content</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'content'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">content</span><span class="pl-kos">)</span> <span class="pl-s1">content</span><span class="pl-kos">.</span><span class="pl-en">insertBefore</span><span class="pl-kos">(</span><span class="pl-s1">meta</span><span class="pl-kos">,</span> <span class="pl-s1">content</span><span class="pl-kos">.</span><span class="pl-c1">firstChild</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">injectStyle</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'gmeek-rt-style'</span><span class="pl-kos">)</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+        <span class="pl-k">var</span> <span class="pl-s1">style</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'style'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">style</span><span class="pl-kos">.</span><span class="pl-c1">id</span> <span class="pl-c1">=</span> <span class="pl-s">'gmeek-rt-style'</span><span class="pl-kos">;</span>
+        <span class="pl-s1">style</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span>
+            <span class="pl-s">'.gmeek-rt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;'</span>
+            <span class="pl-c1">+</span> <span class="pl-s">'margin:0 0 14px;font-size:13px;line-height:1.6;'</span>
+            <span class="pl-c1">+</span> <span class="pl-s">'color:var(--color-fg-muted,#656d76);}'</span>
+            <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-rt b{font-weight:600;color:var(--color-fg-default,#1f2328);}'</span>
+            <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-rt-sep{opacity:.55;}'</span>
+            <span class="pl-c1">+</span> <span class="pl-s">'@media (max-width:600px){.gmeek-rt{font-size:12px;margin-bottom:12px;}}'</span><span class="pl-kos">;</span>
+        <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">head</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">style</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+<span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>config 的 <code class="notranslate">script</code> 字段拼成第四个标签（多插件同字符串拼接的写法，G05 讲过）：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ent">"script"</span>: <span class="pl-s"><span class="pl-pds">"</span>&lt;script src='/plugins/GmeekTOC.js'&gt;&lt;/script&gt;&lt;script src='/plugins/lightbox.js'&gt;&lt;/script&gt;&lt;script src='/plugins/GmeekPrevNext.js'&gt;&lt;/script&gt;&lt;script src='/plugins/GmeekReadTime.js'&gt;&lt;/script&gt;<span class="pl-pds">"</span></span></pre></div>
+<p>改了 config 和 static，老规矩：push、等几秒、手动触发一次全局重建。</p>
+<h2>不上浏览器，怎么测运行时插件</h2>
+<p>和 G08 一样，导航/统计是运行时才发生的事，curl 只能验到静态部分：插件文件 200、各文章页底部都有 <code class="notranslate">GmeekReadTime.js</code> 的 script 标签（About 页也有标签，但插件第二行正则就退出了）。数字对不对，curl 看不见。</p>
+<p>叶扬用 node 做了两层离线验收。<strong>第一层</strong>直接拿本地构建产物 <code class="notranslate">docs/post/N.html</code> 试算：抠出 <code class="notranslate">#postBody</code>、去掉标签、解码 <code class="notranslate">&amp;amp;</code> 之类的实体，喂给计数正则，结果和阅读直觉对得上：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>文章</th>
+<th>汉字</th>
+<th>拉丁词</th>
+<th>总计数</th>
+<th>时长</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#1 搭建篇</td>
+<td>1,700</td>
+<td>382</td>
+<td>2,082</td>
+<td>5 分钟</td>
+</tr>
+<tr>
+<td>#7 G01</td>
+<td>1,518</td>
+<td>248</td>
+<td>1,766</td>
+<td>4 分钟</td>
+</tr>
+<tr>
+<td>#13 G07</td>
+<td>1,832</td>
+<td>496</td>
+<td>2,328</td>
+<td>6 分钟</td>
+</tr>
+<tr>
+<td>#14 G08</td>
+<td>2,196</td>
+<td>731</td>
+<td>2,927</td>
+<td>7 分钟</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>篇幅越长代码越多，拉丁词占比越高，数字梯度也合理。</p>
+<p><strong>第二层</strong>更有意思：不给浏览器，伪造一个最小的 <code class="notranslate">document</code>，用 <code class="notranslate">new Function('location','document', code)</code> 把插件源码真跑一遍，然后断言：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">new</span> <span class="pl-v">Function</span><span class="pl-kos">(</span><span class="pl-s">'location'</span><span class="pl-kos">,</span> <span class="pl-s">'document'</span><span class="pl-kos">,</span> <span class="pl-s1">code</span><span class="pl-kos">)</span><span class="pl-kos">(</span><span class="pl-kos">{</span> <span class="pl-c1">pathname</span>: <span class="pl-s">'/about.html'</span> <span class="pl-kos">}</span><span class="pl-kos">,</span> <span class="pl-s1">documentStub</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// content.insertBefore 调用次数应为 0 —— About 自退</span>
+
+<span class="pl-k">new</span> <span class="pl-v">Function</span><span class="pl-kos">(</span><span class="pl-s">'location'</span><span class="pl-kos">,</span> <span class="pl-s">'document'</span><span class="pl-kos">,</span> <span class="pl-s1">code</span><span class="pl-kos">)</span><span class="pl-kos">(</span><span class="pl-kos">{</span> <span class="pl-c1">pathname</span>: <span class="pl-s">'/post/14.html'</span> <span class="pl-kos">}</span><span class="pl-kos">,</span> <span class="pl-s1">documentStub</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// 应插入 1 个 meta，innerHTML 里含 "2,927" 和 "7"，注入 1 个 style</span>
+
+<span class="pl-k">new</span> <span class="pl-v">Function</span><span class="pl-kos">(</span><span class="pl-s">'location'</span><span class="pl-kos">,</span> <span class="pl-s">'document'</span><span class="pl-kos">,</span> <span class="pl-s1">code</span><span class="pl-kos">)</span><span class="pl-kos">(</span><span class="pl-kos">{</span> <span class="pl-c1">pathname</span>: <span class="pl-s">'/post/99.html'</span> <span class="pl-kos">}</span><span class="pl-kos">,</span> <span class="pl-s1">emptyDocStub</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// 空正文插入数应为 0</span></pre></div>
+<p>桩对象只需实现插件真正碰过的几个 API（<code class="notranslate">getElementById</code>、<code class="notranslate">createElement</code>、<code class="notranslate">head.appendChild</code>、<code class="notranslate">insertBefore</code>），三十行搞定。三个分支全绿才上线——最后的颜色、间距这种视觉活儿，才留给真机肉眼。</p>
+<h2>小结</h2>
+<p>五十行代码，全站文章立刻有了"阅读预算"。G08 总结的自研插件四件套——<strong>URL 正则定位、Primer 变量管主题、#content 找插入点、评论区附近收尾</strong>——这一期复用了前三件，只把数据源从 G04 系的 <code class="notranslate">postList.json</code> 换成了页面自身的 DOM。另外白捡一条经验：涉及生僻 Unicode 边界，码位转义 + 打印码位验收。</p>
+<p>下一期 G10 要玩个大的：<code class="notranslate">postList.json</code> 里躺着全站文章的标题与日期，却只被 sitemap 和 G08 用过——叶扬打算把它按年份分组渲染成一张<strong>时间线归档页</strong>，让读者一眼看尽博客的全部家当。</p>
+<h2>参考</h2>
+<ul>
+<li>本站插件源码：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekReadTime.js">https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekReadTime.js</a></li>
+<li>自研插件第一弹：<a href="/post/14.html">G08 文章末尾的"上一篇 / 下一篇"</a></li>
+<li>全局 script 注入机制：<a href="/post/12.html">G06 文章末尾的秘密</a></li>
+<li>Primer CSS 变量体系：<a href="https://primer.style/foundations/color" rel="nofollow">https://primer.style/foundations/color</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script>
+
+</html>
