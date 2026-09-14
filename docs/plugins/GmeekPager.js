@@ -38,6 +38,9 @@
 
             var nav = box.closest('nav');
             if (nav) nav.setAttribute('aria-label', '分页');
+            // 可见文字已是中文，原生按钮的英文 aria-label 顺手汉化（只改可点按钮）
+            if (prev.getAttribute('aria-label')) prev.setAttribute('aria-label', '上一页');
+            if (next.getAttribute('aria-label')) next.setAttribute('aria-label', '下一页');
 
             box.textContent = '';
             box.appendChild(prev);
