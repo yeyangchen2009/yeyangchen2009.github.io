@@ -102,7 +102,7 @@
 | `displayTitle` | 页头显示标题，默认与 `title` 一致 | 想让站名短、标题完整时用 |
 | `homeUrl` | 站点绝对地址 | **绑定自定义域名后必须配**，否则分页/RSS 链接错乱 |
 
-favicon + ogImage 列入 **G03**。
+favicon + ogImage 已由 **[G03](/post/9.html)** 完成：自制"叶"字 SVG 图标（明暗自适应）+ Pillow 生成 1200×630 PNG 封面；注意 `ogImage` 只认位图绝对 URL，SVG 不行。
 
 ### 注入与自定义（插件体系的另一半）
 
@@ -219,7 +219,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | —— | [右侧文章目录插件](/post/3.html) | GmeekTOC | 教程 | ✅ |
 | G01 | [固定页面机制：做一个不进文章流的 About 页](/post/7.html) | `singlePage` + `iconList` | 配置 | ✅ |
 | G02 | [页脚装修：版权小字与"本站已运行 N 天"](/post/8.html) | `bottomText` + `startSite` | 配置 | ✅ |
-| G03 | favicon 与社交分享封面 ogImage | `faviconUrl` + `ogImage` | 配置 | ⏳ |
+| G03 | [给博客一张脸：自制 SVG favicon 与社交分享封面](/post/9.html) | `faviconUrl` + `ogImage` | 配置 | ✅ |
 | G04 | 不写 sitemap：把 RSS 提交给 Google 和 Bing | Search Console / 站长工具 | SEO | ⏳ |
 | G05 | 图片灯箱：lightbox 插件接入 | 官方插件 | 教程 | ⏳ |
 | G06 | 文章末尾的隐藏 JSON：单篇插件、自定义封面、补发旧文 | 文章级配置 | 原理 | ⏳ |
@@ -254,4 +254,4 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01、G02 已完成，下一篇 G03，搞面子工程：favicon 与社交分享封面 ogImage。
+G01、G02、G03 已完成，下一篇 G04 是最"躺赢"的一篇：不写代码，把 RSS 提交给 Google Search Console 和 Bing 站长工具。
