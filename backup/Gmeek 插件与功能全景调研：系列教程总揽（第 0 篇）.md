@@ -177,7 +177,7 @@ favicon + ogImage 已由 **[G03](/post/9.html)** 完成：自制"叶"字 SVG 图
 
 - Google Search Console / Bing 站长工具直接提交 `rss.xml` 即可（Bing 添加站点时还能从 GSC 一键导入，验证状态继承）；
 - 百度的 sitemap 工具按 sitemaps.org 协议解析、不认 RSS，已在工作流新增 `sitemap_gen.py`，每次构建从 `postList.json` 自动生成标准 `sitemap.xml`，三家都提交它做双保险；
-- RSS 之外，`robots.txt` 和自定义 `404.html` 直接放进 `static/` 根目录即可，构建时原样复制到站点根，GitHub Pages 原生识别（列入 **G11**）。
+- RSS 之外，`robots.txt` 和自定义 `404.html` 直接放进 `static/` 根目录即可，构建时原样复制到站点根，GitHub Pages 原生识别（✅ 已完成，见 [G11](/post/18.html)：robots 显式 Allow + Sitemap 绝对 URL；404 独立页 noindex、三态主题读 meek_theme、fetch 最新 5 篇）。
 
 ## 六、社区生态盘点：有宝贝，也有大坑
 
@@ -225,7 +225,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G08 | [自研插件（一）：文章末尾的"上一篇 / 下一篇"](/post/14.html) | `postList.json` | 自研 | ✅ |
 | G09 | [自研插件（二）：标题下的字数与阅读时长](/post/15.html) | DOM 统计 | 自研 | ✅ |
 | G10 | [自研插件（三）：凭空造出的时间线归档页](/post/17.html) | `singlePage` + 数据渲染 | 自研 | ✅ |
-| G11 | robots.txt 与自定义 404 页 | `static/` 直出 | 运维 | ⏳ |
+| G11 | [运维两小件：robots.txt 与自定义 404 页](/post/18.html) | `static/` 直出 | 运维 | ✅ |
 | G12 | 外链自动新窗口打开 | 小插件 | 自研 | 💤 |
 | G13 | 数字分页条 | 社区插件 | 借鉴 | 💤 |
 | G14 | 移动端目录：articletoc 与响应式策略 | 官方插件 | 体验 | 💤 |
@@ -252,6 +252,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G10 已完成，下一篇 G11：robots.txt 与自定义 404 页，直接放 `static/` 根目录，构建原样复制到站点根，GitHub Pages 原生识别——给爬虫立规矩、给迷路读者一个台阶。
+G01–G11 已完成，下一篇 G12：外链自动新窗口打开——十几行 JS 给正文外链加 target="_blank" rel="noopener"，读者点开参考资料时不再被"逐出"博客。
+
 
 
