@@ -159,15 +159,15 @@ favicon + ogImage 已由 **[G03](/post/9.html)** 完成：自制"叶"字 SVG 图
 以下能力不用配置、不用插件，写 Markdown 时直接存在：
 
 1. **代码块一键复制**：GitHub 同款 copy/check 图标按钮，[post.html](https://github.com/Meekdai/Gmeek/blob/main/templates/post.html) 内置（对应早期社区 issue #134 的诉求，现已官方解决）。
-2. **数学公式按需加载**：正文中用 `<math-renderer>$E=mc^2$</math-renderer>` 包裹公式，框架检测到该标签才注入 MathJax，不写公式的文章零开销（`Gmeek.py:154`）。
-3. **GitHub Alert 提示块**：`> [!NOTE]`、`> [!TIP]`、`> [!IMPORT]`、`> [!WARNING]`、`> [!CAUTION]` 自动渲染成 GitHub 官网同款彩色边框块，框架自动补样式（`Gmeek.py:159` 起）。
+2. **数学公式按需加载**：正文直接写 `$E=mc^2$`（行内）或 `$$...$$`（块级），GitHub 渲染成 `<math-renderer>` 标签后，框架剥掉标签壳、注入 MathJax 3（jsdelivr CDN），不写公式的文章零开销（[G07](/post/13.html) 已实测；坑：正文中的美元金额要用反引号包，避免成对 `$` 被当公式）。
+3. **GitHub Alert 提示块**：`> [!NOTE]`、`> [!TIP]`、`> [!IMPORT]`、`> [!WARNING]`、`> [!CAUTION]` 自动渲染成 GitHub 官网同款彩色边框块，框架检测到 `markdown-alert-title` 自动补五套配色（`Gmeek.py:159` 起，颜色走 Primer CSS 变量，明暗自适应）。注意 API 渲染的标题是英文 Note/Tip/…，静态页不做本地化。
 4. **三态主题与评论联动**：亮 → 暗 → 跟随系统循环；切换时通过 `postMessage` 让 utterances 评论 iframe 同步换肤（[base.html:54](https://github.com/Meekdai/Gmeek/blob/main/templates/base.html)）。
 5. **列表分页**：文章数超过 `onePageListNum`，首页自动出现上一页/下一页。
 6. **每日定时重建**：工作流除了监听 issue 事件，还有一条 `schedule: cron("0 16 * * *")`，即**北京时间每天 0:00 自动全量重建**一次。Webhook 丢失、改了配置忘记手动构建，第二天都会自愈。注意：Issue 事件只触发**增量构建**，`config.json` 的结构性变更（如新增 singlePage）不会被加载，必须手动跑一次全局重建——G01 实操时踩过这个坑。
 7. **Markdown 原文自动备份**：每次构建把 issue 正文存进仓库 `backup/` 目录，`git clone` 即整站离线副本。
 8. **RSS 即 sitemap**：见下节，单独说。
 
-写作技巧（Alert、公式、Mermaid 本站已配）单独成篇，列入 **G07**。
+写作技巧已由 **[G07](/post/13.html)** 完成：Alert/公式零配置；Mermaid 非内置（GitHub API 只语法高亮不出图），本站方案为 `static/mermaid.min.js`（v11，3.5MB）+ `mermaid-init.js`（监听明暗切换重绘）+ 含图文章用 G06 单篇 JSON 挂脚本，避免全站陪葬；另有内联反引号 `Gmeek-html` 直出 HTML 的彩蛋（围栏代码块不生效）。
 
 ## 五、SEO：被问得最多，答案却最简单
 
@@ -221,7 +221,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G04 | [把门牌号递给搜索引擎：RSS 直接当 sitemap 提交](/post/10.html) | GSC / Bing / 百度 + `sitemap_gen.py` | SEO | ✅ |
 | G05 | [给文章图片装一盏灯：官方 lightbox 灯箱插件](/post/11.html) | 官方插件 | 教程 | ✅ |
 | G06 | [文章末尾的秘密：一行隐藏 JSON，给单篇文章开小灶](/post/12.html) | 文章级配置 | 原理 | ✅ |
-| G07 | 写作增强：GitHub Alert 块、数学公式、Mermaid | 内置语法 | 教程 | ⏳ |
+| G07 | [写作三件套：Alert 提示块、数学公式、Mermaid 图表](/post/13.html) | 内置语法 + mermaid 三件套 | 教程 | ✅ |
 | G08 | 自研插件（一）：文章末尾上一篇/下一篇 | `postList.json` | 自研 | ⏳ |
 | G09 | 自研插件（二）：字数统计与阅读时长 | DOM 统计 | 自研 | ⏳ |
 | G10 | 自研插件（三）：时间线归档页 | `singlePage` + 数据渲染 | 自研 | ⏳ |
@@ -252,4 +252,4 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G06 已完成，下一篇 G07 回到写作本身：GitHub 风格 Alert 块、数学公式、Mermaid 图表在 Gmeek 里的正确写法与加载策略。
+G01–G07 已完成，下一篇 G08 进入自研插件环节：文章末尾的"上一篇/下一篇"导航，数据源是 G04 已登场的 `postList.json`。

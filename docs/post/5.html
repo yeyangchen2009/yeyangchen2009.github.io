@@ -437,15 +437,15 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>以下能力不用配置、不用插件，写 Markdown 时直接存在：</p>
 <ol>
 <li><strong>代码块一键复制</strong>：GitHub 同款 copy/check 图标按钮，<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/post.html">post.html</a> 内置（对应早期社区 issue #134 的诉求，现已官方解决）。</li>
-<li><strong>数学公式按需加载</strong>：正文中用 <code class="notranslate">&lt;math-renderer&gt;$E=mc^2$&lt;/math-renderer&gt;</code> 包裹公式，框架检测到该标签才注入 MathJax，不写公式的文章零开销（<code class="notranslate">Gmeek.py:154</code>）。</li>
-<li><strong>GitHub Alert 提示块</strong>：<code class="notranslate">&gt; [!NOTE]</code>、<code class="notranslate">&gt; [!TIP]</code>、<code class="notranslate">&gt; [!IMPORT]</code>、<code class="notranslate">&gt; [!WARNING]</code>、<code class="notranslate">&gt; [!CAUTION]</code> 自动渲染成 GitHub 官网同款彩色边框块，框架自动补样式（<code class="notranslate">Gmeek.py:159</code> 起）。</li>
+<li><strong>数学公式按需加载</strong>：正文直接写 <code class="notranslate">$E=mc^2$</code>（行内）或 <code class="notranslate">$$...$$</code>（块级），GitHub 渲染成 <code class="notranslate">&lt;math-renderer&gt;</code> 标签后，框架剥掉标签壳、注入 MathJax 3（jsdelivr CDN），不写公式的文章零开销（<a href="/post/13.html">G07</a> 已实测；坑：正文中的美元金额要用反引号包，避免成对 <code class="notranslate">$</code> 被当公式）。</li>
+<li><strong>GitHub Alert 提示块</strong>：<code class="notranslate">&gt; [!NOTE]</code>、<code class="notranslate">&gt; [!TIP]</code>、<code class="notranslate">&gt; [!IMPORT]</code>、<code class="notranslate">&gt; [!WARNING]</code>、<code class="notranslate">&gt; [!CAUTION]</code> 自动渲染成 GitHub 官网同款彩色边框块，框架检测到 <code class="notranslate">markdown-alert-title</code> 自动补五套配色（<code class="notranslate">Gmeek.py:159</code> 起，颜色走 Primer CSS 变量，明暗自适应）。注意 API 渲染的标题是英文 Note/Tip/…，静态页不做本地化。</li>
 <li><strong>三态主题与评论联动</strong>：亮 → 暗 → 跟随系统循环；切换时通过 <code class="notranslate">postMessage</code> 让 utterances 评论 iframe 同步换肤（<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/base.html">base.html:54</a>）。</li>
 <li><strong>列表分页</strong>：文章数超过 <code class="notranslate">onePageListNum</code>，首页自动出现上一页/下一页。</li>
 <li><strong>每日定时重建</strong>：工作流除了监听 issue 事件，还有一条 <code class="notranslate">schedule: cron("0 16 * * *")</code>，即<strong>北京时间每天 0:00 自动全量重建</strong>一次。Webhook 丢失、改了配置忘记手动构建，第二天都会自愈。注意：Issue 事件只触发<strong>增量构建</strong>，<code class="notranslate">config.json</code> 的结构性变更（如新增 singlePage）不会被加载，必须手动跑一次全局重建——G01 实操时踩过这个坑。</li>
 <li><strong>Markdown 原文自动备份</strong>：每次构建把 issue 正文存进仓库 <code class="notranslate">backup/</code> 目录，<code class="notranslate">git clone</code> 即整站离线副本。</li>
 <li><strong>RSS 即 sitemap</strong>：见下节，单独说。</li>
 </ol>
-<p>写作技巧（Alert、公式、Mermaid 本站已配）单独成篇，列入 <strong>G07</strong>。</p>
+<p>写作技巧已由 <strong><a href="/post/13.html">G07</a></strong> 完成：Alert/公式零配置；Mermaid 非内置（GitHub API 只语法高亮不出图），本站方案为 <code class="notranslate">static/mermaid.min.js</code>（v11，3.5MB）+ <code class="notranslate">mermaid-init.js</code>（监听明暗切换重绘）+ 含图文章用 G06 单篇 JSON 挂脚本，避免全站陪葬；另有内联反引号  直出 HTML 的彩蛋（围栏代码块不生效）。</p>
 <h2>五、SEO：被问得最多，答案却最简单</h2>
 <p>社区 issue <a href="https://github.com/Meekdai/Gmeek/issues/145" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/145/hovercard">#145</a> 里有人建议生成 <code class="notranslate">sitemap.xml</code>，作者的回复是：<strong><code class="notranslate">rss.xml</code> 已包含全站所有重要页面链接，他自己就是把 rss.xml 提交给 Google 的</strong>；提问者随后验证，必应和谷歌都能正常识别 RSS 作为站点地图。</p>
 <p><strong>G04 已落地</strong>（<a href="/post/10.html">教程</a>）：</p>
@@ -580,10 +580,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 <tr>
 <td>G07</td>
-<td>写作增强：GitHub Alert 块、数学公式、Mermaid</td>
-<td>内置语法</td>
+<td><a href="/post/13.html">写作三件套：Alert 提示块、数学公式、Mermaid 图表</a></td>
+<td>内置语法 + mermaid 三件套</td>
 <td>教程</td>
-<td>⏳</td>
+<td>✅</td>
 </tr>
 <tr>
 <td>G08</td>
@@ -662,7 +662,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
 <li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
 </ol>
-<p>G01–G06 已完成，下一篇 G07 回到写作本身：GitHub 风格 Alert 块、数学公式、Mermaid 图表在 Gmeek 里的正确写法与加载策略。</p></div>
+<p>G01–G07 已完成，下一篇 G08 进入自研插件环节：文章末尾的"上一篇/下一篇"导航，数据源是 G04 已登场的 <code class="notranslate">postList.json</code>。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
