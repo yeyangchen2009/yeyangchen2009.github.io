@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# G03 给博客一张脸：自制 SVG favicon 与社交分享封面
+
+> 浏览器的收藏夹里一排灰扑扑的默认图标，聊天框里甩出去的链接光秃秃只有一行字——这都是博客在'社死现场'。">
+<meta property="og:title" content="G03 给博客一张脸：自制 SVG favicon 与社交分享封面">
+<meta property="og:description" content="# G03 给博客一张脸：自制 SVG favicon 与社交分享封面
+
+> 浏览器的收藏夹里一排灰扑扑的默认图标，聊天框里甩出去的链接光秃秃只有一行字——这都是博客在'社死现场'。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/9.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G03 给博客一张脸：自制 SVG favicon 与社交分享封面</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G03 给博客一张脸：自制 SVG favicon 与社交分享封面</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/9" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>G03 给博客一张脸：自制 SVG favicon 与社交分享封面</h1>
+<blockquote>
+<p>浏览器的收藏夹里一排灰扑扑的默认图标，聊天框里甩出去的链接光秃秃只有一行字——这都是博客在"社死现场"。这一期 G03，叶扬给博客做了两张脸：标签页上的 favicon，和链接分享时的大封面。一个是纯手写 SVG（还会明暗自适应），一个是用 Python 画出来的 PNG。不借助任何在线设计工具。</p>
+</blockquote>
+<h2>先看看之前有多凑合</h2>
+<p>Gmeek 其实早就给了默认值。<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L100">Gmeek.py:100</a> 写着：不配置 <code class="notranslate">faviconUrl</code> 时，favicon 默认就是 <code class="notranslate">avatarUrl</code>；不配置 <code class="notranslate">ogImage</code> 时，<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L103">分享封面也默认头像</a>。</p>
+<p>也就是说，叶扬之前的博客在任何场景下都顶着同一个 GitHub 头像：标签页、收藏夹、分享卡片……头像是给"人"看的，图标是给"站"看的，混在一起，辨识度约等于校服上别了枚别人的校徽。</p>
+<p>这一期要做两件东西：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>文件</th>
+<th>出现的地方</th>
+<th>格式要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">favicon.svg</code></td>
+<td>浏览器标签页、书签、历史记录</td>
+<td>SVG 现代浏览器通吃</td>
+</tr>
+<tr>
+<td><code class="notranslate">og.png</code></td>
+<td>链接被分享到微信/QQ/X/Telegram 时的卡片</td>
+<td><strong>必须 PNG/JPG</strong>，1200×630</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>favicon：一个"叶"字的自我修养</h2>
+<h3>设计思路</h3>
+<p>个人博客的图标最讨巧的做法就是用名字。"叶扬"的"叶"字简体只有五笔，几何感强——左边一个方框（口），右边一个十字（十），缩小到 16 像素仍然认得出来，简直是被字体设计师开过光的 logo 坯子。</p>
+<p>配色直接继承博客的视觉血脉：GitHub 暗底（<code class="notranslate">#0d1117<span class="ml-1 d-inline-block border circle color-border-subtle" style="background-color: #0d1117; height: 8px; width: 8px;"></span></code>）+ Gmeek 控制台绿（<code class="notranslate">#02d81d<span class="ml-1 d-inline-block border circle color-border-subtle" style="background-color: #02d81d; height: 8px; width: 8px;"></span></code>），就是每次构建时那个绿色 logo 的颜色。</p>
+<h3>最终 SVG，全文不到 20 行</h3>
+<p>放在仓库 <code class="notranslate">static/favicon.svg</code>：</p>
+<div class="highlight highlight-text-xml-svg"><pre class="notranslate">&lt;<span class="pl-ent">svg</span> <span class="pl-e">xmlns</span>=<span class="pl-s"><span class="pl-pds">"</span>http://www.w3.org/2000/svg<span class="pl-pds">"</span></span> <span class="pl-e">viewBox</span>=<span class="pl-s"><span class="pl-pds">"</span>0 0 512 512<span class="pl-pds">"</span></span>&gt;
+  &lt;<span class="pl-ent">defs</span>&gt;
+    &lt;<span class="pl-ent">linearGradient</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>leafGreen<span class="pl-pds">"</span></span> <span class="pl-e">x1</span>=<span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span> <span class="pl-e">y1</span>=<span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span> <span class="pl-e">x2</span>=<span class="pl-s"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span> <span class="pl-e">y2</span>=<span class="pl-s"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span>&gt;
+      &lt;<span class="pl-ent">stop</span> <span class="pl-e">offset</span>=<span class="pl-s"><span class="pl-pds">"</span>0<span class="pl-pds">"</span></span> <span class="pl-e">stop-color</span>=<span class="pl-s"><span class="pl-pds">"</span>#3fb950<span class="pl-pds">"</span></span>/&gt;
+      &lt;<span class="pl-ent">stop</span> <span class="pl-e">offset</span>=<span class="pl-s"><span class="pl-pds">"</span>1<span class="pl-pds">"</span></span> <span class="pl-e">stop-color</span>=<span class="pl-s"><span class="pl-pds">"</span>#02d81d<span class="pl-pds">"</span></span>/&gt;
+    &lt;/<span class="pl-ent">linearGradient</span>&gt;
+  &lt;/<span class="pl-ent">defs</span>&gt;
+  &lt;<span class="pl-ent">style</span>&gt;<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-e">.bg</span> { <span class="pl-c1"><span class="pl-c1">fill</span></span>: <span class="pl-c1">#ffffff</span>; }</span>
+<span class="pl-s1">    <span class="pl-e">.ring</span> { <span class="pl-c1"><span class="pl-c1">stroke</span></span>: <span class="pl-c1">url</span>(<span class="pl-v">#leafGreen</span>); <span class="pl-c1"><span class="pl-c1">opacity</span></span>: <span class="pl-c1">.55</span>; }</span>
+<span class="pl-s1">    <span class="pl-k">@media</span> (prefers-color-scheme: dark) {</span>
+<span class="pl-s1">      <span class="pl-e">.bg</span> { <span class="pl-c1"><span class="pl-c1">fill</span></span>: <span class="pl-c1">#0d1117</span>; }</span>
+<span class="pl-s1">      <span class="pl-e">.ring</span> { <span class="pl-c1"><span class="pl-c1">opacity</span></span>: <span class="pl-c1">.35</span>; }</span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1"></span>  &lt;/<span class="pl-ent">style</span>&gt;
+  &lt;<span class="pl-ent">rect</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>bg<span class="pl-pds">"</span></span> <span class="pl-e">width</span>=<span class="pl-s"><span class="pl-pds">"</span>512<span class="pl-pds">"</span></span> <span class="pl-e">height</span>=<span class="pl-s"><span class="pl-pds">"</span>512<span class="pl-pds">"</span></span> <span class="pl-e">rx</span>=<span class="pl-s"><span class="pl-pds">"</span>112<span class="pl-pds">"</span></span>/&gt;
+  &lt;<span class="pl-ent">rect</span> <span class="pl-e">class</span>=<span class="pl-s"><span class="pl-pds">"</span>ring<span class="pl-pds">"</span></span> <span class="pl-e">x</span>=<span class="pl-s"><span class="pl-pds">"</span>18<span class="pl-pds">"</span></span> <span class="pl-e">y</span>=<span class="pl-s"><span class="pl-pds">"</span>18<span class="pl-pds">"</span></span> <span class="pl-e">width</span>=<span class="pl-s"><span class="pl-pds">"</span>476<span class="pl-pds">"</span></span> <span class="pl-e">height</span>=<span class="pl-s"><span class="pl-pds">"</span>476<span class="pl-pds">"</span></span> <span class="pl-e">rx</span>=<span class="pl-s"><span class="pl-pds">"</span>98<span class="pl-pds">"</span></span>
+        <span class="pl-e">fill</span>=<span class="pl-s"><span class="pl-pds">"</span>none<span class="pl-pds">"</span></span> <span class="pl-e">stroke-width</span>=<span class="pl-s"><span class="pl-pds">"</span>10<span class="pl-pds">"</span></span>/&gt;
+  &lt;<span class="pl-ent">text</span> <span class="pl-e">x</span>=<span class="pl-s"><span class="pl-pds">"</span>256<span class="pl-pds">"</span></span> <span class="pl-e">y</span>=<span class="pl-s"><span class="pl-pds">"</span>266<span class="pl-pds">"</span></span> <span class="pl-e">text-anchor</span>=<span class="pl-s"><span class="pl-pds">"</span>middle<span class="pl-pds">"</span></span> <span class="pl-e">dominant-baseline</span>=<span class="pl-s"><span class="pl-pds">"</span>central<span class="pl-pds">"</span></span>
+        <span class="pl-e">font-family</span>=<span class="pl-s"><span class="pl-pds">"</span>'PingFang SC','Hiragino Sans GB','Microsoft YaHei',</span>
+<span class="pl-s">                     'Noto Sans CJK SC',sans-serif<span class="pl-pds">"</span></span>
+        <span class="pl-e">font-size</span>=<span class="pl-s"><span class="pl-pds">"</span>300<span class="pl-pds">"</span></span> <span class="pl-e">font-weight</span>=<span class="pl-s"><span class="pl-pds">"</span>800<span class="pl-pds">"</span></span> <span class="pl-e">fill</span>=<span class="pl-s"><span class="pl-pds">"</span>url(#leafGreen)<span class="pl-pds">"</span></span>&gt;叶&lt;/<span class="pl-ent">text</span>&gt;
+&lt;/<span class="pl-ent">svg</span>&gt;</pre></div>
+<p>几个值得说的细节：</p>
+<ol>
+<li><strong>SVG favicon 是矢量的</strong>。同一个文件应对 16px 的标签页、32px 的书签栏、甚至拖到手机主屏幕的 180px，永远锐利，文件只有不到 1KB。</li>
+<li><strong>它会跟着浏览器换肤色</strong>。SVG 内部可以写 <code class="notranslate">@media (prefers-color-scheme: dark)</code>——这是 SVG favicon 相对 <code class="notranslate">.ico</code> 的超能力：亮色标签栏时是白底绿字，暗色标签栏时自动变成 GitHub 暗底。叶扬第一次看到标签页上的小方块跟着系统主题变色时，确实愣了一下。</li>
+<li><strong>文字没有引入任何外部字体</strong>，而是列了一串系统中文字体回退栈：苹方 → 冬青黑 → 微软雅黑 → Noto → 无衬线。SVG 在访客本地渲染，中文系统必然命中其中之一。代价是极个别没有 CJK 字体的极简 Linux 环境会显示豆腐块——对中文博客来说可以忽略。</li>
+<li><code class="notranslate">y="266"</code> 而不是 256，是因为中文字面重心普遍偏上，下沉 10 像素视觉上才居中。这种玄学微调，做过 PPT 的人都懂。</li>
+</ol>
+<blockquote>
+<p>如果你不想用文字，把 <code class="notranslate">&lt;text&gt;</code> 换成任意 <code class="notranslate">&lt;path&gt;</code> 图形即可。作者本人用的就是一个<a href="https://blog.meekdai.com/favicon.svg" rel="nofollow">手绘风格的 SVG</a>，可以去他仓库参观。</p>
+</blockquote>
+<h2>ogImage：社交平台不给 SVG 入场券</h2>
+<p>favicon 可以潇洒地用矢量，分享封面却不行。Open Graph 协议的 <code class="notranslate">og:image</code> 在各大社交平台（微信、QQ、X、Telegram、Facebook、Slack）只认 <strong>PNG/JPG 等位图格式</strong>，扔一个 SVG 链接进去，卡片会优雅地假装没看见。</p>
+<p>行业标准尺寸是 <strong>1200×630</strong>（1.91:1），小于 600px 宽的图在 Facebook 上不会以大图卡片展示。</p>
+<h3>用 Python 画一张，而不是开 Photoshop</h3>
+<p>封面的构成很简单：深色渐变底、绿色描边徽章里一个"叶"、标题、副标题、一行小字署名。这种"色块 + 系统字体"的图，<a href="https://python-pillow.org/" rel="nofollow">Pillow</a> 十几行就画了，还能进 Git 版本管理，想改文案重跑一次即可。</p>
+<p>环境准备：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">pip install pillow</pre></div>
+<p>核心代码（完整脚本就是生成本站封面的这一份）：</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">from</span> <span class="pl-c1">PIL</span> <span class="pl-k">import</span> <span class="pl-v">Image</span>, <span class="pl-v">ImageDraw</span>, <span class="pl-v">ImageFont</span>
+
+<span class="pl-c1">W</span>, <span class="pl-c1">H</span> <span class="pl-c1">=</span> <span class="pl-c1">1200</span>, <span class="pl-c1">630</span>
+<span class="pl-s1">img</span> <span class="pl-c1">=</span> <span class="pl-v">Image</span>.<span class="pl-c1">new</span>(<span class="pl-s">"RGB"</span>, (<span class="pl-c1">W</span>, <span class="pl-c1">H</span>), (<span class="pl-c1">13</span>, <span class="pl-c1">17</span>, <span class="pl-c1">23</span>))
+<span class="pl-s1">px</span> <span class="pl-c1">=</span> <span class="pl-s1">img</span>.<span class="pl-c1">load</span>()
+<span class="pl-k">for</span> <span class="pl-s1">y</span> <span class="pl-c1">in</span> <span class="pl-en">range</span>(<span class="pl-c1">H</span>):                       <span class="pl-c"># 手工竖向渐变</span>
+    <span class="pl-s1">t</span> <span class="pl-c1">=</span> <span class="pl-s1">y</span> <span class="pl-c1">/</span> <span class="pl-c1">H</span>
+    <span class="pl-k">for</span> <span class="pl-s1">x</span> <span class="pl-c1">in</span> <span class="pl-en">range</span>(<span class="pl-c1">W</span>):
+        <span class="pl-s1">px</span>[<span class="pl-s1">x</span>, <span class="pl-s1">y</span>] <span class="pl-c1">=</span> (<span class="pl-en">int</span>(<span class="pl-c1">13</span><span class="pl-c1">+</span><span class="pl-c1">9</span><span class="pl-c1">*</span><span class="pl-s1">t</span>), <span class="pl-en">int</span>(<span class="pl-c1">17</span><span class="pl-c1">+</span><span class="pl-c1">10</span><span class="pl-c1">*</span><span class="pl-s1">t</span>), <span class="pl-en">int</span>(<span class="pl-c1">23</span><span class="pl-c1">+</span><span class="pl-c1">11</span><span class="pl-c1">*</span><span class="pl-s1">t</span>))
+
+<span class="pl-s1">d</span> <span class="pl-c1">=</span> <span class="pl-v">ImageDraw</span>.<span class="pl-c1">Draw</span>(<span class="pl-s1">img</span>)
+
+<span class="pl-c"># 绿色描边圆角徽章 + “叶”</span>
+<span class="pl-s1">d</span>.<span class="pl-c1">rounded_rectangle</span>((<span class="pl-c1">80</span>, <span class="pl-c1">155</span>, <span class="pl-c1">400</span>, <span class="pl-c1">475</span>), <span class="pl-s1">radius</span><span class="pl-c1">=</span><span class="pl-c1">64</span>,
+                    <span class="pl-s1">fill</span><span class="pl-c1">=</span>(<span class="pl-c1">13</span>, <span class="pl-c1">17</span>, <span class="pl-c1">23</span>), <span class="pl-s1">outline</span><span class="pl-c1">=</span>(<span class="pl-c1">2</span>, <span class="pl-c1">216</span>, <span class="pl-c1">29</span>), <span class="pl-s1">width</span><span class="pl-c1">=</span><span class="pl-c1">6</span>)
+<span class="pl-s1">fb</span> <span class="pl-c1">=</span> <span class="pl-s">"C:/Windows/Fonts/msyhbd.ttc"</span>       <span class="pl-c"># 微软雅黑 Bold，macOS 换 PingFang.ttc</span>
+<span class="pl-s1">d</span>.<span class="pl-c1">text</span>((<span class="pl-c1">240</span>, <span class="pl-c1">318</span>), <span class="pl-s">"叶"</span>, <span class="pl-s1">font</span><span class="pl-c1">=</span><span class="pl-v">ImageFont</span>.<span class="pl-c1">truetype</span>(<span class="pl-s1">fb</span>, <span class="pl-c1">190</span>),
+       <span class="pl-s1">fill</span><span class="pl-c1">=</span>(<span class="pl-c1">2</span>, <span class="pl-c1">216</span>, <span class="pl-c1">29</span>), <span class="pl-s1">anchor</span><span class="pl-c1">=</span><span class="pl-s">"mm"</span>)
+
+<span class="pl-c"># 标题与副标题</span>
+<span class="pl-s1">d</span>.<span class="pl-c1">text</span>((<span class="pl-c1">470</span>, <span class="pl-c1">205</span>), <span class="pl-s">"叶扬的博客"</span>, <span class="pl-s1">font</span><span class="pl-c1">=</span><span class="pl-v">ImageFont</span>.<span class="pl-c1">truetype</span>(<span class="pl-s1">fb</span>, <span class="pl-c1">88</span>), <span class="pl-s1">fill</span><span class="pl-c1">=</span>(<span class="pl-c1">230</span>, <span class="pl-c1">237</span>, <span class="pl-c1">243</span>))
+<span class="pl-s1">d</span>.<span class="pl-c1">text</span>((<span class="pl-c1">470</span>, <span class="pl-c1">350</span>), <span class="pl-s">"我是叶扬，人生苦短，我用 AI ～"</span>,
+       <span class="pl-s1">font</span><span class="pl-c1">=</span><span class="pl-v">ImageFont</span>.<span class="pl-c1">truetype</span>(<span class="pl-s">"C:/Windows/Fonts/msyh.ttc"</span>, <span class="pl-c1">38</span>), <span class="pl-s1">fill</span><span class="pl-c1">=</span>(<span class="pl-c1">139</span>, <span class="pl-c1">148</span>, <span class="pl-c1">158</span>))
+
+<span class="pl-s1">img</span>.<span class="pl-c1">save</span>(<span class="pl-s">"og.png"</span>, <span class="pl-s">"PNG"</span>, <span class="pl-s1">optimize</span><span class="pl-c1">=</span><span class="pl-c1">True</span>)</pre></div>
+<p>成品就是现在你把这个链接丢进任何聊天框会看到的卡片：左侧绿色描边徽章、右侧标题与口号、底部一行 "Gmeek · 用 GitHub Issues 写博客"，底部还有一条渐变绿线收边。</p>
+<blockquote>
+<p>两个坑替叶扬踩过：① Pillow 画渐变只能逐像素手搓，没有 API，但 1200×630 的循环瞬间完成；② 中文字体必须显式指定 <code class="notranslate">msyhbd.ttc</code>，否则 Pillow 默认字体不认识中文，出来一排豆腐块。</p>
+</blockquote>
+<h2>配置：两行，然后手动重建</h2>
+<p>两个文件放进 <code class="notranslate">static/</code>，构建时会被原样复制到站点根目录（这个机制在<a href="/post/1.html">第 1 篇</a>详细讲过）。然后打开 <code class="notranslate">config.json</code>：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate">{
+    <span class="pl-ent">"faviconUrl"</span>: <span class="pl-s"><span class="pl-pds">"</span>https://yeyangchen2009.github.io/favicon.svg<span class="pl-pds">"</span></span>,
+    <span class="pl-ent">"ogImage"</span>: <span class="pl-s"><span class="pl-pds">"</span>https://yeyangchen2009.github.io/og.png<span class="pl-pds">"</span></span>
+}</pre></div>
+<p>注意<strong>必须写完整的绝对 URL</strong>，不能图省事写 <code class="notranslate">/og.png</code>。模板 <a href="https://github.com/Meekdai/Gmeek/blob/main/templates/base.html#L9">base.html:9</a> 里 favicon 用相对路径浏览器还能自己补全，但 <code class="notranslate">og:image</code> 是给微信、Facebook 这些外部爬虫读的——它们手里没有你的域名上下文，相对路径等于无效地址。</p>
+<p>老规矩三连：提交、push、<strong>深呼吸几秒</strong>、手动全局重建：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">gh workflow run <span class="pl-s"><span class="pl-pds">"</span>build Gmeek<span class="pl-pds">"</span></span></pre></div>
+<p>（push 完立刻触发构建可能 checkout 到旧代码，叶扬在 <a href="/post/8.html">G02</a> 已经替大家表演过一次了。）</p>
+<h2>验证清单</h2>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> 浏览器标签页显示绿色"叶"图标，切换系统明暗主题，图标底色跟着变；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> 查看页面源码，<code class="notranslate">&lt;link rel="icon" href="...favicon.svg"&gt;</code> 已就位；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> <code class="notranslate">og:image</code> 的 content 是 <code class="notranslate">https://</code> 开头的绝对 PNG 地址；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> 把文章链接贴到 <a href="https://www.opengraph.xyz/" rel="nofollow">https://www.opengraph.xyz/</a>（免登录的 OG 预览工具），能看到完整大图卡片；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Completed task" checked=""> 微信/Telegram 发给"文件传输助手"实测卡片效果（平台有缓存，第一次抓取后隔几分钟才更新）。</li>
+</ul>
+<h2>还能怎么玩</h2>
+<ol>
+<li><strong>每篇文章单独封面</strong>：文章正文最后一行的隐藏 JSON 支持 <code class="notranslate">"ogImage"</code> 字段，给重点文章配专属头图（G06 会细讲这个机制）；</li>
+<li><strong>favicon 也可以走纯图形派</strong>：不写字，画个代码括号 <code class="notranslate">&lt;/&gt;</code>、一片叶子，或者你的猫的剪影；</li>
+<li><strong>想要 ico 兼容老古董浏览器</strong>：用任意在线转换工具把 SVG/PNG 转一份 <code class="notranslate">favicon.ico</code> 丢进 <code class="notranslate">static/</code>，再通过 <code class="notranslate">allHead</code> 加一行 <code class="notranslate">&lt;link rel="alternate icon"&gt;</code>，新旧通吃。叶扬选择不伺候。</li>
+</ol>
+<h2>小结</h2>
+<p>图标和封面这种东西，不影响任何功能，但它决定了博客在"站外"的样子——读者还没点进来，就已经在标签页和聊天框里见过它两次了。一个自己写的 SVG 加上一张自己画的 PNG，成本半小时，辨识度是永久的。</p>
+<p>下一期 G04 是整个系列里最"躺赢"的一篇：不写一行代码、不放一个文件，只要去两个网站点几下提交——把 RSS 喂给 Google 和 Bing，让搜索引擎开始带陌生读者上门。</p>
+<h2>参考</h2>
+<ul>
+<li>模板中的 favicon 与 OG 注入点：<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/base.html">https://github.com/Meekdai/Gmeek/blob/main/templates/base.html</a></li>
+<li>Open Graph 协议（图片要求一节）：<a href="https://ogp.me/" rel="nofollow">https://ogp.me/</a></li>
+<li>SVG favicon 与 prefers-color-scheme：<a href="https://developer.mozilla.org/en-US/docs/Web/Manifest/icons" rel="nofollow">https://developer.mozilla.org/en-US/docs/Web/Manifest/icons</a></li>
+<li>作者的 favicon 样本：<a href="https://github.com/Meekdai/meekdai.github.io/blob/main/favicon.svg">https://github.com/Meekdai/meekdai.github.io/blob/main/favicon.svg</a></li>
+<li>OG 卡片在线预览：<a href="https://www.opengraph.xyz/" rel="nofollow">https://www.opengraph.xyz/</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script>
+
+</html>
