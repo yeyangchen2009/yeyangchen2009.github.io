@@ -206,6 +206,9 @@ Sitemap: https://yeyangchen2009.github.io/sitemap.xml
 <p>行尾和 BOM 值得多说一句：Windows 上 git 默认可能在工作区把 LF 转成 CRLF（提交时能看到那两条 warning），但仓库 blob 存的是 LF，Action checkout 后复制到线上的仍是干净 LF——叶扬专门 curl 下来 <code class="notranslate">tr -cd '\r' | wc -c</code> 数过，为 0。robots 解析器对 CRLF 其实也兼容，但干净永远是好习惯。</p>
 <h2>小结</h2>
 <p>两个文件，零配置，补齐了站点的两副面孔：<strong>对机器</strong>，robots.txt 显式表达收录态度、钉上 sitemap 入口；<strong>对人</strong>，404 页用同色系、同主题、最新文章把迷路读者接住。原理上就记住一句：<strong>static/ 是"原样到达站点根"的传送门，且每次构建全量重刷</strong>。</p>
+<blockquote>
+<p>顺带记录一个现场：本文发布后普通文章达到 16 篇，越过了 config 里 <code class="notranslate">onePageListNum:15</code> 的单页上限，首页底部<strong>第一次出现"下一页"分页条</strong>（框架自动生成 page2.html，最早的搭建篇被请去了第二页）。纯框架行为，无需任何操作——数字分页的美化留给 G13。</p>
+</blockquote>
 <p>下一期 G12 做个体验小补丁：让正文中的外链自动在新标签页打开（<code class="notranslate">target="_blank"</code> 加 <code class="notranslate">rel="noopener"</code>），内链保持当前页跳转——读者点开参考资料时不再被"逐出"博客。</p>
 <h2>参考</h2>
 <ul>
