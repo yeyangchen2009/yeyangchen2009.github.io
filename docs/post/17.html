@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# G10 自研插件（三）：凭空造出的时间线归档页
+
+> 前两弹分别在文章**头尾**做文章——G08 上一篇/下一篇读 `postList.json`，G09 阅读时长读页面自身 DOM。">
+<meta property="og:title" content="G10 自研插件（三）：凭空造出的时间线归档页">
+<meta property="og:description" content="# G10 自研插件（三）：凭空造出的时间线归档页
+
+> 前两弹分别在文章**头尾**做文章——G08 上一篇/下一篇读 `postList.json`，G09 阅读时长读页面自身 DOM。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/17.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G10 自研插件（三）：凭空造出的时间线归档页</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G10 自研插件（三）：凭空造出的时间线归档页</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/17" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>G10 自研插件（三）：凭空造出的时间线归档页</h1>
+<blockquote>
+<p>前两弹分别在文章<strong>头尾</strong>做文章——G08 上一篇/下一篇读 <code class="notranslate">postList.json</code>，G09 阅读时长读页面自身 DOM。这一期叶扬要<strong>凭空造一个新页面出来</strong>：一个按年份分组的文章档案馆。首页只展示最近 15 篇然后分页，标签页得先知道关键词才能搜，而一个好博客应该有一个入口，让人一眼看尽全部家当。这期的主角不再只是插件，还有框架的<strong>固定页机制</strong>（singlePage）和 G07 一闪而过的那个"彩蛋"——它其实是生产级基础设施。</p>
+</blockquote>
+<h2>先看现场</h2>
+<p><strong>现在页头应该多了一个档案盒图标</strong>（首页右上，about 按钮旁边），点进去就是新建好的 <a href="/archive.html">/archive.html</a>：2026 大标题、左侧一根时间竖线、每个文章标题挂在圆点右侧按时间倒序排列，滚动时年份会吸顶；暗色模式一切正常，手机上竖线和圆点也对齐。最妙的是它<strong>零维护</strong>——以后每发一篇新文，它都会自己排队进时间线，永远不用编辑这个页面。</p>
+<p>先给结论（后文明着算一遍）：本站目前 14 篇普通文章，#6 是 About、#16 是这个归档页，<strong>它们都不进文章流</strong>；但在其余数据出口里的待遇各不相同。</p>
+<h2>一、新页面从哪来：singlePage 读源码确认事实</h2>
+<p>About 页（issue #6）从建站起就在，但关于它的事实之前大多是"知道能用"。这一期要新增第二个固定页，叶扬把官方构建脚本 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py">Gmeek.py</a> 相关逻辑全读了一遍，逐条实测：</p>
+<p><strong>1. 身份判定：第一个标签说了算。</strong> 第 316 行：</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">if</span> <span class="pl-s1">issue</span>.<span class="pl-c1">labels</span>[<span class="pl-c1">0</span>].<span class="pl-c1">name</span> <span class="pl-c1">in</span> <span class="pl-s1">self</span>.<span class="pl-c1">blogBase</span>[<span class="pl-s">"singlePage"</span>]:
+    <span class="pl-s1">listJsonName</span><span class="pl-c1">=</span><span class="pl-s">'singeListJson'</span>   <span class="pl-c"># 官方把 single 拼成了 singe，变量名就是这个</span>
+    <span class="pl-s1">htmlFile</span><span class="pl-c1">=</span><span class="pl-s">'{}.html'</span>.<span class="pl-c1">format</span>(<span class="pl-s1">self</span>.<span class="pl-c1">createFileName</span>(<span class="pl-s1">issue</span>,<span class="pl-s1">useLabel</span><span class="pl-c1">=</span><span class="pl-c1">True</span>))
+    <span class="pl-s1">gen_Html</span> <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-c1">root_dir</span><span class="pl-c1">+</span><span class="pl-s1">htmlFile</span>
+<span class="pl-k">else</span>:
+    <span class="pl-s1">listJsonName</span><span class="pl-c1">=</span><span class="pl-s">'postListJson'</span>
+    <span class="pl-s1">gen_Html</span> <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-c1">post_dir</span><span class="pl-c1">+</span><span class="pl-s1">htmlFile</span></pre></div>
+<p>两个结论：issue 的<strong>第一个标签</strong>若命中 config 的 <code class="notranslate">singlePage</code> 数组，它就脱离文章流，生成到站点根目录的 <code class="notranslate">&lt;标签名&gt;.html</code>（所以标签名就是路径名，只能用 URL 友好的英文）；否则一律按普通文章处理。因此创建 archive issue 时标签<strong>只能挂一个 <code class="notranslate">archive</code></strong>——若先写"博客"再写"archive"，labels[0] 就是"博客"，页面会变成 <code class="notranslate">/post/16.html</code> 混进首页文章流。</p>
+<p><strong>2. 固定页不进 postList.json，但进 RSS 和 sitemap。</strong> 固定页进的是另一个字典 <code class="notranslate">singeListJson</code>（Gmeek.py:326），插件们常读的 <code class="notranslate">postList.json</code> 里没有它。但 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L278">Gmeek.py:278</a> 显示 feed 构建时<strong>先遍历固定页</strong>再遍历普通文章，所以 RSS 里固定页是排在最前面的置顶条目——curl 本站 rss.xml 前两条就是 about.html 和 archive.html；G04 写的 sitemap_gen 读 config.singlePage，也会自动给 archive.html 加一行（实测 17→18 URLs）。三个出口分流如下：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>数据出口</th>
+<th>普通文章</th>
+<th>固定页</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>postList.json（插件数据源）</td>
+<td>✅</td>
+<td>❌（在 singeListJson）</td>
+</tr>
+<tr>
+<td>RSS feed</td>
+<td>✅ 时间序</td>
+<td>✅ <strong>置顶在最前</strong></td>
+</tr>
+<tr>
+<td>sitemap.xml</td>
+<td>✅</td>
+<td>✅（sitemap_gen 自动）</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>3. 页头按钮是模板循环出来的，图标按标签名查。</strong> 首页模板 <a href="https://github.com/Meekdai/Gmeek/blob/main/templates/plist.html">plist.html</a> 里有一段 Jinja 循环：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate">{% for num in blogBase['singeListJson'] -%}
+<span class="pl-kos">&lt;</span><span class="pl-ent">a</span> <span class="pl-c1">href</span>="<span class="pl-s">.../{{ [...]['labels'][0] }}.html</span>" <span class="pl-c1">title</span>="<span class="pl-s">{{ postTitle }}</span>"<span class="pl-kos">&gt;</span>
+  <span class="pl-kos">&lt;</span><span class="pl-ent">svg</span><span class="pl-kos">&gt;</span><span class="pl-kos">&lt;</span><span class="pl-ent">path</span> <span class="pl-c1">id</span>="<span class="pl-s">{{ postTitle }}</span>"<span class="pl-kos">&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">path</span><span class="pl-kos">&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">svg</span><span class="pl-kos">&gt;</span>
+<span class="pl-kos">&lt;/</span><span class="pl-ent">a</span><span class="pl-kos">&gt;</span>
+{%- endfor %}</pre></div>
+<p>配套 JS 按<strong>标签名</strong>填图标：<code class="notranslate">IconList["archive"]</code>（plist.html 内联脚本）。IconList 由内置 IconBase 和 config.iconList 合并而成（Gmeek.py:215-216），内置只有 about/link 等少数几个，没有 archive——所以必须自己在 config.iconList 里给一条，否则按钮就是一个空白圆圈（链接和 title 提示仍有效，只是没图案）。</p>
+<p><strong>4. 按钮只在首页出现。</strong> 这是模板结构决定的：post.html（文章页）和 tag.html（标签页）的 header 里根本没有这段循环。也就是说读者在文章页看不到归档入口，靠首页和 sitemap/RSS 引导。框架限制，合理。</p>
+<p><strong>5. 标签得先存在。</strong> <code class="notranslate">gh issue create --label archive</code> 时仓库里还没有这个标签，gh 当场报错 <code class="notranslate">'archive' not found</code>，不会帮你自动建。先 <code class="notranslate">gh label create archive --color 6e40c9</code>（用与 about 相同的紫色），再发 issue。</p>
+<p>图标 path 取自 GitHub 自家的 Octicon「archive」16px（<a href="https://github.com/primer/octicons/blob/main/icons/archive-16.svg">primer/octicons</a>，MIT 协议，全站界面图标本来就都是这套），直接贴进 config：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ent">"singlePage"</span>: [<span class="pl-s"><span class="pl-pds">"</span>about<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>archive<span class="pl-pds">"</span></span>],
+<span class="pl-ent">"iconList"</span>: {<span class="pl-ent">"github"</span>: <span class="pl-s"><span class="pl-pds">"</span>…(省略)…<span class="pl-pds">"</span></span>, <span class="pl-ent">"archive"</span>: <span class="pl-s"><span class="pl-pds">"</span>M0 2.75C0 1.784.784 1 …(完整 path 见本站 config.json)… Z<span class="pl-pds">"</span></span>}</pre></div>
+<h2>二、插件怎么"粘"到固定页上：彩蛋变身基础设施</h2>
+<p>页面壳子由 issue 提供，时间线内容却要等浏览器拿到 postList.json 后才能渲染——插件需要一个<strong>挂载点</strong>。直接在 issue 正文里写 <code class="notranslate">&lt;div&gt;</code> 没用，会被当成文本显示出来。</p>
+<p><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L180">Gmeek.py:180</a> 有个在 G07 被当作"彩蛋"介绍过的开关：</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">if</span> <span class="pl-s">'&lt;code class="notranslate"&gt;Gmeek-html'</span> <span class="pl-c1">in</span> <span class="pl-s1">post_body</span>:
+    <span class="pl-s1">post_body</span> <span class="pl-c1">=</span> <span class="pl-s1">re</span>.<span class="pl-c1">sub</span>(<span class="pl-s">r'&lt;code class="notranslate"&gt;Gmeek-html(.*?)&lt;/code&gt;'</span>,
+                       <span class="pl-k">lambda</span> <span class="pl-s1">match</span>: <span class="pl-s1">html</span>.<span class="pl-c1">unescape</span>(<span class="pl-s1">match</span>.<span class="pl-c1">group</span>(<span class="pl-c1">1</span>)),
+                       <span class="pl-s1">flags</span><span class="pl-c1">=</span><span class="pl-s1">re</span>.<span class="pl-c1">DOTALL</span>)</pre></div>
+<p>它配合的是 Markdown 的行内反引号。archive issue 的正文里只写了这么一行：</p>
+<div class="highlight highlight-text-md"><pre class="notranslate"><span class="pl-s">`</span><span class="pl-c1">Gmeek-html&lt;div id="archiveTimeline"&gt;⏳ 文章列表加载中…&lt;/div&gt;</span><span class="pl-s">`</span></pre></div>
+<p>链路是这样的：GitHub 渲染接口把反引号里的内容转义成 <code class="notranslate">&amp;lt;div …&amp;gt;</code> 并包上 <code class="notranslate">&lt;code class="notranslate"&gt;</code>；构建期 Gmeek 正则命中<strong>开头的 Gmeek-html 标记</strong>，捕获后面的内容再 <code class="notranslate">html.unescape</code> 反转义——最终页面里就是一个真实的 div。G07 用它在正文里塞 kbd 小键盘玩，这一期它是整个页面的地基：</p>
+<ul>
+<li>div 里的"⏳ 文章列表加载中…"是天然的 <strong>loading 态</strong>（JS 未执行/正在 fetch 时显示）；</li>
+<li>插件成功后用渲染结果整体替换 <code class="notranslate">innerHTML</code>；</li>
+<li>fetch 失败时把容器改写成错误提示，不弹 alert、不白屏。</li>
+</ul>
+<p>写这个标记有三个精确约束，都是叶扬拿渲染接口预检出来的：</p>
+<ol>
+<li><strong>Gmeek-html 只在开头写一次</strong>。正则非贪婪匹配到 <code class="notranslate">&lt;/code&gt;</code> 就停，结尾再写一次会残留成页面上的裸文本；</li>
+<li><strong>必须是行内反引号</strong>，围栏代码块渲染结构不匹配，不生效（G07 实测）；</li>
+<li><strong>不能把这个关键字单独放进行内反引号里做"文字说明"</strong>——那会被构建期同一条正则误命中。所以本文里提到它时用裸文本 Gmeek-html，演示语法一律放围栏代码块。</li>
+</ol>
+<h2>二点五、数据里还藏着一个"假文章"</h2>
+<p>按惯例先 <code class="notranslate">Object.keys(list)</code> 遍历 postList.json，桩测试立刻露馅：15 个键里有一个不叫 <code class="notranslate">P编号</code>，而叫 <strong><code class="notranslate">labelColorDict</code></strong>——框架存标签颜色用的字典（页头标签 chip 上色就靠它），混在同一个 JSON 里。</p>
+<p>处理办法和 G08 一致，用三个字段的有效性过滤：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-kos">.</span><span class="pl-en">filter</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">p</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-k">return</span> <span class="pl-s1">p</span><span class="pl-kos">.</span><span class="pl-c1">url</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">p</span><span class="pl-kos">.</span><span class="pl-c1">num</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">p</span><span class="pl-kos">.</span><span class="pl-c1">date</span><span class="pl-kos">;</span> <span class="pl-kos">}</span><span class="pl-kos">)</span></pre></div>
+<p><code class="notranslate">parseInt('labelColorDict'.replace(/^P/, ''), 10)</code> 是 NaN，直接出局。G08 的上下篇插件和 sitemap_gen 其实都被同一道 filter 保护着。写插件遍历这份数据，永远不要假设"里面全是文章"。</p>
+<h2>三、时间线怎么排、怎么画</h2>
+<p><strong>排序与分组</strong>复用 G08 的熟脸逻辑，方向反过来：组内日期倒序（最新在上），同一天按 issue 编号倒序兜底；再用 <code class="notranslate">date.slice(0,4)</code> 取年份前向输出，2026 年全站 14 篇就是一个大组——等博客写到 2027 年，新组会自动出现。</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-kos">.</span><span class="pl-en">sort</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">a</span><span class="pl-kos">,</span> <span class="pl-s1">b</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">date</span> <span class="pl-c1">!==</span> <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">date</span><span class="pl-kos">)</span> <span class="pl-k">return</span> <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">date</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">date</span> ? <span class="pl-c1">1</span> : <span class="pl-c1">-</span><span class="pl-c1">1</span><span class="pl-kos">;</span> <span class="pl-c">// 最新在前</span>
+    <span class="pl-k">return</span> <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">num</span> <span class="pl-c1">-</span> <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">num</span><span class="pl-kos">;</span>
+<span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p><strong>时间线视觉</strong>只靠 CSS：<code class="notranslate">ul</code> 左边一根 2px 竖线（border-left），每个 <code class="notranslate">li::before</code> 是 8px accent 蓝色圆点，绝对定位压在竖线上，再用 3px 画布底色的外阴影把竖线"咬"出缺口——不用画任何图片：</p>
+<div class="highlight highlight-source-css"><pre class="notranslate">.<span class="pl-c1">gmeek-ar-list</span>{<span class="pl-c1">border-left</span><span class="pl-kos">:</span><span class="pl-c1">2<span class="pl-smi">px</span></span> solid <span class="pl-en">var</span>(<span class="pl-s1">--color-border-muted</span><span class="pl-kos">,</span><span class="pl-pds"><span class="pl-kos">#</span>d0d7de</span>);
+  <span class="pl-c1">padding-left</span><span class="pl-kos">:</span><span class="pl-c1">24<span class="pl-smi">px</span></span>;<span class="pl-c1">list-style</span><span class="pl-kos">:</span>none;}
+.<span class="pl-c1">gmeek-ar-item</span>{<span class="pl-c1">position</span><span class="pl-kos">:</span>relative;}
+.<span class="pl-c1">gmeek-ar-item</span>::<span class="pl-c1">before</span>{<span class="pl-c1">content</span><span class="pl-kos">:</span><span class="pl-s">""</span>;<span class="pl-c1">position</span><span class="pl-kos">:</span>absolute;<span class="pl-c1">left</span><span class="pl-kos">:</span><span class="pl-c1">-29<span class="pl-smi">px</span></span>;<span class="pl-c1">top</span><span class="pl-kos">:</span><span class="pl-c1">15<span class="pl-smi">px</span></span>;
+  <span class="pl-c1">width</span><span class="pl-kos">:</span><span class="pl-c1">8<span class="pl-smi">px</span></span>;<span class="pl-c1">height</span><span class="pl-kos">:</span><span class="pl-c1">8<span class="pl-smi">px</span></span>;<span class="pl-c1">border-radius</span><span class="pl-kos">:</span><span class="pl-c1">50<span class="pl-smi">%</span></span>;
+  <span class="pl-c1">background</span><span class="pl-kos">:</span><span class="pl-en">var</span>(<span class="pl-s1">--color-accent-fg</span><span class="pl-kos">,</span><span class="pl-pds"><span class="pl-kos">#</span>0969da</span>);
+  <span class="pl-c1">box-shadow</span><span class="pl-kos">:</span><span class="pl-c1">0</span> <span class="pl-c1">0</span> <span class="pl-c1">0</span> <span class="pl-c1">3<span class="pl-smi">px</span></span> <span class="pl-en">var</span>(<span class="pl-s1">--color-canvas-default</span><span class="pl-kos">,</span><span class="pl-pds"><span class="pl-kos">#</span>ffffff</span>);}</pre></div>
+<p><strong>年份标题做吸顶</strong>：<code class="notranslate">position:sticky;top:0</code>，这里有个必踩的坑——吸顶元素<strong>必须有不透明背景</strong>（<code class="notranslate">--color-canvas-default</code>），否则文章标题会从年份条底下透出来叠成一团；再配一条底边和 z-index:1，滚动时"现在在哪一年"始终可见。其余颜色全走 Primer 变量（fg-default 标题、fg-muted 日期、accent-fg 计数 chip），明暗三态自动正确，这是 G08 拿到 issue #196 背书的老纪律。日期列定宽 46px + <code class="notranslate">font-variant-numeric:tabular-nums</code> 等宽数字，不同位数的日期不会让标题列左右抖。</p>
+<p><strong>手机端</strong>这次没有重排可翻车（G08/G09 攒下的判断力）：时间线本身就是单列，375px 宽只需要把竖线内边距 24→20px、圆点 left 同步调、字号微调，结构原封不动。</p>
+<h2>四、发布顺序：这次最容易翻车的地方</h2>
+<p>config 和 issue 互相等对方：singlePage 没上线就发 issue，它会被当普通文章；只改 config 不发 issue，首页按钮指向 404。叶扬设计的<strong>零事故顺序</strong>（也是本文的 SOP）：</p>
+<ol>
+<li><strong>先 push</strong>：插件进 static、config 改三处（singlePage 加 archive、iconList 加 path、script 拼接第五个 <code class="notranslate">&lt;script&gt;</code>）；</li>
+<li><strong>手动触发一次全局重建并等它成功</strong>——确保线上 config 已就位，此时还没有 archive issue，模板里的固定页循环为空，<strong>没有按钮也没有 404</strong>；</li>
+<li><code class="notranslate">gh label create archive</code>，再创建只挂 archive 一个标签的 issue（自动触发增量构建，生成 <code class="notranslate">/archive.html</code>）；</li>
+<li>立刻验证身份没跑偏（见下节）；</li>
+<li><strong>再手动触发一次全局重建</strong>——按钮在 plist.html 里，而增量构建只重生成当前这一个 issue 的页面，首页必须靠全局重建才会出现档案盒图标。</li>
+</ol>
+<p>第 2 步和第 5 步都不能省。跳过第 2 步，issue 触发的构建若抢在 config push 前 checkout，#16 就会作为普通文章写进 postList（虽然下次全局重建能自愈，但窗口期数据是错的）；跳过第 5 步，页面在了但全站没有入口。</p>
+<h2>五、验证：curl 能验的和只能托付浏览器的</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>检查项</th>
+<th>期望</th>
+<th>手段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>/archive.html</td>
+<td>200，挂载点是<strong>真实 div</strong> 而非 code（彩蛋生效）</td>
+<td>curl + grep</td>
+</tr>
+<tr>
+<td>/post/16.html</td>
+<td><strong>404</strong>（固定页不占文章路径）</td>
+<td>curl</td>
+</tr>
+<tr>
+<td>postList.json</td>
+<td>无 P16 键（15 键 = 14 篇文章 + labelColorDict）</td>
+<td>curl + node</td>
+</tr>
+<tr>
+<td>sitemap.xml</td>
+<td>18 URLs，含 archive.html</td>
+<td>curl</td>
+</tr>
+<tr>
+<td>rss.xml</td>
+<td>archive 与 about 一起在 feed 最前</td>
+<td>curl</td>
+</tr>
+<tr>
+<td>页头按钮</td>
+<td>首页有（含 IconList["archive"] 填图）；tag 页/文章页没有</td>
+<td>curl</td>
+</tr>
+<tr>
+<td>插件文件</td>
+<td>/plugins/GmeekArchive.js 200</td>
+<td>curl</td>
+</tr>
+<tr>
+<td>时间线交互</td>
+<td>排序、圆点对齐、年份吸顶、暗色、手机间距</td>
+<td>浏览器/手机</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>运行时那半依旧托付不了 curl，还是用 node 造境：vm 沙箱里注入假的 location/document/fetch，喂真实 postList.json 跑插件源码，断言 about 页不发 fetch、14 篇全部入列且首条 #15 末条 #1、labelColorDict 不泄漏、fetch reject 时容器变成错误文案。全绿，视觉部分才交给真机。</p>
+<h2>小结</h2>
+<p>G08–G10 自研三连至此收官：<strong>G08 把 postList.json 变成文末导航，G09 把页面 DOM 变成阅读预算，G10 用 postList.json + singlePage + 彩蛋挂载点凭空造出一整个页面</strong>。固定页分流表、labelColorDict 陷阱、彩蛋三约束、双次全局重建的发布顺序，是这一期比代码本身更值钱的四条笔记。</p>
+<p>下一期 G11 离开插件题材，回到"放个文件就完事"的轻松环节：<code class="notranslate">robots.txt</code> 与自定义 404 页——给爬虫立规矩，给迷路的读者一个台阶。</p>
+<h2>参考</h2>
+<ul>
+<li>构建脚本 singlePage/RSS/彩蛋逻辑：<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py">Gmeek.py</a>（addOnePostJson 约 314 行、createFeedXml 约 266 行、Gmeek-html 约 180 行）</li>
+<li>固定页按钮循环：<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/plist.html">templates/plist.html</a></li>
+<li>档案盒图标：<a href="https://github.com/primer/octicons/blob/main/icons/archive-16.svg">octicons archive-16.svg</a>（MIT）</li>
+<li>本站插件：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekArchive.js">GmeekArchive.js</a></li>
+<li>相关前作：<a href="/post/12.html">G06 文章末尾的秘密</a>（注入机制）、<a href="/post/13.html">G07 写作三件套</a>（彩蛋与 Mermaid）、<a href="/post/14.html">G08 上一篇/下一篇</a>（postList 排序）、<a href="/post/15.html">G09 阅读时长</a>、<a href="/post/10.html">G04 SEO 与 sitemap</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script>
+
+</html>
