@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> 上一期 [G12](/post/19.html) 接掉了 [issue #186](https://github.com/Meekdai/Gmeek/issues/186) 的头号需求（外链新标签页），这一期接第二个：**数字分页条**。">
+<meta property="og:title" content="G13｜数字分页条：借不到轮子，就自己造一个">
+<meta property="og:description" content="> 上一期 [G12](/post/19.html) 接掉了 [issue #186](https://github.com/Meekdai/Gmeek/issues/186) 的头号需求（外链新标签页），这一期接第二个：**数字分页条**。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/20.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G13｜数字分页条：借不到轮子，就自己造一个</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G13｜数字分页条：借不到轮子，就自己造一个</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/20" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>上一期 <a href="/post/19.html">G12</a> 接掉了 <a href="https://github.com/Meekdai/Gmeek/issues/186" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/186/hovercard">issue #186</a> 的头号需求（外链新标签页），这一期接第二个：<strong>数字分页条</strong>。写这篇的时候博客里有 17 篇文章——恰好越过框架的 15 篇分页线，首页底部刚刚长出原生的"上一页/下一页"，素材是现成的。</p>
+</blockquote>
+<h2>先说要解决什么</h2>
+<p>文章超过 15 篇以后，列表页底部自动出现了框架原生的分页条。能用，但它只有两个按钮：</p>
+<ul>
+<li>读者不知道自己在<strong>第几页、一共几页</strong>；
+<ul>
+<li>最早的那批文章（比如<a href="/post/1.html">第 1 篇</a>）沉在第二页，想翻到它只能点"下一页"，文章再多就是一路点过去；</li>
+</ul>
+</li>
+<li>搜索引擎也一样：深层文章距首页的"点击深度"随页数线性增长，而数字页码能让任意一页都离首页只有一下。</li>
+</ul>
+<p>所以经典的数字分页条长这样：<code class="notranslate">上一页 1 … 4 5 6 … 10 下一页</code>——首尾页直达、当前页高亮、远处的页码折叠成省略号。GitHub 自己的 issue 列表底部就是它。</p>
+<h2>调研记：社区插件失联了</h2>
+<p>做之前叶扬照例先找轮子。总揽 #5 里登记过社区方案：李轶凡同学的《<a href="https://blog.liyifan.xyz/post/gei-bo-ke-tian-jia-shu-zi-fen-ye-tiao.html" rel="nofollow">给博客添加数字分页条</a>》。G12 结尾也是这么预告的："接上并审一遍源码"。</p>
+<p>然后叶扬开始了五连找：</p>
+<ol>
+<li>直接打开原文——域名 DNS 解析失败，站点打不开；</li>
+<li>GitHub 搜作者的用户名，仓库还在，但仓库里只剩一个 README，源码文件已经不在了；</li>
+<li>翻官方 <a href="https://github.com/Meekdai/Gmeek/issues/167" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/167/hovercard">issue #167</a> 的评论区，没有可用的分页方案；</li>
+<li>Wayback Machine 查历史存档，查不到该页面的快照；</li>
+<li>GitHub 全站代码搜索 <code class="notranslate">onePageListNum</code>（框架分页的配置名），零结果。</li>
+</ol>
+<p>原文链接叶扬仍然放在文末参考里——想法是人家先提的，出处要给。但源码确实拿不到了，<strong>这一期从"接社区插件 + 审源码"临时改成"自研"</strong>。好处是：自己写就得把框架分页的每一个细节都搞懂，等于白捡一节源码课。</p>
+<h2>源码课：框架是怎么分页的</h2>
+<p>分页逻辑在构建脚本的 <code class="notranslate">createPlistHtml</code> 里，叶扬把它翻完以后画成了图：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>postListJson 全部文章<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>按置顶 top 与创建时间倒序<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>按 onePageListNum 切片&lt;<span class="pl-ent">br</span>/&gt;默认每片 15 篇<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>第 0 片 → index.html&lt;<span class="pl-ent">br</span>/&gt;（上一页按钮禁用）<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>第 1 片 → page2.html<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>第 N 片 → pageN+1.html&lt;<span class="pl-ent">br</span>/&gt;（最后一片的下一页禁用）<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>最后一片同时渲染 tag.html<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>文章总数 &gt; 15？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">H</span>
+    <span class="pl-ent">H</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">是</span><span class="pl-k">|</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>输出 paginate-container&lt;<span class="pl-ent">br</span>/&gt;上一页 / 下一页<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">H</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">否</span><span class="pl-k">|</span> <span class="pl-ent">J</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>整个 nav 不渲染<span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<p>几个值得记住的实锤点：</p>
+<ol>
+<li><strong>每片 15 篇</strong>来自默认配置 <code class="notranslate">onePageListNum: 15</code>（可以在自己的 config.json 里覆盖）。切片前文章先按 <code class="notranslate">(置顶, 创建时间)</code> 倒序，所以最新文章永远在 index.html；</li>
+<li><strong>第 0 页叫 <code class="notranslate">index.html</code></strong>（不是 page1.html），从第 1 片开始才叫 <code class="notranslate">page2.html</code>、<code class="notranslate">page3.html</code>……数字从 2 起算，第一次读源码时这里很容易看错；</li>
+<li>上一页/下一页的禁用态不是样式装饰，而是标签都换了：可点时是 <code class="notranslate">&lt;a rel="next"&gt;</code>，到头时是 <code class="notranslate">&lt;span aria-disabled="true"&gt;</code>；</li>
+<li><strong>tag 标签页是个"搭车客"</strong>：它直接复用最后一片文章渲染，但用的是另一套模板 <code class="notranslate">tag.html</code>；</li>
+<li>文章不足 15 篇时，整个分页 nav 连渲染都不渲染——这一点直接决定了插件的自退策略（后面讲）。</li>
+</ol>
+<p>当前线上的真实 HTML（首页）长这样：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-kos">&lt;</span><span class="pl-ent">nav</span> <span class="pl-c1">class</span>="<span class="pl-s">paginate-container</span>" <span class="pl-c1">aria-label</span>="<span class="pl-s">Pagination</span>"<span class="pl-kos">&gt;</span>
+  <span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">class</span>="<span class="pl-s">pagination</span>"<span class="pl-kos">&gt;</span>
+    <span class="pl-kos">&lt;</span><span class="pl-ent">span</span> <span class="pl-c1">class</span>="<span class="pl-s">previous_page</span>" <span class="pl-c1">aria-disabled</span>="<span class="pl-s">true</span>"<span class="pl-kos">&gt;</span>上一页<span class="pl-kos">&lt;/</span><span class="pl-ent">span</span><span class="pl-kos">&gt;</span>
+    <span class="pl-kos">&lt;</span><span class="pl-ent">a</span> <span class="pl-c1">class</span>="<span class="pl-s">next_page</span>" <span class="pl-c1">rel</span>="<span class="pl-s">next</span>"
+       <span class="pl-c1">href</span>="<span class="pl-s">https://yeyangchen2009.github.io/page2.html</span>"
+       <span class="pl-c1">aria-label</span>="<span class="pl-s">Next Page</span>"<span class="pl-kos">&gt;</span>下一页<span class="pl-kos">&lt;/</span><span class="pl-ent">a</span><span class="pl-kos">&gt;</span>
+  <span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span>
+<span class="pl-kos">&lt;/</span><span class="pl-ent">nav</span><span class="pl-kos">&gt;</span></pre></div>
+<p>注意：可见文字已经是 i18n 汉化过的"上一页/下一页"，但容器和按钮的 <code class="notranslate">aria-label</code> 还是英文（<code class="notranslate">Pagination</code>、<code class="notranslate">Next Page</code>）——读屏用户听到的仍是英文，这个小尾巴稍后由插件收掉。</p>
+<h2>插件放哪儿：indexScript 登场</h2>
+<p>前六个自研/接入插件都挂在 config.json 的 <code class="notranslate">script</code> 字段里，但那个字段<strong>只注入文章页和固定页</strong>，列表页（首页和 pageN）拿不到。翻框架源码和模板可以确认，配置里还有一对专门给列表页用的字段：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>配置字段</th>
+<th>注入位置</th>
+<th>本系列的使用者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">allHead</code></td>
+<td>全站所有页面的 <code class="notranslate">&lt;head&gt;</code></td>
+<td>GmeekVercount 计数</td>
+</tr>
+<tr>
+<td><code class="notranslate">head</code> / <code class="notranslate">style</code></td>
+<td>文章页头部</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code class="notranslate">script</code></td>
+<td>文章页、固定页的底部</td>
+<td>TOC、灯箱、上一篇下一篇、阅读时长、归档、外链</td>
+</tr>
+<tr>
+<td><strong><code class="notranslate">indexScript</code> / <code class="notranslate">indexStyle</code></strong></td>
+<td><strong>只有列表页</strong>（index.html、pageN.html）</td>
+<td><strong>G13 首次使用</strong></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><code class="notranslate">indexScript</code> 在列表页模板的脚本区末尾输出（模板第 144 行），而 <code class="notranslate">tag.html</code> 不含这行——连标签页都不注入。作用域收得非常死，正合"列表页插件"的身。于是 config.json 只加一行：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ent">"indexScript"</span>: <span class="pl-s"><span class="pl-pds">"</span>&lt;script src='/plugins/GmeekPager.js'&gt;&lt;/script&gt;<span class="pl-pds">"</span></span></pre></div>
+<blockquote>
+<p>老规矩：改了 config.json 必须手动 <code class="notranslate">workflow_dispatch</code> 做一次全局重建，等构建 checkout 到最新提交再触发，别让它拿旧 SHA 白跑。</p>
+</blockquote>
+<h2>意外之喜：Primer 把数字分页的样式全包了</h2>
+<p>动手写 CSS 之前，叶扬先把站点引的 Primer 21 样式表整份拉下来翻了一遍——然后发现：<strong>数字分页需要的一切样式 Primer 早就写好了</strong>，框架的"上一页/下一页"只是恰好只用上了其中两个类。关键规则（删掉压缩格式后整理如下）：</p>
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-c">/* 所有分页子元素都是 32px 最小宽度的小方块按钮 */</span>
+.<span class="pl-c1">pagination</span> <span class="pl-ent">a</span><span class="pl-kos">,</span> .<span class="pl-c1">pagination</span> <span class="pl-ent">span</span><span class="pl-kos">,</span> .<span class="pl-c1">pagination</span> <span class="pl-ent">em</span> {
+  <span class="pl-c1">min-width</span><span class="pl-kos">:</span> <span class="pl-c1">32<span class="pl-smi">px</span></span>; <span class="pl-c1">padding</span><span class="pl-kos">:</span> <span class="pl-c1">5<span class="pl-smi">px</span></span> <span class="pl-c1">10<span class="pl-smi">px</span></span>;
+  <span class="pl-c1">border</span><span class="pl-kos">:</span> <span class="pl-c1">1<span class="pl-smi">px</span></span> solid transparent; <span class="pl-c1">border-radius</span><span class="pl-kos">:</span> <span class="pl-c1">6<span class="pl-smi">px</span></span>;
+  <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-en">var</span>(<span class="pl-s1">--fgColor-default</span><span class="pl-kos">,</span> <span class="pl-en">var</span>(<span class="pl-s1">--color-fg-default</span>));
+  <span class="pl-c1">text-align</span><span class="pl-kos">:</span> center; <span class="pl-c1">cursor</span><span class="pl-kos">:</span> pointer;
+}
+<span class="pl-c">/* 当前页：蓝底白字，:hover 也保持（选择器自带 :hover） */</span>
+.<span class="pl-c1">pagination</span> .<span class="pl-c1">current</span><span class="pl-kos">,</span>
+.<span class="pl-c1">pagination</span> [<span class="pl-c1">aria-current</span>]<span class="pl-kos">:</span><span class="pl-c1">not</span>([<span class="pl-c1">aria-current</span><span class="pl-c1">=</span><span class="pl-s">false</span>]) {
+  <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-en">var</span>(<span class="pl-s1">--fgColor-onEmphasis</span>);
+  <span class="pl-c1">background-color</span><span class="pl-kos">:</span> <span class="pl-en">var</span>(<span class="pl-s1">--bgColor-accent-emphasis</span>);
+}
+<span class="pl-c">/* 省略号：禁用色、无边框、默认光标 */</span>
+.<span class="pl-c1">pagination</span> .<span class="pl-c1">gap</span><span class="pl-kos">,</span> .<span class="pl-c1">pagination</span> [<span class="pl-c1">aria-disabled</span><span class="pl-c1">=</span><span class="pl-s">true</span>] {
+  <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-en">var</span>(<span class="pl-s1">--fgColor-disabled</span>); <span class="pl-c1">cursor</span><span class="pl-kos">:</span> default;
+}</pre></div>
+<p>更妙的是它连<strong>响应式显隐</strong>都内建了，靠的是子元素位置而不是类名：</p>
+<div class="highlight highlight-source-css"><pre class="notranslate">.<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-ent"><span class="pl-c1">*</span></span> { <span class="pl-c1">display</span><span class="pl-kos">:</span> none; }                 <span class="pl-c">/* 默认全藏 */</span>
+.<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">first-child</span><span class="pl-kos">,</span>
+.<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">last-child</span><span class="pl-kos">,</span>
+.<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> .<span class="pl-c1">previous_page</span><span class="pl-kos">,</span>
+.<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> .<span class="pl-c1">next_page</span> { <span class="pl-c1">display</span><span class="pl-kos">:</span> inline-block; } <span class="pl-c">/* 只露首尾：上一页、下一页 */</span>
+<span class="pl-k">@media</span> (<span class="pl-c1">min-width</span><span class="pl-kos">:</span> <span class="pl-c1">544<span class="pl-smi">px</span></span>) {
+  .<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">nth-child</span>(<span class="pl-c1">2</span>)<span class="pl-kos">,</span>
+  .<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">nth-last-child</span>(<span class="pl-c1">2</span>)<span class="pl-kos">,</span>
+  .<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> .<span class="pl-c1">current</span><span class="pl-kos">,</span>
+  .<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> .<span class="pl-c1">gap</span> { <span class="pl-c1">display</span><span class="pl-kos">:</span> inline-block; }     <span class="pl-c">/* 平板再露首尾页码、当前页、省略号 */</span>
+}
+<span class="pl-k">@media</span> (<span class="pl-c1">min-width</span><span class="pl-kos">:</span> <span class="pl-c1">768<span class="pl-smi">px</span></span>) {
+  .<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-ent"><span class="pl-c1">*</span></span> { <span class="pl-c1">display</span><span class="pl-kos">:</span> inline-block; }        <span class="pl-c">/* 桌面全显 */</span>
+}</pre></div>
+<p>以第 5 页/共 10 页为例，同一段 DOM 在三种屏幕上的效果：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>屏宽</th>
+<th>读者看到</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>手机（&lt;544px）</td>
+<td><code class="notranslate">上一页 下一页</code></td>
+</tr>
+<tr>
+<td>平板（544–767px）</td>
+<td><code class="notranslate">上一页 1 … 5 … 10 下一页</code></td>
+</tr>
+<tr>
+<td>桌面（≥768px）</td>
+<td><code class="notranslate">上一页 1 … 4 5 6 … 10 下一页</code></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>这带来一条严格的** DOM 顺序纪律**：上一页必须是第一个子元素（<code class="notranslate">:first-child</code>）、下一页必须是最后一个（<code class="notranslate">:last-child</code>），数字页码一律夹在中间。顺序错了，手机端的隐藏规则就会误伤。</p>
+<p>结论：<strong>这个插件零行自定义 CSS</strong>，活只有一件——把正确的 DOM 按正确的顺序拼出来。颜色全部走 Primer 变量，明暗主题自动跟随，连 G08/G09 那套 <code class="notranslate">html[data-color-mode="dark"]</code> 的操心都省了。</p>
+<h2>插件实现</h2>
+<h3>设计要点</h3>
+<ol>
+<li><strong>URL 守卫 + 容器守卫双保险</strong>。只在 <code class="notranslate">/</code>、<code class="notranslate">/index.html</code>、<code class="notranslate">/pageN.html</code> 上干活；再查 <code class="notranslate">.paginate-container .pagination</code> 是否存在——文章不足 15 篇时框架根本不渲染这个容器，插件直接退出。所以新博客从第一天就可以挂这个插件，零副作用；</li>
+<li><strong>总页数问数据，不猜 DOM</strong>。fetch <code class="notranslate">/postList.json</code> 数文章键，<code class="notranslate">Math.ceil(篇数 / 15)</code> 得到总页数。这里有个 G10 就打过交道的老坑：postList.json 里混着一个非文章键 <code class="notranslate">labelColorDict</code>（标签颜色字典）。用 <code class="notranslate">/^P\d+$/</code> 正则 + 要求 <code class="notranslate">postUrl</code> 非空，双保险过滤；</li>
+<li><strong>窗口算法</strong>：总页数 ≤ 7 时全部铺开（两三个页码还折叠纯属矫情）；更多时，首页、末页常驻，当前页两侧各露一页，跨度大于 1 的地方插一个省略号。例如第 5 页/共 10 页得到序列 <code class="notranslate">1, …, 4, 5, 6, …, 10</code>；</li>
+<li><strong>只增建，不重建</strong>。框架给的"上一页/下一页"节点原样保留——用 <code class="notranslate">appendChild</code> 把它们移动回新顺序的首尾。这么做是因为原生节点上带着值钱的东西：<code class="notranslate">rel="next"</code>/<code class="notranslate">rel="previous"</code>（搜索引擎认得的分页关系）、绝对 URL 的 href、禁用态、Primer 的 clip-path 箭头。自己重建等于把这些责任全揽过来，纯属给自己制造 bug；</li>
+<li><strong>语义化</strong>：当前页用 <code class="notranslate">&lt;em class="current" aria-current="page"&gt;</code>（Primer 对 <code class="notranslate">.current</code> 和 <code class="notranslate">aria-current</code> 双选择器都给蓝底），不可点所以不用 <code class="notranslate">&lt;a&gt;</code>，避免自引用链接；省略号 <code class="notranslate">&lt;span class="gap" aria-hidden="true"&gt;</code> 不让读屏念"点点点"；每个数字链接带 <code class="notranslate">aria-label="第 N 页"</code>；顺手把容器和可点按钮的英文 aria-label 汉化成"分页/上一页/下一页"（禁用的 span 没有 aria-label，也不给它加，避免和可见文本重复朗读）；</li>
+<li><strong>三种"什么都不做"</strong>：单页博客（<code class="notranslate">total &lt; 2</code>）、URL 页码超出总页数（<code class="notranslate">current &gt; total</code> 的防御）、fetch 失败——全部保持原生条不动。网络挂了读者至少还能用原生的上一页/下一页。</li>
+</ol>
+<h3>运行时流程</h3>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>indexScript 加载脚本<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>路径是 /、/index.html&lt;<span class="pl-ent">br</span>/&gt;或 /pageN.html？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">否：tag/文章/固定页</span><span class="pl-k">|</span> <span class="pl-ent">X</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>直接退出<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">是</span><span class="pl-k">|</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span>存在 .pagination 容器？<span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">否：文章不足 15 篇</span><span class="pl-k">|</span> <span class="pl-ent">X</span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">是</span><span class="pl-k">|</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>fetch /postList.json&lt;<span class="pl-ent">br</span>/&gt;（no-cache）<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>数据正常且&lt;<span class="pl-ent">br</span>/&gt;当前页 ≤ 总页数？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">否</span><span class="pl-k">|</span> <span class="pl-ent">Y</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>保留原生条不动<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">是</span><span class="pl-k">|</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>数 P 开头文章键&lt;<span class="pl-ent">br</span>/&gt;total = ceil(篇数/15)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>窗口算法生成页码序列<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>清空容器后重建顺序：&lt;<span class="pl-ent">br</span>/&gt;原 prev → 数字与省略号 → 原 next<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">H</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>Primer 样式与响应式自动生效<span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<h3>完整源码</h3>
+<p><code class="notranslate">static/plugins/GmeekPager.js</code>，全文 90 行左右，零依赖：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-c">/* GmeekPager —— 列表页数字分页条</span>
+<span class="pl-c"> * 作用域：首页 /、/index.html 与 /pageN.html（config 的 indexScript 只注入列表页 plist）</span>
+<span class="pl-c"> * 数据源：/postList.json，按 /^P\d+$/ 过滤掉 labelColorDict 等非文章键，每 15 篇一页</span>
+<span class="pl-c"> * 做法：完整保留框架原生的“上一页/下一页”节点（属性、箭头、禁用态都不动），</span>
+<span class="pl-c"> *       在中间插入 GitHub 风格数字页码；按钮样式、当前页蓝底、省略号与三档</span>
+<span class="pl-c"> *       响应式显隐全部复用 Primer 21 内建的 .pagination 规则，零自定义 CSS：</span>
+<span class="pl-c"> *       手机(&lt;544px)只露上下页；平板(544–768px)露首尾页码与当前页；桌面全显。</span>
+<span class="pl-c"> * 降级：文章不足一页时框架不渲染 nav（插件直接退出）；fetch 失败或数据异常时</span>
+<span class="pl-c"> *       保持框架原生“上一页/下一页”条不动，不影响翻页。</span>
+<span class="pl-c"> */</span>
+<span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">var</span> <span class="pl-s1">m</span> <span class="pl-c1">=</span> <span class="pl-s1">location</span><span class="pl-kos">.</span><span class="pl-c1">pathname</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">\/</span><span class="pl-s">p</span><span class="pl-s">a</span><span class="pl-s">g</span><span class="pl-s">e</span><span class="pl-kos">(</span><span class="pl-cce">\d</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-cce">\.</span><span class="pl-s">h</span><span class="pl-s">t</span><span class="pl-s">m</span><span class="pl-s">l</span><span class="pl-cce">$</span><span class="pl-c1">/</span></span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">var</span> <span class="pl-s1">isHome</span> <span class="pl-c1">=</span> <span class="pl-pds"><span class="pl-c1">/</span><span class="pl-kos">(?:</span><span class="pl-cce">^</span><span class="pl-cce">\/</span><span class="pl-cce">$</span><span class="pl-kos">)</span><span class="pl-c1">|</span><span class="pl-cce">\/</span><span class="pl-s">i</span><span class="pl-s">n</span><span class="pl-s">d</span><span class="pl-s">e</span><span class="pl-s">x</span><span class="pl-cce">\.</span><span class="pl-s">h</span><span class="pl-s">t</span><span class="pl-s">m</span><span class="pl-s">l</span><span class="pl-cce">$</span><span class="pl-c1">/</span></span><span class="pl-kos">.</span><span class="pl-en">test</span><span class="pl-kos">(</span><span class="pl-s1">location</span><span class="pl-kos">.</span><span class="pl-c1">pathname</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">m</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-c1">!</span><span class="pl-s1">isHome</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+    <span class="pl-k">var</span> <span class="pl-s1">current</span> <span class="pl-c1">=</span> <span class="pl-s1">m</span> ? <span class="pl-en">parseInt</span><span class="pl-kos">(</span><span class="pl-s1">m</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">,</span> <span class="pl-c1">10</span><span class="pl-kos">)</span> : <span class="pl-c1">1</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">box</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'.paginate-container .pagination'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">box</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-c1">ONE_PAGE</span> <span class="pl-c1">=</span> <span class="pl-c1">15</span><span class="pl-kos">;</span> <span class="pl-c">// Gmeek 默认 onePageListNum；若在 config.json 改过需同步改这里</span>
+
+    <span class="pl-en">fetch</span><span class="pl-kos">(</span><span class="pl-s">'/postList.json'</span><span class="pl-kos">,</span> <span class="pl-kos">{</span> <span class="pl-c1">cache</span>: <span class="pl-s">'no-cache'</span> <span class="pl-kos">}</span><span class="pl-kos">)</span>
+        <span class="pl-kos">.</span><span class="pl-en">then</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">r</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">r</span><span class="pl-kos">.</span><span class="pl-c1">ok</span><span class="pl-kos">)</span> <span class="pl-k">throw</span> <span class="pl-k">new</span> <span class="pl-v">Error</span><span class="pl-kos">(</span><span class="pl-s">'HTTP '</span> <span class="pl-c1">+</span> <span class="pl-s1">r</span><span class="pl-kos">.</span><span class="pl-c1">status</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">return</span> <span class="pl-s1">r</span><span class="pl-kos">.</span><span class="pl-en">json</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span><span class="pl-kos">)</span>
+        <span class="pl-kos">.</span><span class="pl-en">then</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">list</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">var</span> <span class="pl-s1">count</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span><span class="pl-kos">;</span>
+            <span class="pl-v">Object</span><span class="pl-kos">.</span><span class="pl-en">keys</span><span class="pl-kos">(</span><span class="pl-s1">list</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">forEach</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">k</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+                <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">^</span><span class="pl-s">P</span><span class="pl-cce">\d</span><span class="pl-c1">+</span><span class="pl-cce">$</span><span class="pl-c1">/</span></span><span class="pl-kos">.</span><span class="pl-en">test</span><span class="pl-kos">(</span><span class="pl-s1">k</span><span class="pl-kos">)</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">list</span><span class="pl-kos">[</span><span class="pl-s1">k</span><span class="pl-kos">]</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">list</span><span class="pl-kos">[</span><span class="pl-s1">k</span><span class="pl-kos">]</span><span class="pl-kos">.</span><span class="pl-c1">postUrl</span><span class="pl-kos">)</span> <span class="pl-s1">count</span><span class="pl-c1">++</span><span class="pl-kos">;</span>
+            <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">var</span> <span class="pl-s1">total</span> <span class="pl-c1">=</span> <span class="pl-v">Math</span><span class="pl-kos">.</span><span class="pl-en">ceil</span><span class="pl-kos">(</span><span class="pl-s1">count</span> <span class="pl-c1">/</span> <span class="pl-c1">ONE_PAGE</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">total</span> <span class="pl-c1">&lt;</span> <span class="pl-c1">2</span> <span class="pl-c1">||</span> <span class="pl-s1">current</span> <span class="pl-c1">&gt;</span> <span class="pl-s1">total</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span> <span class="pl-c">// 单页或数据异常，保留原生条</span>
+
+            <span class="pl-k">var</span> <span class="pl-s1">prev</span> <span class="pl-c1">=</span> <span class="pl-s1">box</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'.previous_page'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">var</span> <span class="pl-s1">next</span> <span class="pl-c1">=</span> <span class="pl-s1">box</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'.next_page'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">prev</span> <span class="pl-c1">||</span> <span class="pl-c1">!</span><span class="pl-s1">next</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+
+            <span class="pl-k">var</span> <span class="pl-s1">nav</span> <span class="pl-c1">=</span> <span class="pl-s1">box</span><span class="pl-kos">.</span><span class="pl-en">closest</span><span class="pl-kos">(</span><span class="pl-s">'nav'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">nav</span><span class="pl-kos">)</span> <span class="pl-s1">nav</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-label'</span><span class="pl-kos">,</span> <span class="pl-s">'分页'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-c">// 可见文字已是中文，原生按钮的英文 aria-label 顺手汉化（只改可点按钮）</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">prev</span><span class="pl-kos">.</span><span class="pl-en">getAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-label'</span><span class="pl-kos">)</span><span class="pl-kos">)</span> <span class="pl-s1">prev</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-label'</span><span class="pl-kos">,</span> <span class="pl-s">'上一页'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">next</span><span class="pl-kos">.</span><span class="pl-en">getAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-label'</span><span class="pl-kos">)</span><span class="pl-kos">)</span> <span class="pl-s1">next</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-label'</span><span class="pl-kos">,</span> <span class="pl-s">'下一页'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+            <span class="pl-s1">box</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-s">''</span><span class="pl-kos">;</span>
+            <span class="pl-s1">box</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">prev</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-en">buildSequence</span><span class="pl-kos">(</span><span class="pl-s1">current</span><span class="pl-kos">,</span> <span class="pl-s1">total</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">forEach</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">item</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+                <span class="pl-s1">box</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-en">renderItem</span><span class="pl-kos">(</span><span class="pl-s1">item</span><span class="pl-kos">,</span> <span class="pl-s1">item</span> <span class="pl-c1">===</span> <span class="pl-s1">current</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-s1">box</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">next</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span><span class="pl-kos">)</span>
+        <span class="pl-kos">.</span><span class="pl-en">catch</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-c">/* 网络失败：原生上一页/下一页原样保留 */</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-c">// 首页、末页常驻；当前页两侧各一页；跨度大于 1 的空档用省略号折叠；</span>
+    <span class="pl-c">// 总页不多（≤7）时全部铺开，省略号只在真正需要时出现</span>
+    <span class="pl-k">function</span> <span class="pl-en">buildSequence</span><span class="pl-kos">(</span><span class="pl-s1">cur</span><span class="pl-kos">,</span> <span class="pl-s1">total</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">total</span> <span class="pl-c1">&lt;=</span> <span class="pl-c1">7</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">var</span> <span class="pl-s1">all</span> <span class="pl-c1">=</span> <span class="pl-kos">[</span><span class="pl-kos">]</span><span class="pl-kos">;</span>
+            <span class="pl-k">for</span> <span class="pl-kos">(</span><span class="pl-k">var</span> <span class="pl-s1">k</span> <span class="pl-c1">=</span> <span class="pl-c1">1</span><span class="pl-kos">;</span> <span class="pl-s1">k</span> <span class="pl-c1">&lt;=</span> <span class="pl-s1">total</span><span class="pl-kos">;</span> <span class="pl-s1">k</span><span class="pl-c1">++</span><span class="pl-kos">)</span> <span class="pl-s1">all</span><span class="pl-kos">.</span><span class="pl-en">push</span><span class="pl-kos">(</span><span class="pl-s1">k</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">return</span> <span class="pl-s1">all</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span>
+        <span class="pl-k">var</span> <span class="pl-s1">nums</span> <span class="pl-c1">=</span> <span class="pl-kos">[</span><span class="pl-kos">]</span><span class="pl-kos">;</span>
+        <span class="pl-k">for</span> <span class="pl-kos">(</span><span class="pl-k">var</span> <span class="pl-s1">n</span> <span class="pl-c1">=</span> <span class="pl-c1">1</span><span class="pl-kos">;</span> <span class="pl-s1">n</span> <span class="pl-c1">&lt;=</span> <span class="pl-s1">total</span><span class="pl-kos">;</span> <span class="pl-s1">n</span><span class="pl-c1">++</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">n</span> <span class="pl-c1">===</span> <span class="pl-c1">1</span> <span class="pl-c1">||</span> <span class="pl-s1">n</span> <span class="pl-c1">===</span> <span class="pl-s1">total</span> <span class="pl-c1">||</span> <span class="pl-kos">(</span><span class="pl-s1">n</span> <span class="pl-c1">&gt;=</span> <span class="pl-s1">cur</span> <span class="pl-c1">-</span> <span class="pl-c1">1</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">n</span> <span class="pl-c1">&lt;=</span> <span class="pl-s1">cur</span> <span class="pl-c1">+</span> <span class="pl-c1">1</span><span class="pl-kos">)</span><span class="pl-kos">)</span> <span class="pl-s1">nums</span><span class="pl-kos">.</span><span class="pl-en">push</span><span class="pl-kos">(</span><span class="pl-s1">n</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span>
+        <span class="pl-k">var</span> <span class="pl-s1">out</span> <span class="pl-c1">=</span> <span class="pl-kos">[</span><span class="pl-kos">]</span><span class="pl-kos">;</span>
+        <span class="pl-k">for</span> <span class="pl-kos">(</span><span class="pl-k">var</span> <span class="pl-s1">i</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span><span class="pl-kos">;</span> <span class="pl-s1">i</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">nums</span><span class="pl-kos">.</span><span class="pl-c1">length</span><span class="pl-kos">;</span> <span class="pl-s1">i</span><span class="pl-c1">++</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">i</span> <span class="pl-c1">&gt;</span> <span class="pl-c1">0</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">nums</span><span class="pl-kos">[</span><span class="pl-s1">i</span><span class="pl-kos">]</span> <span class="pl-c1">-</span> <span class="pl-s1">nums</span><span class="pl-kos">[</span><span class="pl-s1">i</span> <span class="pl-c1">-</span> <span class="pl-c1">1</span><span class="pl-kos">]</span> <span class="pl-c1">&gt;</span> <span class="pl-c1">1</span><span class="pl-kos">)</span> <span class="pl-s1">out</span><span class="pl-kos">.</span><span class="pl-en">push</span><span class="pl-kos">(</span><span class="pl-s">'gap'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-s1">out</span><span class="pl-kos">.</span><span class="pl-en">push</span><span class="pl-kos">(</span><span class="pl-s1">nums</span><span class="pl-kos">[</span><span class="pl-s1">i</span><span class="pl-kos">]</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span>
+        <span class="pl-k">return</span> <span class="pl-s1">out</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">renderItem</span><span class="pl-kos">(</span><span class="pl-s1">item</span><span class="pl-kos">,</span> <span class="pl-s1">isCurrent</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">item</span> <span class="pl-c1">===</span> <span class="pl-s">'gap'</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">var</span> <span class="pl-s1">gap</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'span'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-s1">gap</span><span class="pl-kos">.</span><span class="pl-c1">className</span> <span class="pl-c1">=</span> <span class="pl-s">'gap'</span><span class="pl-kos">;</span>
+            <span class="pl-s1">gap</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-hidden'</span><span class="pl-kos">,</span> <span class="pl-s">'true'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-s1">gap</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-s">'…'</span><span class="pl-kos">;</span>
+            <span class="pl-k">return</span> <span class="pl-s1">gap</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">isCurrent</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">var</span> <span class="pl-s1">cur</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'em'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-s1">cur</span><span class="pl-kos">.</span><span class="pl-c1">className</span> <span class="pl-c1">=</span> <span class="pl-s">'current'</span><span class="pl-kos">;</span>
+            <span class="pl-s1">cur</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-current'</span><span class="pl-kos">,</span> <span class="pl-s">'page'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-s1">cur</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-v">String</span><span class="pl-kos">(</span><span class="pl-s1">item</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">return</span> <span class="pl-s1">cur</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span>
+        <span class="pl-k">var</span> <span class="pl-s1">a</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'a'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">href</span> <span class="pl-c1">=</span> <span class="pl-s1">item</span> <span class="pl-c1">===</span> <span class="pl-c1">1</span> ? <span class="pl-s">'/'</span> : <span class="pl-s">'/page'</span> <span class="pl-c1">+</span> <span class="pl-s1">item</span> <span class="pl-c1">+</span> <span class="pl-s">'.html'</span><span class="pl-kos">;</span>
+        <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-label'</span><span class="pl-kos">,</span> <span class="pl-s">'第 '</span> <span class="pl-c1">+</span> <span class="pl-s1">item</span> <span class="pl-c1">+</span> <span class="pl-s">' 页'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-v">String</span><span class="pl-kos">(</span><span class="pl-s1">item</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">return</span> <span class="pl-s1">a</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+<span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>两个链接细节：第 1 页的 href 用 <code class="notranslate">/</code>（比 <code class="notranslate">/index.html</code> 更短，也和读者心智一致），其余是 <code class="notranslate">/pageN.html</code>；都用根相对路径，不写死域名，换域名零成本。</p>
+<h2>验证：这次差点被自己的测试骗了</h2>
+<p>运行时插件 curl 只能验"有没有注入"，逻辑照旧用 node 验。叶扬在 vm 沙箱里造了 <code class="notranslate">location</code>、<code class="notranslate">document</code>、<code class="notranslate">fetch</code> 三件套的 DOM 桩，直接跑磁盘上的插件源码，前前后后写了 <strong>25 条断言</strong>，覆盖：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>场景</th>
+<th>期望结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本站真实数据：17 篇、首页</td>
+<td><code class="notranslate">[1] 2</code>，上一页禁用、下一页可点，原生节点引用不变</td>
+</tr>
+<tr>
+<td>17 篇、page2</td>
+<td><code class="notranslate">1 [2]</code>，保留框架的绝对 URL prev</td>
+</tr>
+<tr>
+<td>140 篇、第 5 页</td>
+<td><code class="notranslate">1 … 4 [5] 6 … 10</code>，两个省略号均 <code class="notranslate">aria-hidden</code></td>
+</tr>
+<tr>
+<td>第 1 页/末页/总页数 7</td>
+<td>边界窗口正确；≤7 页时全部铺开无省略号</td>
+</tr>
+<tr>
+<td>15 篇/16 篇/45 篇</td>
+<td>整除不产生空页、余数页正确、单页不动 DOM</td>
+</tr>
+<tr>
+<td>tag/文章页/固定页</td>
+<td>直接退出，<strong>一次 fetch 都不发</strong></td>
+</tr>
+<tr>
+<td>fetch 失败、页码超界</td>
+<td>原生条原样保留</td>
+</tr>
+<tr>
+<td>脏键 <code class="notranslate">labelColorDict</code>、空 <code class="notranslate">postUrl</code> 的 P 键</td>
+<td>都不参与计数</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>另外又用<strong>线上真实的 postList.json</strong>端到端跑了一遍：17 篇 → 总页数 2 → 首页 <code class="notranslate">[1] 2</code>、page2 <code class="notranslate">1 [2]</code>。</p>
+<p>过程中踩了两个值得记的坑：</p>
+<ol>
+<li><strong>桩里 <code class="notranslate">a.href = '...'</code> 没反射到 attribute</strong>。真实 DOM 中属性赋值会同步到 HTML 属性，而自制桩对象里 <code class="notranslate">href</code> 和 <code class="notranslate">attrs</code> 字典是两张皮，导致 <code class="notranslate">getAttribute('href')</code> 读出来全是 null，红了一片——红的是测试桩，不是插件。G12 的教训刚记下（桩要注入插件用到的全部浏览器全局，否则插件静默死亡、否定断言假通过），这次是它的变体：<strong>桩对 DOM 语义的模拟也得保真</strong>；</li>
+<li><strong>异步断言抢跑</strong>。第一版真实数据驱动里，<code class="notranslate">runPage()</code> 之后立刻读 DOM，fetch 的 Promise 链还在微任务队列里没执行，结果输出"只有上一页/下一页"，差点以为插件没生效。补了一个 <code class="notranslate">await tick()</code> 就好。写异步插件测试，断言前必须给微任务排队的机会。</li>
+</ol>
+<p>线上验证分两层：curl 看到 index.html/page2.html 的构建产物里都正确注入了 <code class="notranslate">&lt;script src='/plugins/GmeekPager.js'&gt;</code>，而 tag.html <strong>没有</strong>（证明 indexScript 作用域精确）；构建产物里的分页 HTML 本身原封不动——数字页码是浏览器端运行时渲染的，源码对爬虫保持简洁，无 JS 环境或抓包看到的仍是稳妥的原生条。</p>
+<h2>SEO 收益</h2>
+<p>数字分页不只是体验优化：它让<strong>任意列表页到首页的点击距离恒为 1</strong>。原生"下一页"时代，第 10 页的文章要顺着十次链接才能被爬到；数字条上线后，爬虫（和读者）在首页就能发现 page10 的链接。配合 G04 的 sitemap，深层文章的发现路径又多了一条。当前页用 <code class="notranslate">&lt;em&gt;</code> 而非 <code class="notranslate">&lt;a&gt;</code>，避免自引用链接稀释；原生节点上的 <code class="notranslate">rel="next"/"previous"</code> 原样保留，分页关系语义不丢。</p>
+<h2>小结</h2>
+<p>一篇"借鉴失败"逼出来的自研，最后反而做得比照抄更踏实：框架分页的切片规则、<code class="notranslate">indexScript</code> 的精确作用域、Primer 内建的数字分页样式与三档响应式，全是在"找不到轮子"以后才一个个从源码里抠实的。插件本体 90 行，自定义 CSS 0 行——剩下的工作全是读懂约定、然后顺着约定走。</p>
+<p>下一期 G14 换个战场到手机上：桌面端的 TOC 目录在小屏一直缺席，叶扬准备接官方的 articletoc 插件，聊聊"桌面/小屏两套目录如何用响应式和平共处"。</p>
+<h2>参考</h2>
+<ul>
+<li>需求出处：<a href="https://github.com/Meekdai/Gmeek/issues/186" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/186/hovercard">issue #186 提一些需求</a></li>
+<li>社区思路出处（写作时站点已失联，链接存档致敬）：李轶凡《<a href="https://blog.liyifan.xyz/post/gei-bo-ke-tian-jia-shu-zi-fen-ye-tiao.html" rel="nofollow">给博客添加数字分页条</a>》</li>
+<li>分页样式来源：<a href="https://primer.style/css/components/pagination" rel="nofollow">Primer CSS Pagination</a>（站点引用版本 21.0.7）</li>
+<li>本站插件源码：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekPager.js">GmeekPager.js</a></li>
+<li>相关前作：<a href="/post/10.html">G04 SEO 与 sitemap</a>、<a href="/post/17.html">G10 时间线归档页</a>（postList.json 与 labelColorDict）、<a href="/post/19.html">G12 外链新标签页</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script>
+
+</html>
