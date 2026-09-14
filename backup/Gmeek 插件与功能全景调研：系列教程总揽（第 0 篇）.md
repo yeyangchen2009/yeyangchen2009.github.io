@@ -185,7 +185,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 
 **值得借鉴的：**
 
-- **数字分页条**：把"上一页/下一页"换成 1/2/3 页码，文章几十篇以后有用。作者在 [issue #186](https://github.com/Meekdai/Gmeek/issues/186) 中确认可由插件实现，社区已有教程：李轶凡《[给博客添加数字分页条](https://blog.liyifan.xyz/post/gei-bo-ke-tian-jia-shu-zi-fen-ye-tiao.html)》。列入 **G13**（文章多了再做）。
+- **数字分页条** ✅：把"上一页/下一页"换成 1/2/3 页码，文章几十篇以后有用，[issue #186](https://github.com/Meekdai/Gmeek/issues/186) 需求 2。社区李轶凡《[给博客添加数字分页条](https://blog.liyifan.xyz/post/gei-bo-ke-tian-jia-shu-zi-fen-ye-tiao.html)》提供了思路，但 2026-09 调研时原站 DNS 失联、GitHub 仓库源码已撤、Wayback 无存档，**已完成见 [G13](/post/20.html)（借鉴失败转为自研）**：`static/plugins/GmeekPager.js`，90 行零 CSS——复用 Primer 21 内建 `.current/.gap` 样式与三档响应式显隐；保留框架原生 prev/next 节点只插中间数字；`config.indexScript` 首次启用（仅注入 index/pageN，tag 页不注入）；fetch postList.json 计数过滤 labelColorDict；≤7 页全显、否则首尾页+当前页±1+省略号；单页/失败/超界三态静默降级。
 - **外链新窗口打开** ✅：同 issue #186 的头号需求，**已完成见 [G12](/post/19.html)**。`static/plugins/GmeekExternal.js`：URL 构造器按 hostname 判内外（协议相对 URL/自家绝对 URL 都不误判），外链补 `target=_blank` + 合并 `rel=noopener`；显式 target 不覆盖、rel 只合并不替换；不自动加 nofollow（SEO）、不加 noreferrer（保留来路）。
 
 **看看就好、不要搬的：**
@@ -227,7 +227,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G10 | [自研插件（三）：凭空造出的时间线归档页](/post/17.html) | `singlePage` + 数据渲染 | 自研 | ✅ |
 | G11 | [运维两小件：robots.txt 与自定义 404 页](/post/18.html) | `static/` 直出 | 运维 | ✅ |
 | G12 | [小补丁：外链自动新标签页打开](/post/19.html) | URL 判定 + noopener | 自研 | ✅ |
-| G13 | 数字分页条 | 社区插件 | 借鉴 | 💤 |
+| G13 | [数字分页条：借不到轮子，就自己造一个](/post/20.html) | `indexScript` + Primer 内建分页样式 | 自研（社区方案失联） | ✅ |
 | G14 | 移动端目录：articletoc 与响应式策略 | 官方插件 | 体验 | 💤 |
 | G15 | tocbot 本地化：当前章节滚动高亮 | CDN 资源本地化 | 进阶 | 💤 |
 
@@ -252,7 +252,8 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G12 已完成，下一篇 G13：数字分页条——G11 后文章数越过 15 篇，框架原生 Previous/Next 分页已出现，接入并审查社区数字分页插件（李轶凡教程，issue #186 需求 2）。
+G01–G13 已完成，下一篇 G14：移动端目录——桌面端 GmeekTOC 在小屏缺席，接官方 articletoc 插件并处理桌面/小屏两套目录的响应式共存策略。
+
 
 
 
