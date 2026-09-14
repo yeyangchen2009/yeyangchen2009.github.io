@@ -488,9 +488,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>G09 ✅</td>
 </tr>
 <tr>
-<td>时间线归档页</td>
-<td>读 <code class="notranslate">postList.json</code> 按年份分组渲染；可挂 <code class="notranslate">singlePage</code> 机制做成固定页</td>
-<td>G10</td>
+<td><del>时间线归档页</del> ✅</td>
+<td><strong>已完成，见 <a href="/post/17.html">G10</a></strong>：新增 archive 固定页（issue #16，只打 archive 标签）+ <code class="notranslate">static/plugins/GmeekArchive.js</code>；Gmeek-html 彩蛋写挂载点 div；读 postList.json 过滤 labelColorDict 假键、日期倒序+编号兜底、按年分组、sticky 年份与时间线 CSS；iconList 配 Octicon archive 图标；RSS 置顶收录固定页、sitemap 自动+1；发布须双次全局重建</td>
+<td>G10 ✅</td>
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
@@ -601,10 +601,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 <tr>
 <td>G10</td>
-<td>自研插件（三）：时间线归档页</td>
+<td><a href="/post/17.html">自研插件（三）：凭空造出的时间线归档页</a></td>
 <td><code class="notranslate">singlePage</code> + 数据渲染</td>
 <td>自研</td>
-<td>⏳</td>
+<td>✅</td>
 </tr>
 <tr>
 <td>G11</td>
@@ -662,7 +662,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
 <li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
 </ol>
-<p>G01–G09 已完成，下一篇 G10 自研插件第三弹：时间线归档页，读 <code class="notranslate">postList.json</code> 按年份分组渲染，可挂 <code class="notranslate">singlePage</code> 做成固定页。</p></div>
+<p>G01–G10 已完成，下一篇 G11：robots.txt 与自定义 404 页，直接放 <code class="notranslate">static/</code> 根目录，构建原样复制到站点根，GitHub Pages 原生识别——给爬虫立规矩、给迷路读者一个台阶。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>

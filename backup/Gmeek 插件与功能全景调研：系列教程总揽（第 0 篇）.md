@@ -201,7 +201,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 |---|---|---|
 | ~~文章末尾上一篇/下一篇~~ ✅ | **已完成，见 [G08](/post/14.html)**：`static/plugins/GmeekPrevNext.js`，90 行零依赖；URL 正则定位当前篇（顺带防 about 页）、createdDate+编号排序（兼容 timestamp 补发）、Primer 变量自适应暗色、插在评论按钮前、首尾显示禁用占位 | G08 ✅ |
 | ~~字数统计与预计阅读时长~~ ✅ | **已完成，见 [G09](/post/15.html)**：`static/plugins/GmeekReadTime.js`，50 行零依赖；CJK 汉字按字（三个表意文字区段，码位转义防同形字）+ 拉丁串按词混合计数、标点不计、代码块计入；中文 400 字/分钟，不足 1 分钟按 1 分钟；插在 `#content` 最前；Primer 变量三态适配；手机端仅缩字号不重排 | G09 ✅ |
-| 时间线归档页 | 读 `postList.json` 按年份分组渲染；可挂 `singlePage` 机制做成固定页 | G10 |
+| ~~时间线归档页~~ ✅ | **已完成，见 [G10](/post/17.html)**：新增 archive 固定页（issue #16，只打 archive 标签）+ `static/plugins/GmeekArchive.js`；Gmeek-html 彩蛋写挂载点 div；读 postList.json 过滤 labelColorDict 假键、日期倒序+编号兜底、按年分组、sticky 年份与时间线 CSS；iconList 配 Octicon archive 图标；RSS 置顶收录固定页、sitemap 自动+1；发布须双次全局重建 | G10 ✅ |
 
 这三篇完整演示"如何写一个自己的 Gmeek 插件"，而不只是抄配置。
 
@@ -224,7 +224,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G07 | [写作三件套：Alert 提示块、数学公式、Mermaid 图表](/post/13.html) | 内置语法 + mermaid 三件套 | 教程 | ✅ |
 | G08 | [自研插件（一）：文章末尾的"上一篇 / 下一篇"](/post/14.html) | `postList.json` | 自研 | ✅ |
 | G09 | [自研插件（二）：标题下的字数与阅读时长](/post/15.html) | DOM 统计 | 自研 | ✅ |
-| G10 | 自研插件（三）：时间线归档页 | `singlePage` + 数据渲染 | 自研 | ⏳ |
+| G10 | [自研插件（三）：凭空造出的时间线归档页](/post/17.html) | `singlePage` + 数据渲染 | 自研 | ✅ |
 | G11 | robots.txt 与自定义 404 页 | `static/` 直出 | 运维 | ⏳ |
 | G12 | 外链自动新窗口打开 | 小插件 | 自研 | 💤 |
 | G13 | 数字分页条 | 社区插件 | 借鉴 | 💤 |
@@ -252,5 +252,6 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G09 已完成，下一篇 G10 自研插件第三弹：时间线归档页，读 `postList.json` 按年份分组渲染，可挂 `singlePage` 做成固定页。
+G01–G10 已完成，下一篇 G11：robots.txt 与自定义 404 页，直接放 `static/` 根目录，构建原样复制到站点根，GitHub Pages 原生识别——给爬虫立规矩、给迷路读者一个台阶。
+
 
