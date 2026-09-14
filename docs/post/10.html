@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# G04 把门牌号递给搜索引擎：RSS 直接当 sitemap 提交（Google / Bing / 百度）
+
+> G03 给博客挂上了 favicon 和分享封面，门面算是装好了。">
+<meta property="og:title" content="G04 把门牌号递给搜索引擎：RSS 直接当 sitemap 提交（Google / Bing / 百度）">
+<meta property="og:description" content="# G04 把门牌号递给搜索引擎：RSS 直接当 sitemap 提交（Google / Bing / 百度）
+
+> G03 给博客挂上了 favicon 和分享封面，门面算是装好了。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/10.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G04 把门牌号递给搜索引擎：RSS 直接当 sitemap 提交（Google / Bing / 百度）</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G04 把门牌号递给搜索引擎：RSS 直接当 sitemap 提交（Google / Bing / 百度）</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/10" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>G04 把门牌号递给搜索引擎：RSS 直接当 sitemap 提交（Google / Bing / 百度）</h1>
+<blockquote>
+<p>G03 给博客挂上了 favicon 和分享封面，门面算是装好了。可互联网上没人知道这个地址——搜索引擎的爬虫靠链接在网上漫游，一个零外链的新站，它可能几个月都溜达不过来。这一期 G04 要干的事很像去派出所报备地址：主动把全站页面清单递到 Google、Bing、百度三家手里。这是整个系列里代码最少、"外交事务"最多的一篇。</p>
+</blockquote>
+<h2>先说原理：sitemap 是什么</h2>
+<p>sitemap（站点地图）就是一个 XML 文件，里面列着网站所有可以公开抓取的网址，通常还带着最后更新时间：</p>
+<div class="highlight highlight-text-xml"><pre class="notranslate">&lt;?<span class="pl-ent">xml</span><span class="pl-e"> version</span>=<span class="pl-s"><span class="pl-pds">"</span>1.0<span class="pl-pds">"</span></span><span class="pl-e"> encoding</span>=<span class="pl-s"><span class="pl-pds">"</span>UTF-8<span class="pl-pds">"</span></span>?&gt;
+&lt;<span class="pl-ent">urlset</span> <span class="pl-e">xmlns</span>=<span class="pl-s"><span class="pl-pds">"</span>http://www.sitemaps.org/schemas/sitemap/0.9<span class="pl-pds">"</span></span>&gt;
+  &lt;<span class="pl-ent">url</span>&gt;
+    &lt;<span class="pl-ent">loc</span>&gt;https://example.com/post/1.html&lt;/<span class="pl-ent">loc</span>&gt;
+    &lt;<span class="pl-ent">lastmod</span>&gt;2026-09-13&lt;/<span class="pl-ent">lastmod</span>&gt;
+    &lt;<span class="pl-ent">priority</span>&gt;0.8&lt;/<span class="pl-ent">priority</span>&gt;
+  &lt;/<span class="pl-ent">url</span>&gt;
+&lt;/<span class="pl-ent">urlset</span>&gt;</pre></div>
+<p>爬虫每次来访先读它，就知道"这个站有哪些页、哪篇更新了"，不用再靠外链一个一个摸。</p>
+<p>那 Gmeek 生成 sitemap.xml 吗？不生成。早在 <a href="https://github.com/Meekdai/Gmeek/issues/145" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/145/hovercard">Gmeek 官方 issue #145</a> 就有人向作者提过这个需求，作者的回复很有意思：</p>
+<blockquote>
+<p>"目前的 rss.xml 文件已经包含整个网站的所有重要页面的链接。我就是把 rss.xml 提交给 google 的。"</p>
+</blockquote>
+<p>普通博客系统的 RSS 只吐最近几篇文章，但叶扬实测过本站的 <code class="notranslate">rss.xml</code>——从 G03 一路到《楞严咒》，<strong>九篇文章加 About 页全在里面</strong>，它本质上就是一份套着 RSS 外壳的完整页面清单。提问题的网友也跟帖确认："我把 rss 地址提交到必应和谷歌，可以正常识别抓取。"</p>
+<p>而 Google 和 Bing 的官方文档都明确接受 <strong>RSS 2.0 / Atom 1.0 feed</strong> 作为站点地图提交（feed 天然带发布时间，对发现新文章反而更快）。所以这一期的前半场，可以零代码。</p>
+<p>不过有一家例外：<strong>百度</strong>的普通收录工具按 <a href="https://www.sitemaps.org/protocol.html" rel="nofollow">sitemaps.org</a> 协议解析，对 RSS 这种"套壳"格式不太买账。为了不让百度这位同学对着 RSS 挠头，叶扬写了 15 行脚本，让博客每次构建时顺手产出一份标准 <code class="notranslate">sitemap.xml</code>——Google 和 Bing 也一并提交，双保险。</p>
+<h2>代码同步：让构建自己长出 sitemap.xml</h2>
+<p>数据是现成的：Gmeek 每次构建都会生成 <code class="notranslate">docs/postList.json</code>，结构如下：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate">{
+  <span class="pl-ent">"P9"</span>: {
+    <span class="pl-ent">"labels"</span>: [<span class="pl-s"><span class="pl-pds">"</span>博客<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Gmeek<span class="pl-pds">"</span></span>],
+    <span class="pl-ent">"postTitle"</span>: <span class="pl-s"><span class="pl-pds">"</span>G03 给博客一张脸：自制 SVG favicon 与社交分享封面<span class="pl-pds">"</span></span>,
+    <span class="pl-ent">"postUrl"</span>: <span class="pl-s"><span class="pl-pds">"</span>post/9.html<span class="pl-pds">"</span></span>,
+    <span class="pl-ent">"createdDate"</span>: <span class="pl-s"><span class="pl-pds">"</span>2026-09-14<span class="pl-pds">"</span></span>
+  }
+}</pre></div>
+<p>在仓库根目录新建 <code class="notranslate">sitemap_gen.py</code>（<code class="notranslate">GITHUB_REPOSITORY</code> 是 Actions 自动注入的环境变量，本地运行则回退到从 config 的 exlink 推导域名）：</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-c"># -*- coding: utf-8 -*-</span>
+<span class="pl-s">"""Generate docs/sitemap.xml from docs/postList.json and config.json."""</span>
+<span class="pl-k">import</span> <span class="pl-s1">datetime</span>
+<span class="pl-k">import</span> <span class="pl-s1">json</span>
+<span class="pl-k">import</span> <span class="pl-s1">os</span>
+
+<span class="pl-c1">WORK</span> <span class="pl-c1">=</span> <span class="pl-s1">os</span>.<span class="pl-c1">environ</span>.<span class="pl-c1">get</span>(<span class="pl-s">"GITHUB_WORKSPACE"</span>, <span class="pl-s">"."</span>)
+
+<span class="pl-k">with</span> <span class="pl-en">open</span>(<span class="pl-s1">os</span>.<span class="pl-c1">path</span>.<span class="pl-c1">join</span>(<span class="pl-c1">WORK</span>, <span class="pl-s">"config.json"</span>), <span class="pl-s1">encoding</span><span class="pl-c1">=</span><span class="pl-s">"utf-8"</span>) <span class="pl-k">as</span> <span class="pl-s1">f</span>:
+    <span class="pl-s1">cfg</span> <span class="pl-c1">=</span> <span class="pl-s1">json</span>.<span class="pl-c1">load</span>(<span class="pl-s1">f</span>)
+
+<span class="pl-s1">repo</span> <span class="pl-c1">=</span> <span class="pl-s1">os</span>.<span class="pl-c1">environ</span>.<span class="pl-c1">get</span>(<span class="pl-s">"GITHUB_REPOSITORY"</span>, <span class="pl-s">""</span>)
+<span class="pl-k">if</span> <span class="pl-s1">repo</span>:
+    <span class="pl-s1">owner</span>, <span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s1">repo</span>.<span class="pl-c1">split</span>(<span class="pl-s">"/"</span>, <span class="pl-c1">1</span>)
+<span class="pl-k">else</span>:  <span class="pl-c"># local fallback: derive from exlink.github</span>
+    <span class="pl-s1">owner</span>, <span class="pl-s1">name</span> <span class="pl-c1">=</span> <span class="pl-s1">cfg</span>[<span class="pl-s">"exlink"</span>][<span class="pl-s">"github"</span>].<span class="pl-c1">rstrip</span>(<span class="pl-s">"/"</span>).<span class="pl-c1">split</span>(<span class="pl-s">"/"</span>)[<span class="pl-c1">-</span><span class="pl-c1">2</span>:]
+
+<span class="pl-k">if</span> <span class="pl-s1">name</span> <span class="pl-c1">==</span> <span class="pl-s1">owner</span> <span class="pl-c1">+</span> <span class="pl-s">".github.io"</span>:
+    <span class="pl-s1">base</span> <span class="pl-c1">=</span> <span class="pl-s">"https://%s/"</span> <span class="pl-c1">%</span> <span class="pl-s1">name</span>
+<span class="pl-k">else</span>:  <span class="pl-c"># project pages live under /&lt;repo&gt;/</span>
+    <span class="pl-s1">base</span> <span class="pl-c1">=</span> <span class="pl-s">"https://%s.github.io/%s/"</span> <span class="pl-c1">%</span> (<span class="pl-s1">owner</span>, <span class="pl-s1">name</span>)
+
+<span class="pl-k">with</span> <span class="pl-en">open</span>(<span class="pl-s1">os</span>.<span class="pl-c1">path</span>.<span class="pl-c1">join</span>(<span class="pl-c1">WORK</span>, <span class="pl-s">"docs"</span>, <span class="pl-s">"postList.json"</span>), <span class="pl-s1">encoding</span><span class="pl-c1">=</span><span class="pl-s">"utf-8"</span>) <span class="pl-k">as</span> <span class="pl-s1">f</span>:
+    <span class="pl-s1">posts</span> <span class="pl-c1">=</span> <span class="pl-s1">json</span>.<span class="pl-c1">load</span>(<span class="pl-s1">f</span>)
+
+<span class="pl-s1">today</span> <span class="pl-c1">=</span> <span class="pl-s1">datetime</span>.<span class="pl-c1">date</span>.<span class="pl-c1">today</span>().<span class="pl-c1">isoformat</span>()
+<span class="pl-s1">urls</span> <span class="pl-c1">=</span> [(<span class="pl-s1">base</span>, <span class="pl-s1">today</span>, <span class="pl-s">"1.0"</span>)]                          <span class="pl-c"># 首页</span>
+<span class="pl-k">for</span> <span class="pl-s1">sp</span> <span class="pl-c1">in</span> <span class="pl-s1">cfg</span>.<span class="pl-c1">get</span>(<span class="pl-s">"singlePage"</span>, []):                   <span class="pl-c"># About 这类固定页</span>
+    <span class="pl-s1">urls</span>.<span class="pl-c1">append</span>((<span class="pl-s1">base</span> <span class="pl-c1">+</span> <span class="pl-s1">sp</span> <span class="pl-c1">+</span> <span class="pl-s">".html"</span>, <span class="pl-s1">today</span>, <span class="pl-s">"0.5"</span>))
+<span class="pl-s1">urls</span>.<span class="pl-c1">append</span>((<span class="pl-s1">base</span> <span class="pl-c1">+</span> <span class="pl-s">"tag.html"</span>, <span class="pl-s1">today</span>, <span class="pl-s">"0.4"</span>))         <span class="pl-c"># 标签页</span>
+<span class="pl-k">for</span> <span class="pl-s1">v</span> <span class="pl-c1">in</span> <span class="pl-s1">posts</span>.<span class="pl-c1">values</span>():
+    <span class="pl-k">if</span> <span class="pl-s">"postUrl"</span> <span class="pl-c1"><span class="pl-c1">not</span> <span class="pl-c1">in</span></span> <span class="pl-s1">v</span>:                             <span class="pl-c"># singlePage 条目无 postUrl</span>
+        <span class="pl-k">continue</span>
+    <span class="pl-s1">urls</span>.<span class="pl-c1">append</span>((<span class="pl-s1">base</span> <span class="pl-c1">+</span> <span class="pl-s1">v</span>[<span class="pl-s">"postUrl"</span>], <span class="pl-s1">v</span>.<span class="pl-c1">get</span>(<span class="pl-s">"createdDate"</span>, <span class="pl-s1">today</span>), <span class="pl-s">"0.8"</span>))
+
+<span class="pl-s1">items</span> <span class="pl-c1">=</span> <span class="pl-s">""</span>.<span class="pl-c1">join</span>(
+    <span class="pl-s">'  &lt;url&gt;&lt;loc&gt;%s&lt;/loc&gt;&lt;lastmod&gt;%s&lt;/lastmod&gt;&lt;priority&gt;%s&lt;/priority&gt;&lt;/url&gt;<span class="pl-cce">\n</span>'</span>
+    <span class="pl-c1">%</span> (<span class="pl-s1">u</span>, <span class="pl-s1">d</span>, <span class="pl-s1">p</span>) <span class="pl-k">for</span> <span class="pl-s1">u</span>, <span class="pl-s1">d</span>, <span class="pl-s1">p</span> <span class="pl-c1">in</span> <span class="pl-s1">urls</span>
+)
+<span class="pl-k">with</span> <span class="pl-en">open</span>(<span class="pl-s1">os</span>.<span class="pl-c1">path</span>.<span class="pl-c1">join</span>(<span class="pl-c1">WORK</span>, <span class="pl-s">"docs"</span>, <span class="pl-s">"sitemap.xml"</span>), <span class="pl-s">"w"</span>, <span class="pl-s1">encoding</span><span class="pl-c1">=</span><span class="pl-s">"utf-8"</span>) <span class="pl-k">as</span> <span class="pl-s1">f</span>:
+    <span class="pl-s1">f</span>.<span class="pl-c1">write</span>(<span class="pl-s">'&lt;?xml version="1.0" encoding="UTF-8"?&gt;<span class="pl-cce">\n</span>'</span>
+            <span class="pl-s">'&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;<span class="pl-cce">\n</span>'</span>
+            <span class="pl-c1">+</span> <span class="pl-s1">items</span> <span class="pl-c1">+</span> <span class="pl-s">"&lt;/urlset&gt;<span class="pl-cce">\n</span>"</span>)</pre></div>
+<p>然后在 <code class="notranslate">.github/workflows/Gmeek.yml</code> 里，紧跟 "Generate new html" 步骤后面加一步（此时 docs 已从构建目录拷回工作区）：</p>
+<div class="highlight highlight-source-yaml"><pre class="notranslate">      - <span class="pl-ent">name</span>: <span class="pl-s">Generate sitemap.xml</span>
+        <span class="pl-ent">run</span>: <span class="pl-s">python sitemap_gen.py</span></pre></div>
+<p>这样每次发文章触发的增量构建、每天的定时构建，都会重刷一次 <code class="notranslate">sitemap.xml</code> 并自动 commit——它永远和文章列表同步，比手写一份然后忘更新强太多了。提交后手动全局重建一次（改了 workflow 老规矩：push、深呼吸几秒、<code class="notranslate">gh workflow run "build Gmeek"</code>），访问 <code class="notranslate">https://你的域名/sitemap.xml</code> 就能看到十一行 URL 清单。</p>
+<h2>第一站：Google Search Console（需代理）</h2>
+<p>地址：<a href="https://search.google.com/search-console" rel="nofollow">https://search.google.com/search-console</a>，用任意 Google 账号登录。</p>
+<p><strong>1）添加资源时选"网址前缀"，不要选"网域"。</strong> 网域资源要求去域名服务商那里加 DNS TXT 记录——github.io 的 DNS 不归我们管，此路不通。网址前缀框里填 <code class="notranslate">https://yeyangchen2009.github.io/</code>。</p>
+<p><strong>2）验证所有权。</strong> 提供多种方式，对静态站最友好的是"HTML 文件"：下载一个形如 <code class="notranslate">google1a2b3c4d5e6f7g8h.html</code> 的文件，丢进仓库 <code class="notranslate">static/</code> 目录，等它上线（编辑任意 issue 触发构建，或手动 dispatch），浏览器能匿名打开后，回来点"验证"。这个文件验证后<strong>不要删</strong>，Google 会不定期复检。</p>
+<p><strong>3）提交站点地图。</strong> 左侧菜单"索引 → 站点地图"，依次提交两个：</p>
+<ul>
+<li><code class="notranslate">rss.xml</code>——feed 形式，Google 对 feed 的新内容发现很积极；</li>
+<li><code class="notranslate">sitemap.xml</code>——标准完整清单，给百度准备的那份，Google 也照收。</li>
+</ul>
+<p>状态显示"成功"可能要等几小时甚至一两天；刚提交时刷出"无法读取"先别慌，用浏览器无痕窗口确认文件本身能公开访问，再回来等。</p>
+<p><strong>4）主动请求收录首页。</strong> 顶上"网址检查"框贴入站点根地址，若提示"网址不在 Google 上"，点"请求编入索引"。每篇文章不必逐一请求，sitemap 和 RSS 会负责后续。</p>
+<h2>第二站：Bing 网站管理员工具（国内直连）</h2>
+<p>地址：<a href="https://www.bing.com/webmasters" rel="nofollow">https://www.bing.com/webmasters</a>，微软账号（MSN/Outlook/LinkedIn 同体系）登录。</p>
+<p>Bing 最讨喜的一点：添加站点时有个 <strong>"从 Google Search Console 导入"</strong> 按钮，OAuth 授权一次，站点、验证状态、站点地图全部继承过来，三十秒收工。叶扬强烈建议走这条路——刚在 Google 那边做的功课不花白做。</p>
+<p>如果想手动添加（或以后换账号），验证方式同样是三种：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>方式</th>
+<th>做法</th>
+<th>适合场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XML 文件</td>
+<td>下载 <code class="notranslate">BingSiteAuth.xml</code> 放 <code class="notranslate">static/</code></td>
+<td>静态站首选</td>
+</tr>
+<tr>
+<td>Meta 标签</td>
+<td>给 <code class="notranslate">&lt;head&gt;</code> 加 <code class="notranslate">&lt;meta name="msvalidate.01" content="..."&gt;</code></td>
+<td>懒得放文件时，可塞进 config 的 <code class="notranslate">allHead</code></td>
+</tr>
+<tr>
+<td>DNS TXT</td>
+<td>域名商后台加记录</td>
+<td>自有域名用户</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>"配置我的网站 → 站点地图"里同样提交 <code class="notranslate">rss.xml</code> 和 <code class="notranslate">sitemap.xml</code>。顺带一提：Bing 后台是全球统一的，这里提交一次，cn.bing.com 和国际版都生效。</p>
+<h2>第三站：百度搜索资源平台（国内主场）</h2>
+<p>地址：<a href="https://ziyuan.baidu.com" rel="nofollow">https://ziyuan.baidu.com</a>，百度账号登录，进"用户中心 → 添加网站"，协议记得选 <code class="notranslate">https</code>。</p>
+<p><strong>1）验证站点</strong>，三选一：</p>
+<ul>
+<li><strong>文件验证</strong>：下载 <code class="notranslate">baidu_verify_xxxx.html</code> 放 <code class="notranslate">static/</code>——和 Google、Bing 的文件凑成一锅，一次构建全部上线；</li>
+<li><strong>HTML 标签验证</strong>：拿到 <code class="notranslate">&lt;meta name="baidu-site-verification" content="xxxx"&gt;</code>，整段塞进 <code class="notranslate">config.json</code> 的 <code class="notranslate">allHead</code> 字段（GmeekVercount 那行旁边拼上即可），再全局重建；</li>
+<li>CNAME 验证：自有域名才用得上，github.io 忽略。</li>
+</ul>
+<p><strong>2）数据引入 → 普通收录 → sitemap</strong>，提交 <code class="notranslate">https://yeyangchen2009.github.io/sitemap.xml</code>。注意这里喂标准协议文件，不喂 RSS。状态显示"等待处理"是常态，百度的处理周期以<strong>周</strong>计。</p>
+<p><strong>3）做好心理预期管理。</strong> github.io 服务器在海外、站点未备案，百度对这类域名的抓取和收录一向冷淡，可能一个月后 <code class="notranslate">site:</code> 查询仍是零条。这不是操作有误，是中文互联网的客观地形——面向中文读者，百度这边做了不亏，但 Google/Bing 才是独立博客的主战场，不用为百度的冷脸焦虑。</p>
+<h2>验证文件的"三文件一锅端"技巧</h2>
+<p>走完三家会拿到三个文件：<code class="notranslate">google*.html</code>、<code class="notranslate">BingSiteAuth.xml</code>、<code class="notranslate">baidu_verify_*.html</code>。它们的共同归宿都是仓库 <code class="notranslate">static/</code> 目录（构建时原样复制到站点根目录，机制在<a href="/post/1.html">第 1 篇</a>讲过）。全部丢进去，一次全局重建，三个平台挨个点"验证"即可。两个铁律：</p>
+<ol>
+<li>文件名和内容一字不改，平台是按它给的原名回源比对的；</li>
+<li>验证通过后文件永久保留，删了会被复检打回原形。</li>
+</ol>
+<h2>收尾：怎么知道报备生效了</h2>
+<p>在任意搜索引擎的搜索框输入 <code class="notranslate">site:yeyangchen2009.github.io</code>，能查到页数说明已被收录；刚提交的几天查不到是正常的，索引以天到周为单位。之后想观察动态：</p>
+<ul>
+<li><strong>GSC</strong> 的"网页索引编制"报告会展示收录/未收录原因，是最值得常看的面板；</li>
+<li><strong>Bing</strong> 的"URL 检查"可以单页请求抓取；</li>
+<li>比提交地图更有效的收录加速器永远是<strong>外链</strong>——在 Gmeek 官方仓库 issue 下留言交流、以后做友链页互链，都是在给爬虫修路。</li>
+</ul>
+<p>下一期 G05 回归代码：装官方 lightbox 插件，让文章里的图片点击放大、左右切换，手机上看大图不再靠两根手指硬撑。</p>
+<h2>参考</h2>
+<ul>
+<li>Gmeek 官方关于 sitemap 的讨论（作者确认 RSS 可提交）：<a class="issue-link js-issue-link" data-error-text="Failed to load title" data-id="2420519114" data-permission-text="Title is private" data-url="https://github.com/Meekdai/Gmeek/issues/145" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/145/hovercard" href="https://github.com/Meekdai/Gmeek/issues/145">Meekdai/Gmeek#145</a></li>
+<li>Google 提交站点地图帮助（含 RSS/Atom feed 说明）：<a href="https://developers.google.com/search/docs/crawling-indexing/sitemaps/submit-sitemap" rel="nofollow">https://developers.google.com/search/docs/crawling-indexing/sitemaps/submit-sitemap</a></li>
+<li>Bing 网站管理员工具 · 站点地图：<a href="https://www.bing.com/webmasters/help/sitemaps-3b5cf6ed" rel="nofollow">https://www.bing.com/webmasters/help/sitemaps-3b5cf6ed</a></li>
+<li>sitemap 协议官方站：<a href="https://www.sitemaps.org/protocol.html" rel="nofollow">https://www.sitemaps.org/protocol.html</a></li>
+<li>百度搜索资源平台：<a href="https://ziyuan.baidu.com" rel="nofollow">https://ziyuan.baidu.com</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script>
+
+</html>
