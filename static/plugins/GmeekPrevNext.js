@@ -74,21 +74,27 @@
     function injectStyle() {
         var style = document.createElement('style');
         style.textContent = ''
-            + '.gmeek-pn{display:flex;gap:12px;margin:28px 0 10px;}'
-            + '.gmeek-pn-item{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;'
-            + 'padding:12px 14px;border:1px solid var(--color-border-muted,#d0d7de);border-radius:12px;'
+            + '.gmeek-pn{display:flex;gap:10px;margin:28px 0 10px;}'
+            + '.gmeek-pn-item{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:4px;'
+            + 'padding:11px 12px;border:1px solid var(--color-border-muted,#d0d7de);border-radius:12px;'
             + 'color:var(--color-fg-default,#1f2328);text-decoration:none;'
             + 'transition:border-color .15s ease,background-color .15s ease,transform .15s ease;}'
             + '.gmeek-pn-item:hover{border-color:var(--color-accent-fg,#0969da);'
             + 'background:var(--color-accent-subtle,#ddf4ff);transform:translateY(-1px);text-decoration:none;}'
             + '.gmeek-pn-next{align-items:flex-end;text-align:right;}'
-            + '.gmeek-pn-label{font-size:12px;color:var(--color-fg-muted,#656d76);}'
+            + '.gmeek-pn-label{font-size:12px;color:var(--color-fg-muted,#656d76);white-space:nowrap;}'
+            + '.gmeek-pn-item:not(.is-disabled) .gmeek-pn-label::before{content:"\\2190  ";}'
+            + '.gmeek-pn-next:not(.is-disabled) .gmeek-pn-label::before{content:"";}'
+            + '.gmeek-pn-next:not(.is-disabled) .gmeek-pn-label::after{content:"  \\2192";}'
             + '.gmeek-pn-title{font-weight:600;line-height:1.4;display:-webkit-box;-webkit-box-orient:vertical;'
             + '-webkit-line-clamp:2;overflow:hidden;}'
             + '.gmeek-pn-date{font-size:12px;color:var(--color-fg-muted,#656d76);}'
             + '.gmeek-pn-item.is-disabled{opacity:.45;pointer-events:none;}'
-            + '@media (max-width:600px){.gmeek-pn{flex-direction:column;gap:8px;}'
-            + '.gmeek-pn-next{align-items:flex-start;text-align:left;}}';
+            + '@media (max-width:600px){.gmeek-pn{gap:8px;margin:22px 0 8px;}'
+            + '.gmeek-pn-item{padding:9px 10px;border-radius:10px;gap:3px;}'
+            + '.gmeek-pn-label{font-size:11px;}'
+            + '.gmeek-pn-title{font-size:13px;line-height:1.35;-webkit-line-clamp:2;}'
+            + '.gmeek-pn-date{display:none;}}';
         document.head.appendChild(style);
     }
 })();
