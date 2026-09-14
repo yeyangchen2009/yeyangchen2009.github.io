@@ -186,7 +186,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 **值得借鉴的：**
 
 - **数字分页条**：把"上一页/下一页"换成 1/2/3 页码，文章几十篇以后有用。作者在 [issue #186](https://github.com/Meekdai/Gmeek/issues/186) 中确认可由插件实现，社区已有教程：李轶凡《[给博客添加数字分页条](https://blog.liyifan.xyz/post/gei-bo-ke-tian-jia-shu-zi-fen-ye-tiao.html)》。列入 **G13**（文章多了再做）。
-- **外链新窗口打开**：同 issue #186 的头号需求，十几行 JS 给正文外链加 `target="_blank" rel="noopener"`，可顺手加 `rel="nofollow"` 的 SEO 讨论（见 issue #145）。列入 **G12**。
+- **外链新窗口打开** ✅：同 issue #186 的头号需求，**已完成见 [G12](/post/19.html)**。`static/plugins/GmeekExternal.js`：URL 构造器按 hostname 判内外（协议相对 URL/自家绝对 URL 都不误判），外链补 `target=_blank` + 合并 `rel=noopener`；显式 target 不覆盖、rel 只合并不替换；不自动加 nofollow（SEO）、不加 noreferrer（保留来路）。
 
 **看看就好、不要搬的：**
 
@@ -226,7 +226,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G09 | [自研插件（二）：标题下的字数与阅读时长](/post/15.html) | DOM 统计 | 自研 | ✅ |
 | G10 | [自研插件（三）：凭空造出的时间线归档页](/post/17.html) | `singlePage` + 数据渲染 | 自研 | ✅ |
 | G11 | [运维两小件：robots.txt 与自定义 404 页](/post/18.html) | `static/` 直出 | 运维 | ✅ |
-| G12 | 外链自动新窗口打开 | 小插件 | 自研 | 💤 |
+| G12 | [小补丁：外链自动新标签页打开](/post/19.html) | URL 判定 + noopener | 自研 | ✅ |
 | G13 | 数字分页条 | 社区插件 | 借鉴 | 💤 |
 | G14 | 移动端目录：articletoc 与响应式策略 | 官方插件 | 体验 | 💤 |
 | G15 | tocbot 本地化：当前章节滚动高亮 | CDN 资源本地化 | 进阶 | 💤 |
@@ -252,7 +252,8 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G11 已完成，下一篇 G12：外链自动新窗口打开——十几行 JS 给正文外链加 target="_blank" rel="noopener"，读者点开参考资料时不再被"逐出"博客。
+G01–G12 已完成，下一篇 G13：数字分页条——G11 后文章数越过 15 篇，框架原生 Previous/Next 分页已出现，接入并审查社区数字分页插件（李轶凡教程，issue #186 需求 2）。
+
 
 
 

@@ -459,7 +459,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p><strong>值得借鉴的：</strong></p>
 <ul>
 <li><strong>数字分页条</strong>：把"上一页/下一页"换成 1/2/3 页码，文章几十篇以后有用。作者在 <a href="https://github.com/Meekdai/Gmeek/issues/186" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/186/hovercard">issue #186</a> 中确认可由插件实现，社区已有教程：李轶凡《<a href="https://blog.liyifan.xyz/post/gei-bo-ke-tian-jia-shu-zi-fen-ye-tiao.html" rel="nofollow">给博客添加数字分页条</a>》。列入 <strong>G13</strong>（文章多了再做）。</li>
-<li><strong>外链新窗口打开</strong>：同 issue #186 的头号需求，十几行 JS 给正文外链加 <code class="notranslate">target="_blank" rel="noopener"</code>，可顺手加 <code class="notranslate">rel="nofollow"</code> 的 SEO 讨论（见 issue #145）。列入 <strong>G12</strong>。</li>
+<li><strong>外链新窗口打开</strong> ✅：同 issue #186 的头号需求，<strong>已完成见 <a href="/post/19.html">G12</a></strong>。<code class="notranslate">static/plugins/GmeekExternal.js</code>：URL 构造器按 hostname 判内外（协议相对 URL/自家绝对 URL 都不误判），外链补 <code class="notranslate">target=_blank</code> + 合并 <code class="notranslate">rel=noopener</code>；显式 target 不覆盖、rel 只合并不替换；不自动加 nofollow（SEO）、不加 noreferrer（保留来路）。</li>
 </ul>
 <p><strong>看看就好、不要搬的：</strong></p>
 <ul>
@@ -615,10 +615,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 <tr>
 <td>G12</td>
-<td>外链自动新窗口打开</td>
-<td>小插件</td>
+<td><a href="/post/19.html">小补丁：外链自动新标签页打开</a></td>
+<td>URL 判定 + noopener</td>
 <td>自研</td>
-<td>💤</td>
+<td>✅</td>
 </tr>
 <tr>
 <td>G13</td>
@@ -662,7 +662,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
 <li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
 </ol>
-<p>G01–G11 已完成，下一篇 G12：外链自动新窗口打开——十几行 JS 给正文外链加 target="_blank" rel="noopener"，读者点开参考资料时不再被"逐出"博客。</p></div>
+<p>G01–G12 已完成，下一篇 G13：数字分页条——G11 后文章数越过 15 篇，框架原生 Previous/Next 分页已出现，接入并审查社区数字分页插件（李轶凡教程，issue #186 需求 2）。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
