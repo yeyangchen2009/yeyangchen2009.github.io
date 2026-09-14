@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>叶扬的博客</title><link>https://yeyangchen2009.github.io</link><description>我是叶扬，人生苦短，我用AI～</description><copyright>叶扬的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.com/yeyangchen2009.png</url><title>avatar</title><link>https://yeyangchen2009.github.io</link></image><lastBuildDate>Mon, 14 Sep 2026 14:17:09 +0000</lastBuildDate><managingEditor>叶扬的博客</managingEditor><ttl>60</ttl><webMaster>叶扬的博客</webMaster><item><title>G09 自研插件（二）：标题下的字数与阅读时长</title><link>https://yeyangchen2009.github.io/post/15.html</link><description># G09 自研插件（二）：标题下的字数与阅读时长
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>叶扬的博客</title><link>https://yeyangchen2009.github.io</link><description>我是叶扬，人生苦短，我用AI～</description><copyright>叶扬的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.com/yeyangchen2009.png</url><title>avatar</title><link>https://yeyangchen2009.github.io</link></image><lastBuildDate>Mon, 14 Sep 2026 14:19:18 +0000</lastBuildDate><managingEditor>叶扬的博客</managingEditor><ttl>60</ttl><webMaster>叶扬的博客</webMaster><item><title>G09 自研插件（二）：标题下的字数与阅读时长</title><link>https://yeyangchen2009.github.io/post/15.html</link><description># G09 自研插件（二）：标题下的字数与阅读时长
 
 &gt; G08 的'上一篇 / 下一篇'在文章**末尾**留人，这一期叶扬把目光挪到文章**开头**。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/15.html</guid><pubDate>Mon, 14 Sep 2026 13:18:49 +0000</pubDate></item><item><title>G08 自研插件（一）：文章末尾的"上一篇 / 下一篇"</title><link>https://yeyangchen2009.github.io/post/14.html</link><description># G08 自研插件（一）：文章末尾的'上一篇 / 下一篇'&#13;
 &#13;
@@ -27,8 +27,8 @@
 
 &gt; 《楞严咒》出自《大佛顶如来密因修证了义诸菩萨万行首楞严经》，又称「大佛顶首楞严神咒」，是佛教中极为重要的咒语。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/2.html</guid><pubDate>Sun, 13 Sep 2026 07:44:55 +0000</pubDate></item><item><title>用 GitHub Issues 写博客：Gmeek 搭建全过程与原理</title><link>https://yeyangchen2009.github.io/post/1.html</link><description># 用 GitHub Issues 写博客：Gmeek 搭建全过程与原理&#13;
 &#13;
-&gt; 把博客托管在 GitHub 上，写作却不用碰 Git——新建一个 Issue、打个标签，文章自动上线。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/1.html</guid><pubDate>Sun, 13 Sep 2026 06:53:05 +0000</pubDate></item><item><title>文章归档</title><link>https://yeyangchen2009.github.io/archive.html</link><description># 文章归档
-
-&gt; 这里按年份倒序列出博客的全部文章。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/archive.html</guid><pubDate>Mon, 14 Sep 2026 14:16:39 +0000</pubDate></item><item><title>关于叶扬</title><link>https://yeyangchen2009.github.io/about.html</link><description># 关于叶扬&#13;
+&gt; 把博客托管在 GitHub 上，写作却不用碰 Git——新建一个 Issue、打个标签，文章自动上线。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/1.html</guid><pubDate>Sun, 13 Sep 2026 06:53:05 +0000</pubDate></item><item><title>关于叶扬</title><link>https://yeyangchen2009.github.io/about.html</link><description># 关于叶扬&#13;
 &#13;
-&gt; 我是叶扬。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/about.html</guid><pubDate>Sun, 13 Sep 2026 13:53:48 +0000</pubDate></item></channel></rss>
+&gt; 我是叶扬。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/about.html</guid><pubDate>Sun, 13 Sep 2026 13:53:48 +0000</pubDate></item><item><title>文章归档</title><link>https://yeyangchen2009.github.io/archive.html</link><description># 文章归档
+
+&gt; 这里按年份倒序列出博客的全部文章。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/archive.html</guid><pubDate>Mon, 14 Sep 2026 14:16:39 +0000</pubDate></item></channel></rss>
