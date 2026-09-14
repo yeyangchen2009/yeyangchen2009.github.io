@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# G08 自研插件（一）：文章末尾的'上一篇 / 下一篇'
+
+> G04 到 G07 装的都是'别人造好的轮子'。">
+<meta property="og:title" content="G08 自研插件（一）：文章末尾的"上一篇 / 下一篇"">
+<meta property="og:description" content="# G08 自研插件（一）：文章末尾的'上一篇 / 下一篇'
+
+> G04 到 G07 装的都是'别人造好的轮子'。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/14.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G08 自研插件（一）：文章末尾的"上一篇 / 下一篇"</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G08 自研插件（一）：文章末尾的"上一篇 / 下一篇"</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/14" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>G08 自研插件（一）：文章末尾的"上一篇 / 下一篇"</h1>
+<blockquote>
+<p>G04 到 G07 装的都是"别人造好的轮子"。从这一期开始，叶扬要自己写插件了。第一个目标很朴素：读者读完一篇文章，滚到底部，除了评论区无路可走——浏览器的后退键会把人送回 Google，而不是送向下一篇。一个"上一篇 / 下一篇"导航，就是把读者在博客里多留十分钟的那两块踏板。数据源我们早就有了（G04 生成 sitemap 时打过交道），这一期把它接到页面上。</p>
+</blockquote>
+<h2>先看现场</h2>
+<p>不用翻别的文章，<strong>你现在滚到这篇文章评论按钮的上方</strong>，就能看到两块卡片：左边通向上一篇 <a href="/post/13.html">G07 写作三件套</a>，右边是一块灰色的"已经到尽头啦"——因为本文发布时它就是最新的一篇。这个导航在全站每篇文章底部都有，颜色自动跟随明暗主题，手机上会竖起来排列。</p>
+<h2>数据从哪来：postList.json</h2>
+<p>Gmeek 每次构建都会产出一个 <code class="notranslate">postList.json</code>，它就是整个博客的"文章目录"。打开 <a href="https://yeyangchen2009.github.io/postList.json" rel="nofollow">https://yeyangchen2009.github.io/postList.json</a> 看结构：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate">{
+  <span class="pl-ent">"P13"</span>: {
+    <span class="pl-ent">"labels"</span>: [<span class="pl-s"><span class="pl-pds">"</span>博客<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Gmeek<span class="pl-pds">"</span></span>],
+    <span class="pl-ent">"postTitle"</span>: <span class="pl-s"><span class="pl-pds">"</span>G07 写作三件套：Alert 提示块、数学公式、Mermaid 图表<span class="pl-pds">"</span></span>,
+    <span class="pl-ent">"postUrl"</span>: <span class="pl-s"><span class="pl-pds">"</span>post/13.html<span class="pl-pds">"</span></span>,
+    <span class="pl-ent">"createdDate"</span>: <span class="pl-s"><span class="pl-pds">"</span>2026-09-14<span class="pl-pds">"</span></span>,
+    <span class="pl-ent">"dateLabelColor"</span>: <span class="pl-s"><span class="pl-pds">"</span>#1f883d<span class="pl-pds">"</span></span>
+  }
+}</pre></div>
+<p>键是 <code class="notranslate">P</code> + issue 编号，值里有标题、相对路径、日期。它随构建自动更新，发新文章零维护——G04 的 sitemap 脚本读的是同一份文件。注意两个事实：<strong>About 页不进 postList</strong>（G01 讲过固定页机制），普通文章才有 <code class="notranslate">postUrl</code> 字段。</p>
+<h2>设计决策一：插件怎么知道"我是第几篇"</h2>
+<p>导航要先定位"当前"。文章页的 URL 是规整的 <code class="notranslate">/post/14.html</code>，一个正则就够：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">var</span> <span class="pl-s1">match</span> <span class="pl-c1">=</span> <span class="pl-s1">location</span><span class="pl-kos">.</span><span class="pl-c1">pathname</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">\/</span><span class="pl-s">p</span><span class="pl-s">o</span><span class="pl-s">s</span><span class="pl-s">t</span><span class="pl-cce">\/</span><span class="pl-kos">(</span><span class="pl-cce">\d</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-cce">\.</span><span class="pl-s">h</span><span class="pl-s">t</span><span class="pl-s">m</span><span class="pl-s">l</span><span class="pl-c1">/</span></span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">match</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+<span class="pl-k">var</span> <span class="pl-s1">currentNum</span> <span class="pl-c1">=</span> <span class="pl-en">parseInt</span><span class="pl-kos">(</span><span class="pl-s1">match</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">,</span> <span class="pl-c1">10</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>这个 <code class="notranslate">return</code> 不是可有可无的。叶扬实测过一个反直觉的现象：<strong>About 页也会加载文章脚本</strong>——config 的 <code class="notranslate">script</code> 字段对 singlePage 同样注入（打开 about.html 看源码，TOC、灯箱脚本都在）。插件不设防的话，About 页也会 fetch 一遍数据、试图渲染导航。正则匹配不到 <code class="notranslate">/post/N.html</code> 就退出，首页、标签页、固定页全部天然免疫。</p>
+<p>为什么不直接查 DOM 里的文章标题去反查编号？URL 是页面上最稳定、最早可得的信息，不依赖任何元素渲染，零竞态。</p>
+<h2>设计决策二：按什么排"上下"</h2>
+<p>最省事的写法是按 issue 编号排序：13 的上一篇是 12，下一篇是 14。但 G06 讲过 <code class="notranslate">timestamp</code> 能补发旧文——一篇 2020 年的旧文可能挂着编号 #20，插进文章流后，纯编号排序就会把它排到最新面。</p>
+<p>所以排序键用<strong>日期优先、编号兜底</strong>：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-kos">.</span><span class="pl-en">sort</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">a</span><span class="pl-kos">,</span> <span class="pl-s1">b</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">date</span> <span class="pl-c1">!==</span> <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">date</span><span class="pl-kos">)</span> <span class="pl-k">return</span> <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">date</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">date</span> ? <span class="pl-c1">-</span><span class="pl-c1">1</span> : <span class="pl-c1">1</span><span class="pl-kos">;</span> <span class="pl-c">// 先比 createdDate</span>
+    <span class="pl-k">return</span> <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">num</span> <span class="pl-c1">-</span> <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">num</span><span class="pl-kos">;</span>                                   <span class="pl-c">// 同一天再比编号</span>
+<span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>这样"上一篇"永远是时间线上更早的邻居，与读者在首页看到的文章流顺序一致。本站目前编号和日期完全重合，两套规则结果相同——但代码要为将来的补发场景买好保险。</p>
+<p>顺带定一下语义：中文博客的惯例是<strong>上一篇 = 更早、下一篇 = 更新</strong>，左侧卡片放上一篇，右侧放下一篇。</p>
+<h2>设计决策三：插在哪里、长什么样</h2>
+<p>插入点选评论按钮 <code class="notranslate">#cmButton</code> 的前面——正文、版权小字之后，评论区之前，符合"读完正文→继续逛→想聊两句再评论"的动线；找不到评论按钮（比如评论被关）时退化为追加到内容容器：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">var</span> <span class="pl-s1">anchor</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'cmButton'</span><span class="pl-kos">)</span> <span class="pl-c1">||</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'comments'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">anchor</span><span class="pl-kos">.</span><span class="pl-c1">parentNode</span><span class="pl-kos">.</span><span class="pl-en">insertBefore</span><span class="pl-kos">(</span><span class="pl-s1">nav</span><span class="pl-kos">,</span> <span class="pl-s1">anchor</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>样式上全部借用站点已加载的 <strong>Primer CSS 变量</strong>（就是 G07 Alert 配色的同一套体系），不写死任何颜色：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>用途</th>
+<th>变量</th>
+<th>暗色下</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>卡片边框</td>
+<td><code class="notranslate">--color-border-muted</code></td>
+<td>自动变浅灰</td>
+</tr>
+<tr>
+<td>正文文字</td>
+<td><code class="notranslate">--color-fg-default</code></td>
+<td>自动变白</td>
+</tr>
+<tr>
+<td>次要文字</td>
+<td><code class="notranslate">--color-fg-muted</code></td>
+<td>自动变中灰</td>
+</tr>
+<tr>
+<td>hover 强调</td>
+<td><code class="notranslate">--color-accent-fg</code> + <code class="notranslate">--color-accent-subtle</code></td>
+<td>自动变蓝边蓝底</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>主题切换靠 <code class="notranslate">&lt;html data-color-mode="dark"&gt;</code> 钩子，Primer 内部接管变量，插件连"监听主题按钮"都省了——对比 G07 的 mermaid 必须手动监听重绘，CSS 变量方案是真·躺赢。其余细节：标题超长两行省略、hover 上浮 1px、600px 以下纵向堆叠。</p>
+<h2>完整代码</h2>
+<p>新建 <code class="notranslate">static/plugins/GmeekPrevNext.js</code>（约 90 行，零依赖）：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-c">/* GmeekPrevNext —— 文章底部"上一篇/下一篇"导航</span>
+<span class="pl-c"> * 数据源：/postList.json（Gmeek 每次构建自动生成）</span>
+<span class="pl-c"> * 排序：createdDate 优先、issue 编号兜底（兼容 timestamp 补发旧文）</span>
+<span class="pl-c"> */</span>
+<span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">var</span> <span class="pl-s1">match</span> <span class="pl-c1">=</span> <span class="pl-s1">location</span><span class="pl-kos">.</span><span class="pl-c1">pathname</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">\/</span><span class="pl-s">p</span><span class="pl-s">o</span><span class="pl-s">s</span><span class="pl-s">t</span><span class="pl-cce">\/</span><span class="pl-kos">(</span><span class="pl-cce">\d</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-cce">\.</span><span class="pl-s">h</span><span class="pl-s">t</span><span class="pl-s">m</span><span class="pl-s">l</span><span class="pl-c1">/</span></span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">match</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span> <span class="pl-c">// 首页、/about.html 等固定页不生成</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">currentNum</span> <span class="pl-c1">=</span> <span class="pl-en">parseInt</span><span class="pl-kos">(</span><span class="pl-s1">match</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">,</span> <span class="pl-c1">10</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-en">injectStyle</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-en">fetch</span><span class="pl-kos">(</span><span class="pl-s">'/postList.json'</span><span class="pl-kos">,</span> <span class="pl-kos">{</span> <span class="pl-c1">cache</span>: <span class="pl-s">'no-cache'</span> <span class="pl-kos">}</span><span class="pl-kos">)</span>
+        <span class="pl-kos">.</span><span class="pl-en">then</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">r</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">r</span><span class="pl-kos">.</span><span class="pl-c1">ok</span><span class="pl-kos">)</span> <span class="pl-k">throw</span> <span class="pl-k">new</span> <span class="pl-v">Error</span><span class="pl-kos">(</span><span class="pl-s">'postList fetch failed'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">return</span> <span class="pl-s1">r</span><span class="pl-kos">.</span><span class="pl-en">json</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span><span class="pl-kos">)</span>
+        <span class="pl-kos">.</span><span class="pl-en">then</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">list</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">var</span> <span class="pl-s1">posts</span> <span class="pl-c1">=</span> <span class="pl-v">Object</span><span class="pl-kos">.</span><span class="pl-en">keys</span><span class="pl-kos">(</span><span class="pl-s1">list</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">map</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">key</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+                <span class="pl-k">var</span> <span class="pl-s1">item</span> <span class="pl-c1">=</span> <span class="pl-s1">list</span><span class="pl-kos">[</span><span class="pl-s1">key</span><span class="pl-kos">]</span><span class="pl-kos">;</span>
+                <span class="pl-k">return</span> <span class="pl-kos">{</span>
+                    <span class="pl-c1">num</span>: <span class="pl-en">parseInt</span><span class="pl-kos">(</span><span class="pl-s1">key</span><span class="pl-kos">.</span><span class="pl-en">replace</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">^</span><span class="pl-s">P</span><span class="pl-c1">/</span></span><span class="pl-kos">,</span> <span class="pl-s">''</span><span class="pl-kos">)</span><span class="pl-kos">,</span> <span class="pl-c1">10</span><span class="pl-kos">)</span><span class="pl-kos">,</span>
+                    <span class="pl-c1">title</span>: <span class="pl-s1">item</span><span class="pl-kos">.</span><span class="pl-c1">postTitle</span><span class="pl-kos">,</span>
+                    <span class="pl-c1">url</span>: <span class="pl-s1">item</span><span class="pl-kos">.</span><span class="pl-c1">postUrl</span> ? <span class="pl-s">'/'</span> <span class="pl-c1">+</span> <span class="pl-s1">item</span><span class="pl-kos">.</span><span class="pl-c1">postUrl</span> : <span class="pl-s">''</span><span class="pl-kos">,</span>
+                    <span class="pl-c1">date</span>: <span class="pl-s1">item</span><span class="pl-kos">.</span><span class="pl-c1">createdDate</span> <span class="pl-c1">||</span> <span class="pl-s">''</span>
+                <span class="pl-kos">}</span><span class="pl-kos">;</span>
+            <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">filter</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">p</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-k">return</span> <span class="pl-s1">p</span><span class="pl-kos">.</span><span class="pl-c1">url</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">p</span><span class="pl-kos">.</span><span class="pl-c1">num</span><span class="pl-kos">;</span> <span class="pl-kos">}</span><span class="pl-kos">)</span>
+              <span class="pl-kos">.</span><span class="pl-en">sort</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">a</span><span class="pl-kos">,</span> <span class="pl-s1">b</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+                  <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">date</span> <span class="pl-c1">!==</span> <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">date</span><span class="pl-kos">)</span> <span class="pl-k">return</span> <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">date</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">date</span> ? <span class="pl-c1">-</span><span class="pl-c1">1</span> : <span class="pl-c1">1</span><span class="pl-kos">;</span>
+                  <span class="pl-k">return</span> <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">num</span> <span class="pl-c1">-</span> <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">num</span><span class="pl-kos">;</span>
+              <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+            <span class="pl-k">var</span> <span class="pl-s1">idx</span> <span class="pl-c1">=</span> <span class="pl-s1">posts</span><span class="pl-kos">.</span><span class="pl-en">map</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">p</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-k">return</span> <span class="pl-s1">p</span><span class="pl-kos">.</span><span class="pl-c1">num</span><span class="pl-kos">;</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">indexOf</span><span class="pl-kos">(</span><span class="pl-s1">currentNum</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">idx</span> <span class="pl-c1">&lt;</span> <span class="pl-c1">0</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+
+            <span class="pl-k">var</span> <span class="pl-s1">older</span> <span class="pl-c1">=</span> <span class="pl-s1">posts</span><span class="pl-kos">[</span><span class="pl-s1">idx</span> <span class="pl-c1">-</span> <span class="pl-c1">1</span><span class="pl-kos">]</span> <span class="pl-c1">||</span> <span class="pl-c1">null</span><span class="pl-kos">;</span>
+            <span class="pl-k">var</span> <span class="pl-s1">newer</span> <span class="pl-c1">=</span> <span class="pl-s1">posts</span><span class="pl-kos">[</span><span class="pl-s1">idx</span> <span class="pl-c1">+</span> <span class="pl-c1">1</span><span class="pl-kos">]</span> <span class="pl-c1">||</span> <span class="pl-c1">null</span><span class="pl-kos">;</span>
+
+            <span class="pl-k">var</span> <span class="pl-s1">nav</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'nav'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-s1">nav</span><span class="pl-kos">.</span><span class="pl-c1">className</span> <span class="pl-c1">=</span> <span class="pl-s">'gmeek-pn'</span><span class="pl-kos">;</span>
+            <span class="pl-s1">nav</span><span class="pl-kos">.</span><span class="pl-c1">innerHTML</span> <span class="pl-c1">=</span> <span class="pl-en">cell</span><span class="pl-kos">(</span><span class="pl-s">'上一篇'</span><span class="pl-kos">,</span> <span class="pl-s1">older</span><span class="pl-kos">,</span> <span class="pl-c1">true</span><span class="pl-kos">)</span> <span class="pl-c1">+</span> <span class="pl-en">cell</span><span class="pl-kos">(</span><span class="pl-s">'下一篇'</span><span class="pl-kos">,</span> <span class="pl-s1">newer</span><span class="pl-kos">,</span> <span class="pl-c1">false</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+            <span class="pl-k">var</span> <span class="pl-s1">anchor</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'cmButton'</span><span class="pl-kos">)</span> <span class="pl-c1">||</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'comments'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">anchor</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">anchor</span><span class="pl-kos">.</span><span class="pl-c1">parentNode</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+                <span class="pl-s1">anchor</span><span class="pl-kos">.</span><span class="pl-c1">parentNode</span><span class="pl-kos">.</span><span class="pl-en">insertBefore</span><span class="pl-kos">(</span><span class="pl-s1">nav</span><span class="pl-kos">,</span> <span class="pl-s1">anchor</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-kos">}</span> <span class="pl-k">else</span> <span class="pl-kos">{</span>
+                <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'content'</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">nav</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-kos">}</span>
+        <span class="pl-kos">}</span><span class="pl-kos">)</span>
+        <span class="pl-kos">.</span><span class="pl-en">catch</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-smi">console</span><span class="pl-kos">.</span><span class="pl-en">warn</span><span class="pl-kos">(</span><span class="pl-s">'GmeekPrevNext:'</span><span class="pl-kos">,</span> <span class="pl-s1">e</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-c1">message</span><span class="pl-kos">)</span><span class="pl-kos">;</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">cell</span><span class="pl-kos">(</span><span class="pl-s1">label</span><span class="pl-kos">,</span> <span class="pl-s1">post</span><span class="pl-kos">,</span> <span class="pl-s1">isLeft</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">var</span> <span class="pl-s1">cls</span> <span class="pl-c1">=</span> <span class="pl-s">'gmeek-pn-item'</span> <span class="pl-c1">+</span> <span class="pl-kos">(</span><span class="pl-s1">isLeft</span> ? <span class="pl-s">''</span> : <span class="pl-s">' gmeek-pn-next'</span><span class="pl-kos">)</span>
+                              <span class="pl-c1">+</span> <span class="pl-kos">(</span><span class="pl-s1">post</span> ? <span class="pl-s">''</span> : <span class="pl-s">' is-disabled'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">post</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">return</span> <span class="pl-s">'&lt;a class="'</span> <span class="pl-c1">+</span> <span class="pl-s1">cls</span> <span class="pl-c1">+</span> <span class="pl-s">'" href="'</span> <span class="pl-c1">+</span> <span class="pl-s1">post</span><span class="pl-kos">.</span><span class="pl-c1">url</span> <span class="pl-c1">+</span> <span class="pl-s">'"&gt;'</span>
+                <span class="pl-c1">+</span> <span class="pl-s">'&lt;span class="gmeek-pn-label"&gt;'</span> <span class="pl-c1">+</span> <span class="pl-s1">label</span> <span class="pl-c1">+</span> <span class="pl-s">'&lt;/span&gt;'</span>
+                <span class="pl-c1">+</span> <span class="pl-s">'&lt;span class="gmeek-pn-title"&gt;'</span> <span class="pl-c1">+</span> <span class="pl-en">escapeHtml</span><span class="pl-kos">(</span><span class="pl-s1">post</span><span class="pl-kos">.</span><span class="pl-c1">title</span><span class="pl-kos">)</span> <span class="pl-c1">+</span> <span class="pl-s">'&lt;/span&gt;'</span>
+                <span class="pl-c1">+</span> <span class="pl-s">'&lt;span class="gmeek-pn-date"&gt;'</span> <span class="pl-c1">+</span> <span class="pl-s1">post</span><span class="pl-kos">.</span><span class="pl-c1">date</span> <span class="pl-c1">+</span> <span class="pl-s">'&lt;/span&gt;&lt;/a&gt;'</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span>
+        <span class="pl-k">return</span> <span class="pl-s">'&lt;div class="'</span> <span class="pl-c1">+</span> <span class="pl-s1">cls</span> <span class="pl-c1">+</span> <span class="pl-s">'"&gt;'</span>
+            <span class="pl-c1">+</span> <span class="pl-s">'&lt;span class="gmeek-pn-label"&gt;'</span> <span class="pl-c1">+</span> <span class="pl-s1">label</span> <span class="pl-c1">+</span> <span class="pl-s">'&lt;/span&gt;'</span>
+            <span class="pl-c1">+</span> <span class="pl-s">'&lt;span class="gmeek-pn-title"&gt;已经到尽头啦&lt;/span&gt;&lt;/div&gt;'</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">escapeHtml</span><span class="pl-kos">(</span><span class="pl-s1">s</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">return</span> <span class="pl-v">String</span><span class="pl-kos">(</span><span class="pl-s1">s</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">replace</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-kos">[</span><span class="pl-c1">&amp;</span><span class="pl-c1">&lt;</span><span class="pl-c1">&gt;</span><span class="pl-c1">"</span><span class="pl-kos">]</span><span class="pl-c1">/</span>g</span><span class="pl-kos">,</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">c</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">return</span> <span class="pl-kos">{</span> <span class="pl-s">'&amp;'</span>: <span class="pl-s">'&amp;amp;'</span><span class="pl-kos">,</span> <span class="pl-s">'&lt;'</span>: <span class="pl-s">'&amp;lt;'</span><span class="pl-kos">,</span> <span class="pl-s">'&gt;'</span>: <span class="pl-s">'&amp;gt;'</span><span class="pl-kos">,</span> <span class="pl-s">'"'</span>: <span class="pl-s">'&amp;quot;'</span> <span class="pl-kos">}</span><span class="pl-kos">[</span><span class="pl-s1">c</span><span class="pl-kos">]</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">injectStyle</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">var</span> <span class="pl-s1">style</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'style'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">style</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span>
+            <span class="pl-s">'.gmeek-pn{display:flex;gap:12px;margin:28px 0 10px;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-item{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'padding:12px 14px;border:1px solid var(--color-border-muted,#d0d7de);'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'border-radius:12px;color:var(--color-fg-default,#1f2328);text-decoration:none;'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'transition:border-color .15s,background-color .15s,transform .15s;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-item:hover{border-color:var(--color-accent-fg,#0969da);'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'background:var(--color-accent-subtle,#ddf4ff);transform:translateY(-1px);}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-next{align-items:flex-end;text-align:right;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-label,.gmeek-pn-date{font-size:12px;color:var(--color-fg-muted,#656d76);}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-title{font-weight:600;line-height:1.4;display:-webkit-box;'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.is-disabled{opacity:.45;pointer-events:none;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'@media (max-width:600px){.gmeek-pn{flex-direction:column;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-next{align-items:flex-start;text-align:left;}}'</span><span class="pl-kos">;</span>
+        <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">head</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">style</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+<span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>挂到 config 的 <code class="notranslate">script</code> 字段，第三个标签拼在后面（多插件写法 G05 讲过）：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ent">"script"</span>: <span class="pl-s"><span class="pl-pds">"</span>&lt;script src='/plugins/GmeekTOC.js'&gt;&lt;/script&gt;&lt;script src='/plugins/lightbox.js'&gt;&lt;/script&gt;&lt;script src='/plugins/GmeekPrevNext.js'&gt;&lt;/script&gt;<span class="pl-pds">"</span></span></pre></div>
+<p>改 config 走老规矩：push、等几秒、手动全局重建。</p>
+<h2>几个工程上的小心思</h2>
+<ol>
+<li><strong>标题做了 HTML 转义</strong>。数据虽然来自自己的仓库，但把标题直接拼进 innerHTML 是坏习惯——哪天标题里有个 <code class="notranslate">&lt;</code>、<code class="notranslate">&amp;</code>，页面就可能破相。一行 <code class="notranslate">escapeHtml</code> 是对渲染管道的基本尊重；</li>
+<li><strong>fetch 失败只 console.warn</strong>。JSON 拉不到时文章正文照常阅读，导航悄悄缺席，不弹窗、不挡内容——渐进增强的底线；</li>
+<li><strong><code class="notranslate">cache: 'no-cache'</code></strong>。发新文章后构建会更新 postList.json，避免读者浏览器抱着旧缓存导致"最新一篇没有下一篇入口"（其实本来也没有）之类的状态错乱；</li>
+<li><strong>首尾边界</strong>。第 1 篇没有上一篇、最新文没有下一篇，渲染的是 <code class="notranslate">pointer-events:none</code> 的半透明占位卡而不是缺一块——布局对称，读者也能明确感知"到头了"。</li>
+</ol>
+<h2>怎么验证：这个插件 curl 不到</h2>
+<p>和 TOC、灯箱不同，导航是<strong>运行时</strong>才生成的：curl 抓 HTML 源码，搜不到任何文章标题，只有一句 fetch。验证要在浏览器里：</p>
+<ol>
+<li>打开任意文章，滚到底部，确认两块导航卡片；</li>
+<li>点上一篇/下一篇，沿编号一路走到 #1 和最新一篇，确认两端是灰色占位；</li>
+<li>F12 → Network，确认 <code class="notranslate">postList.json</code> 请求 200；</li>
+<li>打开 About 页，确认没有导航、Console 无报错；</li>
+<li>切换明暗主题，确认卡片配色跟着变。</li>
+</ol>
+<p>叶扬在上线前还用 Node 把排序函数单独跑了一遍真实数据：12 篇普通文章（#6 About 被正确排除）、#1 无前项、#13 无后项、#9 的邻居是 #8 和 #10，全对了才发布。</p>
+<h2>小结</h2>
+<p>90 行代码，零依赖，一次开发全站生效。这个插件示范了 Gmeek 自研插件的标准套路：<strong>postList.json 当数据源、URL 正则定位当前页、Primer 变量搞定主题、评论区前插入</strong>。接下来的 G09 阅读时长会复用前两招，G10 归档页会把这份数据玩得更狠。</p>
+<p>下一期 G09：字数统计与阅读时长，给每篇文章的标题区挂一个"约 N 字 · 阅读 M 分钟"。</p>
+<h2>参考</h2>
+<ul>
+<li>本站插件源码：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekPrevNext.js">https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekPrevNext.js</a></li>
+<li>数据源说明（sitemap 同源）：<a href="/post/10.html">G04 把门牌号递给搜索引擎</a></li>
+<li>单篇/全局 script 注入机制：<a href="/post/12.html">G06 文章末尾的秘密</a></li>
+<li>Primer CSS 变量体系：<a href="https://primer.style/foundations/color" rel="nofollow">https://primer.style/foundations/color</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script>
+
+</html>
