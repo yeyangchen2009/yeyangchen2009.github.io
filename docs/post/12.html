@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# G06 文章末尾的秘密：一行隐藏 JSON，给单篇文章开小灶
+
+> 前面几期装修的都是'全屋'：TOC、灯箱、favicon、页脚……写在 `config.json` 里的东西对所有页面一视同仁。">
+<meta property="og:title" content="G06 文章末尾的秘密：一行隐藏 JSON，给单篇文章开小灶">
+<meta property="og:description" content="# G06 文章末尾的秘密：一行隐藏 JSON，给单篇文章开小灶
+
+> 前面几期装修的都是'全屋'：TOC、灯箱、favicon、页脚……写在 `config.json` 里的东西对所有页面一视同仁。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/12.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G06 文章末尾的秘密：一行隐藏 JSON，给单篇文章开小灶</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+<style>.markdown-body h2{border-left:4px solid #2da44e;padding-left:.6em}</style>
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G06 文章末尾的秘密：一行隐藏 JSON，给单篇文章开小灶</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/12" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>G06 文章末尾的秘密：一行隐藏 JSON，给单篇文章开小灶</h1>
+<blockquote>
+<p>前面几期装修的都是"全屋"：TOC、灯箱、favicon、页脚……写在 <code class="notranslate">config.json</code> 里的东西对所有页面一视同仁。可总有那么几篇文章想搞特殊：一篇多图教程想单独加载个插件、一篇旧文补发想把日期改回当年、一篇镇站之宝想配专属分享封面。Gmeek 的答案藏在一个很不正经的地方——<strong>文章正文的最后一行，一条 HTML 注释</strong>。这一期 G06 把它拆开讲，而且你正在读的这篇文章，本身就是实验品。</p>
+</blockquote>
+<h2>先看现场</h2>
+<p>不用翻后台，三个证据此刻就在这一页上：</p>
+<ol>
+<li><strong>看本文的每个二级标题</strong>——左边是不是多了一条绿色竖线？全站其他文章没有；</li>
+<li><strong>拉到本文最底部</strong>——有一个绿色虚线框的小徽章，全站也只有这篇有；</li>
+<li>按 <strong>F12</strong> 打开浏览器控制台，能看到一行绿色的彩蛋日志。</li>
+</ol>
+<p>这三样东西不在 <code class="notranslate">config.json</code> 里，不在任何插件文件里，它们的全部"源代码"就是本文末尾那一行注释：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-c">&lt;!-- ##{"style":"...","script":"..."}## --&gt;</span></pre></div>
+<p>页面加载时，Gmeek 在构建阶段把这行注释解析掉，里面的 CSS 和 JS 就只注入到了这一篇文章。读者看正文时它是不可见的注释，编译器眼里它是一份配置文件——一石二鸟。</p>
+<h2>源码：它是怎么被抠出来的</h2>
+<p>核心逻辑在 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L357">Gmeek.py 第 357 行附近</a>，五行看懂：</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">try</span>:
+    <span class="pl-s1">postConfig</span> <span class="pl-c1">=</span> <span class="pl-s1">json</span>.<span class="pl-c1">loads</span>(<span class="pl-s1">issue</span>.<span class="pl-c1">body</span>.<span class="pl-c1">split</span>(<span class="pl-s">"<span class="pl-cce">\r</span><span class="pl-cce">\n</span>"</span>)[<span class="pl-c1">-</span><span class="pl-c1">1</span>:][<span class="pl-c1">0</span>].<span class="pl-c1">split</span>(<span class="pl-s">"##"</span>)[<span class="pl-c1">1</span>])
+    <span class="pl-en">print</span>(<span class="pl-s">"Has Custom JSON parameters"</span>)
+<span class="pl-k">except</span>:
+    <span class="pl-s1">postConfig</span> <span class="pl-c1">=</span> {}</pre></div>
+<p>拆解这一行链式调用：</p>
+<ol>
+<li>
+<p><code class="notranslate">issue.body</code> 是整篇 issue 正文；</p>
+</li>
+<li>
+<p><code class="notranslate">.split("\r\n")[-1:][0]</code>——按换行切开，<strong>只取最后一行</strong>；</p>
+</li>
+<li>
+<p><code class="notranslate">.split("##")[1]</code>——最后一行再按 <code class="notranslate">##</code> 切成三段，取中间那段。注释长这样：</p>
+<pre class="notranslate"><code class="notranslate">&lt;!-- ##{...JSON...}## --&gt;
+     ↑第一段  ↑JSON(第二段)  ↑第三段
+</code></pre>
+</li>
+<li>
+<p><code class="notranslate">json.loads()</code> 解析；任何一步失败（没有注释、JSON 写错）都静默回退到空字典——文章照常发布，只是定制不生效，<strong>不会报错给你看</strong>。这是它最坑的地方：写错了没有任何红叉提示。</p>
+</li>
+</ol>
+<p>紧接着是五个字段的分发（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L363-L386">363–386 行</a>）：</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">if</span> <span class="pl-s">"timestamp"</span> <span class="pl-c1">in</span> <span class="pl-s1">postConfig</span>:
+    <span class="pl-s1">post</span>[<span class="pl-s">"createdAt"</span>] <span class="pl-c1">=</span> <span class="pl-s1">postConfig</span>["<span class="pl-s1">timestamp</span>]          <span class="pl-c"># 覆盖</span>
+<span class="pl-k">if</span> <span class="pl-s">"style"</span> <span class="pl-c1">in</span> <span class="pl-s1">postConfig</span>:
+    <span class="pl-s1">post</span>[<span class="pl-s">"style"</span>] <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-c1">blogBase</span>[<span class="pl-s">"style"</span>] <span class="pl-c1">+</span> <span class="pl-s1">postConfig</span>[<span class="pl-s">"style"</span>]   <span class="pl-c"># 追加</span>
+<span class="pl-k">if</span> <span class="pl-s">"script"</span> <span class="pl-c1">in</span> <span class="pl-s1">postConfig</span>:
+    <span class="pl-s1">post</span>[<span class="pl-s">"script"</span>] <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-c1">blogBase</span>[<span class="pl-s">"script"</span>] <span class="pl-c1">+</span> <span class="pl-s1">postConfig</span>[<span class="pl-s">"script"</span>] <span class="pl-c"># 追加</span>
+<span class="pl-k">if</span> <span class="pl-s">"head"</span> <span class="pl-c1">in</span> <span class="pl-s1">postConfig</span>:
+    <span class="pl-s1">post</span>[<span class="pl-s">"head"</span>] <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-c1">blogBase</span>[<span class="pl-s">"head"</span>] <span class="pl-c1">+</span> <span class="pl-s1">postConfig</span>[<span class="pl-s">"head"</span>]       <span class="pl-c"># 追加</span>
+<span class="pl-k">if</span> <span class="pl-s">"ogImage"</span> <span class="pl-c1">in</span> <span class="pl-s1">postConfig</span>:
+    <span class="pl-s1">post</span>[<span class="pl-s">"ogImage"</span>] <span class="pl-c1">=</span> <span class="pl-s1">postConfig</span>[<span class="pl-s">"ogImage"</span>]             <span class="pl-c"># 覆盖</span></pre></div>
+<p>字段清单：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>字段</th>
+<th>策略</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">style</code></td>
+<td>追加在全局样式<strong>之后</strong></td>
+<td>单篇排版微调、标题装饰（本文的绿竖条）</td>
+</tr>
+<tr>
+<td><code class="notranslate">script</code></td>
+<td>追加在全局脚本之后</td>
+<td>单篇才需要的交互/插件（本文的徽章和彩蛋）</td>
+</tr>
+<tr>
+<td><code class="notranslate">head</code></td>
+<td>追加进 <code class="notranslate">&lt;head&gt;</code></td>
+<td>单篇额外的 meta、第三方库 CSS</td>
+</tr>
+<tr>
+<td><code class="notranslate">ogImage</code></td>
+<td><strong>覆盖</strong>全站封面</td>
+<td>重点文章的专属分享大图（G03 留的钩子）</td>
+</tr>
+<tr>
+<td><code class="notranslate">timestamp</code></td>
+<td><strong>覆盖</strong>发布时间</td>
+<td>补发旧文、修正日期</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>模板侧的注入点也对得上：<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/post.html">post.html</a> 里 <code class="notranslate">style</code> 输出在主样式表之后（所以单篇 CSS 天然拥有更高优先级），<code class="notranslate">script</code> 在页尾脚本块，<code class="notranslate">ogImage</code> 直接喂给 <code class="notranslate">&lt;meta property="og:image"&gt;</code>。</p>
+<h2>本文的配方</h2>
+<p>贴上本文最后一行的真身（换行是为了方便阅读，<strong>实际必须压成一行</strong>）：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-c">&lt;!-- ##{"style":"&lt;style&gt;.markdown-body h2{border-left:4px solid #2da44e;padding-left:.6em}&lt;/style&gt;","script":"&lt;script&gt;console.log('%c G06 隐藏 JSON 已生效 ','color:#2da44e');document.getElementById('content').appendChild(Object.assign(document.createElement('div'),{textContent:'🪄 本篇样式由正文最后一行的隐藏 JSON 注入',style:'margin-top:2.5em;padding:.8em 1em;border:1px dashed #2da44e;border-radius:10px;color:#2da44e'}));&lt;/script&gt;"}## --&gt;</span></pre></div>
+<p>两个写作要点：</p>
+<ul>
+<li>JSON 的<strong>键和值都必须用双引号</strong>，值内部的 JavaScript 全部改用单引号，否则引号大战会逼疯你；</li>
+<li>值里的 <code class="notranslate">&lt;style&gt;</code>、<code class="notranslate">&lt;script&gt;</code> 标签要写全——这两个字段最终是拼进 HTML 的字符串，不是裸 CSS/JS。</li>
+</ul>
+<h2>六个必须知道的坑</h2>
+<p><strong>1）必须是正文最后一行，后面连一个空行都不能有。</strong> 解析器是机械地取最后一行，你在注释后面随手敲个回车，最后一行就变成空字符串，JSON 解析失败，静默失效。</p>
+<p><strong>2）值里不能出现连续的 <code class="notranslate">##</code>。</strong> 因为解析器自己就是拿 <code class="notranslate">##</code> 当分隔符。JS 里写锚点 <code class="notranslate">a.href='x##y'</code> 这种代码会把整行切崩。要写请用 <code class="notranslate">'#'+'#'</code> 拼。</p>
+<p><strong>3）它是"追加"，不是"替换"。</strong> 单篇 <code class="notranslate">script</code> 会接在全局 TOC、lightbox 之后执行——你没法用它<strong>关掉</strong>某篇的灯箱，只能叠加东西或用 CSS 覆盖样式。想反其道而行之（只给一篇装插件）反而正是它的主场：全局不配，单篇给。</p>
+<p><strong>4）<code class="notranslate">timestamp</code> 是秒级 Unix 时间戳，且牵一发动全身。</strong> 它改的是文章的 <code class="notranslate">createdAt</code>，连带影响：首页排序、RSS 里的发布时间、文章日期标签的颜色（源码里日期颜色按年份取模选色）、以及 G04 那个自动 sitemap 的 lastmod。在 <code class="notranslate">urlMode:"issue"</code> 下文章 URL 是编号不受影响，但如果用的是路径模式，URL 也会跟着变。补发一篇 2020 年的旧文，就填 <code class="notranslate">1577836800</code>（2020-01-01 00:00 UTC）。</p>
+<p><strong>5）换行符的学问：放心用，但要懂原理。</strong> 源码按 <code class="notranslate">\r\n</code>（Windows 换行）切分，看着吓人——本地写稿都是 <code class="notranslate">\n</code>（Unix 换行）怎么办？叶扬翻过 Action 构建出来的 backup 原文，<strong>所有文章无一例外都是 CRLF</strong>：无论你在网页编辑还是用 gh API 发文，GitHub 存进 issue 的正文都会被规范化成 CRLF。所以这条只在"本地拿源码调试解析逻辑"时才需要注意。</p>
+<p><strong>6）改完要触发一次构建。</strong> 给已发布文章补这行注释，本质是编辑 issue，会触发增量构建重新解析正文，不用全局重建。</p>
+<h2>怎么确认它真的生效了</h2>
+<p>这是 Gmeek 少有的"沉默功能"，好在源码留了一扇窗：构建日志里，解析成功会打印一行——</p>
+<pre class="notranslate"><code class="notranslate">Has Custom JSON parameters
+{'style': '...', 'script': '...'}
+</code></pre>
+<p>发布后去 Actions 点开本次构建日志搜 "Custom JSON"，能看到解析出的字典，就是成了；什么都没有，就是最后一行没写对。线上再 F12 核对元素，双保险。</p>
+<h2>三个实战用法</h2>
+<p><strong>① 镇站之宝配专属封面。</strong> 给某篇单独指定分享大图（规矩和 G03 一样：PNG/JPG、绝对 URL）：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-c">&lt;!-- ##{"ogImage":"https://yeyangchen2009.github.io/images/g01-cover.png"}## --&gt;</span></pre></div>
+<p>顺嘴一提：<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L494">Gmeek.py 第 494 行</a>会在写 postList.json 前把每篇的 ogImage 字段删掉——列表数据用不上它，不删白白撑大 JSON。框架的体贴都在这种小地方。</p>
+<p><strong>② 单篇加载重型库。</strong> 比如只有一篇文章用到图表库，就只给那篇的 <code class="notranslate">head</code> 加 CDN 样式、<code class="notranslate">script</code> 加库代码，不让其他读者替它还债。</p>
+<p><strong>③ 旧文搬家。</strong> 从其他博客平台导入文章时，用 <code class="notranslate">timestamp</code> 保留原始发布日期，时间线不会因为搬家全挤到今天。</p>
+<h2>小结</h2>
+<p>一行注释，五个字段，换来了全局配置之外的"单篇自治权"：样式能定制、脚本能私加、封面能专属、时间能回退。它的设计哲学和 Gmeek 一脉相承——不建数据库、不开后台，所有配置都寄生在已有的内容载体里（全局靠 config.json，单篇靠 issue 正文）。代价是静默失败，所以"最后一行 + 看日志"这八个字值回全文。</p>
+<p>下一期 G07 回到写作本身：GitHub 风格的 Alert 提示块、数学公式、Mermaid 图表在 Gmeek 里的正确写法和各自的加载策略。</p>
+<h2>参考</h2>
+<ul>
+<li>隐藏 JSON 解析与字段分发：<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L357-L386">https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L357-L386</a></li>
+<li>文章模板注入点：<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/post.html">https://github.com/Meekdai/Gmeek/blob/main/templates/post.html</a></li>
+<li>官方配置说明（进阶用法）：<a href="https://github.com/Meekdai/Gmeek#readme">https://github.com/Meekdai/Gmeek#readme</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul>
+</div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script><script src='/plugins/lightbox.js'></script><script>console.log('%c🪤 G06 隐藏 JSON 已生效','color:#2da44e;font-size:16px;font-weight:bold');(function(){var b=document.createElement('div');b.textContent='🪤 这篇文章的二级标题绿竖条、这行小字、以及控制台彩蛋，全部来自正文最后一行的隐藏 JSON';b.style.cssText='margin-top:2.5em;padding:.8em 1em;border:1px dashed #2da44e;border-radius:10px;color:#2da44e;font-size:.92em';document.getElementById('content').appendChild(b);})();</script>
+
+</html>
