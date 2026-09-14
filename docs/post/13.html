@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# G07 写作三件套：Alert 提示块、数学公式、Mermaid 图表
+
+> 装了灯箱、目录、隐藏 JSON 这些'硬件'之后，这一期 G07 回到写作本身。">
+<meta property="og:title" content="G07 写作三件套：Alert 提示块、数学公式、Mermaid 图表">
+<meta property="og:description" content="# G07 写作三件套：Alert 提示块、数学公式、Mermaid 图表
+
+> 装了灯箱、目录、隐藏 JSON 这些'硬件'之后，这一期 G07 回到写作本身。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/13.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G07 写作三件套：Alert 提示块、数学公式、Mermaid 图表</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+<style>.mermaid-wrap{margin:18px 0;overflow-x:auto;}</style><style>.markdown-alert{padding:0.5rem 1rem;margin-bottom:1rem;border-left:.25em solid var(--borderColor-default,var(--color-border-default));}.markdown-alert .markdown-alert-title {display:flex;font-weight:var(--base-text-weight-medium,500);align-items:center;line-height:1;}.markdown-alert>:first-child {margin-top:0;}.markdown-alert>:last-child {margin-bottom:0;}</style><style>.markdown-alert.markdown-alert-note {border-left-color:var(--borderColor-accent-emphasis, var(--color-accent-emphasis));background-color:var(--color-accent-subtle);}.markdown-alert.markdown-alert-note .markdown-alert-title {color: var(--fgColor-accent,var(--color-accent-fg));}</style><style>.markdown-alert.markdown-alert-tip {border-left-color:var(--borderColor-success-emphasis, var(--color-success-emphasis));background-color:var(--color-success-subtle);}.markdown-alert.markdown-alert-tip .markdown-alert-title {color: var(--fgColor-success,var(--color-success-fg));}</style><style>.markdown-alert.markdown-alert-important {border-left-color:var(--borderColor-done-emphasis, var(--color-done-emphasis));background-color:var(--color-done-subtle);}.markdown-alert.markdown-alert-important .markdown-alert-title {color: var(--fgColor-done,var(--color-done-fg));}</style><style>.markdown-alert.markdown-alert-warning {border-left-color:var(--borderColor-attention-emphasis, var(--color-attention-emphasis));background-color:var(--color-attention-subtle);}.markdown-alert.markdown-alert-warning .markdown-alert-title {color: var(--fgColor-attention,var(--color-attention-fg));}</style><style>.markdown-alert.markdown-alert-caution {border-left-color:var(--borderColor-danger-emphasis, var(--color-danger-emphasis));background-color:var(--color-danger-subtle);}.markdown-alert.markdown-alert-caution .markdown-alert-title {color: var(--fgColor-danger,var(--color-danger-fg));}</style>
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G07 写作三件套：Alert 提示块、数学公式、Mermaid 图表</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/13" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>G07 写作三件套：Alert 提示块、数学公式、Mermaid 图表</h1>
+<blockquote>
+<p>装了灯箱、目录、隐藏 JSON 这些"硬件"之后，这一期 G07 回到写作本身。GitHub Issue 的编辑框看着像个纯文本框，其实它背后站着整套 GFM（GitHub Flavored Markdown）渲染引擎——彩色提示块、LaTeX 公式、流程图都能写。而 Gmeek 在构建时又替我们按动了两个自动开关。这期文章里的每一样武器，你往下滚就能看到现场实弹。</p>
+</blockquote>
+<h2>先看懂渲染管线</h2>
+<p>Gmeek 自己不解析 Markdown。构建时，<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L128">Gmeek.py 的 markdown2html</a> 把整篇正文 POST 给 GitHub 官方的渲染接口：</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-s1">payload</span> <span class="pl-c1">=</span> {<span class="pl-s">"text"</span>: <span class="pl-s1">mdstr</span>, <span class="pl-s">"mode"</span>: <span class="pl-s">"gfm"</span>}
+<span class="pl-s1">response</span> <span class="pl-c1">=</span> <span class="pl-s1">requests</span>.<span class="pl-c1">post</span>(<span class="pl-s">"https://api.github.com/markdown"</span>, <span class="pl-s1">json</span><span class="pl-c1">=</span><span class="pl-s1">payload</span>, ...)</pre></div>
+<p>好处是：<strong>GitHub 网页编辑器里能渲染什么，静态站就能渲染什么</strong>，语法永远和 GitHub 官方同步，不存在"本地一套、线上一套"。拿到 HTML 后，Gmeek 还会做两趟"扫货"（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L153-L181">Gmeek.py:153-181</a>）：扫到 Alert 结构就自动注入配色 CSS，扫到数学公式标记就自动追加 MathJax。</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">LR</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>✍️ Issue 正文&lt;<span class="pl-ent">br</span>/&gt;GFM Markdown<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>⚙️ Gmeek.py 构建<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-k">subgraph</span> <span class="pl-en">CLOUD</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>"构建期 · GitHub Actions"<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>POST /markdown&lt;<span class="pl-ent">br</span>/&gt;官方渲染 API<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>扫描返回 HTML&lt;<span class="pl-ent">br</span>/&gt;里的特殊标记<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+        <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"markdown-alert-title"</span><span class="pl-k">|</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>注入 5 类&lt;<span class="pl-ent">br</span>/&gt;Alert 配色 CSS<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"math-renderer"</span><span class="pl-k">|</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>追加 MathJax 3&lt;<span class="pl-ent">br</span>/&gt;CDN 脚本<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-k">end</span>
+    <span class="pl-k">subgraph</span> <span class="pl-en">LOCAL</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>"浏览器期 · 读者端"<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>MathJax 排版公式<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>mermaid.js 把&lt;<span class="pl-ent">br</span>/&gt;代码块画成图<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-k">end</span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[(</span></span><span class="pl-s"><span class="pl-pds">"</span>静态 HTML 页面<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">)]</span></span></span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">I</span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"highlight-source-mermaid&lt;br/&gt;（只高亮，不画图）"</span><span class="pl-k">|</span> <span class="pl-ent">I</span>
+    <span class="pl-ent">I</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span>
+    <span class="pl-ent">I</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">H</span></pre></div>
+<p>这张图本身就是第三个主角——注意它在 GitHub 网页上只是一个高亮代码块，到了静态站才变成图，下文细说。</p>
+<h2>一、Alert 提示块：零配置，五种颜色</h2>
+<p>语法是 GitHub 2024 年全面支持的，在引用块第一行写方括号标记，<strong>关键字必须大写、独占一行</strong>：</p>
+<div class="highlight highlight-text-md"><pre class="notranslate"><span class="pl-ent"><span class="pl-ent">&gt; </span><span class="pl-s">[</span>!NOTE<span class="pl-s">]</span></span>
+<span class="pl-ent"><span class="pl-ent">&gt; </span>这是一条备注信息。</span></pre></div>
+<p>五种类型本篇全部放出来，对号入座：</p>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg data-component="Octicon" class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p><strong>笔记（蓝）</strong>——中性信息、补充说明、延伸阅读指针。</p>
+</div>
+<div class="markdown-alert markdown-alert-tip"><p class="markdown-alert-title"><svg data-component="Octicon" class="octicon octicon-light-bulb mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p><p><strong>建议（绿）</strong>——能让事情更省事的窍门。</p>
+</div>
+<div class="markdown-alert markdown-alert-important"><p class="markdown-alert-title"><svg data-component="Octicon" class="octicon octicon-report mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p><p><strong>重要（紫）</strong>——读者必须知道的关键信息。</p>
+</div>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg data-component="Octicon" class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p><strong>警告（黄）</strong>——操作有风险，需要留神。</p>
+</div>
+<div class="markdown-alert markdown-alert-caution"><p class="markdown-alert-title"><svg data-component="Octicon" class="octicon octicon-stop mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Caution</p><p><strong>危险（红）</strong>——可能造成不可逆后果的操作。</p>
+</div>
+<p>为什么零配置？Gmeek 扫到 HTML 里的 <code class="notranslate">&lt;p class="markdown-alert-title"&gt;</code> 后，自动把五类配色的 <code class="notranslate">&lt;style&gt;</code> 注入这一页，颜色全部取自 GitHub Primer 的 CSS 变量（<code class="notranslate">--color-attention-subtle</code> 等），站点切暗色时提示块跟着变色，不用我们写一行 CSS。连左边的小图标（圆点、灯泡、感叹号）都是 GitHub 渲染时内联好的 SVG。</p>
+<p><strong>一个实测出来的细节</strong>：通过 API 渲染时，提示块标题是英文的 <strong>Note / Tip / Important / Warning / Caution</strong>（你在 GitHub 网页上看这个 issue 时会显示中文"提示/建议"，那是网页端按浏览器语言本地化的结果；静态站构建时 HTML 已经定型，所以是英文）。不喜欢英文标题的话，两个办法：接受它（图标本身已传达语义），或者用文末的 Gmeek-html 技巧自己写中文版式。</p>
+<h2>二、数学公式：两个美元符号的事</h2>
+<p>行内公式用单个 <code class="notranslate">$</code> 包裹：质能方程 $E=mc^2$，勾股定理 $a^2+b^2=c^2$。块级公式用成对的 <code class="notranslate">$$</code> 独占一行：</p>
+<p>$$
+\int_{-\infty}^{\infty} e^{-x^2},dx = \sqrt{\pi}, \qquad \sum_{n=1}^{\infty}\frac{1}{n^2}=\frac{\pi^2}{6}
+$$</p>
+<p>源码长这样：</p>
+<div class="highlight highlight-text-md"><pre class="notranslate">行内公式用单个 $ 包裹：质能方程 $E=mc^2$。
+
+<span class="pl-s">$$</span><span class="pl-c1"></span>
+<span class="pl-c1">\int_{-\infty}^{\infty} e^{-x^2}\,dx = \sqrt{\pi}</span>
+<span class="pl-c1"></span><span class="pl-s">$$</span></pre></div>
+<p>GitHub 渲染器先把它包成 <code class="notranslate">&lt;math-renderer class="js-inline-math"&gt;</code> 这种自定义标签；Gmeek 扫到后把标签壳拆掉、保留 <code class="notranslate">$...$</code> 原文，并给这一页自动追加：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-kos">&lt;</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span><span class="pl-v">MathJax</span> <span class="pl-c1">=</span> <span class="pl-kos">{</span><span class="pl-c1">tex</span>: <span class="pl-kos">{</span><span class="pl-c1">inlineMath</span>: <span class="pl-kos">[</span><span class="pl-kos">[</span><span class="pl-s">"$"</span><span class="pl-kos">,</span> <span class="pl-s">"$"</span><span class="pl-kos">]</span><span class="pl-kos">]</span><span class="pl-kos">}</span><span class="pl-kos">}</span><span class="pl-kos">;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span>
+<span class="pl-kos">&lt;</span><span class="pl-ent">script</span> <span class="pl-c1">async</span> <span class="pl-c1">src</span>="<span class="pl-s">https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js</span>"<span class="pl-kos">&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span></pre></div>
+<p>读者端的 MathJax 3 再把公式排版成矢量 HTML——所以<strong>没有公式的文章一个字节的 MathJax 都不会加载</strong>，按需付费。</p>
+<p>两个写作上的坑：</p>
+<ol>
+<li>
+<strong>美元金额会"撞车"</strong>。GitHub 的判定规则是：开 <code class="notranslate">$</code> 右边不能是空格、闭 <code class="notranslate">$</code> 左边不能是空格。于是写"价格从 <code class="notranslate">$5</code> 涨到 <code class="notranslate">$10</code>"这种句子时，两个 <code class="notranslate">$</code> 会被当成一对公式分隔符。提到金额时用反引号包起来（<code class="notranslate">`$5`</code>）或转义，即可躲过；</li>
+<li>MathJax 走 jsdelivr 公共 CDN，国内网络偶尔慢半拍，表现为公式先显示源码、片刻后排版好（有 <code class="notranslate">async</code>，不挡阅读）。这是官方唯一的自动注入点，没有配置项可换源；真介意的进阶玩家可以像下一节的 mermaid 一样把库下载到 <code class="notranslate">static/</code>，再用 G06 的单篇 JSON 自行接管。</li>
+</ol>
+<h2>三、Mermaid：唯一需要自己动手的</h2>
+<p>流程图、时序图、甘特图这些，GitHub <strong>网页端能直接渲染</strong>，但对外的 Markdown API 很克制——只把代码块做语法高亮，输出一个 <code class="notranslate">&lt;div class="highlight highlight-source-mermaid"&gt;</code>，并不出图。Gmeek 也没有内建 mermaid，所以本站的方案是三件套：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>组件</th>
+<th>位置</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">mermaid.min.js</code>（v11，约 3.5 MB）</td>
+<td><code class="notranslate">static/</code></td>
+<td>渲染引擎本体</td>
+</tr>
+<tr>
+<td><code class="notranslate">mermaid-init.js</code>（30 行加载器）</td>
+<td><code class="notranslate">static/</code></td>
+<td>找到 mermaid 代码块、替换、画图、跟随明暗主题重绘</td>
+</tr>
+<tr>
+<td>单篇隐藏 JSON</td>
+<td>文章最后一行</td>
+<td>只给含图的文章加载这两个文件</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>加载器做的事很直白：选中 <code class="notranslate">div.highlight-source-mermaid</code>，取出 <code class="notranslate">&lt;pre&gt;</code> 里的图表源码，替换成 mermaid 容器后调用 <code class="notranslate">mermaid.run()</code>；另外监听主题切换按钮（本站按钮的 title 是"切换主题"），点一下就延迟 100ms 重绘。</p>
+<p><strong>为什么不用全局 <code class="notranslate">script</code> 字段让每篇都加载？</strong> 3.5 MB 的库给一篇纯文字文章陪葬太奢侈了。所以含图文章各自在最后一行用 G06 的单篇 JSON 挂脚本——你正在读的这篇、以及 <a href="/post/1.html">第 1 篇</a>搭建全过程，都是这么做的。再看一次发文时序：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>actorBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>actorBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>actorTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>signalColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>signalTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>labelBoxBkgColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>labelBoxBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>labelTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>noteBkgColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>noteTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">sequenceDiagram</span>
+    <span class="pl-k">actor</span> <span class="pl-ent">Y</span> <span class="pl-k">as</span> <span class="pl-ent">叶扬</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">GH</span> <span class="pl-k">as</span> <span class="pl-ent">GitHub Issues</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">AC</span> <span class="pl-k">as</span> <span class="pl-ent">Actions 构建机</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">BR</span> <span class="pl-k">as</span> <span class="pl-ent">读者浏览器</span>
+    <span class="pl-ent">Y</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">GH</span><span class="pl-k">:</span> <span class="pl-s">发布 Issue（含 Alert / 公式 / 图表）</span>
+    <span class="pl-ent">GH</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">AC</span><span class="pl-k">:</span> <span class="pl-s">opened 事件触发构建</span>
+    <span class="pl-ent">AC</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">GH</span><span class="pl-k">:</span> <span class="pl-s">POST /markdown 渲染正文</span>
+    <span class="pl-ent">GH</span><span class="pl-k">--&gt;&gt;</span><span class="pl-ent">AC</span><span class="pl-k">:</span> <span class="pl-s">返回 GFM HTML</span>
+    <span class="pl-ent">AC</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">AC</span><span class="pl-k">:</span> <span class="pl-s">扫描 alert / math 标记注入资源</span>
+    <span class="pl-k">Note over </span><span class="pl-ent">AC</span><span class="pl-k">:</span> <span class="pl-s">mermaid 只保留代码块&lt;br/&gt;不出图</span>
+    <span class="pl-ent">AC</span><span class="pl-k">--&gt;&gt;</span><span class="pl-ent">BR</span><span class="pl-k">:</span> <span class="pl-s">Pages 部署静态页面</span>
+    <span class="pl-ent">BR</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">BR</span><span class="pl-k">:</span> <span class="pl-s">MathJax 排版、mermaid.run() 画图</span></pre></div>
+<p>本站所有图表统一走暗色主题（画布 <code class="notranslate">#0d1117<span class="ml-1 d-inline-block border circle color-border-subtle" style="background-color: #0d1117; height: 8px; width: 8px;"></span></code>、子图 <code class="notranslate">#161b22<span class="ml-1 d-inline-block border circle color-border-subtle" style="background-color: #161b22; height: 8px; width: 8px;"></span></code>、蓝节点 <code class="notranslate">#1f6feb<span class="ml-1 d-inline-block border circle color-border-subtle" style="background-color: #1f6feb; height: 8px; width: 8px;"></span></code>），做法是在每个代码块开头放一行 <code class="notranslate">%%{init: {...}}%%</code> 指令，它的优先级高于加载器的全局主题设置，所以图表恒定深色，不随站点明暗切换，深底白字在任何阅读环境下都成立。</p>
+<p>语法学习成本约等于零：第一行声明图类型（<code class="notranslate">flowchart LR</code>、<code class="notranslate">sequenceDiagram</code>、<code class="notranslate">gantt</code>……），之后全是 <code class="notranslate">A--&gt;B</code>、<code class="notranslate">参与者-&gt;&gt;参与者: 消息</code> 这样的大白话。官方图文手册：<a href="https://mermaid.js.org/intro/syntax-reference.html" rel="nofollow">https://mermaid.js.org/intro/syntax-reference.html</a>。</p>
+<h2>四、附赠的彩蛋：Gmeek-html 直出</h2>
+<p>还有一个藏在<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L180">源码第 180 行</a>的冷门通道：<strong>内联代码</strong>以标记 <strong>Gmeek-html</strong> 开头时，代码内容会被反转义成真实 HTML 插进页面。比如在反引号里写 <kbd>Ctrl+S</kbd>，渲染出来不是代码，而是一个真的键帽：<kbd style="border:1px solid #58a6ff;padding:2px 8px;border-radius:6px;background:#21262d;">Ctrl+S</kbd></p>
+<p>想居中一行字、放个多列布局、嵌个自定义 badge，都可以用它实现"Markdown 里开 HTML 后门"。两个要点：<strong>必须是内联反引号</strong>（叶扬实测围栏代码块不生效，围栏形式只会出现在 pre 标签的 lang 属性里，不匹配转换正则）；内容别用会破坏 JSON 的字符——它只是 HTML 通道，不是脚本通道。</p>
+<h2>速查表</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>需求</th>
+<th>写法</th>
+<th>要不要配置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>蓝色备注块</td>
+<td>
+<code class="notranslate">&gt; [!NOTE]</code> 下一行写内容</td>
+<td>零配置，自动配色</td>
+</tr>
+<tr>
+<td>行内公式</td>
+<td><code class="notranslate">$E=mc^2$</code></td>
+<td>零配置，MathJax 自动加载</td>
+</tr>
+<tr>
+<td>块级公式</td>
+<td>
+<code class="notranslate">$$ ... $$</code> 独占行</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>流程图/时序图</td>
+<td>
+<code class="notranslate">```mermaid</code> 代码块 + 单篇 JSON 挂 mermaid 两件套</td>
+<td>需一次性放好 static 文件</td>
+</tr>
+<tr>
+<td>键帽/居中/任意 HTML</td>
+<td>内联反引号，内容以 Gmeek-html 开头</td>
+<td>零配置</td>
+</tr>
+<tr>
+<td>含图文章加载器</td>
+<td>末行 <code class="notranslate">&lt;!-- ##{"script":"&lt;script src='/mermaid.min.js'&gt;&lt;/script&gt;&lt;script src='/mermaid-init.js'&gt;&lt;/script&gt;"}## --&gt;</code>
+</td>
+<td>见 <a href="/post/12.html">G06</a>
+</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>小结</h2>
+<p>Alert 和公式是"白送的"——写 Markdown 就行，Gmeek 在构建期替你完成识别与资源注入；Mermaid 需要一次性铺好静态库和加载器，但之后每篇文章只要抄一行末行 JSON。再加上 Gmeek-html 后门，Issue 编辑框这个"纯文本框"实际上能排出教程级别的版面。</p>
+<p>下一期 G08 开始进入自研插件环节：文章末尾的"上一篇 / 下一篇"导航，数据源就是 G04 已经见过面的 <code class="notranslate">postList.json</code>。</p>
+<h2>参考</h2>
+<ul>
+<li>Gmeek 渲染与自动注入逻辑：<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L128-L181">https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L128-L181</a></li>
+<li>GitHub Markdown 语法（Alert、数学表达式）：<a href="https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax">https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax</a></li>
+<li>Mermaid 语法手册：<a href="https://mermaid.js.org/intro/syntax-reference.html" rel="nofollow">https://mermaid.js.org/intro/syntax-reference.html</a></li>
+<li>MathJax 3 文档：<a href="https://docs.mathjax.org/en/v3.2-latest/" rel="nofollow">https://docs.mathjax.org/en/v3.2-latest/</a></li>
+<li>单篇 JSON 机制：<a href="/post/12.html">G06 文章末尾的秘密</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul>
+</div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script><script src='/plugins/lightbox.js'></script><script src='/mermaid.min.js'></script><script src='/mermaid-init.js'></script><script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</html>
