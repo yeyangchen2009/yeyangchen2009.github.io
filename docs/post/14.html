@@ -92,7 +92,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>G04 到 G07 装的都是"别人造好的轮子"。从这一期开始，叶扬要自己写插件了。第一个目标很朴素：读者读完一篇文章，滚到底部，除了评论区无路可走——浏览器的后退键会把人送回 Google，而不是送向下一篇。一个"上一篇 / 下一篇"导航，就是把读者在博客里多留十分钟的那两块踏板。数据源我们早就有了（G04 生成 sitemap 时打过交道），这一期把它接到页面上。</p>
 </blockquote>
 <h2>先看现场</h2>
-<p>不用翻别的文章，<strong>你现在滚到这篇文章评论按钮的上方</strong>，就能看到两块卡片：左边通向上一篇 <a href="/post/13.html">G07 写作三件套</a>，右边是一块灰色的"已经到尽头啦"——因为本文发布时它就是最新的一篇。这个导航在全站每篇文章底部都有，颜色自动跟随明暗主题，手机上会竖起来排列。</p>
+<p>不用翻别的文章，<strong>你现在滚到这篇文章评论按钮的上方</strong>，就能看到两块卡片：左边通向上一篇 <a href="/post/13.html">G07 写作三件套</a>，右边是一块灰色的"已经到尽头啦"——因为本文发布时它就是最新的一篇。这个导航在全站每篇文章底部都有，颜色自动跟随明暗主题，手机上同样保持左右两栏，只是更紧凑（标签带 ← → 箭头、日期让位隐藏）。</p>
 <h2>数据从哪来：postList.json</h2>
 <p>Gmeek 每次构建都会产出一个 <code class="notranslate">postList.json</code>，它就是整个博客的"文章目录"。打开 <a href="https://yeyangchen2009.github.io/postList.json" rel="nofollow">https://yeyangchen2009.github.io/postList.json</a> 看结构：</p>
 <div class="highlight highlight-source-json"><pre class="notranslate">{
@@ -157,7 +157,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
-<p>主题切换靠 <code class="notranslate">&lt;html data-color-mode="dark"&gt;</code> 钩子，Primer 内部接管变量，插件连"监听主题按钮"都省了——对比 G07 的 mermaid 必须手动监听重绘，CSS 变量方案是真·躺赢。其余细节：标题超长两行省略、hover 上浮 1px、600px 以下纵向堆叠。</p>
+<p>主题切换靠 <code class="notranslate">&lt;html data-color-mode="dark"&gt;</code> 钩子，Primer 内部接管变量，插件连"监听主题按钮"都省了——对比 G07 的 mermaid 必须手动监听重绘，CSS 变量方案是真·躺赢。其余细节：标题超长两行省略、hover 上浮 1px、方向箭头、以及一套专门的手机端样式。</p>
+<p><strong>为什么手机端坚持横排。</strong> 初版在 600px 以下把两张卡片改成纵向堆叠，真机上看反而别扭：竖屏本来就长，导航再占两大块纵向空间，"上一篇/下一篇"的并列对照感也丢了。现在的做法是小屏<strong>保持左右两栏</strong>，只做减法：卡片间距和内边距收紧、标题降到 13px、日期隐藏（移动端时间信息价值最低）、标签用伪元素补上 <code class="notranslate">←</code> <code class="notranslate">→</code> 箭头，方向感一眼可辨。375px 宽的屏幕上每栏还有约 170px，两行标题足够表达。</p>
 <h2>完整代码</h2>
 <p>新建 <code class="notranslate">static/plugins/GmeekPrevNext.js</code>（约 90 行，零依赖）：</p>
 <div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-c">/* GmeekPrevNext —— 文章底部"上一篇/下一篇"导航</span>
@@ -233,20 +234,29 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <span class="pl-k">function</span> <span class="pl-en">injectStyle</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
         <span class="pl-k">var</span> <span class="pl-s1">style</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'style'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
         <span class="pl-s1">style</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span>
-            <span class="pl-s">'.gmeek-pn{display:flex;gap:12px;margin:28px 0 10px;}'</span>
-          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-item{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;'</span>
-          <span class="pl-c1">+</span> <span class="pl-s">'padding:12px 14px;border:1px solid var(--color-border-muted,#d0d7de);'</span>
+            <span class="pl-s">'.gmeek-pn{display:flex;gap:10px;margin:28px 0 10px;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-item{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:4px;'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'padding:11px 12px;border:1px solid var(--color-border-muted,#d0d7de);'</span>
           <span class="pl-c1">+</span> <span class="pl-s">'border-radius:12px;color:var(--color-fg-default,#1f2328);text-decoration:none;'</span>
           <span class="pl-c1">+</span> <span class="pl-s">'transition:border-color .15s,background-color .15s,transform .15s;}'</span>
           <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-item:hover{border-color:var(--color-accent-fg,#0969da);'</span>
           <span class="pl-c1">+</span> <span class="pl-s">'background:var(--color-accent-subtle,#ddf4ff);transform:translateY(-1px);}'</span>
           <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-next{align-items:flex-end;text-align:right;}'</span>
-          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-label,.gmeek-pn-date{font-size:12px;color:var(--color-fg-muted,#656d76);}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-label{font-size:12px;color:var(--color-fg-muted,#656d76);white-space:nowrap;}'</span>
+          <span class="pl-c">// 可点击卡片才显示方向箭头，禁用占位不加</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-item:not(.is-disabled) .gmeek-pn-label::before{content:"\\2190  ";}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-next:not(.is-disabled) .gmeek-pn-label::before{content:"";}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-next:not(.is-disabled) .gmeek-pn-label::after{content:"  \\2192";}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-date{font-size:12px;color:var(--color-fg-muted,#656d76);}'</span>
           <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-title{font-weight:600;line-height:1.4;display:-webkit-box;'</span>
           <span class="pl-c1">+</span> <span class="pl-s">'-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}'</span>
           <span class="pl-c1">+</span> <span class="pl-s">'.is-disabled{opacity:.45;pointer-events:none;}'</span>
-          <span class="pl-c1">+</span> <span class="pl-s">'@media (max-width:600px){.gmeek-pn{flex-direction:column;}'</span>
-          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-next{align-items:flex-start;text-align:left;}}'</span><span class="pl-kos">;</span>
+          <span class="pl-c">// 手机端：保持左右两栏，只做减法</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'@media (max-width:600px){.gmeek-pn{gap:8px;margin:22px 0 8px;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-item{padding:9px 10px;border-radius:10px;gap:3px;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-label{font-size:11px;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-title{font-size:13px;line-height:1.35;}'</span>
+          <span class="pl-c1">+</span> <span class="pl-s">'.gmeek-pn-date{display:none;}}'</span><span class="pl-kos">;</span>
         <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">head</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">style</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
     <span class="pl-kos">}</span>
 <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
