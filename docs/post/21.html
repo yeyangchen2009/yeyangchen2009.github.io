@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> 上一期 [G13](/post/20.html) 给列表页装上了数字分页条，这一期换个战场到手机上。">
+<meta property="og:title" content="G14｜手机上的文章目录：右下角 ☰ 与两个 TOC 插件的和平共处">
+<meta property="og:description" content="> 上一期 [G13](/post/20.html) 给列表页装上了数字分页条，这一期换个战场到手机上。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/21.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G14｜手机上的文章目录：右下角 ☰ 与两个 TOC 插件的和平共处</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G14｜手机上的文章目录：右下角 ☰ 与两个 TOC 插件的和平共处</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/21" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>上一期 <a href="/post/20.html">G13</a> 给列表页装上了数字分页条，这一期换个战场到手机上。博客的文章越写越长，桌面端右侧一直有常驻目录（GmeekTOC），但小屏读者想跳章节时只能埋头猛滑——本期接入官方仓库收录的 <strong>articletoc</strong> 插件，并解决它和桌面目录"官方只让二选一"的问题。</p>
+</blockquote>
+<h2>小屏上的目录现状</h2>
+<p>先纠正一个想当然的误会。叶扬一开始以为"手机上没有目录"，读了 GmeekTOC 的源码才发现不是——它自带一条媒体查询：</p>
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-k">@media</span> (<span class="pl-c1">max-width</span><span class="pl-kos">:</span> <span class="pl-c1">1249<span class="pl-smi">px</span></span>) {
+    .<span class="pl-c1">toc</span> {
+        <span class="pl-c1">position</span><span class="pl-kos">:</span> static;   <span class="pl-c">/* 从右侧固定定位退化成普通文档流 */</span>
+        <span class="pl-c1">top</span><span class="pl-kos">:</span> auto;
+        <span class="pl-c1">left</span><span class="pl-kos">:</span> auto;
+        <span class="pl-c1">transform</span><span class="pl-kos">:</span> none;
+        <span class="pl-c1">margin-bottom</span><span class="pl-kos">:</span> <span class="pl-c1">20<span class="pl-smi">px</span></span>;
+    }
+}</pre></div>
+<p>也就是说，屏幕窄于 1250px 时，右侧常驻目录会变成一块普通卡片，插在<strong>文章正文的最前面</strong>。它确实能用，但读长文的体验是：读到第六节想跳回第二节？先把文章滑回顶部，找到目录，点一下，再滑下来。目录从"随时可用的导航"退化成了"文章开头的一个大纲"。</p>
+<p>理想形态是手机 App 常见的那种：右下角一颗圆形 ☰ 按钮，随时呼出浮层目录，选完即走。官方仓库恰好有这么一个插件。</p>
+<h2>官方 articletoc：Tiengming 的圆形按钮</h2>
+<p>官方进阶插件教程里，GmeekTOC 后面紧接着介绍了 articletoc：</p>
+<blockquote>
+<p>articletoc：在右下角有个圆形按钮。本插件由 Tiengming 编写，也是一个非常不错的 TOC 目录插件。配置方式和上面一样，只需要替换地址即可。</p>
+</blockquote>
+<p>机制很简单：</p>
+<ol>
+<li>页面加载后扫描 <code class="notranslate">.markdown-body</code>（就是 <code class="notranslate">#postBody</code> 正文容器）里的 <code class="notranslate">h1</code>–<code class="notranslate">h6</code>；</li>
+<li>在正文末尾放一个 <code class="notranslate">.toc</code> 浮层（默认透明、不可见）；</li>
+<li>在 <code class="notranslate">&lt;body&gt;</code> 上放一颗 <code class="notranslate">.toc-icon</code> 圆形 ☰ 按钮固定在右下角；</li>
+<li>点按钮，浮层带淡入缩放动画展开，图标变 ✖；再点或点浮层外部收起。</li>
+</ol>
+<p>但"<strong>替换地址</strong>"这四个字值得留意——官方的意思是 GmeekTOC 和 articletoc <strong>二选一</strong>，没让它们共存。叶扬把两份源码摆在一起对照，立刻明白了原因。</p>
+<h2>审源码：为什么官方只让二选一</h2>
+<h3>冲突一：类名同名，样式连坐</h3>
+<p>两个插件给各自浮层起的类名<strong>都叫 <code class="notranslate">.toc</code></strong>，articletoc 的样式表是无差别命中的：</p>
+<div class="highlight highlight-source-css"><pre class="notranslate">.<span class="pl-c1">toc</span> {
+    <span class="pl-c1">position</span><span class="pl-kos">:</span> fixed;
+    <span class="pl-c1">bottom</span><span class="pl-kos">:</span> <span class="pl-c1">60<span class="pl-smi">px</span></span>;
+    <span class="pl-c1">right</span><span class="pl-kos">:</span> <span class="pl-c1">20<span class="pl-smi">px</span></span>;
+    <span class="pl-c1">opacity</span><span class="pl-kos">:</span> <span class="pl-c1">0</span>;              <span class="pl-c">/* ← 麻烦在这 */</span>
+    <span class="pl-c1">visibility</span><span class="pl-kos">:</span> hidden;     <span class="pl-c">/* ← 还有这 */</span>
+    <span class="pl-c1">transform</span><span class="pl-kos">:</span> <span class="pl-en">translateY</span>(<span class="pl-c1">20<span class="pl-smi">px</span></span>) <span class="pl-en">scale</span>(<span class="pl-c1">0.9</span>);
+    <span class="pl-c">/* ... */</span>
+}
+.<span class="pl-c1">toc</span>.<span class="pl-c1">show</span> { <span class="pl-c1">opacity</span><span class="pl-kos">:</span> <span class="pl-c1">1</span>; <span class="pl-c1">visibility</span><span class="pl-kos">:</span> visible; }</pre></div>
+<p>如果两个插件同时加载，页面上会有两个 <code class="notranslate">&lt;div class="toc"&gt;</code>：GmeekTOC 那个（桌面右侧常驻目录）和 articletoc 那个（浮层）。articletoc 的样式表后注入 <code class="notranslate">&lt;head&gt;</code>，同特异性选择器按源顺序胜出——于是<strong>桌面常驻目录被 <code class="notranslate">opacity:0;visibility:hidden</code> 一起藏掉了</strong>。这就是"二选一"的技术根因：不是功能互斥，是命名空间撞车。</p>
+<h3>冲突二：暗色主题靠系统偏好，与站点三态主题失配</h3>
+<p>articletoc 的暗色方案是：</p>
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-k">@media</span> (<span class="pl-c1">prefers-color-scheme</span><span class="pl-kos">:</span> dark) {
+    <span class="pl-kos">:</span><span class="pl-c1">root</span> { <span class="pl-s1">--toc-bg</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>2d333b</span>; <span class="pl-s1">--toc-border</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>444c56</span>; <span class="pl-c">/* ... */</span> }
+}</pre></div>
+<p>这个坑本系列在 <a href="/post/14.html">G08</a> 已经踩过并记录在官方 <a href="https://github.com/Meekdai/Gmeek/issues/196" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/196/hovercard">issue #196</a>：站点主题是"亮色 → 暗色 → 跟随系统"三态切换，存 localStorage。读者<strong>手动选了暗色、但系统是亮色</strong>时，媒体查询判定为亮色，浮层就是白底配深色页面；反之亦然。结论早已确立：本站插件一律用 Primer CSS 变量（<code class="notranslate">--color-canvas-default</code> 这一族），让浮层跟随同一个 <code class="notranslate">html[data-color-mode]</code> 钩子，零媒体查询。</p>
+<h3>冲突三：健壮性缺口</h3>
+<p>对照 GmeekTOC 再细看，articletoc 原版还有几处小缺口：</p>
+<ul>
+<li><strong>没有空标题守卫</strong>。GmeekTOC 发现正文一个标题都没有会直接 <code class="notranslate">return</code>；articletoc 照样创建浮层和按钮——在本站的<a href="/archive.html">归档页</a>（正文只有一个挂载点 div、没有任何标题）上，读者会看到一颗按钮，点开是个空盒子；</li>
+<li><strong>点目录链接后浮层不收起</strong>。手机上点完章节，浮层还挡在右下角；</li>
+<li>没有 Esc 关闭，图标没有 <code class="notranslate">role</code>/<code class="notranslate">aria-label</code>/<code class="notranslate">aria-expanded</code>，键盘用户和读屏用户无法操作。</li>
+</ul>
+<p>问题都不大，但既然要接，就一次收拾干净。</p>
+<h2>适配：让两个 TOC 和平共处</h2>
+<p>改动集中在四处，思路与 G08 以来的自研插件守则一脉相承：</p>
+<p><strong>① 类名隔离。</strong> 浮层改名 <code class="notranslate">.toc-mobile</code>、按钮 <code class="notranslate">.toc-mobile-icon</code>、展开态 <code class="notranslate">.is-show</code>。这样两套样式表的选择器完全不交叉——articletoc 的规则再也不会命中 GmeekTOC 的元素，反之亦然（GmeekTOC 里的 <code class="notranslate">.toc a</code> 也不会误中浮层链接）。</p>
+<p><strong>② Primer 变量换肤。</strong> 浮层底用 <code class="notranslate">--color-canvas-overlay</code>（带 <code class="notranslate">--color-canvas-default</code> 兜底）、边框 <code class="notranslate">--color-border-default</code>、正文 <code class="notranslate">--color-fg-default</code>、悬停 <code class="notranslate">--color-accent-subtle</code>、阴影直接用 <code class="notranslate">--color-shadow-large</code>/<code class="notranslate">--color-shadow-medium</code>。按钮默认是描边圆形小图标，展开时变 <code class="notranslate">--color-accent-emphasis</code> 蓝底白字。三态主题自动跟随，一行媒体查询都不用写。</p>
+<p><strong>③ 按屏宽分工，断点严格对齐。</strong> 这是共存方案的核心——以 GmeekTOC 自带的 1249px 为界：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">LR</span>
+    <span class="pl-ent">W</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>浏览器视口宽度<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">Q</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>width &gt; 1249px ?<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">Q</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">是：桌面</span><span class="pl-k">|</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>.toc 常驻文章右侧&lt;<span class="pl-ent">br</span>/&gt;GmeekTOC 当班<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">否：手机/平板</span><span class="pl-k">|</span> <span class="pl-ent">M</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>.toc 文首静态块隐藏&lt;<span class="pl-ent">br</span>/&gt;右下角 ☰ 按钮显示&lt;<span class="pl-ent">br</span>/&gt;articletoc 当班<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>圆形按钮 display:none<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">M</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">M2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>点击 ☰ 呼出浮层&lt;<span class="pl-ent">br</span>/&gt;选择章节 / 点外部 / Esc 收起<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<p>实现只有两条规则：按钮默认 <code class="notranslate">display:none</code>，在 <code class="notranslate">@media (max-width:1249px)</code> 里才 <code class="notranslate">display:flex</code>；同一媒体查询里把 GmeekTOC 退化出的文首静态块 <code class="notranslate">.toc { display: none; }</code> 藏掉——<strong>两个目录在任何屏宽下都只留一个</strong>，不重复占位。</p>
+<p><strong>④ 健壮性与可访问性补齐。</strong> 找不到 <code class="notranslate">.markdown-body</code> 或正文没有标题时静默退出（归档页于是干干净净）；防重复注入；点目录链接、点浮层外部、按 Esc 都会收起；图标加 <code class="notranslate">role="button"</code>、<code class="notranslate">tabindex="0"</code>、<code class="notranslate">aria-label="文章目录"</code>、<code class="notranslate">aria-expanded</code> 随开合翻转，并响应 Enter/Space。</p>
+<h2>一个隐形成就：两套插件共享同一批锚点</h2>
+<p>还有个必须验证的兼容点。两个插件都会给标题补 id，用的算法一字不差：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-s1">heading</span><span class="pl-kos">.</span><span class="pl-c1">id</span> <span class="pl-c1">=</span> <span class="pl-s1">heading</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span><span class="pl-kos">.</span><span class="pl-en">trim</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">replace</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">\s</span><span class="pl-c1">+</span><span class="pl-c1">/</span>g</span><span class="pl-kos">,</span> <span class="pl-s">'-'</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">toLowerCase</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>而 GitHub 的 GFM 渲染接口输出的标题<strong>本身不带 id</strong>（叶扬 curl 了线上文章确认，<code class="notranslate">&lt;h2&gt;</code> 就是光秃秃的 <code class="notranslate">&lt;h2&gt;</code>），所以 id 是两个插件在浏览器端现场生成的。共存时的顺序就很关键：config.json 里 GmeekTOC 排在最前、articletoc 在最后，两边都监听 <code class="notranslate">DOMContentLoaded</code>，按注册顺序执行——GmeekTOC 先扫一遍把 id 建好，articletoc 再扫时发现 <code class="notranslate">heading.id</code> 已存在就直接复用。哪怕顺序反过来也没关系，算法相同，生成的 id 必然一致。</p>
+<p>叶扬拿 G13 那篇 13 个标题的真实文章试跑了一遍生成算法：中文标题原样保留、英文转小写、空格转连字符（<code class="notranslate">indexScript 登场</code> → <code class="notranslate">indexscript-登场</code>、<code class="notranslate">SEO 收益</code> → <code class="notranslate">seo-收益</code>），<strong>无重复 id</strong>。</p>
+<h2>完整源码</h2>
+<p><code class="notranslate">static/plugins/articletoc.js</code>，基于 Tiengming 原版适配，注释里逐条记录了改动：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-c">/* articletoc —— 小屏文章目录浮层</span>
+<span class="pl-c"> * 原作者：Tiengming（Gmeek 官方仓库收录），本站在原版基础上做了四处适配：</span>
+<span class="pl-c"> *   1. 类名隔离 .toc-mobile / .toc-mobile-icon（原版与 GmeekTOC 同名 .toc，</span>
+<span class="pl-c"> *      两个插件同时加载时 CSS 互相污染——opacity:0 会把桌面常驻目录藏掉）；</span>
+<span class="pl-c"> *   2. 配色全部换 Primer CSS 变量，跟随站点三态主题（原版 prefers-color-scheme</span>
+<span class="pl-c"> *      在“手动暗色 + 系统亮色”时失配，见官方 issue #196）；</span>
+<span class="pl-c"> *   3. 桌面（&gt;1249px）隐藏圆形按钮交给 GmeekTOC；小屏（≤1249px）才显示按钮，</span>
+<span class="pl-c"> *      同时隐藏 GmeekTOC 在小屏退化出的文首静态目录块，二者只留一个；</span>
+<span class="pl-c"> *   4. 无正文/无标题时静默退出；点目录链接、点外部、按 Esc 都会收起浮层。</span>
+<span class="pl-c"> * 锚点 id 算法与 GmeekTOC 完全一致，两个插件同页运行时复用同一批标题锚点。</span>
+<span class="pl-c"> */</span>
+<span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">var</span> <span class="pl-s1">body</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'.markdown-body'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">body</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+    <span class="pl-k">var</span> <span class="pl-s1">headings</span> <span class="pl-c1">=</span> <span class="pl-s1">body</span><span class="pl-kos">.</span><span class="pl-en">querySelectorAll</span><span class="pl-kos">(</span><span class="pl-s">'h1, h2, h3, h4, h5, h6'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">headings</span><span class="pl-kos">.</span><span class="pl-c1">length</span> <span class="pl-c1">||</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'tocMobilePanel'</span><span class="pl-kos">)</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+
+    <span class="pl-en">injectStyle</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">panel</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'div'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">panel</span><span class="pl-kos">.</span><span class="pl-c1">className</span> <span class="pl-c1">=</span> <span class="pl-s">'toc-mobile'</span><span class="pl-kos">;</span>
+    <span class="pl-s1">panel</span><span class="pl-kos">.</span><span class="pl-c1">id</span> <span class="pl-c1">=</span> <span class="pl-s">'tocMobilePanel'</span><span class="pl-kos">;</span>
+    <span class="pl-v">Array</span><span class="pl-kos">.</span><span class="pl-c1">prototype</span><span class="pl-kos">.</span><span class="pl-c1">forEach</span><span class="pl-kos">.</span><span class="pl-en">call</span><span class="pl-kos">(</span><span class="pl-s1">headings</span><span class="pl-kos">,</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">h</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">h</span><span class="pl-kos">.</span><span class="pl-c1">id</span><span class="pl-kos">)</span> <span class="pl-s1">h</span><span class="pl-kos">.</span><span class="pl-c1">id</span> <span class="pl-c1">=</span> <span class="pl-s1">h</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span><span class="pl-kos">.</span><span class="pl-en">trim</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">replace</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">\s</span><span class="pl-c1">+</span><span class="pl-c1">/</span>g</span><span class="pl-kos">,</span> <span class="pl-s">'-'</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">toLowerCase</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">var</span> <span class="pl-s1">a</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'a'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">href</span> <span class="pl-c1">=</span> <span class="pl-s">'#'</span> <span class="pl-c1">+</span> <span class="pl-s1">h</span><span class="pl-kos">.</span><span class="pl-c1">id</span><span class="pl-kos">;</span>
+        <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-s1">h</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span><span class="pl-kos">;</span>
+        <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-c1">style</span><span class="pl-kos">.</span><span class="pl-c1">paddingLeft</span> <span class="pl-c1">=</span> <span class="pl-kos">(</span><span class="pl-en">parseInt</span><span class="pl-kos">(</span><span class="pl-s1">h</span><span class="pl-kos">.</span><span class="pl-c1">tagName</span><span class="pl-kos">.</span><span class="pl-en">charAt</span><span class="pl-kos">(</span><span class="pl-c1">1</span><span class="pl-kos">)</span><span class="pl-kos">,</span> <span class="pl-c1">10</span><span class="pl-kos">)</span> <span class="pl-c1">-</span> <span class="pl-c1">1</span><span class="pl-kos">)</span> <span class="pl-c1">*</span> <span class="pl-c1">10</span> <span class="pl-c1">+</span> <span class="pl-s">'px'</span><span class="pl-kos">;</span>
+        <span class="pl-s1">a</span><span class="pl-kos">.</span><span class="pl-en">addEventListener</span><span class="pl-kos">(</span><span class="pl-s">'click'</span><span class="pl-kos">,</span> <span class="pl-s1">closePanel</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">panel</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">a</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">body</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">panel</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">icon</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'div'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-c1">className</span> <span class="pl-c1">=</span> <span class="pl-s">'toc-mobile-icon'</span><span class="pl-kos">;</span>
+    <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'role'</span><span class="pl-kos">,</span> <span class="pl-s">'button'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'tabindex'</span><span class="pl-kos">,</span> <span class="pl-s">'0'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-label'</span><span class="pl-kos">,</span> <span class="pl-s">'文章目录'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-expanded'</span><span class="pl-kos">,</span> <span class="pl-s">'false'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-s">'☰'</span><span class="pl-kos">;</span>
+    <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-en">addEventListener</span><span class="pl-kos">(</span><span class="pl-s">'click'</span><span class="pl-kos">,</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-en">stopPropagation</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-en">togglePanel</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-en">addEventListener</span><span class="pl-kos">(</span><span class="pl-s">'keydown'</span><span class="pl-kos">,</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-c1">key</span> <span class="pl-c1">===</span> <span class="pl-s">'Enter'</span> <span class="pl-c1">||</span> <span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-c1">key</span> <span class="pl-c1">===</span> <span class="pl-s">' '</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-en">preventDefault</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span> <span class="pl-en">togglePanel</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span> <span class="pl-kos">}</span>
+    <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">body</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">icon</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">addEventListener</span><span class="pl-kos">(</span><span class="pl-s">'click'</span><span class="pl-kos">,</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">panel</span><span class="pl-kos">.</span><span class="pl-c1">classList</span><span class="pl-kos">.</span><span class="pl-en">contains</span><span class="pl-kos">(</span><span class="pl-s">'is-show'</span><span class="pl-kos">)</span> <span class="pl-c1">&amp;&amp;</span>
+            <span class="pl-c1">!</span><span class="pl-s1">panel</span><span class="pl-kos">.</span><span class="pl-en">contains</span><span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-c1">target</span><span class="pl-kos">)</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-c1">!</span><span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-en">contains</span><span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-c1">target</span><span class="pl-kos">)</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-en">closePanel</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span>
+    <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">addEventListener</span><span class="pl-kos">(</span><span class="pl-s">'keydown'</span><span class="pl-kos">,</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-c1">key</span> <span class="pl-c1">===</span> <span class="pl-s">'Escape'</span><span class="pl-kos">)</span> <span class="pl-en">closePanel</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">openPanel</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-s1">panel</span><span class="pl-kos">.</span><span class="pl-c1">classList</span><span class="pl-kos">.</span><span class="pl-en">add</span><span class="pl-kos">(</span><span class="pl-s">'is-show'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-c1">classList</span><span class="pl-kos">.</span><span class="pl-en">add</span><span class="pl-kos">(</span><span class="pl-s">'is-active'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-s">'✖'</span><span class="pl-kos">;</span>
+        <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-expanded'</span><span class="pl-kos">,</span> <span class="pl-s">'true'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+    <span class="pl-k">function</span> <span class="pl-en">closePanel</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-s1">panel</span><span class="pl-kos">.</span><span class="pl-c1">classList</span><span class="pl-kos">.</span><span class="pl-en">remove</span><span class="pl-kos">(</span><span class="pl-s">'is-show'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-c1">classList</span><span class="pl-kos">.</span><span class="pl-en">remove</span><span class="pl-kos">(</span><span class="pl-s">'is-active'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-s">'☰'</span><span class="pl-kos">;</span>
+        <span class="pl-s1">icon</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'aria-expanded'</span><span class="pl-kos">,</span> <span class="pl-s">'false'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+    <span class="pl-k">function</span> <span class="pl-en">togglePanel</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">panel</span><span class="pl-kos">.</span><span class="pl-c1">classList</span><span class="pl-kos">.</span><span class="pl-en">contains</span><span class="pl-kos">(</span><span class="pl-s">'is-show'</span><span class="pl-kos">)</span><span class="pl-kos">)</span> <span class="pl-en">closePanel</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">else</span> <span class="pl-en">openPanel</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">injectStyle</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">var</span> <span class="pl-s1">css</span> <span class="pl-c1">=</span> <span class="pl-kos">[</span>
+            <span class="pl-s">'.toc-mobile{position:fixed;bottom:64px;right:20px;z-index:1000;'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'width:250px;max-width:calc(100vw - 40px);max-height:70vh;overflow-y:auto;'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'padding:10px;border-radius:8px;'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'background:var(--color-canvas-overlay,var(--color-canvas-default));'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'border:1px solid var(--color-border-default);'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'box-shadow:var(--color-shadow-large);'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'opacity:0;visibility:hidden;transform:translateY(12px) scale(.98);'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'transition:opacity .25s ease,transform .25s ease,visibility .25s;}'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'.toc-mobile.is-show{opacity:1;visibility:visible;transform:translateY(0) scale(1);}'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'.toc-mobile a{display:block;color:var(--color-fg-default);text-decoration:none;'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'font-size:14px;line-height:1.5;padding:5px 4px;'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'border-bottom:1px solid var(--color-border-muted);}'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'.toc-mobile a:last-child{border-bottom:0;}'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'.toc-mobile a:hover{background:var(--color-accent-subtle);border-radius:4px;}'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'.toc-mobile-icon{position:fixed;bottom:20px;right:20px;z-index:1001;'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'width:42px;height:42px;border-radius:50%;display:none;'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'align-items:center;justify-content:center;font-size:20px;cursor:pointer;'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'user-select:none;-webkit-tap-highlight-color:transparent;'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'color:var(--color-accent-fg);background:var(--color-canvas-default);'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'border:1px solid var(--color-border-default);'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'box-shadow:var(--color-shadow-medium);'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'transition:transform .25s ease,background .2s ease,color .2s ease,border-color .2s ease;}'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'.toc-mobile-icon:hover{transform:scale(1.08);}'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'.toc-mobile-icon:active{transform:scale(.92);}'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'.toc-mobile-icon.is-active{color:#ffffff;'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'background:var(--color-accent-emphasis);border-color:var(--color-accent-emphasis);}'</span><span class="pl-kos">,</span>
+            <span class="pl-c">/* 断点与 GmeekTOC 的 @media(max-width:1249px) 完全对齐：</span>
+<span class="pl-c">               小屏隐藏它退化出的文首静态目录块，改由右下角浮层接管 */</span>
+            <span class="pl-s">'@media (max-width:1249px){'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'.toc{display:none;}'</span><span class="pl-kos">,</span>
+            <span class="pl-s">'.toc-mobile-icon{display:flex;}}'</span>
+        <span class="pl-kos">]</span><span class="pl-kos">.</span><span class="pl-en">join</span><span class="pl-kos">(</span><span class="pl-s">''</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">var</span> <span class="pl-s1">style</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'style'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">style</span><span class="pl-kos">.</span><span class="pl-c1">id</span> <span class="pl-c1">=</span> <span class="pl-s">'tocMobileStyle'</span><span class="pl-kos">;</span>
+        <span class="pl-s1">style</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-s1">css</span><span class="pl-kos">;</span>
+        <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">head</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">style</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+<span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>配置照旧拼在 config.json 的 <code class="notranslate">script</code> 字段末尾（注意不是 G13 那个 <code class="notranslate">indexScript</code>——目录是文章页的事）：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate"><span class="pl-ent">"script"</span>: <span class="pl-s"><span class="pl-pds">"</span>&lt;script src='/plugins/GmeekTOC.js'&gt;&lt;/script&gt;...&lt;script src='/plugins/articletoc.js'&gt;&lt;/script&gt;<span class="pl-pds">"</span></span></pre></div>
+<h2>验证</h2>
+<p>老规矩，curl 只能验注入，逻辑用 node 桩。这次写了 <strong>36 条断言</strong>：</p>
+<ol>
+<li><strong>作用域守卫</strong>：无 <code class="notranslate">.markdown-body</code> 不建任何节点；正文无标题不建浮层和按钮（归档页场景）；重复执行不重复注入；</li>
+<li><strong>锚点兼容</strong>：三个标题（无 id 的 h2、无 id 的 h3、已有自定义 id 的 h2）一起扫描——前两个按算法补 id（<code class="notranslate">第一节</code>、<code class="notranslate">小节-a</code>），第三个的 <code class="notranslate">custom-id</code> 原样保留，链接 href 全部对上；h2/h3 的左缩进分别是 10px/20px；</li>
+<li><strong>开合逻辑</strong>：点 ☰ 展开（浮层 <code class="notranslate">is-show</code>、图标变 ✖、<code class="notranslate">aria-expanded=true</code>），再点收起；点目录内链接收起；展开态点外部收起、点浮层内部不收起；Esc 收起而其他键不影响；图标聚焦时 Enter/Space 可切换；</li>
+<li><strong>样式隔离</strong>：注入的 CSS 里没有任何 <code class="notranslate">prefers-color-scheme</code>；八个 Primer 变量齐全；对桌面 <code class="notranslate">.toc</code> 只有小屏下的 <code class="notranslate">display:none</code> 一条声明，<strong>没有</strong> opacity/visibility 之类会误伤的属性；浮层类名与 GmeekTOC 完全不交叉。</li>
+</ol>
+<p>桩又抓到一次"假红"：第一版桩给节点补的 <code class="notranslate">href</code> 赋值没有反射到 attribute（和 G13 同款——真实 DOM 里 <code class="notranslate">a.href = x</code> 会同步到 HTML 属性），导致两条 href 断言报 null。红的是测试桩不是插件，用 <code class="notranslate">Object.defineProperty</code> 补上反射后全绿。</p>
+<p>线上验证注入作用域（<code class="notranslate">script</code> 字段的边界）：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>页面</th>
+<th>articletoc 注入</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>普通文章 <code class="notranslate">/post/20.html</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>固定页 <code class="notranslate">/about.html</code>、<code class="notranslate">/archive.html</code></td>
+<td>✅（archive 运行时无标题自退）</td>
+</tr>
+<tr>
+<td>首页 <code class="notranslate">/</code>、<code class="notranslate">/page2.html</code>、<code class="notranslate">/tag.html</code></td>
+<td>❌（列表页走 <code class="notranslate">indexScript</code>，不注入文章插件）</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>另外用 G13 真实文章的 13 个标题离线跑了 id 生成，零重复。</p>
+<h2>已知局限</h2>
+<p>如果文章里有两个同名标题（比如两篇小结都叫"小结"），按 <code class="notranslate">textContent → id</code> 的算法会得到两个相同的 id，锚点都指向第一个。这是 GmeekTOC 与 articletoc 的共同行为，本站目前没有重名标题，暂时不修；真要修就给 id 加序号后缀（<code class="notranslate">小结</code>、<code class="notranslate">小结-2</code>），两个插件得同步改、同步部署——先记账。</p>
+<h2>小结</h2>
+<p>这一期没有新造轮子，做的是"让两个官方轮子同轴转动"： articletoc 原版本身写得很轻巧，真正的拦路虎只有一个——<strong>插件之间没有命名空间约定，<code class="notranslate">.toc</code> 这种大众类名必然撞车</strong>。类名一加前缀、配色一换 Primer 变量、断点一对齐，桌面 GmeekTOC 与小屏 articletoc 就各上各的班，读者毫无察觉。</p>
+<p>至此文章页的目录体验在桌面和手机两端都补齐了。但还有个读者从 G07 起就隐约期待的能力没做：<strong>滚动时目录自动高亮当前章节</strong>。下一期 G15，叶扬把 tocbot 从 CDN 请到本地，聊聊第三方库本地化与滚动间谍（scrollspy）。</p>
+<h2>参考</h2>
+<ul>
+<li>原插件收录：<a href="https://github.com/Meekdai/Gmeek/blob/main/plugins/articletoc.js">Gmeek 仓库 plugins/articletoc.js</a>（作者 Tiengming）</li>
+<li>官方说明：<a href="https://blog.meekdai.com/post/%E3%80%90Gmeek-jin-jie-%E3%80%91-cha-jian-gong-neng-de-shi-yong.html" rel="nofollow">【Gmeek 进阶】插件功能的使用</a></li>
+<li>主题失配佐证：<a href="https://github.com/Meekdai/Gmeek/issues/196" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/196/hovercard">issue #196</a></li>
+<li>本站适配源码：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/articletoc.js">articletoc.js</a></li>
+<li>相关前作：<a href="/post/14.html">G08 上一篇/下一篇</a>（Primer 变量与三态主题）、<a href="/post/20.html">G13 数字分页条</a>（indexScript 与 script 的边界）</li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script>
+
+</html>
