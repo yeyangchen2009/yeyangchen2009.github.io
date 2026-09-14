@@ -173,13 +173,11 @@ favicon + ogImage 已由 **[G03](/post/9.html)** 完成：自制"叶"字 SVG 图
 
 社区 issue [#145](https://github.com/Meekdai/Gmeek/issues/145) 里有人建议生成 `sitemap.xml`，作者的回复是：**`rss.xml` 已包含全站所有重要页面链接，他自己就是把 rss.xml 提交给 Google 的**；提问者随后验证，必应和谷歌都能正常识别 RSS 作为站点地图。
 
-因此路线图里的"sitemap.xml"可以划掉，正确做法零代码：
+**G04 已落地**（[教程](/post/10.html)）：
 
-- Google Search Console 添加资源后，站点地图直接填 `https://用户名.github.io/rss.xml`；
-- Bing 站长工具同样提交该地址（国内环境下 Bing/必应的收录价值远高于 Google）；
-- RSS 之外，`robots.txt` 和自定义 `404.html` 直接放进 `static/` 根目录即可，构建时原样复制到站点根，GitHub Pages 原生识别。
-
-这组操作列入 **G04** 与 **G11**。
+- Google Search Console / Bing 站长工具直接提交 `rss.xml` 即可（Bing 添加站点时还能从 GSC 一键导入，验证状态继承）；
+- 百度的 sitemap 工具按 sitemaps.org 协议解析、不认 RSS，已在工作流新增 `sitemap_gen.py`，每次构建从 `postList.json` 自动生成标准 `sitemap.xml`，三家都提交它做双保险；
+- RSS 之外，`robots.txt` 和自定义 `404.html` 直接放进 `static/` 根目录即可，构建时原样复制到站点根，GitHub Pages 原生识别（列入 **G11**）。
 
 ## 六、社区生态盘点：有宝贝，也有大坑
 
@@ -220,7 +218,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G01 | [固定页面机制：做一个不进文章流的 About 页](/post/7.html) | `singlePage` + `iconList` | 配置 | ✅ |
 | G02 | [页脚装修：版权小字与"本站已运行 N 天"](/post/8.html) | `bottomText` + `startSite` | 配置 | ✅ |
 | G03 | [给博客一张脸：自制 SVG favicon 与社交分享封面](/post/9.html) | `faviconUrl` + `ogImage` | 配置 | ✅ |
-| G04 | 不写 sitemap：把 RSS 提交给 Google 和 Bing | Search Console / 站长工具 | SEO | ⏳ |
+| G04 | [把门牌号递给搜索引擎：RSS 直接当 sitemap 提交](/post/10.html) | GSC / Bing / 百度 + `sitemap_gen.py` | SEO | ✅ |
 | G05 | 图片灯箱：lightbox 插件接入 | 官方插件 | 教程 | ⏳ |
 | G06 | 文章末尾的隐藏 JSON：单篇插件、自定义封面、补发旧文 | 文章级配置 | 原理 | ⏳ |
 | G07 | 写作增强：GitHub Alert 块、数学公式、Mermaid | 内置语法 | 教程 | ⏳ |
@@ -254,4 +252,4 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01、G02、G03 已完成，下一篇 G04 是最"躺赢"的一篇：不写代码，把 RSS 提交给 Google Search Console 和 Bing 站长工具。
+G01–G04 已完成，下一篇 G05 装官方 lightbox 图片灯箱插件：文章插图点击放大、左右切换、手机端双指缩放。
