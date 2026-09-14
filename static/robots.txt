@@ -1,0 +1,7 @@
+# robots.txt — https://yeyangchen2009.github.io
+# 全站欢迎合规爬虫收录，无任何屏蔽
+User-agent: *
+Allow: /
+
+# G04 起由 sitemap_gen.py 每次构建自动刷新
+Sitemap: https://yeyangchen2009.github.io/sitemap.xml
