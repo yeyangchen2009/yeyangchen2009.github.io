@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 · 这页走丢了 - 叶扬的博客</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg">
+<style>
+:root{
+  --canvas:#ffffff; --fg:#1f2328; --muted:#656d76; --border:#d0d7de;
+  --accent:#0969da; --accent-subtle:#ddf4ff;
+}
+html[data-color-mode="dark"]{
+  --canvas:#0d1117; --fg:#e6edf3; --muted:#8b949e; --border:#30363d;
+  --accent:#58a6ff; --accent-subtle:#21262d;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--canvas);color:var(--fg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;
+}
+.wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 20px;}
+.card{width:100%;max-width:560px;text-align:center;}
+.code{
+  font-size:clamp(72px,18vw,120px);font-weight:800;line-height:1;margin:0;
+  background:linear-gradient(135deg,var(--accent),#a371f7);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:.04em;
+}
+h1{font-size:20px;margin:14px 0 8px;}
+.desc{font-size:14px;line-height:1.8;color:var(--muted);margin:0 0 22px;}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;
+  font-size:14px;font-weight:600;text-decoration:none;border:1px solid var(--border);
+  color:var(--fg);background:transparent;transition:border-color .15s,background .15s,transform .15s;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.btn-primary:hover{color:#fff;background:var(--accent);opacity:.92;}
+.recent{margin:30px auto 0;max-width:420px;text-align:left;}
+.recent-title{font-size:13px;color:var(--muted);margin:0 0 10px;text-align:center;}
+.recent ul{list-style:none;margin:0;padding:0;}
+.recent li{padding:7px 0;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:baseline;}
+.recent li:last-child{border-bottom:none;}
+.recent a{
+  color:var(--fg);text-decoration:none;font-size:14px;line-height:1.5;
+  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;
+}
+.recent a:hover{color:var(--accent);text-decoration:underline;}
+.recent time{flex:0 0 auto;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;}
+.foot{text-align:center;padding:18px;font-size:12px;color:var(--muted);}
+.foot a{color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="card">
+    <p class="code">404</p>
+    <h1>这页大概是坐时光机走丢了</h1>
+    <p class="desc">你访问的页面不存在——地址可能输错了，或者内容已经搬了家。<br>
+    如果你是从别的网站点过来的，那个链接或许已经过期。</p>
+    <div class="btns">
+      <a class="btn btn-primary" href="/">🏠 回到首页</a>
+      <a class="btn" href="/archive.html">🗂 逛逛归档</a>
+    </div>
+    <div class="recent" id="recentWrap" hidden>
+      <p class="recent-title">或者，从最新文章里挑一篇：</p>
+      <ul id="recentList"></ul>
+    </div>
+  </main>
+</div>
+<div class="foot"><a href="/">叶扬的博客</a> · 人生苦短，我用 AI ～</div>
+<script>
+(function () {
+    // 与 Gmeek 主站共用同一个 localStorage 键，三态主题保持一致
+    try {
+        var t = localStorage.getItem('meek_theme') || 'auto';
+        var dark = t === 'dark' ||
+            (t !== 'light' && window.matchMedia &&
+             window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-color-mode', dark ? 'dark' : 'light');
+    } catch (e) {}
+
+    // 迷路也要有内容：拉取全站最新 5 篇文章（数据结构同 G08/G10）
+    fetch('/postList.json', { cache: 'no-cache' })
+        .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+        .then(function (list) {
+            var posts = Object.keys(list).map(function (key) {
+                var item = list[key];
+                return {
+                    num: parseInt(key.replace(/^P/, ''), 10),
+                    title: item.postTitle,
+                    url: item.postUrl ? '/' + item.postUrl : '',
+                    date: item.createdDate || ''
+                };
+            }).filter(function (p) { return p.url && p.num && p.date; })
+              .sort(function (a, b) {
+                  if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+                  return b.num - a.num;
+              }).slice(0, 5);
+            if (!posts.length) return;
+            var ul = document.getElementById('recentList');
+            posts.forEach(function (p) {
+                var li = document.createElement('li');
+                var time = document.createElement('time');
+                time.textContent = p.date.slice(5);
+                var a = document.createElement('a');
+                a.href = p.url;
+                a.textContent = p.title;
+                li.appendChild(time);
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+            document.getElementById('recentWrap').hidden = false;
+        })
+        .catch(function () { /* 拉不到就保持简洁，不添乱 */ });
+})();
+</script>
+</body>
+</html>
