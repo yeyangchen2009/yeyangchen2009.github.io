@@ -48,11 +48,11 @@
 - **关键坑**：只能走 `script` 字段（仅文章页注入），**不能放 `allHead`**——首页没有 `id="content"` 元素，会抛 TypeError。
 - **叶扬的判断**：官方文档站自己在用，配色全走 Primer CSS 变量自动适配暗色，已装。
 
-### 3. lightbox.js —— 图片灯箱（强烈推荐，待装）
+### 3. lightbox.js —— 图片灯箱（✅ 已装，见 [G05](/post/11.html)）
 
 - **功能**：文章图片点击放大，支持滚轮缩放、左右键切换上一张/下一张、触屏滑动、相邻图片预加载、毛玻璃遮罩、点遮罩关闭。
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/lightbox.js)（357 行，零外部依赖，所有样式与 DOM 都由插件自建）；官方进阶教程收录，由社区用户 **Tiengming** 贡献。
-- **叶扬的判断**：官方插件里完成度最高的一个。本站目前文章几乎无图，但只要开始贴图（比如 Gmeek 操作截图教程）立刻需要，列入 G05。
+- **叶扬的判断**：官方插件里完成度最高的一个，G05 已接入（`static/plugins/lightbox.js` + config `script` 拼接）；教程里用 og.png/favicon.svg 两张图做了可点击演示。
 
 ### 4. articletoc.js —— 悬浮按钮式目录（移动端备选）
 
@@ -219,7 +219,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G02 | [页脚装修：版权小字与"本站已运行 N 天"](/post/8.html) | `bottomText` + `startSite` | 配置 | ✅ |
 | G03 | [给博客一张脸：自制 SVG favicon 与社交分享封面](/post/9.html) | `faviconUrl` + `ogImage` | 配置 | ✅ |
 | G04 | [把门牌号递给搜索引擎：RSS 直接当 sitemap 提交](/post/10.html) | GSC / Bing / 百度 + `sitemap_gen.py` | SEO | ✅ |
-| G05 | 图片灯箱：lightbox 插件接入 | 官方插件 | 教程 | ⏳ |
+| G05 | [给文章图片装一盏灯：官方 lightbox 灯箱插件](/post/11.html) | 官方插件 | 教程 | ✅ |
 | G06 | 文章末尾的隐藏 JSON：单篇插件、自定义封面、补发旧文 | 文章级配置 | 原理 | ⏳ |
 | G07 | 写作增强：GitHub Alert 块、数学公式、Mermaid | 内置语法 | 教程 | ⏳ |
 | G08 | 自研插件（一）：文章末尾上一篇/下一篇 | `postList.json` | 自研 | ⏳ |
@@ -252,4 +252,4 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G04 已完成，下一篇 G05 装官方 lightbox 图片灯箱插件：文章插图点击放大、左右切换、手机端双指缩放。
+G01–G05 已完成，下一篇 G06 拆解文章正文最末尾的隐藏 JSON（`<!-- ##{...}## -->`）：给单篇文章单独定制 script、style、ogImage、时间戳。
