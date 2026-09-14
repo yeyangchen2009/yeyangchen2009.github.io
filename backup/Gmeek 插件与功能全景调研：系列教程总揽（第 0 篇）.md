@@ -54,11 +54,11 @@
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/lightbox.js)（357 行，零外部依赖，所有样式与 DOM 都由插件自建）；官方进阶教程收录，由社区用户 **Tiengming** 贡献。
 - **叶扬的判断**：官方插件里完成度最高的一个，G05 已接入（`static/plugins/lightbox.js` + config `script` 拼接）；教程里用 og.png/favicon.svg 两张图做了可点击演示。
 
-### 4. articletoc.js —— 悬浮按钮式目录（移动端备选）
+### 4. articletoc.js —— 悬浮按钮式目录（✅ 已装，见 [G14](/post/21.html)）
 
 - **功能**：不在正文里占位置，而是在右下角放一个 ☰ 圆形按钮，点击弹出目录浮层，再点外部关闭；自带亮/暗两套 CSS 变量。
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/articletoc.js)，同为 Tiengming 贡献。
-- **叶扬的判断**：它与 GmeekTOC 解决同一个问题，**桌面端二选一**。它的价值在手机：GmeekTOC 窄屏时会在文章开头占一整块，而它只占一个按钮。可选方案：桌面保留现有 GmeekTOC，小屏用媒体查询隐藏之、换挂这个——属于体验优化，不急。
+- **叶扬的判断**：原版与 GmeekTOC 同名 `.toc`，同时加载会被浮层的 `opacity:0;visibility:hidden` 连坐藏掉桌面目录，所以官方只让二选一。**G14 已用类名隔离（`.toc-mobile`）实现共存**：桌面 >1249px 仍是 GmeekTOC 常驻右侧、圆形按钮隐藏；≤1249px 隐藏 GmeekTOC 退化出的文首静态块、右下角 ☰ 浮层当班。另把原版 `prefers-color-scheme` 暗色换成 Primer 变量（#196 三态失配），补空标题守卫、点链接/Esc 收起与 aria-expanded 键盘可达。
 
 ### 5. GmeekTocBot.js —— tocbot 版目录（不建议）
 
@@ -228,7 +228,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G11 | [运维两小件：robots.txt 与自定义 404 页](/post/18.html) | `static/` 直出 | 运维 | ✅ |
 | G12 | [小补丁：外链自动新标签页打开](/post/19.html) | URL 判定 + noopener | 自研 | ✅ |
 | G13 | [数字分页条：借不到轮子，就自己造一个](/post/20.html) | `indexScript` + Primer 内建分页样式 | 自研（社区方案失联） | ✅ |
-| G14 | 移动端目录：articletoc 与响应式策略 | 官方插件 | 体验 | 💤 |
+| G14 | [手机上的文章目录：右下角 ☰ 与两个 TOC 插件的和平共处](/post/21.html) | articletoc 适配 + 类名隔离/响应式分工 | 官方插件适配 | ✅ |
 | G15 | tocbot 本地化：当前章节滚动高亮 | CDN 资源本地化 | 进阶 | 💤 |
 
 更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 `edited` 事件，编辑即自动重建），所以这张表会一直是最新的。
@@ -252,7 +252,8 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G13 已完成，下一篇 G14：移动端目录——桌面端 GmeekTOC 在小屏缺席，接官方 articletoc 插件并处理桌面/小屏两套目录的响应式共存策略。
+G01–G14 已完成，下一篇 G15：tocbot 本地化——把官方 GmeekTocBot 依赖的 cdnjs tocbot 4.27.4 下载到 static/ 改注入，拿到滚动时当前章节自动高亮（scrollspy）能力。
+
 
 
 
