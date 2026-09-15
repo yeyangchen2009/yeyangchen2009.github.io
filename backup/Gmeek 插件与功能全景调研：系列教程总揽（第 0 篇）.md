@@ -231,6 +231,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G14 | [手机上的文章目录：右下角 ☰ 与两个 TOC 插件的和平共处](/post/21.html) | articletoc 适配 + 类名隔离/响应式分工 | 官方插件适配 | ✅ |
 | G15 | [Mermaid 翻车记：自动检测按需加载，顺手给 Gmeek 提个 PR](/post/24.html) | GmeekMermaid 自研插件 + 上游 #236/PR#319 | 自研 + 开源回馈 | ✅ |
 | G16 | [目录会读心：把 tocbot 请到本地，让当前章节一路高亮](/post/25.html) | CDN 资源本地化 + scrollspy | 进阶 | ✅ |
+| 番外 | [给博客拍证件照：零依赖无头截图流水线，与一桩白底怪案](/post/26.html) | CDP + Fetch 域拦截 | 工具/方法论 | ✅ |
 
 更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 `edited` 事件，编辑即自动重建），所以这张表会一直是最新的。
 
@@ -241,7 +242,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | 候选 | 内容 | 依据 | 状态 |
 | --- | --- | --- | --- |
 | **G17 SEO 收尾战** | 文章页补 `<link rel="canonical">`、JSON-LD（BlogPosting 结构化数据）、twitter:card；顺手清洁 `meta description`——框架当前直接取正文开头，会把 `>` 引用符和 `[文字](链接)` 语法原样塞进搜索摘要 | #4 清单上仅剩的技术缺口（已 curl 实锤框架不自带） | ⏸️ 选题保留，2026-09-15 决定先暂停 |
-| **番外·给博客拍证件照** | 零依赖无头浏览器截图教程：Node 内置 WebSocket 直连 CDP（不装 puppeteer），Fetch 域拦截 CSS 破解 headless 样式加载失败、localStorage 注入暗色、2x 高清、元素级 clip 截全图；产物即本批 9 张教程插图 | 2026-09-15 给 9 篇老教程补截图的完整实战，截图器已留存 | 🆕 素材新鲜，候选下一篇 |
+| ~~番外·给博客拍证件照~~ | 零依赖无头浏览器截图教程：Node 内置 WebSocket 直连 CDP（不装 puppeteer），Fetch 域拦截 CSS 破解 headless 样式加载失败、localStorage 注入暗色、2x 高清、元素级 clip 截全图；产物即本批 9 张教程插图。**成品脚本 [`tools/cdp-shot.js`](https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/tools/cdp-shot.js)** | 给 9 篇老教程补截图的完整实战 | ✅ 已发布（2026-09-15，[番外](/post/26.html)） |
 | **番外·收录实战** | G04 提交一周后，Google/Bing 真实收录数据对比、GSC"无法抓取"复查结论，回答"RSS 当 sitemap 到底有没有用" | [G04](/post/10.html)、G16 结尾均已预告 | 📅 约 2026-09-21 后 |
 | 候选·备份双保险 | 用 Actions 把 `backup/` 定期镜像到私有仓库 | #4 运维章自己提的建议 | 待定 |
 | 候选·阅读进度条 | 文章顶部滚动进度条，G16 scrollspy 的姊妹篇 | 体验增强 | 选题偏薄，可能并入杂谈 |
@@ -279,7 +280,8 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G16 已全部完成，路线图正篇收官。**G17 SEO 收尾战**（canonical + JSON-LD + twitter:card + 清洁 description）作为技术收尾选题保留在池、目前暂停；2026-09-15 给 9 篇老教程补齐浏览器实拍截图后，**「番外·给博客拍证件照」（零依赖 CDP 截图）成为候选下一篇**；约 2026-09-21 还有已承诺的 **G04 收录实战番外**——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"。更远的候选见上方选题池。
+G01–G16 已全部完成，路线图正篇收官。**G17 SEO 收尾战**（canonical + JSON-LD + twitter:card + 清洁 description）作为技术收尾选题保留在池、目前暂停；2026-09-15 先完成了 **[番外·给博客拍证件照](/post/26.html)**（零依赖 CDP 无头截图，成品脚本在仓库 `tools/cdp-shot.js`）；约 2026-09-21 还有已承诺的 **G04 收录实战番外**——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，那是下一篇待写的文章。更远的候选见上方选题池。
+
 
 
 
