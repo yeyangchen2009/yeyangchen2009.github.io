@@ -93,6 +93,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </blockquote>
 <h2>先看现场</h2>
 <p><strong>现在页头应该多了一个档案盒图标</strong>（首页右上，about 按钮旁边），点进去就是新建好的 <a href="/archive.html">/archive.html</a>：2026 大标题、左侧一根时间竖线、每个文章标题挂在圆点右侧按时间倒序排列，滚动时年份会吸顶；暗色模式一切正常，手机上竖线和圆点也对齐。最妙的是它<strong>零维护</strong>——以后每发一篇新文，它都会自己排队进时间线，永远不用编辑这个页面。</p>
+<p>实拍一张（暗色主题，年份头带篇数胶囊、圆点竖线、日期对齐）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/g10-archive.png"><img src="/screenshots/g10-archive.png" alt="按年分组的时间线归档页：年份大标题、蓝色篇数胶囊、圆点竖线与文章列表" style="max-width: 100%;"></a></p>
 <p>先给结论（后文明着算一遍）：本站目前 14 篇普通文章，#6 是 About、#16 是这个归档页，<strong>它们都不进文章流</strong>；但在其余数据出口里的待遇各不相同。</p>
 <h2>一、新页面从哪来：singlePage 读源码确认事实</h2>
 <p>About 页（issue #6）从建站起就在，但关于它的事实之前大多是"知道能用"。这一期要新增第二个固定页，叶扬把官方构建脚本 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py">Gmeek.py</a> 相关逻辑全读了一遍，逐条实测：</p>
