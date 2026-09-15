@@ -156,6 +156,8 @@ Sitemap: https://yeyangchen2009.github.io/sitemap.xml
 <p><strong>3. 迷路时给内容，不只给按钮。</strong> 这页也 fetch 了 <code class="notranslate">postList.json</code>，取最新 5 篇文章（排序逻辑与 G08/G10 同款：日期倒序、编号兜底），渲染成"或者，从最新文章里挑一篇"。读者输错地址时，被接住的最好方式是直接给他可看的东西。fetch 失败整块隐藏——降级成只有两个按钮的简洁版，绝不报错。</p>
 <p><strong>4. 零外部依赖。</strong> 不加载任何第三方 CSS/JS/字体，系统字体栈兜底。404 是"出错时刻"，页面必须在网络最差的时候也能秒开。</p>
 <p>页面结构就是一张居中卡片：渐变数字 404、一句叶扬式调侃（"这页大概是坐时光机走丢了"）、两个按钮（🏠 首页 / 🗂 归档——归档入口正好用上 G10 成果）、最新文章列表、页脚签名。</p>
+<p>实拍一张（故意访问一个不存在的地址）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/g11-404.png"><img src="/screenshots/g11-404.png" alt="自定义 404 页：渐变 404、坐时光机走丢了文案、回首页/逛归档按钮、最新五篇文章" style="max-width: 100%;"></a></p>
 <h2>五、验证清单</h2>
 <markdown-accessiblity-table><table role="table">
 <thead>

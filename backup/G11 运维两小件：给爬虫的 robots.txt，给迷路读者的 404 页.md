@@ -92,6 +92,10 @@ document.documentElement.setAttribute('data-color-mode', dark ? 'dark' : 'light'
 
 页面结构就是一张居中卡片：渐变数字 404、一句叶扬式调侃（"这页大概是坐时光机走丢了"）、两个按钮（🏠 首页 / 🗂 归档——归档入口正好用上 G10 成果）、最新文章列表、页脚签名。
 
+实拍一张（故意访问一个不存在的地址）：
+
+![自定义 404 页：渐变 404、坐时光机走丢了文案、回首页/逛归档按钮、最新五篇文章](/screenshots/g11-404.png)
+
 ## 五、验证清单
 
 | 检查 | 期望 | 实测 |
@@ -122,3 +126,4 @@ document.documentElement.setAttribute('data-color-mode', dark ? 'dark' : 'light'
 - static 复制逻辑：[Gmeek.py](https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py)（约 70–88 行）
 - 相关前作：[G04 SEO 与 sitemap](/post/10.html)、[G08 上一篇/下一篇](/post/14.html)、[G10 时间线归档页](/post/17.html)
 - 系列总揽：[Gmeek 插件与功能全景调研（第 0 篇）](/post/5.html)
+
