@@ -81,6 +81,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <blockquote>
 <p>博客能打开、能发文、能评论，只是"活着"；要让文章在十年后还能被人搜到、读到、读得舒服，需要一整套基础功能。这篇文章做一次系统盘点：一个完整博客应该具备哪些功能，叶扬的博客已经有什么、缺什么，以及接下来的建设路线图。</p>
 </blockquote>
+<blockquote>
+<p><strong>2026-09-15 更新</strong>：本文写于系列开工前（9 月 13 日），是一张"开建前的清单"。两天后 <a href="/post/5.html">G01–G16 正篇已全部收官</a>，清单上的待办基本打勾，下文表格与路线图已按现状回填，每项都附上对应的实战教程链接。</p>
+</blockquote>
 <h2>为什么要先列清单再动手</h2>
 <p>刚把博客搭起来的时候，很容易看到别人有什么就往自己站上搬：今天加个看板娘，明天加个音乐播放器，后台挂三四个统计脚本。几年后回头看，这些"装饰"大多随第三方服务倒闭而失效，真正支撑博客运转的基础功能反而一直欠债。</p>
 <p>所以叶扬先按"读者从站外到读完一篇文章"的完整路径，把功能分成五类：</p>
@@ -106,7 +109,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <tr>
 <td>文章列表 / 分页</td>
 <td>首页按时间倒序展示，数量多了分页</td>
-<td>✅ 框架自带（每页 15 篇）</td>
+<td>✅ 框架自带（每页 15 篇）；G13 另补<a href="/post/20.html">数字分页条</a></td>
 </tr>
 <tr>
 <td>标签聚合</td>
@@ -121,12 +124,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <tr>
 <td>时间线归档</td>
 <td>按年月浏览全部文章，写久了价值越高</td>
-<td>⬜ 待建</td>
+<td>✅ 已建，见 <a href="/post/17.html">G10</a></td>
 </tr>
 <tr>
 <td>关于页 About</td>
 <td>博主是谁、怎么联系，建立信任的第一页</td>
-<td>⬜ 待建，优先级最高</td>
+<td>✅ 已建（<code class="notranslate">singlePage</code> 机制见 <a href="/post/7.html">G01</a>，页面在 <a href="/about.html">/about</a>）</td>
 </tr>
 <tr>
 <td>友情链接</td>
@@ -149,7 +152,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <tr>
 <td>文章目录 TOC</td>
 <td>长文导航与定位</td>
-<td>✅ 刚接入，见<a href="/post/3.html">上一篇</a></td>
+<td>✅ 桌面端已升级为 <a href="/post/25.html">G16</a> tocbot（嵌套层级 + 滚动高亮当前章节），手机端 ☰ 浮层见 <a href="/post/21.html">G14</a></td>
 </tr>
 <tr>
 <td>评论系统</td>
@@ -159,7 +162,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <tr>
 <td>图表支持</td>
 <td>技术文画流程图、时序图</td>
-<td>✅ Mermaid 已本地部署</td>
+<td>✅ Mermaid 已本地部署，<a href="/post/24.html">G15</a> 升级为自动检测、按需加载</td>
 </tr>
 <tr>
 <td>代码高亮 + 复制按钮</td>
@@ -174,27 +177,27 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <tr>
 <td>上一篇 / 下一篇</td>
 <td>文末连续阅读引导</td>
-<td>⬜ 待建</td>
+<td>✅ 已建，见 <a href="/post/14.html">G08</a></td>
 </tr>
 <tr>
 <td>字数与阅读时长</td>
 <td>读者决定"要不要现在读完"的参考</td>
-<td>⬜ 待建</td>
+<td>✅ 已建，见 <a href="/post/15.html">G09</a></td>
 </tr>
 <tr>
 <td>图片灯箱 / 懒加载</td>
 <td>点击看大图、节省流量</td>
-<td>⬜ 待建（官方有 lightbox 插件）</td>
+<td>✅ 已装官方 lightbox，见 <a href="/post/11.html">G05</a></td>
 </tr>
 <tr>
 <td>文末版权声明</td>
 <td>声明转载规则，固定一块 CC 协议</td>
-<td>⬜ 待建</td>
+<td>✅ 已用 <code class="notranslate">bottomText</code> 配置实现，见 <a href="/post/8.html">G02</a></td>
 </tr>
 <tr>
 <td>回到顶部</td>
 <td>长文回退导航</td>
-<td>✅ TOC 插件附带 Top 按钮</td>
+<td>✅ 桌面目录卡片附带 Top 按钮（<a href="/post/25.html">G16</a> 保留）</td>
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
@@ -217,7 +220,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <tr>
 <td>Open Graph / Twitter Card</td>
 <td>链接发到社交平台时展示标题、摘要、封面</td>
-<td>⬜ 待核查框架支持度</td>
+<td>✅ 框架自带 og:title/description/url/type，封面经 <a href="/post/9.html">G03</a> 配置 <code class="notranslate">ogImage</code>（自制 1200×630 og.png）；无独立 twitter:card 标签，推特会复用 OG</td>
 </tr>
 <tr>
 <td>分享按钮</td>
@@ -236,6 +239,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <th>功能</th>
 <th>说明</th>
 <th>优先级</th>
+<th>现状</th>
 </tr>
 </thead>
 <tbody>
@@ -243,41 +247,49 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>sitemap.xml</td>
 <td>把全部文章 URL 主动交给搜索引擎</td>
 <td>P0</td>
+<td>✅ <a href="/post/10.html">G04</a>（<code class="notranslate">sitemap_gen.py</code> 构建期自动生成）</td>
 </tr>
 <tr>
 <td>Google Search Console</td>
 <td>提交 sitemap、查看收录与搜索词</td>
 <td>P0</td>
+<td>✅ <a href="/post/10.html">G04</a> 已提交 rss.xml，收录复查中</td>
 </tr>
 <tr>
 <td>Bing 站长工具</td>
 <td>国内环境下必应收录远好于 Google，值得同步提交</td>
 <td>P0</td>
+<td>✅ <a href="/post/10.html">G04</a> 已完成，当天即被抓取</td>
 </tr>
 <tr>
 <td>description / 结构化数据</td>
 <td>每篇文章摘要、JSON-LD，影响搜索结果摘要</td>
 <td>P1</td>
+<td>◑ description 框架自动取正文开头；<strong>JSON-LD 仍缺</strong></td>
 </tr>
 <tr>
 <td>canonical 链接</td>
 <td>避免多 URL 重复收录</td>
 <td>P1</td>
+<td>⬜ 框架未自带，是清单上仅剩的技术缺口</td>
 </tr>
 <tr>
 <td>robots.txt</td>
 <td>爬虫规则入口</td>
 <td>P1</td>
+<td>✅ <a href="/post/18.html">G11</a></td>
 </tr>
 <tr>
 <td>favicon 与站点封面</td>
 <td>浏览器标签页、收藏夹里的辨识度</td>
 <td>P1</td>
+<td>✅ <a href="/post/9.html">G03</a>（自制"叶"字徽章 favicon + og.png）</td>
 </tr>
 <tr>
 <td>百度收录</td>
 <td>对 github.io 域名极不友好，需要独立域名才有意义</td>
-<td>P2，暂缓</td>
+<td>P2</td>
+<td>⏭️ 评估后主动跳过（未备案、性价比低），非欠债</td>
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
@@ -305,7 +317,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <tr>
 <td>自定义 404 页</td>
 <td>输错链接时给读者出路而不是白页</td>
-<td>⬜ 待建</td>
+<td>✅ 已建，见 <a href="/post/18.html">G11</a></td>
 </tr>
 <tr>
 <td>HTTPS</td>
@@ -320,7 +332,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <tr>
 <td>静态资源本地化</td>
 <td>第三方 CDN 挂掉时页面不残缺</td>
-<td>✅ Mermaid 等资源全部放自己仓库</td>
+<td>✅ Mermaid、tocbot（<a href="/post/25.html">G16</a>）等资源全部放自己仓库</td>
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
@@ -330,24 +342,24 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>功能很多，但不能同时开工。按"投入产出比"而不是"实现难度"排，叶扬的顺序是：</p>
 <p><strong>P0（立刻做，半天内全部完成）</strong></p>
 <ol>
-<li>接入文章目录 TOC —— ✅ 已完成（<a href="/post/3.html">过程见此</a>）；</li>
-<li>About 页面 + favicon —— 博客完整度的最低门槛；</li>
-<li>sitemap.xml + 提交 Google / Bing 站长平台 —— 唯一持续带来新读者的投入。</li>
+<li>接入文章目录 TOC —— ✅ 已完成（<a href="/post/3.html">过程见此</a>，后经 <a href="/post/21.html">G14</a>/<a href="/post/25.html">G16</a> 两次升级）；</li>
+<li>About 页面 + favicon —— ✅ 已完成（About 见 <a href="/post/7.html">G01</a>，favicon 见 <a href="/post/9.html">G03</a>）；</li>
+<li>sitemap.xml + 提交 Google / Bing 站长平台 —— ✅ 已完成，见 <a href="/post/10.html">G04</a>（唯一持续带来新读者的投入，收录实战番外待发）。</li>
 </ol>
 <p><strong>P1（文章写多起来之前做）</strong></p>
 <ol start="4">
-<li>自定义 404 页面；</li>
-<li>文末版权声明；</li>
-<li>上一篇 / 下一篇导航 + 字数与阅读时长；</li>
-<li>时间线归档页；</li>
-<li>核查并补全 OG 标签、robots.txt、canonical。</li>
+<li>自定义 404 页面 —— ✅ <a href="/post/18.html">G11</a>；</li>
+<li>文末版权声明 —— ✅ <a href="/post/8.html">G02</a>（<code class="notranslate">bottomText</code> 一行配置）；</li>
+<li>上一篇 / 下一篇导航 + 字数与阅读时长 —— ✅ <a href="/post/14.html">G08</a> + <a href="/post/15.html">G09</a>；</li>
+<li>时间线归档页 —— ✅ <a href="/post/17.html">G10</a>；</li>
+<li>核查并补全 OG 标签、robots.txt、canonical —— ◑ OG 框架自带 + 封面见 <a href="/post/9.html">G03</a>，robots 见 <a href="/post/18.html">G11</a>；<strong>canonical 与 JSON-LD 尚未补</strong>，留作下一轮的两个小缺口。</li>
 </ol>
 <p><strong>P2（有实际需求再做）</strong></p>
 <ol start="9">
-<li>图片灯箱（开始大量贴图时）；</li>
-<li>分享按钮（文章开始被转发时）；</li>
-<li>友链页（认识的博主多起来时）；</li>
-<li>独立域名 + 百度收录（愿意承担年费和备案问题时）。</li>
+<li>图片灯箱（开始大量贴图时）—— ✅ 提前完成，见 <a href="/post/11.html">G05</a>；</li>
+<li>分享按钮（文章开始被转发时）—— ⬜ 未做，维持低优先级；</li>
+<li>友链页（认识的博主多起来时）—— ⬜ 未做；</li>
+<li>独立域名 + 百度收录（愿意承担年费和备案问题时）—— ⏭️ 百度已决定跳过；独立域名仍挂起，等真有需求。</li>
 </ol>
 <h2>建设原则</h2>
 <p>最后立三条规矩，约束以后的自己不乱加东西：</p>
@@ -358,7 +370,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </ol>
 <h2>小结</h2>
 <p>盘点完可以看到，Gmeek 框架已经替个人博客覆盖了骨架的大部分：发文、标签、搜索、RSS、评论、暗色模式、备份都在开箱之列。真正需要自己补的，集中在<strong>SEO 收录</strong>、<strong>About 等固定页面</strong>和<strong>长文阅读辅助</strong>三处。</p>
-<p>这个系列接下来就按 P0 → P1 的顺序，每完成一项写一篇记录，清单即 roadmap。等这个清单全部打勾的那天，这个博客才算真正"建成"。</p></div>
+<p>这个系列随后确实按 P0 → P1 的顺序，每完成一项写一篇记录，清单即 roadmap。截至本次更新，清单上的项目除 canonical / JSON-LD 两个技术小缺口、分享按钮与友链两个主动挂起项外，<strong>已全部打勾</strong>，完整路线见 <a href="/post/5.html">第 0 篇总揽</a>。</p>
+<p>清单之外还有几项"计划外收获"：外链自动新标签页（<a href="/post/19.html">G12</a>）、列表数字分页条（<a href="/post/20.html">G13</a>）、Mermaid 自动按需加载与给上游提的 bug 修复 PR（<a href="/post/24.html">G15</a>，<a href="https://github.com/Meekdai/Gmeek/pull/319" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/319/hovercard">Meekdai/Gmeek#319</a>）。写着写着从"用框架"走到了"给框架修 bug"，这是列清单那天没想到的彩蛋。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
