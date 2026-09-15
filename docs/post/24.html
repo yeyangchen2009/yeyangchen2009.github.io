@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> 上一期 [G14](/post/21.html) 结尾，叶扬说文章页的目录体验已经在桌面和手机两端补齐。">
+<meta property="og:title" content="G15｜Mermaid 翻车记：自动检测按需加载，顺手给 Gmeek 提个 PR">
+<meta property="og:description" content="> 上一期 [G14](/post/21.html) 结尾，叶扬说文章页的目录体验已经在桌面和手机两端补齐。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/24.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G15｜Mermaid 翻车记：自动检测按需加载，顺手给 Gmeek 提个 PR</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G15｜Mermaid 翻车记：自动检测按需加载，顺手给 Gmeek 提个 PR</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/24" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>上一期 <a href="/post/21.html">G14</a> 结尾，叶扬说文章页的目录体验已经在桌面和手机两端补齐。结果发布后回头一看，尴尬了：G13 和 G14 里精心绘制的 mermaid 流程图，在浏览器里全都以<strong>原始代码</strong>的形态晾着——节点、箭头、中文字符串，一字不落地展示给读者。这一期是插播的"翻车现场"：从两张没渲染的图开始，一路追到一个靠记性维持的旧机制，再追到 Gmeek 构建器自身的一个 bug，最后把修复回馈给了上游。全程没有苦大仇深，反而挺好玩的。</p>
+</blockquote>
+<h2>一、案发：两篇新文的流程图当众"裸奔"</h2>
+<p>先做对照实验。同一台浏览器、同一个主题下打开三篇文章：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>文章</th>
+<th>mermaid 图数量</th>
+<th>页面表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/post/13.html">G07 写作三件套</a></td>
+<td>5 张</td>
+<td>✅ 正常渲染</td>
+</tr>
+<tr>
+<td><a href="/post/20.html">G13 数字分页条</a></td>
+<td>2 张</td>
+<td>❌ 整块原始代码</td>
+</tr>
+<tr>
+<td><a href="/post/21.html">G14 手机目录</a></td>
+<td>1 张</td>
+<td>❌ 整块原始代码</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>把三个页面 curl 下来翻 <code class="notranslate">&lt;script&gt;</code>，差异一目了然：G07 的页面底部挂着 <code class="notranslate">mermaid.min.js</code> 和加载器，G13/G14 完全没有。浏览器又不会凭空认识 mermaid 语法，于是 GFM 给的语法高亮壳子 <code class="notranslate">&lt;div class="highlight-source-mermaid"&gt;</code> 就直接露在了页面上——一个带高亮配色的代码块，仅此而已。</p>
+<p>奇怪了，插件机制从 G08 用到 G14，script 字段拼接一直好好的，怎么单单 mermaid 出事？</p>
+<h2>二、根因：一个靠"记性"维持的机制</h2>
+<p>这要从 <a href="/post/13.html">G07</a> 时代的方案说起。当时的考虑是：mermaid v11 的 <code class="notranslate">mermaid.min.js</code> 有约 <strong>3.5MB</strong>，绝不能为了几篇带图的文章让全站每篇都陪葬。所以方案是三件套：</p>
+<ol>
+<li>把 <code class="notranslate">mermaid.min.js</code> 和 30 行的 <code class="notranslate">mermaid-init.js</code> 放进 <code class="notranslate">static/</code>；</li>
+<li><strong>只有含图的文章</strong>，在正文最后一行用 <a href="/post/12.html">G06</a> 教过的隐藏 JSON 挂载：</li>
+</ol>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-c">&lt;!-- ##{"script":"&lt;script src='/mermaid.min.js'&gt;&lt;/script&gt;&lt;script src='/mermaid-init.js'&gt;&lt;/script&gt;"}## --&gt;</span></pre></div>
+<ol start="3">
+<li>Gmeek 构建时解析这最后一行，把脚本只注入这一篇。</li>
+</ol>
+<p>G07 自己当然挂了，所以五张图安然无恙。而写 G13、G14 的时候，叶扬满脑子都是分页算法和类名隔离，<strong>漏写了那最后一行 JSON</strong>——两篇，全漏。</p>
+<h3>这个机制有三重脆弱</h3>
+<p>复盘下来，"作者记性好"居然是整个链路里唯一的保险丝：</p>
+<p><strong>第一重：漏写没有任何报错。</strong> 末行 JSON 解析套在 <code class="notranslate">try/except</code> 里（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L356-L361">Gmeek.py 的 postConfig 解析</a>），解析失败就当这篇没有自定义配置，构建照样绿灯，页面只是默默不长图。绿灯给人一切正常的错觉。</p>
+<p><strong>第二重：编辑器会偷偷加尾巴。</strong> 这次还顺手二刷了 G06 记录过的尾换行坑：通过 <code class="notranslate">gh issue edit</code> 保存正文后，GitHub 会在 body 末尾补出 <code class="notranslate">\n\n</code>。构建器取的是"正文最后一行"，最后一行变成空行，JSON 就失效了——同样静默，同样无日志。这次是用 <code class="notranslate">xxd</code> 看字节才再次实锤的。</p>
+<p><strong>第三重：机制和内容绑死。</strong> "这篇有没有图"是正文内容的属性，却要作者在正文之外用一行隐晦 JSON 再声明一次。任何需要重复声明的事实，迟早会和事实本身脱节。</p>
+<p>榜样其实就在框架里：数学公式从不需要作者挂任何脚本。Gmeek 在构建期扫描到 GFM 产物里的 <code class="notranslate">math-renderer</code> 标签，就自动给这一页注入 MathJax（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L153-L181">Gmeek.py:158 附近的注入逻辑</a>）。作者写 <code class="notranslate">$E=mc^2$</code> 就够了，剩下的框架兜底。mermaid 缺的就是同样的待遇。</p>
+<h2>三、修复：把"记得挂脚本"改成"插件自己检测"</h2>
+<p>给上游提"构建期内建 mermaid"当然是一条路（后来也确实提了，见第六节），但远水解不了近渴，而且插件机制完全够用——把检测时机从构建期挪到浏览器端即可。新插件 <code class="notranslate">static/plugins/GmeekMermaid.js</code> 的工作流：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>文章页加载，GmeekMermaid 启动<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>页面存在&lt;<span class="pl-ent">br</span>/&gt;highlight-source-mermaid 块？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"不存在（0 块）"</span><span class="pl-k">|</span> <span class="pl-ent">X</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>立即 return&lt;<span class="pl-ent">br</span>/&gt;零开销退出<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"存在"</span><span class="pl-k">|</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>提取 pre.textContent 源码&lt;<span class="pl-ent">br</span>/&gt;替换为 .mermaid-wrap 容器<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>window.mermaid&lt;<span class="pl-ent">br</span>/&gt;已存在？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"否：常见路径"</span><span class="pl-k">|</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>动态插入 script&lt;<span class="pl-ent">br</span>/&gt;加载 /mermaid.min.js（约 3.5MB）<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"是：兼容旧的手动挂载"</span><span class="pl-k">|</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>mermaid.initialize&lt;<span class="pl-ent">br</span>/&gt;+ mermaid.run(nodes)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">F</span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>图表渲染完成<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>点击「切换主题」按钮<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">-.-&gt;</span><span class="pl-k">|</span><span class="pl-s">"延迟 100ms 重绘&lt;br/&gt;rendering 锁防重入"</span><span class="pl-k">|</span> <span class="pl-ent">F</span></pre></div>
+<p>几个关键设计决策，挨个交代。</p>
+<h3>0 块立即退出：3.5MB 的经济学</h3>
+<p>插件挂进 config 的 <code class="notranslate">script</code> 字段后，<strong>每篇文章和固定页都会加载它</strong>。但插件本体只有几 KB，真正的大头是 mermaid 引擎。所以入口第一行就是检测：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">var</span> <span class="pl-s1">nodes</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelectorAll</span><span class="pl-kos">(</span><span class="pl-s">'div.highlight-source-mermaid'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">nodes</span><span class="pl-kos">.</span><span class="pl-c1">length</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span></pre></div>
+<p>纯文字文章、About 页、归档页，插件在解析阶段就退出了，绝不会去碰那 3.5MB。这是从 <a href="/post/13.html">G07</a> 就立的规矩——按需付费，一点都不能破。</p>
+<h3>为什么选 <code class="notranslate">highlight-source-mermaid</code></h3>
+<p><a href="/post/13.html">G07</a> 已经实测过 GitHub markdown API 的脾气：<code class="notranslate">```mermaid</code> 围栏块在网页编辑器里能出图，但对外的渲染 API 很克制，只做语法高亮，产物固定是：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">class</span>="<span class="pl-s">highlight highlight-source-mermaid</span>"<span class="pl-kos">&gt;</span>
+  <span class="pl-kos">&lt;</span><span class="pl-ent">pre</span> <span class="pl-c1">class</span>="<span class="pl-s">notranslate</span>"<span class="pl-kos">&gt;</span><span class="pl-kos">&lt;</span><span class="pl-ent">code</span><span class="pl-kos">&gt;</span>flowchart LR ...<span class="pl-kos">&lt;/</span><span class="pl-ent">code</span><span class="pl-kos">&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">pre</span><span class="pl-kos">&gt;</span>
+<span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span></pre></div>
+<p>这个类名就是最可靠的探测信号，不依赖正文写法，老文章新文章一视同仁。取出 <code class="notranslate">&lt;pre&gt;</code> 的 <code class="notranslate">textContent</code> 再剥掉首尾空行，就是干净的图表源码。</p>
+<h3>动态加载的时序：Promise 包 onload</h3>
+<p>3.5MB 的脚本必须在确认有图之后才插入 <code class="notranslate">&lt;script&gt;</code>，而插入之后不能立刻渲染——脚本还没下载执行完。标准做法是用 Promise 包一下 <code class="notranslate">onload</code>/<code class="notranslate">onerror</code>，加载成功再进渲染流程，失败只 <code class="notranslate">console.error</code>，不连累页面其他功能。</p>
+<h3>mermaid v11 的新 API 与两个参数</h3>
+<p>mermaid 10 以后的推荐用法不再是老教程里随处可见的 <code class="notranslate">mermaid.init()</code>，而是显式初始化 + 定点渲染：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-s1">mermaid</span><span class="pl-kos">.</span><span class="pl-en">initialize</span><span class="pl-kos">(</span><span class="pl-kos">{</span>
+    <span class="pl-c1">startOnLoad</span>: <span class="pl-c1">false</span><span class="pl-kos">,</span>        <span class="pl-c">// 关掉自动扫描，渲染权在自己手里</span>
+    <span class="pl-c1">theme</span>: <span class="pl-en">currentTheme</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">,</span>     <span class="pl-c">// 'dark' 或 'default'</span>
+    <span class="pl-c1">securityLevel</span>: <span class="pl-s">'loose'</span><span class="pl-kos">,</span>    <span class="pl-c">// 允许图表标签里的 HTML</span>
+    <span class="pl-c1">flowchart</span>: <span class="pl-kos">{</span> <span class="pl-c1">htmlLabels</span>: <span class="pl-c1">true</span><span class="pl-kos">,</span> <span class="pl-c1">useMaxWidth</span>: <span class="pl-c1">true</span> <span class="pl-kos">}</span>
+<span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">await</span> <span class="pl-s1">mermaid</span><span class="pl-kos">.</span><span class="pl-en">run</span><span class="pl-kos">(</span><span class="pl-kos">{</span> <span class="pl-c1">nodes</span>: <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelectorAll</span><span class="pl-kos">(</span><span class="pl-s">'.mermaid-wrap .mermaid'</span><span class="pl-kos">)</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>两个参数值得单独说：</p>
+<ul>
+<li><strong><code class="notranslate">securityLevel: 'loose'</code></strong>：本站图表的节点文本里大量使用 <code class="notranslate">&lt;br/&gt;</code> 换行（比如 G13 的分页算法图）。默认的 <code class="notranslate">strict</code> 会把这些标签当纯文本转义显示，loose 才放行；</li>
+<li><strong><code class="notranslate">useMaxWidth: true</code></strong>：宽图在手机上自动缩放到容器宽度，配合插件注入的 <code class="notranslate">.mermaid-wrap{overflow-x:auto}</code> 兜底，不会撑破排版。</li>
+</ul>
+<h3>三态主题：跟着 data-color-mode 走，重绘加锁</h3>
+<p>Gmeek 是亮 → 暗 → 跟随系统三态，老 <a href="/post/14.html">G08</a> 起本站插件就立下规矩：只认 <code class="notranslate">html[data-color-mode]</code>，不用 <code class="notranslate">prefers-color-scheme</code>（手动暗色 + 系统亮色时媒体查询会失配，官方 <a href="https://github.com/Meekdai/Gmeek/issues/196" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/196/hovercard">issue #196</a> 有完整讨论）。mermaid 的主题是渲染时烤进 SVG 的，没法靠 CSS 变量自动换肤，只能监听主题按钮、点一下重画一遍：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">var</span> <span class="pl-s1">switchBtn</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'[title="切换主题"]'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">switchBtn</span><span class="pl-kos">)</span> <span class="pl-s1">switchBtn</span><span class="pl-kos">.</span><span class="pl-en">addEventListener</span><span class="pl-kos">(</span><span class="pl-s">'click'</span><span class="pl-kos">,</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-en">setTimeout</span><span class="pl-kos">(</span><span class="pl-s1">draw</span><span class="pl-kos">,</span> <span class="pl-c1">100</span><span class="pl-kos">)</span><span class="pl-kos">;</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>延迟 100ms 是等按钮的三态切换把 <code class="notranslate">data-color-mode</code> 改完；另外 <code class="notranslate">draw()</code> 开头有一把 <code class="notranslate">rendering</code> 布尔锁，防止快速连点导致两场渲染并发、mermaid 报"图正在渲染"的警告。</p>
+<h3>兼容旧的手动挂载</h3>
+<p>万一哪篇文章仍保留着 G07 式的末行 JSON，页面上 <code class="notranslate">window.mermaid</code> 已经存在，插件就不重复加载引擎，直接进入渲染。两套机制可以平滑交接，这也是 <a href="/post/13.html">G07</a> 的末行 JSON 后来能够从容删除的原因——新插件在场，旧挂载只是多余、不会冲突。</p>
+<h2>四、完整源码</h2>
+<p><code class="notranslate">static/plugins/GmeekMermaid.js</code>，85 行，零依赖（外层用四个反引号围栏，是因为源码注释里本身出现了三反引号的 mermaid 标记）：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-c">/* GmeekMermaid —— mermaid 图表自动检测、按需加载</span>
+<span class="pl-c"> * 作用域：config 的 script 只注入文章页/固定页；插件先查</span>
+<span class="pl-c"> *         div.highlight-source-mermaid（GitHub markdown API 对</span>
+<span class="pl-c"> *         ```mermaid 围栏块的高亮产物），没有图表立即退出，零开销。</span>
+<span class="pl-c"> * 有图表才动态加载 /mermaid.min.js（约 3.5MB，仅含图文章承担），</span>
+<span class="pl-c"> * 随后提取源码、按站点明暗主题渲染；切换主题自动重绘。</span>
+<span class="pl-c"> * 兼容旧的手动挂载（文章末行 JSON 自行引入 mermaid.min.js 的情形）：</span>
+<span class="pl-c"> * 全局 mermaid 已存在则直接渲染、不重复加载。</span>
+<span class="pl-c"> */</span>
+<span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">var</span> <span class="pl-s1">nodes</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelectorAll</span><span class="pl-kos">(</span><span class="pl-s">'div.highlight-source-mermaid'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">nodes</span><span class="pl-kos">.</span><span class="pl-c1">length</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+
+    <span class="pl-en">injectStyle</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-c">// 先于任何渲染把高亮块换成自己的容器，提取纯文本图表源码</span>
+    <span class="pl-k">var</span> <span class="pl-s1">blocks</span> <span class="pl-c1">=</span> <span class="pl-v">Array</span><span class="pl-kos">.</span><span class="pl-c1">prototype</span><span class="pl-kos">.</span><span class="pl-c1">map</span><span class="pl-kos">.</span><span class="pl-en">call</span><span class="pl-kos">(</span><span class="pl-s1">nodes</span><span class="pl-kos">,</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">node</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">var</span> <span class="pl-s1">pre</span> <span class="pl-c1">=</span> <span class="pl-s1">node</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'pre'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">var</span> <span class="pl-s1">src</span> <span class="pl-c1">=</span> <span class="pl-kos">(</span><span class="pl-s1">pre</span> ? <span class="pl-s1">pre</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> : <span class="pl-s1">node</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span><span class="pl-kos">)</span>
+            <span class="pl-kos">.</span><span class="pl-en">replace</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">^</span><span class="pl-cce">\n</span><span class="pl-c1">+</span><span class="pl-c1">/</span></span><span class="pl-kos">,</span> <span class="pl-s">''</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">replace</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">\n</span><span class="pl-c1">+</span><span class="pl-cce">$</span><span class="pl-c1">/</span></span><span class="pl-kos">,</span> <span class="pl-s">''</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">var</span> <span class="pl-s1">wrap</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'div'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">wrap</span><span class="pl-kos">.</span><span class="pl-c1">className</span> <span class="pl-c1">=</span> <span class="pl-s">'mermaid-wrap'</span><span class="pl-kos">;</span>
+        <span class="pl-s1">node</span><span class="pl-kos">.</span><span class="pl-c1">parentNode</span><span class="pl-kos">.</span><span class="pl-en">replaceChild</span><span class="pl-kos">(</span><span class="pl-s1">wrap</span><span class="pl-kos">,</span> <span class="pl-s1">node</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">return</span> <span class="pl-kos">{</span> <span class="pl-c1">wrap</span>: <span class="pl-s1">wrap</span><span class="pl-kos">,</span> <span class="pl-c1">src</span>: <span class="pl-s1">src</span> <span class="pl-kos">}</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-smi">window</span><span class="pl-kos">.</span><span class="pl-c1">mermaid</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-en">boot</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span> <span class="pl-k">else</span> <span class="pl-kos">{</span>
+        <span class="pl-en">loadScript</span><span class="pl-kos">(</span><span class="pl-s">'/mermaid.min.js'</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">then</span><span class="pl-kos">(</span><span class="pl-s1">boot</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">catch</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-smi">console</span><span class="pl-kos">.</span><span class="pl-en">error</span><span class="pl-kos">(</span><span class="pl-s">'GmeekMermaid: mermaid.min.js 加载失败'</span><span class="pl-kos">,</span> <span class="pl-s1">e</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">loadScript</span><span class="pl-kos">(</span><span class="pl-s1">src</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-v">Promise</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">resolve</span><span class="pl-kos">,</span> <span class="pl-s1">reject</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-k">var</span> <span class="pl-s1">s</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'script'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+            <span class="pl-s1">s</span><span class="pl-kos">.</span><span class="pl-c1">src</span> <span class="pl-c1">=</span> <span class="pl-s1">src</span><span class="pl-kos">;</span>
+            <span class="pl-s1">s</span><span class="pl-kos">.</span><span class="pl-c1">onload</span> <span class="pl-c1">=</span> <span class="pl-s1">resolve</span><span class="pl-kos">;</span>
+            <span class="pl-s1">s</span><span class="pl-kos">.</span><span class="pl-en">onerror</span> <span class="pl-c1">=</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-s1">reject</span><span class="pl-kos">(</span><span class="pl-k">new</span> <span class="pl-v">Error</span><span class="pl-kos">(</span><span class="pl-s">'load fail: '</span> <span class="pl-c1">+</span> <span class="pl-s1">src</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span> <span class="pl-kos">}</span><span class="pl-kos">;</span>
+            <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">head</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">s</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">injectStyle</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'gmeek-mermaid-style'</span><span class="pl-kos">)</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+        <span class="pl-k">var</span> <span class="pl-s1">style</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'style'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">style</span><span class="pl-kos">.</span><span class="pl-c1">id</span> <span class="pl-c1">=</span> <span class="pl-s">'gmeek-mermaid-style'</span><span class="pl-kos">;</span>
+        <span class="pl-s1">style</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-s">'.mermaid-wrap{margin:18px 0;overflow-x:auto;}'</span><span class="pl-kos">;</span>
+        <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">head</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">style</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">currentTheme</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">return</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">documentElement</span><span class="pl-kos">.</span><span class="pl-en">getAttribute</span><span class="pl-kos">(</span><span class="pl-s">'data-color-mode'</span><span class="pl-kos">)</span> <span class="pl-c1">===</span> <span class="pl-s">'dark'</span>
+            ? <span class="pl-s">'dark'</span> : <span class="pl-s">'default'</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+
+    <span class="pl-k">var</span> <span class="pl-s1">rendering</span> <span class="pl-c1">=</span> <span class="pl-c1">false</span><span class="pl-kos">;</span>
+    <span class="pl-k">async</span> <span class="pl-k">function</span> <span class="pl-en">draw</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">rendering</span><span class="pl-kos">)</span> <span class="pl-k">return</span><span class="pl-kos">;</span>
+        <span class="pl-s1">rendering</span> <span class="pl-c1">=</span> <span class="pl-c1">true</span><span class="pl-kos">;</span>
+        <span class="pl-s1">blocks</span><span class="pl-kos">.</span><span class="pl-en">forEach</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">b</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">wrap</span><span class="pl-kos">.</span><span class="pl-c1">innerHTML</span> <span class="pl-c1">=</span> <span class="pl-s">'&lt;pre class="mermaid"&gt;&lt;/pre&gt;'</span><span class="pl-kos">;</span>
+            <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">wrap</span><span class="pl-kos">.</span><span class="pl-c1">firstChild</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">=</span> <span class="pl-s1">b</span><span class="pl-kos">.</span><span class="pl-c1">src</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-s1">mermaid</span><span class="pl-kos">.</span><span class="pl-en">initialize</span><span class="pl-kos">(</span><span class="pl-kos">{</span>
+            <span class="pl-c1">startOnLoad</span>: <span class="pl-c1">false</span><span class="pl-kos">,</span>
+            <span class="pl-c1">theme</span>: <span class="pl-en">currentTheme</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">,</span>
+            <span class="pl-c1">securityLevel</span>: <span class="pl-s">'loose'</span><span class="pl-kos">,</span>
+            <span class="pl-c1">flowchart</span>: <span class="pl-kos">{</span> <span class="pl-c1">htmlLabels</span>: <span class="pl-c1">true</span><span class="pl-kos">,</span> <span class="pl-c1">useMaxWidth</span>: <span class="pl-c1">true</span> <span class="pl-kos">}</span>
+        <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">try</span> <span class="pl-kos">{</span>
+            <span class="pl-k">await</span> <span class="pl-s1">mermaid</span><span class="pl-kos">.</span><span class="pl-en">run</span><span class="pl-kos">(</span><span class="pl-kos">{</span> <span class="pl-c1">nodes</span>: <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelectorAll</span><span class="pl-kos">(</span><span class="pl-s">'.mermaid-wrap .mermaid'</span><span class="pl-kos">)</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span> <span class="pl-k">catch</span> <span class="pl-kos">(</span><span class="pl-s1">e</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+            <span class="pl-smi">console</span><span class="pl-kos">.</span><span class="pl-en">error</span><span class="pl-kos">(</span><span class="pl-s">'GmeekMermaid render error:'</span><span class="pl-kos">,</span> <span class="pl-s1">e</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-kos">}</span>
+        <span class="pl-s1">rendering</span> <span class="pl-c1">=</span> <span class="pl-c1">false</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+
+    <span class="pl-k">function</span> <span class="pl-en">boot</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+        <span class="pl-en">draw</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">var</span> <span class="pl-s1">switchBtn</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'[title="切换主题"]'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+        <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">switchBtn</span><span class="pl-kos">)</span> <span class="pl-s1">switchBtn</span><span class="pl-kos">.</span><span class="pl-en">addEventListener</span><span class="pl-kos">(</span><span class="pl-s">'click'</span><span class="pl-kos">,</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-en">setTimeout</span><span class="pl-kos">(</span><span class="pl-s1">draw</span><span class="pl-kos">,</span> <span class="pl-c1">100</span><span class="pl-kos">)</span><span class="pl-kos">;</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+<span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>配置方面，只是在 config.json 的 <code class="notranslate">script</code> 字段末尾按老规矩拼上第八个 <code class="notranslate">&lt;script&gt;</code>，不碰模板、不碰构建器。</p>
+<h3>19 条桩断言，以及"红的常常是测试桩"</h3>
+<p>插件没法靠 curl 验证（HTML 里只有注入标签，逻辑跑在浏览器里），叶扬照例用 Node 的 vm 模块搭了一个浏览器桩做断言：伪造的 <code class="notranslate">document</code>、伪造的 script 标签、伪造的 mermaid 对象，一共 19 条，覆盖无图退出、动态加载时序、亮暗主题参数、多图一次 run、切换主题重绘、引擎加载失败与图表语法异常不炸页面等路径。</p>
+<p>过程中测试桩自己连错四次，值得记一笔，因为这是写浏览器插件桩的典型坑：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>桩的毛病</th>
+<th>假象</th>
+<th>修法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>给桩元素赋 <code class="notranslate">s.src=...</code> 没反射到 <code class="notranslate">getAttribute('src')</code></td>
+<td>误报插件没设置脚本地址</td>
+<td>用 <code class="notranslate">Object.defineProperty</code> 让属性和 attribute 双向反射</td>
+</tr>
+<tr>
+<td>桩的 <code class="notranslate">innerHTML</code> 赋值不会真的建子节点</td>
+<td>插件读 <code class="notranslate">firstChild</code> 拿到 null，误报崩溃</td>
+<td>桩里解析标签字符串，真的建出 children</td>
+</tr>
+<tr>
+<td>沙箱里始终没有全局 <code class="notranslate">mermaid</code></td>
+<td>动态加载分支渲染时 ReferenceError</td>
+<td>模拟浏览器：在伪 script 的 <code class="notranslate">onload</code> 回调时刻才往全局注入 mermaid</td>
+</tr>
+<tr>
+<td><code class="notranslate">makeNode</code> 把所有节点 <code class="notranslate">tagName</code> 写死成 <code class="notranslate">DIV</code></td>
+<td><code class="notranslate">&lt;pre&gt;</code> 相关断言全红</td>
+<td>按传入标签赋真实 tagName</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>教训一句话：<strong>断言红了，先怀疑桩的浏览器语义不够保真，再怀疑插件。</strong></p>
+<h2>五、意外收获：无标签 issue 是天然的"站内工单"</h2>
+<p>修复的代码改动走了本站一个正式 PR（<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/pull/23" data-hovercard-type="pull_request" data-hovercard-url="/yeyangchen2009/yeyangchen2009.github.io/pull/23/hovercard">#23</a>），而记录这次事故的来龙去脉需要一个地方。叶扬没打算把排障日志写成文章刷读者的屏，于是新开了一个 issue（<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/22" data-hovercard-type="issue" data-hovercard-url="/yeyangchen2009/yeyangchen2009.github.io/issues/22/hovercard">#22</a>），<strong>故意一个标签都不打</strong>。</p>
+<p>这是读源码时就知道、这次第一次派上用场的冷知识：<code class="notranslate">addOnePostJson()</code> 的整个函数体都包在一个标签判断里——</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">def</span> <span class="pl-en">addOnePostJson</span>(<span class="pl-s1">self</span>,<span class="pl-s1">issue</span>):
+    <span class="pl-k">if</span> <span class="pl-en">len</span>(<span class="pl-s1">issue</span>.<span class="pl-c1">labels</span>)<span class="pl-c1">&gt;=</span><span class="pl-c1">1</span>:
+        ...   <span class="pl-c"># 只有带标签的 issue 才会写入 postListJson、生成页面</span></pre></div>
+<p>无标签的 issue 不生成页面、不进文章列表、不进 RSS、不进 sitemap，却是仓库里一个能写正文、能被 PR 用 <code class="notranslate">Closes #22</code> 自动关闭、能在时间线上留痕的正经 issue。拿它当<strong>站内工单 / CHANGELOG</strong> 再合适不过：#22 完整记录了现象、对比表、修复方案和验收标准，PR 合并后被自动关闭，干净利落。</p>
+<h2>六、红叉追凶：工单反而咬了构建器一口</h2>
+<p>但 #22 上线的瞬间，Actions 页面飘来一个红叉。日志很短：</p>
+<pre class="notranslate"><code class="notranslate">blogBase is exists and issue_number!=0, runOne
+====== start create static html ======
+  File "Gmeek.py", line 427, in runOne
+    self.createPostHtml(self.blogBase[listJsonName]["P"+number_str])
+KeyError: None
+</code></pre>
+<p><code class="notranslate">KeyError: None</code>——有人拿 <code class="notranslate">None</code> 当字典的键去查了。顺着第五节的源码往下想，答案呼之欲出：</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">def</span> <span class="pl-en">runOne</span>(<span class="pl-s1">self</span>,<span class="pl-s1">number_str</span>):
+    <span class="pl-s1">issue</span><span class="pl-c1">=</span><span class="pl-s1">self</span>.<span class="pl-c1">repo</span>.<span class="pl-c1">get_issue</span>(<span class="pl-en">int</span>(<span class="pl-s1">number_str</span>))
+    <span class="pl-k">if</span> <span class="pl-s1">issue</span>.<span class="pl-c1">state</span> <span class="pl-c1">==</span> <span class="pl-s">"open"</span>:
+        <span class="pl-s1">listJsonName</span><span class="pl-c1">=</span><span class="pl-s1">self</span>.<span class="pl-c1">addOnePostJson</span>(<span class="pl-s1">issue</span>)          <span class="pl-c"># 无标签 issue → 返回 None</span>
+        <span class="pl-s1">self</span>.<span class="pl-c1">createPostHtml</span>(<span class="pl-s1">self</span>.<span class="pl-c1">blogBase</span>[<span class="pl-s1">listJsonName</span>][<span class="pl-s">"P"</span><span class="pl-c1">+</span><span class="pl-s1">number_str</span>])  <span class="pl-c"># blogBase[None] → 崩</span></pre></div>
+<p><code class="notranslate">addOnePostJson()</code> 对无标签 issue 隐式返回 <code class="notranslate">None</code>，而增量构建的 <code class="notranslate">runOne()</code> 拿到返回值不做判空，直接 <code class="notranslate">blogBase[None]</code>，必然抛异常。有意思的是<strong>全局重建为什么从来不崩</strong>：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>issue opened / edited&lt;<span class="pl-ent">br</span>/&gt;（无标签，如本站 #22）<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>runOne 增量构建<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">R</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>listJsonName = addOnePostJson()<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">A</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">L</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>issue 带标签？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">L</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"否"</span><span class="pl-k">|</span> <span class="pl-ent">N</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>函数体整体跳过&lt;<span class="pl-ent">br</span>/&gt;隐式返回 None<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">N</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">K</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>blogBase 在 None 键上取文章&lt;<span class="pl-ent">br</span>/&gt;KeyError: None，Action 红叉<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">L</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"是"</span><span class="pl-k">|</span> <span class="pl-ent">OK</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>写入 postListJson&lt;<span class="pl-ent">br</span>/&gt;正常生成页面<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>workflow_dispatch / 每日 0 点定时<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">RA</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>runAll 全局重建<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">RA</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">A2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>只调用 addOnePostJson()&lt;<span class="pl-ent">br</span>/&gt;返回值没人接<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">A2</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">SK</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>无标签 issue 静默跳过&lt;<span class="pl-ent">br</span>/&gt;构建成功，页面也不缺东西<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<p><code class="notranslate">runAll()</code> 只调用、不使用返回值，无标签 issue 被静默跳过，于是全局构建反而"自愈"了。影响面也因此很小：红叉只停留在那一次增量构建的日志里，站点产物一个字节都没坏（无标签 issue 本来就不该有页面）。但红叉毕竟吓人，而且每个拿无标签 issue 当工单用、或者只是手滑忘了贴标签的用户都会撞上。</p>
+<h3>先搜 issue，别重复报告</h3>
+<p>叶扬没有急着开新 issue，而是先搜了一圈上游，果然三个相关的坑都有人占了：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>上游 issue</th>
+<th>状态</th>
+<th>叶扬补了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/Meekdai/Gmeek/issues/236" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/236/hovercard">#236 提交失败</a></td>
+<td>OPEN，0 回复</td>
+<td>楼主贴的报错堆栈和本站的一模一样，给出根因定位、最小复现（开一个无标签 issue 即触发）和 3 行守卫补丁——<a href="https://github.com/Meekdai/Gmeek/issues/236#issuecomment-5673058094" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/236/hovercard">评论原文</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/Meekdai/Gmeek/issues/180" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/180/hovercard">#180 mermaid渲染</a></td>
+<td>OPEN</td>
+<td>楼主和另一位用户 wlkla 都在手写渲染脚本，遗留按需加载、主题切换、复制按钮等问题；贴出 GmeekMermaid 的完整方案与线上 demo，并建议作者对标 MathJax 做构建期自动检测——<a href="https://github.com/Meekdai/Gmeek/issues/180#issuecomment-5673070874" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/180/hovercard">评论原文</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/Meekdai/Gmeek/issues/100" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/100/hovercard">#100 能不能增加一个目录</a></td>
+<td>OPEN</td>
+<td>分享 <a href="/post/21.html">G14</a> 的双 TOC 类名隔离四改动，让官方 articletoc 与 GmeekTOC 能共存——<a href="https://github.com/Meekdai/Gmeek/issues/100#issuecomment-5673078011" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/100/hovercard">评论原文</a></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>补在对症的旧 issue 里比新开三个"我的也是"有价值得多：搜索的人顺着原帖就能看到完整分析。</p>
+<h2>七、第一个上游 PR</h2>
+<p>#236 是个零争议的健壮性缺陷，评论里叶扬也明确表示可以提 PR，于是动手：</p>
+<ol>
+<li>fork <code class="notranslate">Meekdai/Gmeek</code>，新建分支 <code class="notranslate">fix/runone-no-labels-keyerror</code>；</li>
+<li>给 <code class="notranslate">runOne</code> 加 3 行空值守卫，语义向 <code class="notranslate">runAll</code> 看齐——无标签 issue 打印一行日志并跳过：</li>
+</ol>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-s1">listJsonName</span><span class="pl-c1">=</span><span class="pl-s1">self</span>.<span class="pl-c1">addOnePostJson</span>(<span class="pl-s1">issue</span>)
+<span class="pl-k">if</span> <span class="pl-s1">listJsonName</span> <span class="pl-c1">is</span> <span class="pl-c1">None</span>:
+    <span class="pl-en">print</span>(<span class="pl-s">"====== issue has no labels, skip ======"</span>)
+    <span class="pl-k">return</span></pre></div>
+<ol start="3">
+<li><code class="notranslate">python -m py_compile</code> 过语法，再用桩实例（替换掉 repo 和三个 create 方法）验证三种情形：无标签 open issue 跳过且不崩、有标签 open issue 的构建调用顺序不变、closed issue 保持原行为；</li>
+<li>提交 PR：<a href="https://github.com/Meekdai/Gmeek/pull/319" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/319/hovercard">Meekdai/Gmeek#319</a>，正文写清根因、复现、验证，<code class="notranslate">Closes #236</code>——合并后楼主的 issue 会被自动关闭。</li>
+</ol>
+<p>提 PR 之前叶扬给自己定过一条筛选标准，这次正好检验：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>候选改动</th>
+<th>评估</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">runOne</code> 空值守卫</td>
+<td>3 行、纯防御、行为只在原崩溃路径上变化、有现存 issue 背书</td>
+<td>✅ 直接提 PR（#319）</td>
+</tr>
+<tr>
+<td>articletoc 类名隔离</td>
+<td>改大众类名 <code class="notranslate">.toc</code> 可能波及现有用户自定义样式，属设计取舍</td>
+<td>只在 <a href="https://github.com/Meekdai/Gmeek/issues/100" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/100/hovercard">#100</a> 公开方案，等维护者接话</td>
+</tr>
+<tr>
+<td>mermaid 构建期自动检测</td>
+<td>新特性、要动构建器，插件已能绕过</td>
+<td>只在 <a href="https://github.com/Meekdai/Gmeek/issues/180" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/180/hovercard">#180</a> 留建议</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>开源世界里最容易被接受的贡献，往往不是"我给你加了个大功能"，而是"这里有个确定会崩的输入，这是最小修复，这是它不影响其他路径的证据"。上游是低频维护的个人项目（最后一次代码提交在半年前，但社区 PR 仍在被合并），能不能合、什么时候合都随缘；至少下一个撞上 <code class="notranslate">KeyError: None</code> 的人，搜到 #236 就能看见根因和可直接抄走的补丁。</p>
+<h2>八、验收</h2>
+<p>PR <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/pull/23" data-hovercard-type="pull_request" data-hovercard-url="/yeyangchen2009/yeyangchen2009.github.io/pull/23/hovercard">#23</a> 合并后做了一次全局重建，逐页 curl 核对：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>页面</th>
+<th>插件注入</th>
+<th>mermaid 块</th>
+<th>实际行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/post/13.html">G07</a></td>
+<td>是</td>
+<td>5</td>
+<td>末行 JSON 已删除，全部转由自动加载器渲染</td>
+</tr>
+<tr>
+<td><a href="/post/20.html">G13</a></td>
+<td>是</td>
+<td>2</td>
+<td>恢复渲染</td>
+</tr>
+<tr>
+<td><a href="/post/21.html">G14</a></td>
+<td>是</td>
+<td>1</td>
+<td>恢复渲染</td>
+</tr>
+<tr>
+<td><a href="/post/19.html">G12</a>、About、归档</td>
+<td>是</td>
+<td>0</td>
+<td>运行时自退，不加载 mermaid.min.js</td>
+</tr>
+<tr>
+<td>首页 / tag / pageN</td>
+<td>否</td>
+<td>—</td>
+<td><code class="notranslate">script</code> 字段不注入列表页，零负担</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>Network 面板可以亲自验证：纯文字文章不会发出 <code class="notranslate">mermaid.min.js</code> 的请求；含图文章加载一次后走浏览器缓存；明暗主题来回切，图表以对应配色重绘。</p>
+<h2>小结</h2>
+<p>这次翻车的全部教训可以浓缩成一句话：<strong>凡是需要人记住的约定，迟早会被遗忘；好的默认值应该让"什么都不做"就是对的。</strong> G07 时代的手写挂载在"本站只有一篇带图文章"时是合理的权衡，但当带图文章变成三篇、五篇，它就从最佳实践变成了定时炸弹。自动检测、按需加载的插件把约定收回给了机器，作者重新回到"只管写 <code class="notranslate">```mermaid</code> 就好"的状态。</p>
+<p>意外彩蛋是那个红叉：一个为了记录 mermaid 事故而开的无标签工单，恰好亲手触发了上游构建器的隐藏 bug，最后变成了人生第一个上游 PR。开源精神不是什么宏大叙事，无非是：踩坑的时候多走一步，把路牌插在坑边——哪怕只是一条写清根因的评论。</p>
+<p>下一期 G16 回到原计划：tocbot 本地化——把官方 GmeekTocBot 依赖的 cdnjs tocbot 4.27.4 请到 <code class="notranslate">static/</code> 落户，拿到滚动时目录自动高亮当前章节（scrollspy）的能力。</p>
+<h2>参考</h2>
+<ul>
+<li>本站工单：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/22" data-hovercard-type="issue" data-hovercard-url="/yeyangchen2009/yeyangchen2009.github.io/issues/22/hovercard">#22 Mermaid 图表显示为原始代码</a>；修复 PR：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/pull/23" data-hovercard-type="pull_request" data-hovercard-url="/yeyangchen2009/yeyangchen2009.github.io/pull/23/hovercard">#23</a></li>
+<li>本站插件源码：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekMermaid.js">static/plugins/GmeekMermaid.js</a></li>
+<li>上游 PR：<a href="https://github.com/Meekdai/Gmeek/pull/319" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/319/hovercard">Meekdai/Gmeek#319 runOne 空值守卫</a></li>
+<li>上游相关 issue：<a href="https://github.com/Meekdai/Gmeek/issues/236" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/236/hovercard">#236 提交失败（KeyError: None）</a>、<a href="https://github.com/Meekdai/Gmeek/issues/180" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/180/hovercard">#180 mermaid 渲染</a>、<a href="https://github.com/Meekdai/Gmeek/issues/100" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/100/hovercard">#100 文章目录需求</a>、<a href="https://github.com/Meekdai/Gmeek/issues/196" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/196/hovercard">#196 主题适配讨论</a></li>
+<li>mermaid 官方文档：<a href="https://mermaid.js.org/config/usage.html" rel="nofollow">Usage（initialize / run API）</a></li>
+<li>前作：<a href="/post/12.html">G06 文章末尾的秘密</a>、<a href="/post/13.html">G07 写作三件套</a>、<a href="/post/14.html">G08 上一篇/下一篇</a>、<a href="/post/21.html">G14 手机上的文章目录</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekTOC.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
