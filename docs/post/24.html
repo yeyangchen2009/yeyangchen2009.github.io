@@ -454,6 +454,8 @@ KeyError: None
 </tbody>
 </table></markdown-accessiblity-table>
 <p>Network 面板可以亲自验证：纯文字文章不会发出 <code class="notranslate">mermaid.min.js</code> 的请求；含图文章加载一次后走浏览器缓存；明暗主题来回切，图表以对应配色重绘。</p>
+<p>最后上一张实拍——第三节那张自动加载器工作流，在浏览器里按 GitHub Dark 配色完整渲染的样子（对比案发时"整块原始代码晾着"，就是这次修复前后的差别）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/g15-mermaid-loader.png"><img src="/screenshots/g15-mermaid-loader.png" alt="GmeekMermaid 自动加载器工作流流程图在浏览器暗色主题下的完整渲染" style="max-width: 100%;"></a></p>
 <h2>小结</h2>
 <p>这次翻车的全部教训可以浓缩成一句话：<strong>凡是需要人记住的约定，迟早会被遗忘；好的默认值应该让"什么都不做"就是对的。</strong> G07 时代的手写挂载在"本站只有一篇带图文章"时是合理的权衡，但当带图文章变成三篇、五篇，它就从最佳实践变成了定时炸弹。自动检测、按需加载的插件把约定收回给了机器，作者重新回到"只管写 <code class="notranslate">```mermaid</code> 就好"的状态。</p>
 <p>意外彩蛋是那个红叉：一个为了记录 mermaid 事故而开的无标签工单，恰好亲手触发了上游构建器的隐藏 bug，最后变成了人生第一个上游 PR。开源精神不是什么宏大叙事，无非是：踩坑的时候多走一步，把路牌插在坑边——哪怕只是一条写清根因的评论。</p>

@@ -338,6 +338,10 @@ PR [#23](https://github.com/yeyangchen2009/yeyangchen2009.github.io/pull/23) 合
 
 Network 面板可以亲自验证：纯文字文章不会发出 `mermaid.min.js` 的请求；含图文章加载一次后走浏览器缓存；明暗主题来回切，图表以对应配色重绘。
 
+最后上一张实拍——第三节那张自动加载器工作流，在浏览器里按 GitHub Dark 配色完整渲染的样子（对比案发时"整块原始代码晾着"，就是这次修复前后的差别）：
+
+![GmeekMermaid 自动加载器工作流流程图在浏览器暗色主题下的完整渲染](/screenshots/g15-mermaid-loader.png)
+
 ## 小结
 
 这次翻车的全部教训可以浓缩成一句话：**凡是需要人记住的约定，迟早会被遗忘；好的默认值应该让"什么都不做"就是对的。** G07 时代的手写挂载在"本站只有一篇带图文章"时是合理的权衡，但当带图文章变成三篇、五篇，它就从最佳实践变成了定时炸弹。自动检测、按需加载的插件把约定收回给了机器，作者重新回到"只管写 ` ```mermaid ` 就好"的状态。
@@ -355,3 +359,4 @@ Network 面板可以亲自验证：纯文字文章不会发出 `mermaid.min.js` 
 - mermaid 官方文档：[Usage（initialize / run API）](https://mermaid.js.org/config/usage.html)
 - 前作：[G06 文章末尾的秘密](/post/12.html)、[G07 写作三件套](/post/13.html)、[G08 上一篇/下一篇](/post/14.html)、[G14 手机上的文章目录](/post/21.html)
 - 系列总揽：[Gmeek 插件与功能全景调研（第 0 篇）](/post/5.html)
+
