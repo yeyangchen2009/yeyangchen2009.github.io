@@ -167,7 +167,7 @@ favicon + ogImage 已由 **[G03](/post/9.html)** 完成：自制"叶"字 SVG 图
 7. **Markdown 原文自动备份**：每次构建把 issue 正文存进仓库 `backup/` 目录，`git clone` 即整站离线副本。
 8. **RSS 即 sitemap**：见下节，单独说。
 
-写作技巧已由 **[G07](/post/13.html)** 完成：Alert/公式零配置；Mermaid 非内置（GitHub API 只语法高亮不出图），本站方案为 `static/mermaid.min.js`（v11，3.5MB）+ `mermaid-init.js`（监听明暗切换重绘）+ 含图文章用 G06 单篇 JSON 挂脚本，避免全站陪葬；另有内联反引号 `Gmeek-html` 直出 HTML 的彩蛋（围栏代码块不生效）。
+写作技巧已由 **[G07](/post/13.html)** 完成：Alert/公式零配置；Mermaid 非内置（GitHub API 只语法高亮不出图）。**[G15](/post/24.html) 已把 mermaid 升级为自动检测、按需加载**：`static/plugins/GmeekMermaid.js` 检测到 `highlight-source-mermaid` 块才动态加载 `static/mermaid.min.js`（v11，3.5MB），跟随三态主题重绘，作者零配置——G07 时代「含图文章末行手写挂载 JSON」的旧三件套已退役（末行 JSON 漏写即静默失败，是 G15 案发根因）。另有内联反引号 `Gmeek-html` 直出 HTML 的彩蛋（围栏代码块不生效）。
 
 ## 五、SEO：被问得最多，答案却最简单
 
@@ -229,7 +229,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G12 | [小补丁：外链自动新标签页打开](/post/19.html) | URL 判定 + noopener | 自研 | ✅ |
 | G13 | [数字分页条：借不到轮子，就自己造一个](/post/20.html) | `indexScript` + Primer 内建分页样式 | 自研（社区方案失联） | ✅ |
 | G14 | [手机上的文章目录：右下角 ☰ 与两个 TOC 插件的和平共处](/post/21.html) | articletoc 适配 + 类名隔离/响应式分工 | 官方插件适配 | ✅ |
-| G15 | Mermaid 翻车记：自动检测按需加载，顺手给 Gmeek 提个 PR | GmeekMermaid 自研插件 + 上游 #236/PR#319 | 自研 + 开源回馈 | ⏳ |
+| G15 | [Mermaid 翻车记：自动检测按需加载，顺手给 Gmeek 提个 PR](/post/24.html) | GmeekMermaid 自研插件 + 上游 #236/PR#319 | 自研 + 开源回馈 | ✅ |
 | G16 | tocbot 本地化：当前章节滚动高亮 | CDN 资源本地化 | 进阶 | 💤 |
 
 更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 `edited` 事件，编辑即自动重建），所以这张表会一直是最新的。
@@ -253,4 +253,4 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G14 已完成，下一篇 G15：Mermaid 翻车记——G13/G14 的图表整片显示成代码，根因是 G07 时代「含图文章末行手写挂载 JSON」漏写即静默失败；修复方案是自研 GmeekMermaid 插件自动检测 `highlight-source-mermaid`、按需动态加载 3.5MB 的 mermaid.min.js、跟随三态主题重绘。排查路上还用无标签 issue（不构建成文章的「站内工单」用法）顺带挖出上游构建器 bug：无标签 issue 触发增量构建时 `runOne` 抛 `KeyError: None`，已给 Meekdai/Gmeek 提交修复 PR（#319，Closes #236）。原 tocbot 本地化顺延为 G16。
+G01–G15 已完成，下一篇 G16：tocbot 本地化——把官方 GmeekTocBot 依赖的 cdnjs tocbot 4.27.4 下载到 static/ 改注入，拿到滚动时当前章节自动高亮（scrollspy）能力。
