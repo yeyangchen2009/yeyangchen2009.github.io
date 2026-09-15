@@ -128,7 +128,7 @@ function killBrowser(child) {
 async function main() {
     const opt = parseArgs(process.argv.slice(2));
     const browser = resolveBrowser(opt.browser);
-    const { child, port } = await launchBrowser(browser);
+    const { child, port, profile } = await launchBrowser(browser);
 
     try {
         const list = await getJson(port, '/json/list');
@@ -239,7 +239,11 @@ async function main() {
         ws.close();
     } finally {
         killBrowser(child);
-        setTimeout(() => process.exit(0), 200);
+        // Windows 下进程刚退出时文件句柄可能还没释放，删不掉就放弃（临时目录，无大碍）
+        setTimeout(() => {
+            try { fs.rmSync(profile, { recursive: true, force: true }); } catch { /* ignore */ }
+            process.exit(0);
+        }, 300);
     }
 }
 main().catch(e => { console.error(e.message || e); process.exit(1); });
