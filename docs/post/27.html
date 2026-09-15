@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# G17｜SEO 收尾战：canonical、结构化数据和干净的摘要，一次补齐
+
+> 正篇收官时，前传《[建设清单](/post/4.html)》上还剩四项技术缺口：没有 canonical、没有结构化数据、没有 twitter:card，meta description 还把 Markdown 原文原样塞进搜索摘要。">
+<meta property="og:title" content="G17｜SEO 收尾战：canonical、结构化数据和干净的摘要，一次补齐">
+<meta property="og:description" content="# G17｜SEO 收尾战：canonical、结构化数据和干净的摘要，一次补齐
+
+> 正篇收官时，前传《[建设清单](/post/4.html)》上还剩四项技术缺口：没有 canonical、没有结构化数据、没有 twitter:card，meta description 还把 Markdown 原文原样塞进搜索摘要。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/27.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>G17｜SEO 收尾战：canonical、结构化数据和干净的摘要，一次补齐</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">G17｜SEO 收尾战：canonical、结构化数据和干净的摘要，一次补齐</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/27" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>G17｜SEO 收尾战：canonical、结构化数据和干净的摘要，一次补齐</h1>
+<blockquote>
+<p>正篇收官时，前传《<a href="/post/4.html">建设清单</a>》上还剩四项技术缺口：没有 canonical、没有结构化数据、没有 twitter:card，meta description 还把 Markdown 原文原样塞进搜索摘要。2026-09-15 这天叶扬决定把它们一次清零。这篇讲清三件事：缺口到底长什么样、为什么选择"运行时注入"这条需要交代局限的路线、以及一个 135 行的小插件如何让 26 篇文章一夜之间全部体面起来。发布之后，本文就是插件的第一批作品——你在搜索结果里看到的摘要，正是插件读着这篇正文现场生成的。</p>
+</blockquote>
+<h2>一、战场盘点：四个缺口的真容</h2>
+<p>先回到<a href="/post/4.html">前传 #4</a> 9 月 15 日回填时 curl 出来的实锤。以<a href="/post/26.html">截图番外</a>为例，构建后页面 <code class="notranslate">&lt;head&gt;</code> 里与 SEO 有关的标签是这样：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">✅ &lt;meta property="og:title" content="番外｜给博客拍证件照：……"&gt;
+✅ &lt;meta property="og:type" content="article"&gt;
+✅ &lt;meta property="og:url" content="https://yeyangchen2009.github.io/post/26.html"&gt;
+✅ &lt;meta property="og:image" content="https://yeyangchen2009.github.io/og.png"&gt;
+❌ &lt;meta name="description" content="# 番外｜给博客拍证件照……
+
+&gt; 正篇收官之后，叶扬给 9 篇老教程补浏览器实拍截图，……手动截图九遍等于自虐。"&gt;
+❌ 没有 &lt;link rel="canonical"&gt;
+❌ 没有 application/ld+json
+❌ 没有 twitter:card
+</code></pre>
+<p>逐个说后果：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>缺口</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>description 是 Markdown 原文</strong></td>
+<td>框架在构建期直接取 issue 正文开头做摘要，于是 <code class="notranslate">#</code> 标题符号、空行、<code class="notranslate">&gt;</code> 引用符、<code class="notranslate">[文字](链接)</code> 语法原样进了搜索引擎摘要和分享卡片，读者在搜索结果里看到一堆符号</td>
+</tr>
+<tr>
+<td><strong>无 canonical</strong></td>
+<td><code class="notranslate">/post/26.html</code> 与带查询串的同一 URL（UTM 追踪、渠道参数）会被当成不同页面分散权重；转载和镜像出现时，搜索引擎没有权威信号判断原稿是谁</td>
+</tr>
+<tr>
+<td><strong>无 JSON-LD 结构化数据</strong></td>
+<td>搜索引擎只能靠猜理解"这是一篇文章、作者是谁、哪天发的"；拿不到 Article 富结果资格，知识面板、作者署名等增强无从谈起</td>
+</tr>
+<tr>
+<td><strong>无 twitter:card</strong></td>
+<td>X/Twitter、部分聚合器分享时无大图卡片（好在它们会回退读取 OG 标签，所以不是全瞎，只是裸奔）</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>奇怪的是框架并不小气：og:title、og:url 这些构建期就能确定的标签都给全了。问题集中在两类——<strong>需要二次加工正文的</strong>（清洁摘要）和<strong>需要文章级元数据的</strong>（canonical、JSON-LD）。这正是插件该干的活。</p>
+<h2>二、路线之争：运行时注入算不算 SEO？</h2>
+<p>在动手前必须回答一个尖锐的问题：Gmeek 是纯静态站，而我们这套插件体系全部运行在浏览器里。<strong>爬虫 curl 到的 HTML 源码里没有的标签，注入了算不算数？</strong></p>
+<p>叶扬查了 Google 搜索中心的官方文档，结论分三种爬虫区别对待：</p>
+<ol>
+<li><strong>Google</strong>：明确支持 JavaScript 渲染。Googlebot 抓取后会把页面送进渲染队列（二次索引），用 Chromium 跑完 JS 再读最终 DOM——JS 生成的标题、canonical、meta、结构化数据都在可索引范围内（官方 JavaScript SEO 文档原话：Google 会执行 JS 并读取渲染后的内容）。限制只有一个：渲染队列有延迟，新页面可能晚几个小时到一天才看到最终形态；</li>
+<li><strong>Bing</strong>：同样有 JS 渲染管线，能力略保守但主流用法支持；</li>
+<li><strong>不渲染 JS 的爬虫</strong>：部分社交卡片爬虫、百度——它们只读静态源码。</li>
+</ol>
+<p>于是设计原则清晰了：</p>
+<ul>
+<li><strong>静态源码里已经对的，别动也别依赖运行时</strong>：OG 四件套框架构建期就给全了，分享卡片（最依赖不渲染爬虫的场景）本来就工作，插件只覆盖其中脏掉的 <code class="notranslate">og:description</code>；</li>
+<li><strong>运行时补的，瞄准渲染型爬虫</strong>：canonical、JSON-LD、twitter:card、清洁 description 主要服务 Google/Bing；</li>
+<li><strong>百度</strong>：本站在 <a href="/post/10.html">G04</a> 就决定跳过（未备案的 github.io 收录极差），这条局限对我们不成立。</li>
+</ul>
+<p>另一个选择是改框架模板或给上游提 PR，让构建期直接产出静态标签——那当然更"正统"，但违背本系列<a href="/post/4.html">第 4 篇</a>立的规矩（走插件机制、不改模板、升级无痛）。运行时插件是现有纪律下的最优解，代价是在本文里<strong>把局限写明白</strong>，不假装 curl 能看到它。</p>
+<p>整条流水线的分工是这样：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TB</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>GitHub Issue 正文<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>构建期：Gmeek.py<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>静态 HTML&lt;<span class="pl-ent">br</span>/&gt;OG 四件套齐全&lt;<span class="pl-ent">br</span>/&gt;description 是 Markdown 原文<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>读者/渲染型爬虫&lt;<span class="pl-ent">br</span>/&gt;浏览器加载页面<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>GmeekSEO.js 运行<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>canonical 入 head<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>正文 textContent 现场提炼&lt;<span class="pl-ent">br</span>/&gt;覆盖三处 description<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>twitter:card 四件套<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>fetch postList.json&lt;<span class="pl-ent">br</span>/&gt;BlogPosting JSON-LD 入 head<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">J</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>最终 DOM<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">J</span>
+    <span class="pl-ent">H</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">J</span>
+    <span class="pl-ent">I</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">J</span>
+    <span class="pl-ent">J</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">K</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Google/Bing 渲染队列&lt;<span class="pl-ent">br</span>/&gt;读到完整元数据 ✅<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">L</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>不渲染 JS 的爬虫&lt;<span class="pl-ent">br</span>/&gt;读到静态 OG 与脏摘要 ⚠️<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<h2>三、插件实现：static/plugins/GmeekSEO.js</h2>
+<p>成品 <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekSEO.js"><code class="notranslate">static/plugins/GmeekSEO.js</code></a>，135 行零依赖，挂在 config 的 <code class="notranslate">script</code> 字段<strong>第一位</strong>——元数据补全在所有正文插件之前跑完。下面按四个产出拆。</p>
+<h3>3.1 canonical：不拼域名，复用 og:url</h3>
+<p>自己拿 <code class="notranslate">location.origin + pathname</code> 拼 URL 是常见写法，但叶扬选择更懒也更稳的路线——<strong>框架构建期已经把绝对 URL 写进 <code class="notranslate">og:url</code> 了</strong>，直接读：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">function</span> <span class="pl-en">ogContent</span><span class="pl-kos">(</span><span class="pl-s1">prop</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">var</span> <span class="pl-s1">m</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'meta[property="og:'</span> <span class="pl-c1">+</span> <span class="pl-s1">prop</span> <span class="pl-c1">+</span> <span class="pl-s">'"]'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">return</span> <span class="pl-s1">m</span> ? <span class="pl-s1">m</span><span class="pl-kos">.</span><span class="pl-en">getAttribute</span><span class="pl-kos">(</span><span class="pl-s">'content'</span><span class="pl-kos">)</span> : <span class="pl-s">''</span><span class="pl-kos">;</span>
+<span class="pl-kos">}</span>
+<span class="pl-k">var</span> <span class="pl-s1">canonicalUrl</span> <span class="pl-c1">=</span> <span class="pl-en">ogContent</span><span class="pl-kos">(</span><span class="pl-s">'url'</span><span class="pl-kos">)</span> <span class="pl-c1">||</span> <span class="pl-kos">(</span><span class="pl-s1">location</span><span class="pl-kos">.</span><span class="pl-c1">origin</span> <span class="pl-c1">+</span> <span class="pl-s1">pathname</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'link[rel="canonical"]'</span><span class="pl-kos">)</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">var</span> <span class="pl-s1">link</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'link'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">link</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'rel'</span><span class="pl-kos">,</span> <span class="pl-s">'canonical'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">link</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'href'</span><span class="pl-kos">,</span> <span class="pl-s1">canonicalUrl</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">head</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">link</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-kos">}</span></pre></div>
+<p>好处有三：域名跟着 config 走，绑定自定义域名后零改动；没有 trailing slash、大小写之争；<code class="notranslate">if</code> 守卫保证将来框架或上游在静态期补了 canonical，插件绝不打架（测试里专门有一条：预置的静态 canonical 必须原样保留）。</p>
+<h3>3.2 清洁摘要：渲染后 DOM 天生干净</h3>
+<p>这是全篇最有意思的一段。框架为什么脏？因为它在构建期从 <strong>Markdown 原文</strong>里摘文字，<code class="notranslate">#</code>、<code class="notranslate">&gt;</code>、<code class="notranslate">[]()</code> 当然都还在。而插件运行在渲染之后，DOM 给的是另一个世界：</p>
+<ul>
+<li><code class="notranslate">[文字](http://x)</code> 渲染成 <code class="notranslate">&lt;a&gt;</code>，<code class="notranslate">textContent</code> 只剩"文字"，URL 天然消失；</li>
+<li><code class="notranslate">&gt;</code> 渲染成 blockquote 的左边框（那是 CSS，不是字符），textContent 里根本没有 <code class="notranslate">&gt;</code>；</li>
+<li><code class="notranslate">#</code> 渲染成 <code class="notranslate">&lt;h1&gt;</code>，标题和正文已经是不同节点。</li>
+</ul>
+<p>所以算法不是"清洗 Markdown"，而是<strong>选对节点再读文本</strong>：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">function</span> <span class="pl-en">buildDescription</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">var</span> <span class="pl-s1">clone</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'postBody'</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">cloneNode</span><span class="pl-kos">(</span><span class="pl-c1">true</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">var</span> <span class="pl-s1">junk</span> <span class="pl-c1">=</span> <span class="pl-s1">clone</span><span class="pl-kos">.</span><span class="pl-en">querySelectorAll</span><span class="pl-kos">(</span>
+        <span class="pl-s">'h1,h2,h3,h4,h5,h6,pre,script,style,nav,.gmeek-pn,#archiveTimeline,.toc'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">for</span> <span class="pl-kos">(</span><span class="pl-k">var</span> <span class="pl-s1">i</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span><span class="pl-kos">;</span> <span class="pl-s1">i</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">junk</span><span class="pl-kos">.</span><span class="pl-c1">length</span><span class="pl-kos">;</span> <span class="pl-s1">i</span><span class="pl-c1">++</span><span class="pl-kos">)</span> <span class="pl-s1">junk</span><span class="pl-kos">[</span><span class="pl-s1">i</span><span class="pl-kos">]</span><span class="pl-kos">.</span><span class="pl-c1">parentNode</span><span class="pl-kos">.</span><span class="pl-en">removeChild</span><span class="pl-kos">(</span><span class="pl-s1">junk</span><span class="pl-kos">[</span><span class="pl-s1">i</span><span class="pl-kos">]</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">var</span> <span class="pl-s1">text</span> <span class="pl-c1">=</span> <span class="pl-kos">(</span><span class="pl-s1">clone</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span> <span class="pl-c1">||</span> <span class="pl-s">''</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">replace</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-cce">\s</span><span class="pl-c1">+</span><span class="pl-c1">/</span>g</span><span class="pl-kos">,</span> <span class="pl-s">' '</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">trim</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-c1">!</span><span class="pl-s1">text</span> <span class="pl-c1">||</span> <span class="pl-s1">text</span><span class="pl-kos">.</span><span class="pl-c1">length</span> <span class="pl-c1">&lt;=</span> <span class="pl-c1">140</span><span class="pl-kos">)</span> <span class="pl-k">return</span> <span class="pl-s1">text</span><span class="pl-kos">;</span>
+    <span class="pl-k">var</span> <span class="pl-s1">head</span> <span class="pl-c1">=</span> <span class="pl-s1">text</span><span class="pl-kos">.</span><span class="pl-en">slice</span><span class="pl-kos">(</span><span class="pl-c1">0</span><span class="pl-kos">,</span> <span class="pl-c1">140</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-c">// 在 140 字内找最后一个句读，至少留足 70 字才收；否则硬切加省略号</span>
+    ...
+<span class="pl-kos">}</span></pre></div>
+<p>四个细节都有出处：</p>
+<ol>
+<li><strong>克隆再删</strong>（<code class="notranslate">cloneNode(true)</code>）：不能在真实 DOM 上动刀，页面显示什么都不能少；</li>
+<li><strong>删标题</strong>：本系列每篇正文开头都有一个 <code class="notranslate"># 大标题</code>，而标题已经在 og:title 里了，摘要不该以标题开头；</li>
+<li><strong>删 <code class="notranslate">pre</code></strong>：代码不该进搜索摘要；但行内 <code class="notranslate">code</code> 保留——它往往是正常句子的一部分；</li>
+<li><strong>删 <code class="notranslate">#archiveTimeline</code></strong>：<a href="/post/17.html">G10</a> 归档页正文只有一个挂载点，插件跑完前里面写着"⏳ 文章列表加载中…"，这行字要是进了摘要就成了事故现场。</li>
+</ol>
+<p>截断策略是中文特调：140 字为上限（中文一个字就是一个字符，比英文 160 字符的通行建议收紧些），优先在句号/问号/分号/逗号处收刀，但至少要攒够 70 字才允许提前断——防止"引子只有一句短话，后面跟着在第一个逗号处腰斩"。找不到句读就硬切加省略号。</p>
+<p>清洁结果同时覆盖三处：<code class="notranslate">meta[name=description]</code>、<code class="notranslate">og:description</code>、<code class="notranslate">twitter:description</code>，保证搜索摘要和分享卡片看到的是同一段干净话。</p>
+<h3>3.3 twitter:card：补齐四件套</h3>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-en">ensureMeta</span><span class="pl-kos">(</span><span class="pl-s">'meta[name="twitter:card"]'</span><span class="pl-kos">,</span> <span class="pl-s">'name'</span><span class="pl-kos">,</span> <span class="pl-s">'twitter:card'</span><span class="pl-kos">,</span> <span class="pl-s">'summary_large_image'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-en">ensureMeta</span><span class="pl-kos">(</span><span class="pl-s">'twitter:title'</span> <span class="pl-s1">…</span><span class="pl-kos">,</span> <span class="pl-en">ogContent</span><span class="pl-kos">(</span><span class="pl-s">'title'</span><span class="pl-kos">)</span> <span class="pl-c1">||</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">title</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-en">ensureMeta</span><span class="pl-kos">(</span><span class="pl-s">'twitter:description'</span> <span class="pl-s1">…</span><span class="pl-kos">,</span> <span class="pl-s1">desc</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-en">ensureMeta</span><span class="pl-kos">(</span><span class="pl-s">'twitter:image'</span> <span class="pl-s1">…</span><span class="pl-kos">,</span> <span class="pl-en">ogContent</span><span class="pl-kos">(</span><span class="pl-s">'image'</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>大图卡（summary_large_image）配 <a href="/post/9.html">G03</a> 做的 1200×630 og.png 正好同尺寸。<code class="notranslate">ensureMeta</code> 是"有则改、无则建"的统一入口，所以这个插件<strong>跑几遍都幂等</strong>。</p>
+<h3>3.4 JSON-LD：把 postList.json 变成 BlogPosting</h3>
+<p>结构化数据只给普通文章（about/archive 是 WebPage，硬套 Article 反而撒谎）。数据全部来自老熟人 postList.json——<a href="/post/14.html">G08</a> 起每个自研插件的公共粮仓：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">var</span> <span class="pl-s1">ld</span> <span class="pl-c1">=</span> <span class="pl-kos">{</span>
+    <span class="pl-s">'@context'</span>: <span class="pl-s">'https://schema.org'</span><span class="pl-kos">,</span>
+    <span class="pl-s">'@type'</span>: <span class="pl-s">'BlogPosting'</span><span class="pl-kos">,</span>
+    <span class="pl-c1">headline</span>: <span class="pl-v">String</span><span class="pl-kos">(</span><span class="pl-s1">item</span><span class="pl-kos">.</span><span class="pl-c1">postTitle</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">slice</span><span class="pl-kos">(</span><span class="pl-c1">0</span><span class="pl-kos">,</span> <span class="pl-c1">110</span><span class="pl-kos">)</span><span class="pl-kos">,</span>  <span class="pl-c">// Google 建议标题 ≤110 字符</span>
+    <span class="pl-c1">description</span>: <span class="pl-s1">desc</span><span class="pl-kos">,</span>
+    <span class="pl-c1">image</span>: <span class="pl-s1">image</span><span class="pl-kos">,</span>                                    <span class="pl-c">// 1200×630 位图，满足大图建议</span>
+    <span class="pl-c1">datePublished</span>: <span class="pl-s1">item</span><span class="pl-kos">.</span><span class="pl-c1">createdDate</span><span class="pl-kos">,</span>                <span class="pl-c">// "2026-09-15"，schema 合法日期</span>
+    <span class="pl-c1">keywords</span>: <span class="pl-kos">(</span><span class="pl-s1">item</span><span class="pl-kos">.</span><span class="pl-c1">labels</span> <span class="pl-c1">||</span> <span class="pl-kos">[</span><span class="pl-kos">]</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">join</span><span class="pl-kos">(</span><span class="pl-s">', '</span><span class="pl-kos">)</span><span class="pl-kos">,</span>        <span class="pl-c">// "博客, Gmeek"</span>
+    <span class="pl-c1">author</span>: <span class="pl-kos">{</span> <span class="pl-s">'@type'</span>: <span class="pl-s">'Person'</span><span class="pl-kos">,</span> <span class="pl-c1">name</span>: <span class="pl-s1">authorName</span> <span class="pl-kos">}</span><span class="pl-kos">,</span>
+    <span class="pl-c1">publisher</span>: <span class="pl-kos">{</span> <span class="pl-s">'@type'</span>: <span class="pl-s">'Organization'</span><span class="pl-kos">,</span> <span class="pl-c1">name</span>: <span class="pl-s1">siteName</span><span class="pl-kos">,</span>
+                 <span class="pl-c1">logo</span>: <span class="pl-kos">{</span> <span class="pl-s">'@type'</span>: <span class="pl-s">'ImageObject'</span><span class="pl-kos">,</span> <span class="pl-c1">url</span>: <span class="pl-s1">image</span> <span class="pl-kos">}</span> <span class="pl-kos">}</span><span class="pl-kos">,</span>
+    <span class="pl-c1">mainEntityOfPage</span>: <span class="pl-kos">{</span> <span class="pl-s">'@type'</span>: <span class="pl-s">'WebPage'</span><span class="pl-kos">,</span> <span class="pl-s">'@id'</span>: <span class="pl-s1">canonicalUrl</span> <span class="pl-kos">}</span><span class="pl-kos">,</span>
+    <span class="pl-c1">url</span>: <span class="pl-s1">canonicalUrl</span>
+<span class="pl-kos">}</span><span class="pl-kos">;</span></pre></div>
+<p>两个"人名从哪来"的小决策：页脚 <code class="notranslate">#footer a</code> 的文本是"叶扬的博客"，正好一鱼两吃——整串做 publisher 组织名，去掉"的博客"后缀做作者人名。不硬编码、不新建配置，三行正则搞定。</p>
+<p>还有一个<strong>故意没放的字段：<code class="notranslate">dateModified</code></strong>。issue 被编辑过很多次，但 Gmeek 的数据出口里没有"最后修改时间"，运行时的 <code class="notranslate">new Date()</code> 是读者访问时间，填进去就是伪造。没有可靠数据源的字段宁可缺席——这条原则和 <a href="/post/24.html">G15</a> 不给没图文章加载 mermaid 是同一个脾气。</p>
+<h3>3.5 守卫与降级</h3>
+<ul>
+<li><strong>正则双保险</strong>：config 的 <code class="notranslate">script</code> 只注入文章页和固定页，插件内部再用 <code class="notranslate">/\/post\/(\d+)\.html$/</code> 与 <code class="notranslate">/^\/[A-Za-z0-9_-]+\.html$/</code> 确认身份，首页、tag 页即使误加载也立刻自退；</li>
+<li><strong>无 <code class="notranslate">#postBody</code> 就退出</strong>，一个标签都不碰；</li>
+<li><strong>fetch 失败只 <code class="notranslate">console.warn</code></strong>：postList 拉不到时，canonical/摘要/twitter 这些同步产物照常生效，只少一个 JSON-LD，不挡阅读；</li>
+<li><strong>重入标志</strong> <code class="notranslate">window.__gmeekSEO</code>，脚本被重复注入时不重复劳动。</li>
+</ul>
+<h2>四、测试：红的照例先是桩</h2>
+<p>系列惯例，上线前 vm 桩测试伺候，15 条断言覆盖：canonical 复用与幂等、预置静态 canonical 不被覆盖、摘要无 <code class="notranslate"># &gt; [ ] (</code> 与 URL 残留、代码块剔除而链接文字保留、两种截断路径、JSON-LD 全字段（含作者名派生）、fetch 失败静默降级、固定页不请求数据也不出 JSON-LD、archive 挂载点不进摘要、两类自退。</p>
+<p>熟悉的一幕再次上演：<strong>头两轮全红，红的是桩，不是插件</strong>——桩节点缺 <code class="notranslate">removeChild</code>、<code class="notranslate">textContent</code> 只有 getter 没有 setter。真实 DOM 这两个都是标配，插件代码一行没改，补齐桩之后 15 条全绿。从 <a href="/post/20.html">G13</a> 到现在，"桩对标准语义的保真度"这个坑已经咬了第五次，值得在系列里留名：<strong>写 DOM 桩时，拿 MDN 上该接口的完整成员表对着抄</strong>。</p>
+<h2>五、线上验收：CDP 读渲染后的 head</h2>
+<p>curl 只能证明"静态源码里依然没有"（这正是预期的局限），验收必须在跑完 JS 的浏览器里做。叶扬复用了<a href="/post/26.html">截图番外</a>那台 CDP 相机的连接方式，写了个只读数不拍照的探测脚本，导航后等 4.5 秒让 fetch 回来，然后一次性读回渲染后的全部元数据。<code class="notranslate">/post/26.html</code> 的实测结果：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">canonical:    https://yeyangchen2009.github.io/post/26.html
+description:  正篇收官之后，叶扬给 9 篇老教程补浏览器实拍截图，顺手给自己
+              挖了个坑：手机浮层要现场点开、流程图比视口还高、九张图全部
+              要暗色主题、还得是 2x 高清——手动截图九遍等于自虐。
+twitter:card  summary_large_image ✅  twitter:image og.png ✅
+JSON-LD:      BlogPosting，datePublished 2026-09-15，keywords "博客, Gmeek"，
+              author 叶扬，publisher 叶扬的博客，mainEntityOfPage 与 canonical 同址
+</code></pre>
+<p>对比插件上岗前，同页的摘要是以 <code class="notranslate"># 番外｜……</code> 加空行加 <code class="notranslate">&gt; </code> 开头的 Markdown 原文。固定页同样各就各位：about 摘出了自我介绍首段，archive 摘出了"这里按年份倒序列出博客的全部文章……"那段说明（比叶扬预想的回退标题方案还漂亮），两页都有 canonical、都没有被乱点鸳鸯谱的 JSON-LD。首页和 tag 页确认零注入，框架原有的干净描述纹丝不动。</p>
+<p>读者侧的人工验收有两个入口，推荐亲手试：</p>
+<ol>
+<li><strong>Google 富结果测试</strong>（<a href="https://search.google.com/test/rich-results" rel="nofollow">https://search.google.com/test/rich-results</a>）：输入任意文章 URL，它会像 Googlebot 一样渲染页面，应识别出 1 个 <code class="notranslate">Article</code> 项且零错误零警告；</li>
+<li><strong>查看源代码 vs 审查元素</strong>：同一页 <code class="notranslate">Ctrl+U</code> 看到的 description 是脏的（构建期原文），F12 审查元素看到的是净的（运行时结果）——这个"分裂现场"正好是本插件工作原理最直观的演示。</li>
+</ol>
+<p>收录数据层面的效果（富结果是否出现、摘要是否真的换成清洁版）无法当天验证，要等 Google 渲染队列与重抓，已记入约 2026-09-21 后的 <strong>G04 收录实战番外</strong>，用真实索引数据说话。</p>
+<h2>六、诚实清单：这招的边界</h2>
+<ul>
+<li><strong>不渲染 JS 的爬虫看不到运行时产物</strong>：百度（本站主动跳过）与少数卡片爬虫只能读到静态 OG——而 OG 四件套框架本就给全，分享不残废；受影响的只有它们拿到的 og:description 仍是旧的脏值（下次框架若支持构建期摘要，静态值会同步干净）；</li>
+<li><strong>新页面的富结果有时延</strong>：Google 首次抓取与二次渲染之间可能隔几小时到一天，这是所有 JS 注入方案的共同代价；</li>
+<li><strong><code class="notranslate">dateModified</code> 缺席</strong>：无可靠数据源，不伪造；<code class="notranslate">publisher.logo</code> 暂用横版 og.png（合法但非 Google 偏好的方形 logo），等哪天做了方形 PNG 再换；</li>
+<li><strong>结构化数据只覆盖 BlogPosting</strong>：面包屑（BreadcrumbList）是下一个可选项——本站文章页没有面包屑导航 DOM，要做得连导航一起加，属于另一个选题了。</li>
+</ul>
+<h2>小结</h2>
+<p>前传清单上的四项技术缺口至此全部清零：canonical 给每篇文章发了"身份证"，JSON-LD 让搜索引擎第一次能用结构化语言读懂"谁、何时、写了什么"，twitter:card 补齐分享大图，清洁摘要则把 Markdown 车间的半成品换成了读者能直接读的句子。135 行插件、15 条桩测试、一次全局重建，没有模板改动，升级无痛。</p>
+<p>方法论上再添一条：<strong>构建期产物是给不渲染的爬虫的底线，运行时注入是给渲染型爬虫的增强——想清楚每类爬虫读什么，比追求"curl 里什么都有"更重要。</strong></p>
+<p>下一篇是已在 <a href="/post/10.html">G04</a>、<a href="/post/25.html">G16</a> 和<a href="/post/5.html">总揽 #5</a> 三处承诺过的 <strong>G04 收录实战番外</strong>（约 2026-09-21 数据沉淀后），届时正好连本文的富结果效果一起验收。</p>
+<h2>参考</h2>
+<ul>
+<li>本站插件源码：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekSEO.js">https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekSEO.js</a></li>
+<li>Google：JavaScript 生成内容的 SEO 基础：<a href="https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics" rel="nofollow">https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics</a></li>
+<li>Google：结构化数据入门与 Article 类型：<a href="https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data" rel="nofollow">https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data</a></li>
+<li>schema.org BlogPosting：<a href="https://schema.org/BlogPosting" rel="nofollow">https://schema.org/BlogPosting</a></li>
+<li>X Cards 开发文档（summary_large_image 与 OG 回退）：<a href="https://docs.x.com/x-for-websites/cards/overview/abouts-cards" rel="nofollow">https://docs.x.com/x-for-websites/cards/overview/abouts-cards</a></li>
+<li>相关前作：<a href="/post/10.html">G04 RSS 直接当 sitemap</a>、<a href="/post/14.html">G08 自研插件套路</a>、<a href="/post/17.html">G10 固定页机制</a>、<a href="/post/26.html">番外·CDP 截图流水线</a></li>
+<li>系列总揽：<a href="/post/5.html">Gmeek 插件与功能全景调研（第 0 篇）</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
