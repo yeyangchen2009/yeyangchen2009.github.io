@@ -651,6 +651,62 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tbody>
 </table></markdown-accessiblity-table>
 <p>更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 <code class="notranslate">edited</code> 事件，编辑即自动重建），所以这张表会一直是最新的。</p>
+<h2>收官之后：候选选题池（G17 起）</h2>
+<p>正篇 G01–G16 收官，<a href="/post/4.html">建设清单（前传 #4）</a>也已回填，但清单并非一无所有。2026-09-15 盘出以下候选，按写作意愿排序：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>候选</th>
+<th>内容</th>
+<th>依据</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>G17 SEO 收尾战</strong></td>
+<td>文章页补 <code class="notranslate">&lt;link rel="canonical"&gt;</code>、JSON-LD（BlogPosting 结构化数据）、twitter:card；顺手清洁 <code class="notranslate">meta description</code>——框架当前直接取正文开头，会把 <code class="notranslate">&gt;</code> 引用符和 <code class="notranslate">[文字](链接)</code> 语法原样塞进搜索摘要</td>
+<td>#4 清单上仅剩的技术缺口（已 curl 实锤框架不自带）</td>
+<td>🎯 首选，随时可写</td>
+</tr>
+<tr>
+<td><strong>番外·收录实战</strong></td>
+<td>G04 提交一周后，Google/Bing 真实收录数据对比、GSC"无法抓取"复查结论，回答"RSS 当 sitemap 到底有没有用"</td>
+<td><a href="/post/10.html">G04</a>、G16 结尾均已预告</td>
+<td>📅 约 2026-09-21 后</td>
+</tr>
+<tr>
+<td>候选·备份双保险</td>
+<td>用 Actions 把 <code class="notranslate">backup/</code> 定期镜像到私有仓库</td>
+<td>#4 运维章自己提的建议</td>
+<td>待定</td>
+</tr>
+<tr>
+<td>候选·阅读进度条</td>
+<td>文章顶部滚动进度条，G16 scrollspy 的姊妹篇</td>
+<td>体验增强</td>
+<td>选题偏薄，可能并入杂谈</td>
+</tr>
+<tr>
+<td>候选·图片懒加载</td>
+<td>正文 <code class="notranslate">img</code> 补 <code class="notranslate">loading="lazy"</code></td>
+<td>#4 清单（灯箱做了、懒加载没做）</td>
+<td>本站每篇图极少，价值低</td>
+</tr>
+<tr>
+<td>候选·跟版方法论</td>
+<td>Gmeek 版本升级流程、PR <a href="https://github.com/Meekdai/Gmeek/pull/319" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/319/hovercard">#319</a> 合并后的跟踪与回馈闭环</td>
+<td>运维</td>
+<td>等上游合并后才有料</td>
+</tr>
+<tr>
+<td>⏭️ 主动挂起</td>
+<td>分享按钮、友链固定页、独立域名 + 百度收录</td>
+<td>#4 P2</td>
+<td>有真实需求再说，不算欠债</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
 <h2>参考资料汇总</h2>
 <ul>
 <li>Gmeek 源码：<a href="https://github.com/Meekdai/Gmeek">https://github.com/Meekdai/Gmeek</a></li>
@@ -669,7 +725,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
 <li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
 </ol>
-<p>G01–G16 已全部完成，路线图正篇收官。下一篇是番外：G04 提交给 Google/Bing 的两个 sitemap 正在经历收录考核，约 2026-09-21（Google Search Console 复查 + 数据沉淀一周）后写收录实战，用真实数据回答"RSS 当 sitemap 提交到底有没有用"。</p></div>
+<p>G01–G16 已全部完成，路线图正篇收官。接下来首选 <strong>G17 SEO 收尾战</strong>（canonical + JSON-LD + twitter:card + 清洁 description，把前传 #4 清单上仅剩的技术缺口清零）；其后约 2026-09-21 是已承诺的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"。更远的候选见上方选题池。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
