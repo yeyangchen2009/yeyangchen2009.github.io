@@ -258,7 +258,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <h3>5.3 手机浮层：先点再拍</h3>
 <p>G14 的 ☰ 目录浮层默认隐藏，点按钮才出现。手机视口（390×844）下用 <code class="notranslate">--click</code> 传选择器，脚本在截图前执行一次点击并等待动画：</p>
 <div class="highlight highlight-source-shell"><pre class="notranslate">node tools/cdp-shot.js https://站点/post/21.html g14.png 390 844 \
-  --theme dark --css primer.css \
+  --theme dark --css tools/primer-21.0.7.css \
   --css-match <span class="pl-s"><span class="pl-pds">'</span>*Primer/21.0.7/primer.css*<span class="pl-pds">'</span></span> \
   --click <span class="pl-s"><span class="pl-pds">'</span>.toc-mobile-icon<span class="pl-pds">'</span></span></pre></div>
 <p>桌面端要滚到指定章节同理，<code class="notranslate">--eval 'window.scrollTo(0, 5553),"ok"'</code> 即可；G16 那张 scrollspy 蓝竖线就是滚到位、等 50ms 节流的 scrollspy 反应过来之后才按的快门。</p>
@@ -273,10 +273,10 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </ol>
 <p>图片放进 <code class="notranslate">static/screenshots/</code>，Gmeek 构建时整目录原样复制到站点根（机制见 <a href="/post/18.html">G11</a>），文章里直接用 <code class="notranslate">/screenshots/xxx.png</code> 引用。九篇 issue 的编辑严格<strong>串行</strong>：一篇改完等增量构建成功，再改下一篇，避免九个自动提交互相踩踏。</p>
 <h2>七、脚本与复用</h2>
-<p>成品在仓库里：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/tools/cdp-shot.js">tools/cdp-shot.js</a>，约 245 行，Node ≥ 22 运行，零 npm 依赖，Windows/macOS/Linux 三端自动探测 Edge 或 Chrome。常用姿势：</p>
+<p>成品在仓库里：<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/tools/cdp-shot.js">tools/cdp-shot.js</a>，约 245 行，Node ≥ 22 运行，零 npm 依赖，Windows/macOS/Linux 三端自动探测 Edge 或 Chrome。同目录下还附了一份当时下载的 <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/tools/primer-21.0.7.css">primer-21.0.7.css</a>（832KB，Primer 本体是 MIT 协议），克隆仓库即可复现整套流程，不用再自己去镜像站拖文件。注意 <code class="notranslate">tools/</code> 只存在于源码仓库，Gmeek 只部署 <code class="notranslate">static/</code>，这份 CSS 不会上线占流量。常用姿势：</p>
 <div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-c"><span class="pl-c">#</span> 桌面暗色视口截图（CSS 走本地应答，离线可拍）</span>
 node tools/cdp-shot.js https://站点/ out.png 1440 900 \
-  --theme dark --css primer.css --css-match <span class="pl-s"><span class="pl-pds">'</span>*Primer/21.0.7/primer.css*<span class="pl-pds">'</span></span>
+  --theme dark --css tools/primer-21.0.7.css --css-match <span class="pl-s"><span class="pl-pds">'</span>*Primer/21.0.7/primer.css*<span class="pl-pds">'</span></span>
 
 <span class="pl-c"><span class="pl-c">#</span> 手机端点击浮层后截图</span>
 node tools/cdp-shot.js https://站点/post/21 out.png 390 844 \
