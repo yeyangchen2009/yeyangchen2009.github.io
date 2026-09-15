@@ -165,6 +165,4 @@ Alert 和公式是"白送的"——写 Markdown 就行，Gmeek 在构建期替�
 - 单篇 JSON 机制：[G06 文章末尾的秘密](/post/12.html)
 - 系列总揽：[Gmeek 插件与功能全景调研（第 0 篇）](/post/5.html)
 
-> 🔔 **2026-09 更新**：本站已把 mermaid 升级为**自动检测、按需加载**（`static/plugins/GmeekMermaid.js`，见 [#22](https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/22) 与 [PR #23](https://github.com/yeyangchen2009/yeyangchen2009.github.io/pull/23)）——文章页检测到 mermaid 代码块才动态加载 mermaid.min.js，**新文章无需再写下面这行手动挂载 JSON**。下面这行作为"手动挂载方案"的教学演示保留，新旧机制可共存、互不冲突。
-
-<!-- ##{"style":"<style>.mermaid-wrap{margin:18px 0;overflow-x:auto;}</style>","script":"<script src='/mermaid.min.js'></script><script src='/mermaid-init.js'></script>"}## -->
+> 🔔 **2026-09 更新**：本文写作时，mermaid 需要在文章末行手写一行挂载 JSON（正文表格保留了这个历史写法）。本站现已升级为**自动检测、按需加载**（`static/plugins/GmeekMermaid.js`，见 [#22](https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/22) 与 [PR #23](https://github.com/yeyangchen2009/yeyangchen2009.github.io/pull/23)）：文章页检测到 mermaid 代码块才动态加载 mermaid.min.js，新文章零配置。本文的全部图表即由自动加载器渲染。
