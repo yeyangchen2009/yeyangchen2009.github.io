@@ -1,12 +1,3 @@
-# 叶扬的博客 :link: https://yeyangchen2009.github.io 
-### :page_facing_up: [23](https://yeyangchen2009.github.io/tag.html) 
-### :speech_balloon: 0 
-### :hibiscus: 203167 
-### :alarm_clock: 2026-09-15 20:40:34 
-### Powered by :heart: [Gmeek](https://github.com/Meekdai/Gmeek)
-
-
-<!-- BEGIN CUSTOM README -->
 ## 📖 关于本站
 
 叶扬的个人博客，全程由 [Gmeek](https://github.com/Meekdai/Gmeek) 驱动：**在 GitHub Issues 里写文章，Actions 自动生成静态页面，GitHub Pages 部署上线**。零服务器、零数据库，Issue 一提交，几分钟后就是一篇新博客。
@@ -44,4 +35,3 @@
 ---
 
 > ☝️ 最上方的文章数 / 评论数 / 总字数 / 时间戳由 Gmeek 每次构建自动重写，手工修改会被覆盖；以上自定义区块由 `tools/build-readme.py` 在构建时拼接，想改内容请编辑 `README.custom.md`。
-<!-- END CUSTOM README -->

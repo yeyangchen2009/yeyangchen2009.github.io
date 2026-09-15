@@ -58,6 +58,9 @@ jobs:
       - name: Generate sitemap.xml
         run: python sitemap_gen.py
 
+      - name: Rebuild README
+        run: python tools/build-readme.py
+
       - name: update html
         run: |
           git config --local user.email "$(jq -r ".email" config.json)"
