@@ -64,6 +64,10 @@ flowchart LR
 
 为什么零配置？Gmeek 扫到 HTML 里的 `<p class="markdown-alert-title">` 后，自动把五类配色的 `<style>` 注入这一页，颜色全部取自 GitHub Primer 的 CSS 变量（`--color-attention-subtle` 等），站点切暗色时提示块跟着变色，不用我们写一行 CSS。连左边的小图标（圆点、灯泡、感叹号）都是 GitHub 渲染时内联好的 SVG。
 
+浏览器里暗色主题下五块齐整的样子（蓝/绿/紫/黄/红，图标是内联 SVG）：
+
+![暗色主题下五种 Alert 提示块：Note 蓝、Tip 绿、Important 紫、Warning 黄、Caution 红](/screenshots/g07-alerts.png)
+
 **一个实测出来的细节**：通过 API 渲染时，提示块标题是英文的 **Note / Tip / Important / Warning / Caution**（你在 GitHub 网页上看这个 issue 时会显示中文"提示/建议"，那是网页端按浏览器语言本地化的结果；静态站构建时 HTML 已经定型，所以是英文）。不喜欢英文标题的话，两个办法：接受它（图标本身已传达语义），或者用文末的 Gmeek-html 技巧自己写中文版式。
 
 ## 二、数学公式：两个美元符号的事
@@ -166,3 +170,4 @@ Alert 和公式是"白送的"——写 Markdown 就行，Gmeek 在构建期替�
 - 系列总揽：[Gmeek 插件与功能全景调研（第 0 篇）](/post/5.html)
 
 > 🔔 **2026-09 更新**：本文写作时，mermaid 需要在文章末行手写一行挂载 JSON（正文表格保留了这个历史写法）。本站现已升级为**自动检测、按需加载**（`static/plugins/GmeekMermaid.js`，见 [#22](https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/22) 与 [PR #23](https://github.com/yeyangchen2009/yeyangchen2009.github.io/pull/23)）：文章页检测到 mermaid 代码块才动态加载 mermaid.min.js，新文章零配置。本文的全部图表即由自动加载器渲染。升级的来龙去脉与踩坑全过程见 [G15 Mermaid 翻车记](/post/24.html)。
+
