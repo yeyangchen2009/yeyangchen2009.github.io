@@ -46,6 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ![明暗自适应的叶字 favicon.svg](/favicon.svg)
 
+点开 og.png 后灯箱长这样——背景压暗、图片 `contain` 居中、右上角关闭、右侧圆形箭头翻到下一张：
+
+![灯箱打开状态：暗色遮罩上居中放大的社交封面，右上角关闭按钮，右侧翻页箭头](/screenshots/g05-lightbox.png)
+
 灯箱打开后可以这样玩：
 
 | 操作 | 效果 |
@@ -104,3 +108,4 @@ if (clickedImage && !this.isOpen) {
 - issue #152 多个插件同时安装的配置写法：<https://github.com/Meekdai/Gmeek/issues/152>
 - issue #74 medium-zoom 方案讨论：<https://github.com/Meekdai/Gmeek/issues/74>
 - 系列总揽：[Gmeek 插件与功能全景调研（第 0 篇）](/post/5.html)
+
