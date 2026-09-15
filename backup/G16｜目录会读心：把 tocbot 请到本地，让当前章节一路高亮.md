@@ -14,6 +14,10 @@
 
 在 [第 0 篇总揽](/post/5.html)的插件档案里，叶扬当时给 GmeekTocBot 留的判词是："功能最强但依赖第三方 CDN，与本站'静态资源全部本地化'的原则冲突。真想要当前章节高亮，未来可把 tocbot 的 JS/CSS 下载到 static/ 再改注入地址，列入远期备选。"远期，就是这期。
 
+下面这张是暗色主题下的实拍：文章滚到"四、审源码"时，右侧嵌套目录里对应的章节自动亮起蓝色竖线，点目录则平滑跳转。这就是 scrollspy——本期要请进门的能力。
+
+![暗色主题下右侧 tocbot 嵌套目录，蓝色竖线高亮当前阅读章节](/screenshots/g16-scrollspy.png)
+
 ## 二、官方 GmeekTocBot：一个 2.5KB 的封装壳
 
 先看官方插件到底做了多少事。整个文件只有 2.5KB，去掉注释后逻辑一目了然：
@@ -239,3 +243,4 @@ flowchart LR
 - 本站适配源码：[static/plugins/GmeekTocBot.js](https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekTocBot.js)
 - 前作：[前传 #3 右侧文章目录插件](/post/3.html)、[G14 手机上的文章目录](/post/21.html)、[G15 Mermaid 翻车记](/post/24.html)、[G01 全局重建的坑](/post/7.html)、[G08 Primer 变量与三态主题](/post/14.html)
 - 系列总揽：[Gmeek 插件与功能全景调研（第 0 篇）](/post/5.html)
+

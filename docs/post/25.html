@@ -124,6 +124,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tbody>
 </table></markdown-accessiblity-table>
 <p>在 <a href="/post/5.html">第 0 篇总揽</a>的插件档案里，叶扬当时给 GmeekTocBot 留的判词是："功能最强但依赖第三方 CDN，与本站'静态资源全部本地化'的原则冲突。真想要当前章节高亮，未来可把 tocbot 的 JS/CSS 下载到 static/ 再改注入地址，列入远期备选。"远期，就是这期。</p>
+<p>下面这张是暗色主题下的实拍：文章滚到"四、审源码"时，右侧嵌套目录里对应的章节自动亮起蓝色竖线，点目录则平滑跳转。这就是 scrollspy——本期要请进门的能力。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/g16-scrollspy.png"><img src="/screenshots/g16-scrollspy.png" alt="暗色主题下右侧 tocbot 嵌套目录，蓝色竖线高亮当前阅读章节" style="max-width: 100%;"></a></p>
 <h2>二、官方 GmeekTocBot：一个 2.5KB 的封装壳</h2>
 <p>先看官方插件到底做了多少事。整个文件只有 2.5KB，去掉注释后逻辑一目了然：</p>
 <div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">function</span> <span class="pl-en">createTOC</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
