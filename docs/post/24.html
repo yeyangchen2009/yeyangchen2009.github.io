@@ -99,7 +99,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <tbody>
 <tr>
 <td><a href="/post/13.html">G07 写作三件套</a></td>
-<td>5 张</td>
+<td>2 张</td>
 <td>✅ 正常渲染</td>
 </tr>
 <tr>
@@ -126,7 +126,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <ol start="3">
 <li>Gmeek 构建时解析这最后一行，把脚本只注入这一篇。</li>
 </ol>
-<p>G07 自己当然挂了，所以五张图安然无恙。而写 G13、G14 的时候，叶扬满脑子都是分页算法和类名隔离，<strong>漏写了那最后一行 JSON</strong>——两篇，全漏。</p>
+<p>G07 自己当然挂了，所以两张图安然无恙。而写 G13、G14 的时候，叶扬满脑子都是分页算法和类名隔离，<strong>漏写了那最后一行 JSON</strong>——两篇，全漏。</p>
 <h3>这个机制有三重脆弱</h3>
 <p>复盘下来，"作者记性好"居然是整个链路里唯一的保险丝：</p>
 <p><strong>第一重：漏写没有任何报错。</strong> 末行 JSON 解析套在 <code class="notranslate">try/except</code> 里（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L356-L361">Gmeek.py 的 postConfig 解析</a>），解析失败就当这篇没有自定义配置，构建照样绿灯，页面只是默默不长图。绿灯给人一切正常的错觉。</p>
@@ -424,7 +424,7 @@ KeyError: None
 <tr>
 <td><a href="/post/13.html">G07</a></td>
 <td>是</td>
-<td>5</td>
+<td>2</td>
 <td>末行 JSON 已删除，全部转由自动加载器渲染</td>
 </tr>
 <tr>
