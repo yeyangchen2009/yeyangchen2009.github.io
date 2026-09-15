@@ -316,7 +316,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>如果文章里有两个同名标题（比如两篇小结都叫"小结"），按 <code class="notranslate">textContent → id</code> 的算法会得到两个相同的 id，锚点都指向第一个。这是 GmeekTOC 与 articletoc 的共同行为，本站目前没有重名标题，暂时不修；真要修就给 id 加序号后缀（<code class="notranslate">小结</code>、<code class="notranslate">小结-2</code>），两个插件得同步改、同步部署——先记账。</p>
 <h2>小结</h2>
 <p>这一期没有新造轮子，做的是"让两个官方轮子同轴转动"： articletoc 原版本身写得很轻巧，真正的拦路虎只有一个——<strong>插件之间没有命名空间约定，<code class="notranslate">.toc</code> 这种大众类名必然撞车</strong>。类名一加前缀、配色一换 Primer 变量、断点一对齐，桌面 GmeekTOC 与小屏 articletoc 就各上各的班，读者毫无察觉。</p>
-<p>至此文章页的目录体验在桌面和手机两端都补齐了。但还有个读者从 G07 起就隐约期待的能力没做：<strong>滚动时目录自动高亮当前章节</strong>。下一期 G15，叶扬把 tocbot 从 CDN 请到本地，聊聊第三方库本地化与滚动间谍（scrollspy）。</p>
+<p>至此文章页的目录体验在桌面和手机两端都补齐了。但叶扬发布后回头一看：G13 和本篇里精心画的 mermaid 流程图，居然全以原始代码的形态晾在页面上。下一期 G15 是一期插播的"翻车现场"——排查 mermaid 图表为什么没渲染的全过程，顺手做一个自动检测、按需加载的插件，再一路追查到 Gmeek 构建器本身的一个 bug，给上游提了人生第一个 PR。至于<strong>滚动时目录自动高亮当前章节</strong>（tocbot 本地化 + scrollspy）顺延到 G16，不跑题。</p>
 <h2>参考</h2>
 <ul>
 <li>原插件收录：<a href="https://github.com/Meekdai/Gmeek/blob/main/plugins/articletoc.js">Gmeek 仓库 plugins/articletoc.js</a>（作者 Tiengming）</li>
