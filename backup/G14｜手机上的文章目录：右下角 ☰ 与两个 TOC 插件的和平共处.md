@@ -33,6 +33,10 @@
 3. 在 `<body>` 上放一颗 `.toc-icon` 圆形 ☰ 按钮固定在右下角；
 4. 点按钮，浮层带淡入缩放动画展开，图标变 ✖；再点或点浮层外部收起。
 
+手机视口（390px 宽）下点 ☰ 后，浮层从右下角弹出、按标题层级缩进，背景文章压暗：
+
+![手机端点 ☰ 弹出的文章目录浮层，暗色主题，右下角圆形关闭按钮](/screenshots/g14-mobile-toc.png)
+
 但"**替换地址**"这四个字值得留意——官方的意思是 GmeekTOC 和 articletoc **二选一**，没让它们共存。叶扬把两份源码摆在一起对照，立刻明白了原因。
 
 ## 审源码：为什么官方只让二选一
@@ -282,3 +286,4 @@ heading.id = heading.textContent.trim().replace(/\s+/g, '-').toLowerCase();
 - 本站适配源码：[articletoc.js](https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/articletoc.js)
 - 相关前作：[G08 上一篇/下一篇](/post/14.html)（Primer 变量与三态主题）、[G13 数字分页条](/post/20.html)（indexScript 与 script 的边界）
 - 系列总揽：[Gmeek 插件与功能全景调研（第 0 篇）](/post/5.html)
+

@@ -111,6 +111,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li>在 <code class="notranslate">&lt;body&gt;</code> 上放一颗 <code class="notranslate">.toc-icon</code> 圆形 ☰ 按钮固定在右下角；</li>
 <li>点按钮，浮层带淡入缩放动画展开，图标变 ✖；再点或点浮层外部收起。</li>
 </ol>
+<p>手机视口（390px 宽）下点 ☰ 后，浮层从右下角弹出、按标题层级缩进，背景文章压暗：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/g14-mobile-toc.png"><img src="/screenshots/g14-mobile-toc.png" alt="手机端点 ☰ 弹出的文章目录浮层，暗色主题，右下角圆形关闭按钮" style="max-width: 100%;"></a></p>
 <p>但"<strong>替换地址</strong>"这四个字值得留意——官方的意思是 GmeekTOC 和 articletoc <strong>二选一</strong>，没让它们共存。叶扬把两份源码摆在一起对照，立刻明白了原因。</p>
 <h2>审源码：为什么官方只让二选一</h2>
 <h3>冲突一：类名同名，样式连坐</h3>
