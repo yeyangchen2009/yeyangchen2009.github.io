@@ -237,6 +237,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </table></markdown-accessiblity-table>
 <p>这带来一条严格的** DOM 顺序纪律**：上一页必须是第一个子元素（<code class="notranslate">:first-child</code>）、下一页必须是最后一个（<code class="notranslate">:last-child</code>），数字页码一律夹在中间。顺序错了，手机端的隐藏规则就会误伤。</p>
 <p>结论：<strong>这个插件零行自定义 CSS</strong>，活只有一件——把正确的 DOM 按正确的顺序拼出来。颜色全部走 Primer 变量，明暗主题自动跟随，连 G08/G09 那套 <code class="notranslate">html[data-color-mode="dark"]</code> 的操心都省了。</p>
+<p>首页滚到最底部，数字分页条就是最终成品（截图里文章刚过 15 篇、共 2 页，当前在第 1 页所以"上一页"是禁用态、蓝底方块是当前页）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/g13-pager.png"><img src="/screenshots/g13-pager.png" alt="首页底部的数字分页条：禁用态上一页、蓝底当前页 1、页码 2、下一页" style="max-width: 100%;"></a></p>
 <h2>插件实现</h2>
 <h3>设计要点</h3>
 <ol>
