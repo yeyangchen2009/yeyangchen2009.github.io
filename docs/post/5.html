@@ -636,6 +636,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 <tr>
 <td>G15</td>
+<td>Mermaid 翻车记：自动检测按需加载，顺手给 Gmeek 提个 PR</td>
+<td>GmeekMermaid 自研插件 + 上游 #236/PR#319</td>
+<td>自研 + 开源回馈</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>G16</td>
 <td>tocbot 本地化：当前章节滚动高亮</td>
 <td>CDN 资源本地化</td>
 <td>进阶</td>
@@ -662,7 +669,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
 <li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
 </ol>
-<p>G01–G14 已完成，下一篇 G15：tocbot 本地化——把官方 GmeekTocBot 依赖的 cdnjs tocbot 4.27.4 下载到 static/ 改注入，拿到滚动时当前章节自动高亮（scrollspy）能力。</p></div>
+<p>G01–G14 已完成，下一篇 G15：Mermaid 翻车记——G13/G14 的图表整片显示成代码，根因是 G07 时代「含图文章末行手写挂载 JSON」漏写即静默失败；修复方案是自研 GmeekMermaid 插件自动检测 <code class="notranslate">highlight-source-mermaid</code>、按需动态加载 3.5MB 的 mermaid.min.js、跟随三态主题重绘。排查路上还用无标签 issue（不构建成文章的「站内工单」用法）顺带挖出上游构建器 bug：无标签 issue 触发增量构建时 <code class="notranslate">runOne</code> 抛 <code class="notranslate">KeyError: None</code>，已给 Meekdai/Gmeek 提交修复 PR（#319，Closes #236）。原 tocbot 本地化顺延为 G16。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
