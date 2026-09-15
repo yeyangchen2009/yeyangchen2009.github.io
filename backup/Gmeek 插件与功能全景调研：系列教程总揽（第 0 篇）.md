@@ -41,12 +41,12 @@
 - **官方态度**：进阶教程里**首推**。替代的不蒜子（busuanzi）已长期无人维护，且在 Safari 下计数不准。
 - **叶扬的判断**：保留。只记数字、不追踪个人身份，符合[第 4 篇](/post/4.html)立的统计克制原则。另一个统计插件 `GmeekBSZ.js`（不蒜子）**不要装**。
 
-### 2. GmeekTOC.js —— 右侧文章目录（已装）
+### 2. GmeekTOC.js —— 右侧文章目录（~~已装~~ 已退役留档，见 [G16](/post/25.html)）
 
 - **功能**：扫描正文 `h1~h6` 生成固定在右侧的目录，按标题级别缩进，窄屏自动收为文章内块，附 Top 回顶按钮。零依赖，100 行。
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/GmeekTOC.js)；接入全过程见本站[第 3 篇教程](/post/3.html)。
 - **关键坑**：只能走 `script` 字段（仅文章页注入），**不能放 `allHead`**——首页没有 `id="content"` 元素，会抛 TypeError。
-- **叶扬的判断**：官方文档站自己在用，配色全走 Primer CSS 变量自动适配暗色，已装。
+- **叶扬的判断**：官方文档站自己在用，配色全走 Primer CSS 变量自动适配暗色。本站第一个接入的插件（前传 #3），平铺目录无 scrollspy；**G16 起被本地化改造的 GmeekTocBot 接替，config 摘除引用、文件留在 `static/plugins/` 留档可回退**。
 
 ### 3. lightbox.js —— 图片灯箱（✅ 已装，见 [G05](/post/11.html)）
 
@@ -58,13 +58,13 @@
 
 - **功能**：不在正文里占位置，而是在右下角放一个 ☰ 圆形按钮，点击弹出目录浮层，再点外部关闭；自带亮/暗两套 CSS 变量。
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/articletoc.js)，同为 Tiengming 贡献。
-- **叶扬的判断**：原版与 GmeekTOC 同名 `.toc`，同时加载会被浮层的 `opacity:0;visibility:hidden` 连坐藏掉桌面目录，所以官方只让二选一。**G14 已用类名隔离（`.toc-mobile`）实现共存**：桌面 >1249px 仍是 GmeekTOC 常驻右侧、圆形按钮隐藏；≤1249px 隐藏 GmeekTOC 退化出的文首静态块、右下角 ☰ 浮层当班。另把原版 `prefers-color-scheme` 暗色换成 Primer 变量（#196 三态失配），补空标题守卫、点链接/Esc 收起与 aria-expanded 键盘可达。
+- **叶扬的判断**：原版与 GmeekTOC 同名 `.toc`，同时加载会被浮层的 `opacity:0;visibility:hidden` 连坐藏掉桌面目录，所以官方只让二选一。**G14 已用类名隔离（`.toc-mobile`）实现共存**：桌面 >1249px 常驻右侧目录、圆形按钮隐藏；≤1249px 隐藏桌面目录退化出的文首静态块、右下角 ☰ 浮层当班（G16 起桌面目录换成 GmeekTocBot，契约不变、分工不变）。另把原版 `prefers-color-scheme` 暗色换成 Primer 变量（#196 三态失配），补空标题守卫、点链接/Esc 收起与 aria-expanded 键盘可达。
 
-### 5. GmeekTocBot.js —— tocbot 版目录（不建议）
+### 5. GmeekTocBot.js —— tocbot 版目录（✅ 已本地化接入，见 [G16](/post/25.html)）
 
 - **功能**：封装成熟库 [tocbot](https://tscanlin.github.io/tocbot/)，视觉层级更好，独有**滚动时高亮当前章节**能力。
 - **出处**：[插件源码](https://github.com/Meekdai/Gmeek/blob/main/plugins/GmeekTocBot.js)；依赖 `cdnjs.cloudflare.com` 上的 tocbot 4.27.4。
-- **叶扬的判断**：功能最强但依赖第三方 CDN，与本站"静态资源全部本地化"的原则冲突。真想要"当前章节高亮"，未来可把 tocbot 的 JS/CSS 下载到 `static/` 再改注入地址，列入远期备选。
+- **叶扬的判断**：功能最强但原版依赖第三方 CDN，与本站"静态资源全部本地化"的原则冲突。**G16 已按当年预案落地**：tocbot 4.27.4 引擎（11KB）下载到 `static/tocbot/tocbot.min.js`，CSS 六条规则内联并全换 Primer 变量；适配版 `static/plugins/GmeekTocBot.js` 另修官方壳六处将就（id 缺 toLowerCase、100vh 空白 div、容器清空、window.onscroll 覆盖、无空标题守卫、暗色裸奔），接替 GmeekTOC 接管桌面目录。
 
 > **插件组合用法**（官方进阶教程原文给出的方式）：多个插件可以直接拼在同一个字段里：
 > `"script":"<script src='...GmeekTOC.js'></script><script src='...lightbox.js'></script>"`
@@ -230,7 +230,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G13 | [数字分页条：借不到轮子，就自己造一个](/post/20.html) | `indexScript` + Primer 内建分页样式 | 自研（社区方案失联） | ✅ |
 | G14 | [手机上的文章目录：右下角 ☰ 与两个 TOC 插件的和平共处](/post/21.html) | articletoc 适配 + 类名隔离/响应式分工 | 官方插件适配 | ✅ |
 | G15 | [Mermaid 翻车记：自动检测按需加载，顺手给 Gmeek 提个 PR](/post/24.html) | GmeekMermaid 自研插件 + 上游 #236/PR#319 | 自研 + 开源回馈 | ✅ |
-| G16 | tocbot 本地化：当前章节滚动高亮 | CDN 资源本地化 | 进阶 | 💤 |
+| G16 | [目录会读心：把 tocbot 请到本地，让当前章节一路高亮](/post/25.html) | CDN 资源本地化 + scrollspy | 进阶 | ✅ |
 
 更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 `edited` 事件，编辑即自动重建），所以这张表会一直是最新的。
 
@@ -253,4 +253,5 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G15 已完成，下一篇 G16：tocbot 本地化——把官方 GmeekTocBot 依赖的 cdnjs tocbot 4.27.4 下载到 static/ 改注入，拿到滚动时当前章节自动高亮（scrollspy）能力。
+G01–G16 已全部完成，路线图正篇收官。下一篇是番外：G04 提交给 Google/Bing 的两个 sitemap 正在经历收录考核，约 2026-09-21（Google Search Console 复查 + 数据沉淀一周）后写收录实战，用真实数据回答"RSS 当 sitemap 提交到底有没有用"。
+
