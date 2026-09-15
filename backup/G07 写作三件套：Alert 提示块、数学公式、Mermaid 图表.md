@@ -165,4 +165,4 @@ Alert 和公式是"白送的"——写 Markdown 就行，Gmeek 在构建期替�
 - 单篇 JSON 机制：[G06 文章末尾的秘密](/post/12.html)
 - 系列总揽：[Gmeek 插件与功能全景调研（第 0 篇）](/post/5.html)
 
-> 🔔 **2026-09 更新**：本文写作时，mermaid 需要在文章末行手写一行挂载 JSON（正文表格保留了这个历史写法）。本站现已升级为**自动检测、按需加载**（`static/plugins/GmeekMermaid.js`，见 [#22](https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/22) 与 [PR #23](https://github.com/yeyangchen2009/yeyangchen2009.github.io/pull/23)）：文章页检测到 mermaid 代码块才动态加载 mermaid.min.js，新文章零配置。本文的全部图表即由自动加载器渲染。
+> 🔔 **2026-09 更新**：本文写作时，mermaid 需要在文章末行手写一行挂载 JSON（正文表格保留了这个历史写法）。本站现已升级为**自动检测、按需加载**（`static/plugins/GmeekMermaid.js`，见 [#22](https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/22) 与 [PR #23](https://github.com/yeyangchen2009/yeyangchen2009.github.io/pull/23)）：文章页检测到 mermaid 代码块才动态加载 mermaid.min.js，新文章零配置。本文的全部图表即由自动加载器渲染。升级的来龙去脉与踩坑全过程见 [G15 Mermaid 翻车记](/post/24.html)。
