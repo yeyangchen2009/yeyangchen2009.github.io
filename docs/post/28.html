@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# 番外二｜我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线
+
+G17 收官那天晚上，叶扬翻着 `static/plugins/` 目录里一排 `.js` 文件，突然意识到一件事：这一个多星期他给博客写了一大堆功能——目录、归档、分页条、上一篇下一篇、阅读时长、Mermaid 自动加载、外链新标签、SEO 四件套——但它们自始至终只服务了一个博客，就是他自己的。">
+<meta property="og:title" content="番外二｜我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线">
+<meta property="og:description" content="# 番外二｜我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线
+
+G17 收官那天晚上，叶扬翻着 `static/plugins/` 目录里一排 `.js` 文件，突然意识到一件事：这一个多星期他给博客写了一大堆功能——目录、归档、分页条、上一篇下一篇、阅读时长、Mermaid 自动加载、外链新标签、SEO 四件套——但它们自始至终只服务了一个博客，就是他自己的。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/28.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>番外二｜我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">番外二｜我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/28" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>番外二｜我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线</h1>
+<p>G17 收官那天晚上，叶扬翻着 <code class="notranslate">static/plugins/</code> 目录里一排 <code class="notranslate">.js</code> 文件，突然意识到一件事：这一个多星期他给博客写了一大堆功能——目录、归档、分页条、上一篇下一篇、阅读时长、Mermaid 自动加载、外链新标签、SEO 四件套——但它们自始至终只服务了一个博客，就是他自己的。</p>
+<p>Gmeek 是开源的，白嫖这么久，是不是该回馈点什么？</p>
+<p>不过"我写了代码"和"这代码适合进上游"之间，隔着一整套筛选流程。有的功能自带 3.5MB 资产，上游不可能收；有的功能别人已经在做了，再提一遍是添乱；还有的代码在自己站里跑得好好的，换个人用立刻翻车——这个后面有实锤。</p>
+<p>这篇番外记录完整过程：怎么把 11 个自研件挨个过筛，最后产出 <strong>3 个 PR、1 个根治 issue、2 条高信息量评论</strong>，以及途中抓到的两桩"只有给别人用时才暴露"的 bug。</p>
+<h2>一、先摸清上游的脾气</h2>
+<p>提 PR 之前先观察，这是叶扬踩过很多坑之后的肌肉记忆。</p>
+<p>Gmeek 官方插件只有 6 个，收录机制非常轻：把 <code class="notranslate">.js</code> 丢进仓库的 <code class="notranslate">plugins/</code> 目录，用户在 <code class="notranslate">config.json</code> 的 <code class="notranslate">script</code> 字段引一下就算安装——<code class="notranslate">articletoc.js</code> 就是外部作者 Tiengming 的作品被官方收录的，有社区先例。维护者更新频率低（最近一次代码提交停在 2026 年 2 月），但项目不是死的：今年还合并过 PR，issue 里也会认真回复。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/upstream-pr-queue.png"><img src="/screenshots/upstream-pr-queue.png" alt="Meekdai/Gmeek 的开放 PR 队列：最上面三条是叶扬刚开的 #321、#320，加上昨天开的 #319；再往下能看到从 3 月排到现在的 #307、从去年 7 月排到现在的 #272" style="max-width: 100%;"></a></p>
+<p>这是现在的 PR 队列，最上面三条绿名字都是叶扬的——截图时 #320 才开了 32 分钟，热乎的。注意队列里的时间尺度：<strong>这个项目的 PR 合并周期以月甚至年计，急不得</strong>。</p>
+<p>更早之前他已经在 issue 区做过一轮侦察，收获很大。比如 #145，一个 2024 年 7 月的 SEO 需求老帖，三条需求分别是外链 rel、外链跳转页、sitemap：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/upstream-145-top.png"><img src="/screenshots/upstream-145-top.png" alt="#145 原帖：提主列出三条 SEO 需求，维护者 Meekdai 在楼下认真追问外链具体指什么、sitemap 是不是就是 rss.xml" style="max-width: 100%;"></a></p>
+<p>就是在这个帖子里，维护者亲口回了一句："这些功能都可以通过插件的方式来实现，我有空写一个试试。"</p>
+<p>然后七个月过去了，那个插件还没出现。</p>
+<p><strong>维护者没空兑现的承诺，是社区贡献者最好的入场券</strong>：需求明确、维护者公开背书、还没人动手。另外，昨天开的 #319（无标签 issue 触发 KeyError 的三行修复）已经在队列里当探路石——如果这个最小的 PR 能被合并，说明贡献通道还活着。</p>
+<h2>二、十一个自研件过筛子</h2>
+<p>把候选全部摊开，按统一标准过筛。标准就三条：</p>
+<ol>
+<li><strong>有上游 issue 呼声吗？</strong> 自嗨功能不进上游，得有别人的真实需求佐证；</li>
+<li><strong>形态匹配吗？</strong> 上游插件都是单文件、零构建、依赖走 CDN、样式内联或复用 Primer；</li>
+<li><strong>有兼容性包袱吗？</strong> 会改变现有用户页面表现的，先在 issue 里递话，不直接上代码。</li>
+</ol>
+<p>过筛结果分成四个梯队：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">LR</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>static/plugins 里&lt;<span class="pl-ent">br</span>/&gt;11 个自研件<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>① 立即提 PR&lt;<span class="pl-ent">br</span>/&gt;有需求 · 形态配 · 无包袱<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">A</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>② 第二梯队&lt;<span class="pl-ent">br</span>/&gt;先压着等节奏<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">A</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>③ 不写代码&lt;<span class="pl-ent">br</span>/&gt;review / 评论 / issue<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">A</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>④ 缓提或不提<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>#320 GmeekExternal&lt;<span class="pl-ent">br</span>/&gt;对接 #186 的原需求<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>#321 GmeekSEO&lt;<span class="pl-ent">br</span>/&gt;对接 #145 的维护者承诺<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>上一篇/下一篇&lt;<span class="pl-ent">br</span>/&gt;阅读时长 · 数字分页&lt;<span class="pl-ent">br</span>/&gt;归档时间线<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>#307 sitemap 别人已在做&lt;<span class="pl-ent">br</span>/&gt;→ 写一份认真的 review<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>#318 lxml 构建失败&lt;<span class="pl-ent">br</span>/&gt;→ 贴对照日志帮排查<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D3</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>#322 根治 issue&lt;<span class="pl-ent">br</span>/&gt;→ 构建期清洗 description<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Mermaid：3.5MB 本地资产&lt;<span class="pl-ent">br</span>/&gt;articletoc：改类名有兼容包袱&lt;<span class="pl-ent">br</span>/&gt;build-readme / cdp-shot：非博客功能<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<p>几个落选的理由值得一说：</p>
+<ul>
+<li><strong>Mermaid 加载器</strong>：我们刻意把 3.5MB 的 mermaid.min.js 放本地（南科大镜像抽风的阴影，见 <a href="/post/24.html">G15</a>），上游插件的传统是 CDN 引入，理念冲突。思路已经在 #180 分享，代码不强推。</li>
+<li><strong>articletoc 的类名隔离修复</strong>：改类名会波及所有已经自定义过 <code class="notranslate">.toc</code> 样式的老用户，有兼容包袱；而且原作者 Tiengming 本人的 #272 还在队列里，外人不宜插队。这个在 #100 里递过话，等维护者接。</li>
+<li><strong>README 拼接器、cdp-shot 截图器</strong>：它们是"仓库工程"和"写作工具"，不是博客功能，本就不属于 Gmeek。</li>
+</ul>
+<h2>三、两个 PR 是怎么写的</h2>
+<h3>3.1 #320 GmeekExternal：最小的试水</h3>
+<p><a href="https://github.com/Meekdai/Gmeek/issues/186" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/186/hovercard">#186</a> 的第一条需求原话就是"用新标签页打开链接（支持设置区分站内和站外）"。最终交付 42 行，零依赖零 CSS：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/upstream-320-top.png"><img src="/screenshots/upstream-320-top.png" alt="PR #320：Open 状态，1 commit、+42 行，正文列出功能、刻意不做的事和安装方法" style="max-width: 100%;"></a></p>
+<p>两个设计决策有点说法：</p>
+<ul>
+<li><strong>内外链判定不用字符串 <code class="notranslate">includes</code></strong>，交给 <code class="notranslate">new URL(href, location.href)</code> 按 hostname 比较。绝对地址、协议相对地址（<code class="notranslate">//host/...</code>）、根相对、纯相对路径都能正确归类；自定义域名、project pages 子路径部署也成立。</li>
+<li><strong>补 <code class="notranslate">noopener</code>，但刻意不加 <code class="notranslate">nofollow</code> / <code class="notranslate">noreferrer</code></strong>。<code class="notranslate">nofollow</code> 是 SEO 投票语义，外链给不给权重该由作者决定；<code class="notranslate">noreferrer</code> 会抹掉来源统计，而现代浏览器里 <code class="notranslate">noopener</code> 已足够防 reverse tabnapping。#145 里维护者自己也是"需要时手写 a 标签"的路子——插件不该替用户做 SEO 决定。</li>
+</ul>
+<p>PR 描述按固定四件套写：<strong>背景（链接到具体 issue）、功能、刻意不做的事、安装方法 + 线上 demo</strong>。让维护者在一分钟内看懂"这是什么、为什么该合、怎么装"。</p>
+<h3>3.2 #321 GmeekSEO：重头戏，但要把边界写在脸上</h3>
+<p><a href="https://github.com/Meekdai/Gmeek/pull/321" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/321/hovercard">#321</a> 对接 #145 的另一半，也就是 <a href="/post/27.html">G17</a> 那四件套：canonical、清洁摘要、Twitter Card、BlogPosting 结构化数据。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/upstream-321-top.png"><img src="/screenshots/upstream-321-top.png" alt="PR #321：Open 状态，1 commit、+138 行，背景里直接引用 #145，专设一节诚实说明运行时注入的边界" style="max-width: 100%;"></a></p>
+<p>提给上游的版本，PR 描述里专门有一节"已知边界"，主动说明：canonical 和 JSON-LD 是运行时注入，<code class="notranslate">curl</code> 静态源码看不到，依赖 Google/Bing 的渲染队列；并且明说<strong>更彻底的修法在模板层</strong>——构建期就把 description 洗干净、把 canonical 写进 HTML，插件只是零侵入的过渡方案。</p>
+<p>为什么一边承认有更好的方案，一边还要提插件？因为插件今天装上就能用，模板改动不知道排到什么时候；两个方案不冲突，选择权交给维护者。开源贡献里最忌讳的，就是把 workaround 伪装成正解塞给对方。</p>
+<h2>四、实锤：准备 PR 的过程抓到自己两个 bug</h2>
+<p>这是全篇最有教程价值的一节。</p>
+<p>在自己站里跑了好几天的 GmeekSEO，换成"假如一个什么都没配的用户装上它"的视角走查，立刻翻出两个通用性问题：</p>
+<ol>
+<li><strong>固定页识别正则只支持用户站。</strong> 本站是 <code class="notranslate">owner.github.io</code>，about 页路径是 <code class="notranslate">/about.html</code>，旧正则 <code class="notranslate">^/[A-Za-z0-9_-]+\.html$</code> 正好命中；但 Gmeek 还支持 project pages 形态，页面部署在 <code class="notranslate">/repo/about.html</code>，子路径直接不匹配，插件会静默罢工。改成取路径末段（<code class="notranslate">pathname.split('/').pop()</code>）再判断，两种部署形态通吃。</li>
+<li><strong>没配 ogImage 的用户会得到空字符串图片字段。</strong> 本站 config 里有 <code class="notranslate">og.png</code>，JSON-LD 的 <code class="notranslate">image</code> 一直是真值；但不配 ogImage 是框架允许的，这时插件会输出 <code class="notranslate">"image": ""</code>，Google 富结果测试直接判错误。改成 <code class="notranslate">image || undefined</code>，<code class="notranslate">JSON.stringify</code> 序列化时自动省略该字段。</li>
+</ol>
+<p>两个修复先在 PR 分支改好，又<strong>同步回本站、全局重建、线上验证</strong>，保证自己跑的和提给上游的是同一份代码（commit <code class="notranslate">9e9f21e</code>，重建 run 成功，headSha 核对一致）。</p>
+<p>教训很直白：<strong>你自己的环境配置永远是齐的，通用性 bug 只有认真想象"一个什么都没配的用户装上去会怎样"时才现形。</strong> 这也是给开源项目提 PR 最大的私人收益——它逼着你的代码从"我能用"升级成"任何人都能用"。</p>
+<h2>五、不写代码的贡献，有时比 PR 更有用</h2>
+<h3>5.1 帮别人的 PR 做 review：#307</h3>
+<p>sitemap 我们站早有外挂版（<code class="notranslate">sitemap_gen.py</code>，<a href="/post/8.html">G04</a> 就用上了）。但翻到 <a href="https://github.com/Meekdai/Gmeek/pull/307" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/307/hovercard">#307</a> 之后叶扬决定不重复提：人家 3 月就开了 PR，代码读下来完成度很高。那能做什么？——写一份认真的 review。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/upstream-307-top.png"><img src="/screenshots/upstream-307-top.png" alt="#307 现场：Dainsleif233 的提交在上方，下方是叶扬的 reviewed 时间线和五条核对意见、两条非阻塞建议，右栏 Reviewers 已出现头像" style="max-width: 100%;"></a></p>
+<p>他把 <code class="notranslate">Gmeek.py</code> 的 <code class="notranslate">createPlistHtml</code> 翻出来逐条对照：分页页数的 <code class="notranslate">ceil</code> 边界在 15/30/31 篇三种情况下是否与模板循环一致、<code class="notranslate">labelColorDict</code> 会不会污染遍历（结论：主流程返回后才塞字典，时序安全）、runOne 增量构建时旧文章和固定页 merge 得全不全、两种 Pages URL 形态、<code class="notranslate">docs/</code> 输出位置——五条"我核对过、确认没问题"，加两条非阻塞建议（删文的 runOne 分支不刷新 sitemap；框架缺一个带 <code class="notranslate">Sitemap:</code> 声明的 robots.txt）。</p>
+<p>对低频维护的项目来说，一个带着验证过程的"这个 PR 可以合"，往往比再开一个 PR 有价值得多。等 #307 合并，我们自己的外挂版就回迁过去。</p>
+<h3>5.2 帮人排查"伪 bug"：#318</h3>
+<p><a href="https://github.com/Meekdai/Gmeek/issues/318" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/318/hovercard">#318</a> 报告 lxml 6.1.3 在 Python 3.8 下没有预编译 wheel，构建必挂。叶扬当天的构建日志里恰好有反证：ubuntu-24.04 + Python 3.8.18 成功下载了 <code class="notranslate">lxml-6.1.3-cp38-manylinux</code> wheel。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/upstream-318-top.png"><img src="/screenshots/upstream-318-top.png" alt="#318：叶扬的评论贴出当天成功安装的三行日志，列出三个排查问题，并给出钉版本和升级 Python 的规避方案" style="max-width: 100%;"></a></p>
+<p>贴日志、问环境（怀疑是 glibc 低于 2.28 的老系统，或是本地 Windows）、再给出钉版本和升级 Python 的临时方案。issue 区里很有价值的一类回复就是："我这边复现不了，这是我的对照数据。"</p>
+<h3>5.3 workaround 之外，再单开一个根治 issue：#322</h3>
+<p><a href="/post/27.html">G17</a> 就实锤过：文章页的 meta description 直接取 <code class="notranslate">issue.body</code> 第一个句号前的原文，<code class="notranslate">#</code>、<code class="notranslate">&gt;</code>、<code class="notranslate">[]()</code> 全进搜索摘要。GmeekSEO 插件运行时能洗干净，但静态源码里还是脏的，不渲染 JS 的爬虫读不到。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/upstream-322-top.png"><img src="/screenshots/upstream-322-top.png" alt="#322：现象、代码位置（Gmeek.py 第 347 行原文截取 + post.html 直渲）、影响、复现、约十行的构建期修法，结构完整" style="max-width: 100%;"></a></p>
+<p>于是另开 <a href="https://github.com/Meekdai/Gmeek/issues/322" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/322/hovercard">#322</a>：代码位置（<code class="notranslate">Gmeek.py:347</code> + <code class="notranslate">templates/post.html</code> 第 4、6 行）、现象、复现路径、约十行标准库就能实现的构建期修法，全部写清楚。插件 PR 是今天的解药，根治 issue 是明天的手术刀，两个都留下，并在 PR 评论里互相挂了链接。</p>
+<h2>六、节奏、礼仪，和一个截图彩蛋</h2>
+<p>最后沉淀几条这次摸到的门道：</p>
+<ul>
+<li><strong>一个插件一个 PR，绝不打包。</strong> 小项目 review 成本本来就高，塞在一起只会让它们互相连坐——一个有争议，全部卡住。</li>
+<li><strong>别一次性轰炸。</strong> 第二梯队四个先压着，看维护者对 #319/#320/#321 的响应节奏再说。给停更七个月的项目一次甩六个 PR，那是压力，不是热情。</li>
+<li><strong>PR 描述替维护者把 merge 理由写好</strong>：解决哪个 issue、怎么装、线上 demo、已知边界，四件套齐活。</li>
+<li><strong>状态要诚实。</strong> 截至本文发布，三个 PR 全部 <strong>Open 等待合并</strong>，没有任何一行进入官方仓库。以后无论被合并、被要求修改还是被婉拒，叶扬都会回到<a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/5" data-hovercard-type="issue" data-hovercard-url="/yeyangchen2009/yeyangchen2009.github.io/issues/5/hovercard">路线图 #5</a> 更新状态。</li>
+</ul>
+<p>截图彩蛋：本文 7 张配图全部用<a href="/post/26.html">番外一</a>那个零依赖截图器拍的 GitHub 页面——截图器第三次自举。过程中还翻车两次：GitHub 新版 issue 页把评论塞进了 <strong>shadow DOM 里的虚拟滚动列表</strong>，<code class="notranslate">scrollIntoView</code> 在无头浏览器里把页面拍成了"重影墙"（同一条评论在画面里重复十几遍），最后靠"渐进滚动触发懒加载 + 页面自身 hash 路由定位"才驯服。这个技术坑以后单独写，这篇的主角是 PR。</p>
+<h2>小结：一张可以直接抄的回馈清单</h2>
+<ol>
+<li>先翻 issue：找维护者亲口承诺过但没做的、长期 open 的真实需求；</li>
+<li>观察上游形态：单文件、零构建、CDN 风格、无本站硬编码，照着来；</li>
+<li>过三道筛：有需求吗？形态配吗？有兼容包袱吗？</li>
+<li>换"小白用户"视角走查代码，专抓配置缺失类的通用性 bug；</li>
+<li>别人已经在做的，去做 review，别重复造轮子；</li>
+<li>遇到伪 bug 报告，贴对照日志帮人排查；</li>
+<li>workaround 插件和构建期根治 issue 一起给；</li>
+<li>小步提交、别轰炸、按维护者的节奏来；</li>
+<li>没合并就写"待合并"，诚实是开源社区的硬通货。</li>
+</ol>
+<p>人生苦短，我用 AI——但回馈开源这件事上，AI 能帮我写代码，过筛、决策和礼仪，得我自己来。</p>
+<h2>参考链接</h2>
+<ul>
+<li>PR：<a href="https://github.com/Meekdai/Gmeek/pull/319" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/319/hovercard">#319 修复无标签 issue 的 KeyError</a>、<a href="https://github.com/Meekdai/Gmeek/pull/320" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/320/hovercard">#320 GmeekExternal</a>、<a href="https://github.com/Meekdai/Gmeek/pull/321" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/321/hovercard">#321 GmeekSEO</a></li>
+<li>issue：<a href="https://github.com/Meekdai/Gmeek/issues/322" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/322/hovercard">#322 构建期清洗 description 的根治建议</a>、<a href="https://github.com/Meekdai/Gmeek/pull/307" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/307/hovercard">#307 sitemap 内建生成</a>、<a href="https://github.com/Meekdai/Gmeek/issues/318" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/318/hovercard">#318 lxml wheel 排查</a>、需求来源 <a href="https://github.com/Meekdai/Gmeek/issues/145" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/145/hovercard">#145</a> 与 <a href="https://github.com/Meekdai/Gmeek/issues/186" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/186/hovercard">#186</a></li>
+<li>站内相关：<a href="/post/27.html">G17 SEO 收尾战</a>、<a href="/post/26.html">番外一 无头截图流水线</a>、<a href="/post/24.html">G15 Mermaid 翻车记</a></li>
+<li>验收工具：<a href="https://search.google.com/test/rich-results" rel="nofollow">Google Rich Results Test</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
