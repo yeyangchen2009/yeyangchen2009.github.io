@@ -21,6 +21,10 @@
  *   --full                整页截图（用 Page.getLayoutMetrics 取 CSS 像素尺寸）
  *   --settle <ms>         导航/重载后等待渲染的时间（默认 3500）
  *   --wait <ms>           动作后等待时间（默认 1500）
+ *   --profile-dir <dir>  持久化浏览器 profile（保留登录 cookie；默认每次临时目录）
+ *   --headed              有头模式（配合 --profile-dir 做首次手动登录）
+ *   --keep-open          截图后保持浏览器不退出，直到 --done-flag 指定的文件出现
+ *   --done-flag <path>   与 --keep-open 配合：该文件出现即优雅结束（文件会被删除）
  *   --debug               滚动位置、主题属性、背景色等诊断输出
  *
  * 示例:
@@ -47,7 +51,8 @@ function parseArgs(argv) {
         process.exit(2);
     }
     const withValue = new Set(['theme', 'theme-key', 'theme-value', 'scale', 'css',
-        'css-match', 'browser', 'hash', 'eval', 'click', 'settle', 'wait', 'scheme']);
+        'css-match', 'browser', 'hash', 'eval', 'click', 'settle', 'wait', 'scheme',
+        'profile-dir', 'done-flag']);
     const o = { url, out, width: +w, height: +h, scale: 2, settle: 3500, wait: 1500,
         theme: 'light', 'theme-key': 'meek_theme', 'theme-value': 'dark' };
     for (let i = 4; i < argv.length; i++) {
@@ -57,6 +62,8 @@ function parseArgs(argv) {
         if (withValue.has(key)) { o[key] = argv[++i]; }
         else if (key === 'full') o.full = true;
         else if (key === 'debug') o.debug = true;
+        else if (key === 'headed') o.headed = true;
+        else if (key === 'keep-open') o.keepOpen = true;
         else { console.error('未知选项: --' + key); process.exit(2); }
     }
     o.scale = +o.scale;
@@ -98,14 +105,21 @@ function getJson(port, urlPath) {
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function launchBrowser(browser) {
-    const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'cdp-shot-'));
-    const child = spawn(browser, [
-        '--headless=new', '--disable-gpu', '--hide-scrollbars', '--no-first-run',
+async function launchBrowser(browser, opt) {
+    // --profile-dir 给持久目录（跨次保留登录态，退出不删）；否则每次用临时目录
+    const persistent = !!opt.profileDir;
+    const profile = opt.profileDir
+        ? path.resolve(opt.profileDir)
+        : fs.mkdtempSync(path.join(os.tmpdir(), 'cdp-shot-'));
+    fs.mkdirSync(profile, { recursive: true });
+    const args = [
+        '--disable-gpu', '--hide-scrollbars', '--no-first-run',
         '--no-proxy-server', '--ignore-certificate-errors',
         '--remote-debugging-port=0', '--remote-allow-origins=*',
         '--user-data-dir=' + profile, 'about:blank',
-    ], { stdio: ['ignore', 'ignore', 'pipe'] });
+    ];
+    if (!opt.headed) args.unshift('--headless=new');
+    const child = spawn(browser, args, { stdio: ['ignore', 'ignore', 'pipe'] });
 
     // 端口 0 = 让浏览器自选端口，从 stderr 的 "DevTools listening on ws://127.0.0.1:PORT/..." 解析
     const port = await new Promise((resolve, reject) => {
@@ -116,7 +130,7 @@ async function launchBrowser(browser) {
         });
         child.on('exit', code => { clearTimeout(timer); reject(new Error('浏览器提前退出，code=' + code)); });
     });
-    return { child, port, profile };
+    return { child, port, profile, persistent };
 }
 
 function killBrowser(child) {
@@ -129,7 +143,7 @@ function killBrowser(child) {
 async function main() {
     const opt = parseArgs(process.argv.slice(2));
     const browser = resolveBrowser(opt.browser);
-    const { child, port, profile } = await launchBrowser(browser);
+    const { child, port, profile, persistent } = await launchBrowser(browser, opt);
 
     try {
         const list = await getJson(port, '/json/list');
@@ -243,11 +257,31 @@ async function main() {
         console.log('saved', opt.out, fs.statSync(opt.out).size, 'bytes');
 
         ws.close();
+
+        // --keep-open：截图后保持浏览器（典型场景：有头窗口里手动登录），
+        // 轮询 done-flag 文件，出现即优雅结束并删除标志；持久 profile 此时早已落盘
+        if (opt.keepOpen) {
+            if (!opt['done-flag']) { console.error('--keep-open 必须配合 --done-flag <path>'); process.exit(2); }
+            const flag = path.resolve(opt['done-flag']);
+            try { fs.rmSync(flag, { force: true }); } catch { /* ignore */ }
+            console.log('浏览器保持打开，完成操作后我会通过标志文件通知结束…');
+            await new Promise(resolve => {
+                const timer = setInterval(() => {
+                    if (fs.existsSync(flag)) {
+                        clearInterval(timer);
+                        try { fs.rmSync(flag, { force: true }); } catch { /* ignore */ }
+                        resolve();
+                    }
+                }, 1000);
+            });
+        }
     } finally {
         killBrowser(child);
         // Windows 下进程刚退出时文件句柄可能还没释放，删不掉就放弃（临时目录，无大碍）
         setTimeout(() => {
-            try { fs.rmSync(profile, { recursive: true, force: true }); } catch { /* ignore */ }
+            if (!persistent) {
+                try { fs.rmSync(profile, { recursive: true, force: true }); } catch { /* ignore */ }
+            }
             process.exit(0);
         }, 300);
     }
