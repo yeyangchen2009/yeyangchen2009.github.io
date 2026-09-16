@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# B01｜18 秒建站实录：从一个 GitHub 账号到第一篇文章上线
+
+> [B00](/post/30.html) 把地图画好了：Issues 是编辑部、Actions 是印刷厂、Pages 是报刊亭。">
+<meta property="og:title" content="B01｜18 秒建站实录：从一个 GitHub 账号到第一篇文章上线">
+<meta property="og:description" content="# B01｜18 秒建站实录：从一个 GitHub 账号到第一篇文章上线
+
+> [B00](/post/30.html) 把地图画好了：Issues 是编辑部、Actions 是印刷厂、Pages 是报刊亭。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/32.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>B01｜18 秒建站实录：从一个 GitHub 账号到第一篇文章上线</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">B01｜18 秒建站实录：从一个 GitHub 账号到第一篇文章上线</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/32" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>B01｜18 秒建站实录：从一个 GitHub 账号到第一篇文章上线</h1>
+<blockquote>
+<p><a href="/post/30.html">B00</a> 把地图画好了：Issues 是编辑部、Actions 是印刷厂、Pages 是报刊亭。这一篇叶扬带你走完全程——从注册账号开始，每个按钮都截图为证，中间三个最容易卡住的地方会用大字标出来。全程不需要在电脑上装任何东西，只要一个浏览器。</p>
+<p>官方号称 18 秒搭好。叶扬实测：<strong>点鼠标的部分确实只要 18 秒</strong>，等云端印刷的一两分钟里，你可以去倒杯水。</p>
+</blockquote>
+<h2>零、开工前：一个 GitHub 账号</h2>
+<p>打开 <a href="https://github.com/signup">github.com/signup</a>，用邮箱注册：填邮箱、设密码、起一个用户名，跟着验证邮件确认即可。</p>
+<p>这里只有一件事要郑重对待：<strong>用户名就是你未来的域名。</strong></p>
+<p>你起的名字叫 <code class="notranslate">abc123</code>，博客地址就是 <code class="notranslate">https://abc123.github.io</code>；叫 <code class="notranslate">xiaoye2026</code>，地址就是 <code class="notranslate">https://xiaoye2026.github.io</code>。用户名将来虽然能改，但牵一发动全身，建议直接起一个你愿意用很多年的 ID（叶扬的账号就是 yeyangchen2009，博客地址也由此而来）。</p>
+<p>注册完登录，我们开始。</p>
+<h2>一、第 1 步：用模板一键创建仓库（18 秒都花在这）</h2>
+<p>Gmeek 官方把一个博客需要的全部脚手架放进了模板仓库 <a href="https://github.com/Meekdai/Gmeek-template">Meekdai/Gmeek-template</a>，长这样：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b01-template-repo.png"><img src="/screenshots/b01-template-repo.png" alt="模板仓库：顶部带 Public template 徽章，文件列表里是工作流、backup、docs、README 和 config.json 五件套；下方 README 写着官方四步安装法" style="max-width: 100%;"></a></p>
+<p><strong>点这个链接直接进入建仓表单</strong>（它带着模板参数，比手动找按钮快）：</p>
+<blockquote>
+<p><a href="https://github.com/new?template_name=Gmeek-template&amp;template_owner=Meekdai">https://github.com/new?template_name=Gmeek-template&amp;template_owner=Meekdai</a></p>
+</blockquote>
+<p>表单里只需要关心三个地方：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b01-new-repo.png"><img src="/screenshots/b01-new-repo.png" alt="待补截图：通过模板创建仓库的表单——Owner 选自己的账号，Repository name 填 用户名.github.io，Public 保持选中，底部绿色 Create repository 按钮清晰可见" style="max-width: 100%;"></a></p>
+<ol>
+<li><strong>Owner</strong>：选你自己的账号；</li>
+<li><strong>Repository name（仓库名）</strong>：必须填 <code class="notranslate">你的用户名.github.io</code>，一个字符都不能差。叶扬填的是 <code class="notranslate">yeyangchen2009.github.io</code>；</li>
+<li>保持 <strong>Public（公开）</strong> 选中，然后点绿色的 <strong>Create repository</strong>。</li>
+</ol>
+<p>为什么仓库名这么死板？因为 GitHub Pages 有条特殊规矩：名叫 <code class="notranslate">用户名.github.io</code> 的仓库是「用户站」，直接占用根域名 <code class="notranslate">https://用户名.github.io/</code>；要是起了别的名字（比如 <code class="notranslate">my-blog</code>），它就变成「项目站」，网址会变成 <code class="notranslate">https://用户名.github.io/my-blog/</code>，后面所有路径都要矮一级。Gmeek 默认按根域名设计，<strong>新手请严格照做，不要自由发挥仓库名</strong>。</p>
+<p>几秒钟后，你就拥有了一个内容和模板一模一样的新仓库——毛坯房交付完成。</p>
+<h2>二、第 2 步：把 Pages 发布源切到 GitHub Actions（最容易忘）</h2>
+<p>进入新仓库的 <strong>Settings（设置）</strong> 标签页，左侧菜单找到 <strong>Pages</strong>，在 <strong>Build and deployment → Source</strong> 下拉里选择 <strong>GitHub Actions</strong>：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b01-pages.png"><img src="/screenshots/b01-pages.png" alt="待补截图：仓库 Settings → Pages 页面，Build and deployment 的 Source 下拉展开，选中 GitHub Actions" style="max-width: 100%;"></a></p>
+<p>这是四步里<strong>遗忘率最高</strong>的一步，也是新手第一大坑的来源：</p>
+<ul>
+<li>选 <strong>GitHub Actions</strong>：网页由工作流构建出的 artifact 发布，这是 Gmeek 的工作方式；</li>
+<li>保持默认的 <strong>Deploy from a branch</strong>：GitHub 只托管分支上的现成文件，Gmeek 构建了也没人发布——症状是「Actions 一片绿勾，网址打开却是 404」，极其迷惑。</li>
+</ul>
+<p>选一次就好，以后不用再碰。</p>
+<h2>三、第 3 步：写第一篇 issue——记得给它一张「出版许可证」</h2>
+<p>回到仓库首页，点 <strong>Issues</strong> 标签，再点绿色的 <strong>New issue</strong>。</p>
+<h3>3.1 新仓库没有标签，先建一个</h3>
+<p>如果你是第一次打开 Issues，右侧的 <strong>Labels</strong> 区域空空如也——这是第三个必考点的伏笔：<strong>Gmeek 规定一篇 issue 至少带一个标签才会生成文章</strong>，标签就是出版许可证，没贴标签的 issue 只是仓库里的一条备忘。</p>
+<p>点 Labels 旁边的齿轮（或仓库的 Labels 管理页），选 <strong>New label</strong>：</p>
+<ul>
+<li>Label name 随便起，新手建议就叫 <code class="notranslate">博客</code>（叶扬自己用「博客」「Gmeek」两个标签分类）；</li>
+<li>Description 留空即可；</li>
+<li>颜色随手选一个——这个颜色以后会成为该标签文章在列表里的主题色点缀。</li>
+</ul>
+<p>保存。</p>
+<h3>3.2 写正文</h3>
+<p>回到 New issue 页面：</p>
+<ul>
+<li><strong>Title</strong>：文章标题，比如 <code class="notranslate">我的第一篇博客：开张大吉</code>；</li>
+<li>正文框用 <strong>Markdown</strong> 写作，新手先试这几样就够了：<code class="notranslate">#</code> 加空格是小标题，<code class="notranslate">-</code> 加空格是列表，<code class="notranslate">**文字**</code> 加粗，图片直接截图后 Ctrl+V 粘贴（GitHub 会自动上传）；</li>
+<li>在右侧 <strong>Labels</strong> 下拉里勾上刚建的「博客」标签：</li>
+</ul>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b01-label.png"><img src="/screenshots/b01-label.png" alt="待补截图：New issue 页面，标题写着示意标题，右侧 Labels 下拉展开，「博客」标签处于勾选状态（示意即可，不要真的提交）" style="max-width: 100%;"></a></p>
+<p>最后点绿色的 <strong>Submit new issue</strong>。</p>
+<p>这一刻，issue 页面下方会立刻出现一行提示，告诉你有一个 workflow 被触发了——印刷厂开机。</p>
+<h2>四、见证奇迹的两分钟：黄圆点变成绿对勾</h2>
+<p>打开仓库的 <strong>Actions</strong> 标签页，你会看到一条新的运行记录，标题就是你刚发的文章名，旁边先是一个黄色的转圈圈：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b01-actions-runs.png"><img src="/screenshots/b01-actions-runs.png" alt="本站 Actions 页：133 次运行记录，能清楚看到三种触发方式——Issue #31 opened（发文自动）、Manually run（手动全局）、Scheduled（每日定时），全部绿色对勾" style="max-width: 100%;"></a></p>
+<p>这张图里藏着 B00 讲过的三种触发方式，对照着看特别直观：</p>
+<ul>
+<li><strong>Issue #31 opened by yeyangchen2009</strong>：你刚发文章触发的增量构建，自动；</li>
+<li><strong>Manually run</strong>：手动按按钮的全局重建（第 4 步就会用到）；</li>
+<li><strong>Scheduled</strong>：每天北京时间零点的定时全局重建，免费的自愈保险。</li>
+</ul>
+<p>一次构建大约 40 秒到 2 分钟。状态变化是这样的：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">sequenceDiagram</span>
+    <span class="pl-k">actor</span> <span class="pl-ent">你</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">I</span> <span class="pl-k">as</span> <span class="pl-ent">GitHub Issue</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">A</span> <span class="pl-k">as</span> <span class="pl-ent">Actions 印刷厂</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">P</span> <span class="pl-k">as</span> <span class="pl-ent">Pages 报刊亭</span>
+    <span class="pl-ent">你</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">I</span><span class="pl-k">:</span> <span class="pl-s">写好正文 + 勾选标签 + Submit</span>
+    <span class="pl-ent">I</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">A</span><span class="pl-k">:</span> <span class="pl-s">发出 opened 事件</span>
+    <span class="pl-ent">A</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">A</span><span class="pl-k">:</span> <span class="pl-s">云端 Ubuntu 跑 Gmeek.py</span>
+    <span class="pl-k">Note over </span><span class="pl-ent">A</span><span class="pl-k">:</span> <span class="pl-s">黄圆点转圈圈，约 1–2 分钟</span>
+    <span class="pl-ent">A</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">P</span><span class="pl-k">:</span> <span class="pl-s">产物打包部署</span>
+    <span class="pl-ent">A</span><span class="pl-k">--&gt;&gt;</span><span class="pl-ent">I</span><span class="pl-k">:</span> <span class="pl-s">绿色对勾</span>
+    <span class="pl-ent">你</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">P</span><span class="pl-k">:</span> <span class="pl-s">打开 用户名.github.io</span>
+    <span class="pl-ent">P</span><span class="pl-k">--&gt;&gt;</span><span class="pl-ent">你</span><span class="pl-k">:</span> <span class="pl-s">文章已经在首页</span></pre></div>
+<p>等黄圆点变成<strong>绿对勾</strong>，打开浏览器访问：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">https://你的用户名.github.io
+</code></pre>
+<p>你的文章已经躺在首页了。把这个地址发给任何人，对方无需登录、无需 GitHub 账号就能读到。叶扬的站点现在长这样（你的第一次会长得很像，只是标题和文章数还是模板的初始状态——别急，下一篇 B02 就教你改成自己的）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b00-result-home.png"><img src="/screenshots/b00-result-home.png" alt="一篇真实博客上线后的样子：首页文章列表、头像、标签和主题切换都已就绪" style="max-width: 100%;"></a></p>
+<p>顺便消除一个疑惑：<strong>用手机打开，首页可能看不到博客大标题，只有头像</strong>——这是官方模板在窄屏下的刻意设计，不是你装错了。</p>
+<h2>五、第 4 步：手动全局重建，先混个脸熟</h2>
+<p>四步安装法的最后一步平时用不到，但 B00 推出的两条定律请记住：<strong>改了 config.json，或者往仓库里加了新文件后页面不对劲，就需要它。</strong></p>
+<p>操作位置在 Actions → 左侧选 <strong>build Gmeek</strong> → 右侧的 <strong>Run workflow</strong> 下拉 → 再点绿色 <strong>Run workflow</strong>：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b01-run-workflow.png"><img src="/screenshots/b01-run-workflow.png" alt="待补截图：build Gmeek 工作流页右侧 Run workflow 下拉展开，Branch 为 main，绿色 Run workflow 按钮可见" style="max-width: 100%;"></a></p>
+<p>点完会多出一条 <code class="notranslate">Manually run</code> 记录——就是上一张图里见过的那个类型。它和发文构建的区别是：<strong>手动构建会清空产物、遍历你的全部 issue 重建一遍</strong>，所以任何「改了但没生效」的疑难杂症，先来一发手动全局重建，往往药到病除。</p>
+<h2>六、完工验收清单</h2>
+<p>四步走完，对照打勾：</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Incomplete task"> 仓库名严格等于 <code class="notranslate">用户名.github.io</code>；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Incomplete task"> Settings → Pages → Source 已选 <strong>GitHub Actions</strong>；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Incomplete task"> 第一篇 issue 勾选了至少一个标签后才 Submit；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Incomplete task"> Actions 里对应记录是<strong>绿对勾</strong>（不是黄圆点、更不是红叉）；</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" aria-label="Incomplete task"> 浏览器无痕窗口打开 <code class="notranslate">https://用户名.github.io</code> 能看到文章（用无痕窗口是为了绕开本地缓存）。</li>
+</ul>
+<h2>七、翻车急诊室</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>症状</th>
+<th>病因</th>
+<th>处方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>打开域名是 404 / GitHub 默认页</td>
+<td>十有八九是第 2 步没做，Source 没切到 GitHub Actions</td>
+<td>回 Settings → Pages 改完，再手动 Run workflow</td>
+</tr>
+<tr>
+<td>网址变成 <code class="notranslate">用户名.github.io/仓库名/</code></td>
+<td>仓库名没按 <code class="notranslate">用户名.github.io</code> 起</td>
+<td>仓库 Settings 最下方改名；改不动就新建</td>
+</tr>
+<tr>
+<td>Submit issue 后 Actions 毫无反应</td>
+<td>文章没贴标签</td>
+<td>打开 issue，右侧补上标签，再编辑触发一次</td>
+</tr>
+<tr>
+<td>Actions 是红叉</td>
+<td>构建中途报错，新手最常见是以后改 config.json 时漏了逗号</td>
+<td>点进那条记录看红色日志，把报错行搜一搜；实在看不懂就手动 Run workflow 重来，每天凌晨还有定时构建兜底</td>
+</tr>
+<tr>
+<td>绿勾了但首页没文章</td>
+<td>构建/CDN 还在传播，或标签没贴</td>
+<td>等 1–2 分钟，用无痕窗口再看；检查 issue 标签</td>
+</tr>
+<tr>
+<td>博客标题是不认识的占位文字</td>
+<td>模板自带的默认 config.json 还没改</td>
+<td>不是故障——这正是下一篇 B02 的主题</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>小结</h2>
+<ul>
+<li>四步的本质：<strong>模板复制一个仓库 → 告诉 Pages 由 Actions 发布 → 贴标签的 issue 触发构建 → 出问题就手动全局重建</strong>；</li>
+<li>三个必考点：仓库名、Pages 开关、issue 标签，新手翻车几乎都在这三处；</li>
+<li>你现在拥有的是一套零服务器、零成本、数据全部在自己仓库里的博客，写作只需要一个浏览器。</li>
+</ul>
+<p>毛坯房已经交付。下一篇 B02 我们装修第一件家具：把 <code class="notranslate">config.json</code> 里的站名、副标题、头像改成你自己的，并搞懂 <code class="notranslate">last</code> 和锁版本的取舍。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Meekdai/Gmeek">Gmeek 引擎仓库</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek-template">Gmeek-template 模板仓库（建站入口）</a></li>
+<li><a href="https://blog.meekdai.com/post/Gmeek-kuai-su-shang-shou.html" rel="nofollow">官方快速上手指南</a></li>
+<li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#types-of-github-pages-sites">GitHub Pages 官方文档：About user/organization sites</a></li>
+<li>上一篇：<a href="/post/30.html">B00 地基篇总览</a></li>
+<li>前传：<a href="/post/1.html">用 GitHub Issues 写博客：Gmeek 搭建全过程与原理</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
