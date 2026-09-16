@@ -17,6 +17,7 @@
  *   --hash <anchor>       导航后设置 location.hash（用于触发平滑滚动/scrollspy）
  * --eval <js>             导航后执行 JS；若返回 {x,y,width,height} 即按返回矩形取景
  *   --click <selector>    手机端：导航后点击元素（如 ☰ 按钮）
+ *   --scheme <dark|light> 模拟 prefers-color-scheme（截未登录站点的暗色页用）
  *   --full                整页截图（用 Page.getLayoutMetrics 取 CSS 像素尺寸）
  *   --settle <ms>         导航/重载后等待渲染的时间（默认 3500）
  *   --wait <ms>           动作后等待时间（默认 1500）
@@ -46,7 +47,7 @@ function parseArgs(argv) {
         process.exit(2);
     }
     const withValue = new Set(['theme', 'theme-key', 'theme-value', 'scale', 'css',
-        'css-match', 'browser', 'hash', 'eval', 'click', 'settle', 'wait']);
+        'css-match', 'browser', 'hash', 'eval', 'click', 'settle', 'wait', 'scheme']);
     const o = { url, out, width: +w, height: +h, scale: 2, settle: 3500, wait: 1500,
         theme: 'light', 'theme-key': 'meek_theme', 'theme-value': 'dark' };
     for (let i = 4; i < argv.length; i++) {
@@ -186,6 +187,11 @@ async function main() {
             deviceScaleFactor: opt.scale,
             mobile: opt.width <= 1249, // 严格对齐 GmeekTOC/articletoc 的小屏断点
         });
+        if (opt.scheme) {
+            await send('Emulation.setEmulatedMedia', {
+                features: [{ name: 'prefers-color-scheme', value: opt.scheme }],
+            });
+        }
 
         // 第一次导航：落到同源页面后才有资格写 localStorage
         await send('Page.navigate', { url: opt.url });
