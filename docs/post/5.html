@@ -662,6 +662,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>SEO</td>
 <td>✅</td>
 </tr>
+<tr>
+<td>番外二</td>
+<td><a href="/post/28.html">我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线</a></td>
+<td>11 件自研件过筛 + PR #319/#320/#321 + issue #322 + review #307</td>
+<td>开源回馈/方法论</td>
+<td>✅</td>
+</tr>
 </tbody>
 </table></markdown-accessiblity-table>
 <p>更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 <code class="notranslate">edited</code> 事件，编辑即自动重建），所以这张表会一直是最新的。</p>
@@ -690,8 +697,14 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>✅ 已发布（2026-09-15，<a href="/post/26.html">番外</a>）</td>
 </tr>
 <tr>
+<td><del>番外二·开源回馈流水线</del></td>
+<td>11 个自研件按"需求佐证 / 形态匹配 / 兼容包袱"三标准过筛 → PR <a href="https://github.com/Meekdai/Gmeek/pull/320" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/320/hovercard">#320</a> GmeekExternal、<a href="https://github.com/Meekdai/Gmeek/pull/321" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/321/hovercard">#321</a> GmeekSEO（另带 #319 KeyError 修复），根治 issue <a href="https://github.com/Meekdai/Gmeek/issues/322" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/322/hovercard">#322</a>；帮 <a href="https://github.com/Meekdai/Gmeek/pull/307" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/307/hovercard">#307</a> 写验证式 review、<a href="https://github.com/Meekdai/Gmeek/issues/318" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/318/hovercard">#318</a> 贴对照日志；PR 前抓到两桩通用性 bug（project pages 子路径、空 ogImage）。<strong>三个 PR 全部 Open 待合并，未被官方收录</strong></td>
+<td>维护者在 #145 亲口承诺"有空写插件"七个月未兑现 + #319 探路</td>
+<td>✅ 已发布（2026-09-16，<a href="/post/28.html">番外二</a>）</td>
+</tr>
+<tr>
 <td><strong>番外·收录实战</strong></td>
-<td>G04 提交一周后，Google/Bing 真实收录数据对比、GSC"无法抓取"复查结论，回答"RSS 当 sitemap 到底有没有用"</td>
+<td>G04 提交一周后，Google/Bing 真实收录数据对比、GSC"无法抓取"复查结论，回答"RSS 当 sitemap 到底有没有用"；顺带追踪三个上游 PR 的合并进展</td>
 <td><a href="/post/10.html">G04</a>、G16 结尾均已预告</td>
 <td>📅 约 2026-09-21 后</td>
 </tr>
@@ -736,6 +749,16 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>分享按钮 / 友链页 / 独立域名 + 百度</strong>：均为主动放弃而非欠债——系统自带分享面板与 URL 复制已够用；友链等有真实社交圈再开；百度对未备案的 github.io 域名收录极差，G04 已决定跳过。</li>
 </ul>
 <p>结论：除 G17 四项 SEO 技术缺口外，没有"该做没做"的功能了。下一步的写作方向从"造功能"转向"晒方法论"——截图教程、收录实战、跟版记录都属此类。</p>
+<h3>2026-09-16 上游回馈第二波：三 PR + 一 issue + 两条评论</h3>
+<p>G17 之后把 11 个自研件整体过了一遍筛子（详见 <a href="/post/28.html">番外二</a>），结论落地为：</p>
+<ul>
+<li><strong>三个 PR 全部 Open 待合并</strong>：<a href="https://github.com/Meekdai/Gmeek/pull/319" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/319/hovercard">#319</a>（无标签 issue 增量构建 KeyError，3 行）、<a href="https://github.com/Meekdai/Gmeek/pull/320" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/320/hovercard">#320</a>（GmeekExternal 外链新标签，42 行，对接 #186）、<a href="https://github.com/Meekdai/Gmeek/pull/321" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/321/hovercard">#321</a>（GmeekSEO 四件套，138 行，对接 #145 维护者 2024 年的承诺）；</li>
+<li><strong>根治 issue <a href="https://github.com/Meekdai/Gmeek/issues/322" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/322/hovercard">#322</a></strong>：<code class="notranslate">Gmeek.py:347</code> 直接取 issue.body 原文做 description，建议构建期从渲染后 HTML 转纯文本——插件是过渡，构建期才是根治；</li>
+<li><strong>review <a href="https://github.com/Meekdai/Gmeek/pull/307" data-hovercard-type="pull_request" data-hovercard-url="/Meekdai/Gmeek/pull/307/hovercard">#307</a>（sitemap 内建生成）</strong>：五条核对确认（分页页数边界、labelColorDict 时序、runOne 数据完整、两种 Pages 形态、输出位）+ 两条非阻塞建议；质量过关，合并后本站 <code class="notranslate">sitemap_gen.py</code> 回迁内建方案；</li>
+<li><strong><a href="https://github.com/Meekdai/Gmeek/issues/318" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/318/hovercard">#318</a> 伪 bug 排查</strong>：当天构建日志实证 lxml 6.1.3 有 cp38 manylinux wheel，帮助定位为环境问题；</li>
+<li><strong>第二梯队压着不提</strong>：PrevNext/ReadTime/Pager/Archive 四个等维护者对前三连的响应节奏，不一次性轰炸；Mermaid（3.5MB 本地资产）与 articletoc（类名兼容包袱、原作者 PR 在排队）确认缓提。</li>
+<li>PR 前的通用性加固已同步本站：<code class="notranslate">GmeekSEO.js</code> 兼容 project pages 子路径、未配 ogImage 时省略图片字段（commit <code class="notranslate">9e9f21e</code>，已重建上线）。</li>
+</ul>
 <h2>参考资料汇总</h2>
 <ul>
 <li>Gmeek 源码：<a href="https://github.com/Meekdai/Gmeek">https://github.com/Meekdai/Gmeek</a></li>
@@ -754,7 +777,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
 <li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
 </ol>
-<p>G01–G16 正篇与 <strong><a href="/post/27.html">G17 SEO 收尾战</a></strong>（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；2026-09-15 还产出一篇 <strong><a href="/post/26.html">番外·给博客拍证件照</a></strong>（零依赖 CDP 无头截图，成品脚本在仓库 <code class="notranslate">tools/cdp-shot.js</code>）。下一篇待写：约 2026-09-21 的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况。更远的候选见上方选题池。</p></div>
+<p>G01–G16 正篇与 <strong><a href="/post/27.html">G17 SEO 收尾战</a></strong>（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有两篇：<strong><a href="/post/26.html">番外·给博客拍证件照</a></strong>（零依赖 CDP 无头截图，成品脚本在仓库 <code class="notranslate">tools/cdp-shot.js</code>）与 <strong><a href="/post/28.html">番外二·开源回馈流水线</a></strong>（三个上游 PR 待合并，见上方 2026-09-16 小节）。下一篇待写：约 2026-09-21 的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>

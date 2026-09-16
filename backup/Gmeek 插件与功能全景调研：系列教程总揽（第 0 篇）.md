@@ -233,6 +233,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G16 | [目录会读心：把 tocbot 请到本地，让当前章节一路高亮](/post/25.html) | CDN 资源本地化 + scrollspy | 进阶 | ✅ |
 | 番外 | [给博客拍证件照：零依赖无头截图流水线，与一桩白底怪案](/post/26.html) | CDP + Fetch 域拦截 | 工具/方法论 | ✅ |
 | G17 | [SEO 收尾战：canonical、结构化数据和干净的摘要，一次补齐](/post/27.html) | GmeekSEO 运行时注入 canonical/JSON-LD/twitter/清洁 description | SEO | ✅ |
+| 番外二 | [我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线](/post/28.html) | 11 件自研件过筛 + PR #319/#320/#321 + issue #322 + review #307 | 开源回馈/方法论 | ✅ |
 
 更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 `edited` 事件，编辑即自动重建），所以这张表会一直是最新的。
 
@@ -244,7 +245,8 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | --- | --- | --- | --- |
 | ~~**G17 SEO 收尾战**~~ | 文章页补 `<link rel="canonical">`、JSON-LD（BlogPosting 结构化数据）、twitter:card；顺手清洁 `meta description`——框架当前直接取正文开头，会把 `>` 引用符和 `[文字](链接)` 语法原样塞进搜索摘要。**成品 [`static/plugins/GmeekSEO.js`](https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekSEO.js)（135 行，运行时注入，挂 script 首位）** | #4 清单上仅剩的技术缺口 | ✅ 已发布（2026-09-15，[G17](/post/27.html)） |
 | ~~番外·给博客拍证件照~~ | 零依赖无头浏览器截图教程：Node 内置 WebSocket 直连 CDP（不装 puppeteer），Fetch 域拦截 CSS 破解 headless 样式加载失败、localStorage 注入暗色、2x 高清、元素级 clip 截全图；产物即本批 9 张教程插图。**成品脚本 [`tools/cdp-shot.js`](https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/tools/cdp-shot.js)** | 给 9 篇老教程补截图的完整实战 | ✅ 已发布（2026-09-15，[番外](/post/26.html)） |
-| **番外·收录实战** | G04 提交一周后，Google/Bing 真实收录数据对比、GSC"无法抓取"复查结论，回答"RSS 当 sitemap 到底有没有用" | [G04](/post/10.html)、G16 结尾均已预告 | 📅 约 2026-09-21 后 |
+| ~~番外二·开源回馈流水线~~ | 11 个自研件按"需求佐证 / 形态匹配 / 兼容包袱"三标准过筛 → PR [#320](https://github.com/Meekdai/Gmeek/pull/320) GmeekExternal、[#321](https://github.com/Meekdai/Gmeek/pull/321) GmeekSEO（另带 #319 KeyError 修复），根治 issue [#322](https://github.com/Meekdai/Gmeek/issues/322)；帮 [#307](https://github.com/Meekdai/Gmeek/pull/307) 写验证式 review、[#318](https://github.com/Meekdai/Gmeek/issues/318) 贴对照日志；PR 前抓到两桩通用性 bug（project pages 子路径、空 ogImage）。**三个 PR 全部 Open 待合并，未被官方收录** | 维护者在 #145 亲口承诺"有空写插件"七个月未兑现 + #319 探路 | ✅ 已发布（2026-09-16，[番外二](/post/28.html)） |
+| **番外·收录实战** | G04 提交一周后，Google/Bing 真实收录数据对比、GSC"无法抓取"复查结论，回答"RSS 当 sitemap 到底有没有用"；顺带追踪三个上游 PR 的合并进展 | [G04](/post/10.html)、G16 结尾均已预告 | 📅 约 2026-09-21 后 |
 | 候选·备份双保险 | 用 Actions 把 `backup/` 定期镜像到私有仓库 | #4 运维章自己提的建议 | 待定 |
 | 候选·阅读进度条 | 文章顶部滚动进度条，G16 scrollspy 的姊妹篇 | 体验增强 | 选题偏薄，可能并入杂谈 |
 | 候选·图片懒加载 | 正文 `img` 补 `loading="lazy"` | #4 清单（灯箱做了、懒加载没做） | 本站每篇图极少，价值低 |
@@ -261,6 +263,17 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 - **分享按钮 / 友链页 / 独立域名 + 百度**：均为主动放弃而非欠债——系统自带分享面板与 URL 复制已够用；友链等有真实社交圈再开；百度对未备案的 github.io 域名收录极差，G04 已决定跳过。
 
 结论：除 G17 四项 SEO 技术缺口外，没有"该做没做"的功能了。下一步的写作方向从"造功能"转向"晒方法论"——截图教程、收录实战、跟版记录都属此类。
+
+### 2026-09-16 上游回馈第二波：三 PR + 一 issue + 两条评论
+
+G17 之后把 11 个自研件整体过了一遍筛子（详见 [番外二](/post/28.html)），结论落地为：
+
+- **三个 PR 全部 Open 待合并**：[#319](https://github.com/Meekdai/Gmeek/pull/319)（无标签 issue 增量构建 KeyError，3 行）、[#320](https://github.com/Meekdai/Gmeek/pull/320)（GmeekExternal 外链新标签，42 行，对接 #186）、[#321](https://github.com/Meekdai/Gmeek/pull/321)（GmeekSEO 四件套，138 行，对接 #145 维护者 2024 年的承诺）；
+- **根治 issue [#322](https://github.com/Meekdai/Gmeek/issues/322)**：`Gmeek.py:347` 直接取 issue.body 原文做 description，建议构建期从渲染后 HTML 转纯文本——插件是过渡，构建期才是根治；
+- **review [#307](https://github.com/Meekdai/Gmeek/pull/307)（sitemap 内建生成）**：五条核对确认（分页页数边界、labelColorDict 时序、runOne 数据完整、两种 Pages 形态、输出位）+ 两条非阻塞建议；质量过关，合并后本站 `sitemap_gen.py` 回迁内建方案；
+- **[#318](https://github.com/Meekdai/Gmeek/issues/318) 伪 bug 排查**：当天构建日志实证 lxml 6.1.3 有 cp38 manylinux wheel，帮助定位为环境问题；
+- **第二梯队压着不提**：PrevNext/ReadTime/Pager/Archive 四个等维护者对前三连的响应节奏，不一次性轰炸；Mermaid（3.5MB 本地资产）与 articletoc（类名兼容包袱、原作者 PR 在排队）确认缓提。
+- PR 前的通用性加固已同步本站：`GmeekSEO.js` 兼容 project pages 子路径、未配 ogImage 时省略图片字段（commit `9e9f21e`，已重建上线）。
 
 ## 参考资料汇总
 
@@ -281,7 +294,8 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G16 正篇与 **[G17 SEO 收尾战](/post/27.html)**（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；2026-09-15 还产出一篇 **[番外·给博客拍证件照](/post/26.html)**（零依赖 CDP 无头截图，成品脚本在仓库 `tools/cdp-shot.js`）。下一篇待写：约 2026-09-21 的 **G04 收录实战番外**——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况。更远的候选见上方选题池。
+G01–G16 正篇与 **[G17 SEO 收尾战](/post/27.html)**（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有两篇：**[番外·给博客拍证件照](/post/26.html)**（零依赖 CDP 无头截图，成品脚本在仓库 `tools/cdp-shot.js`）与 **[番外二·开源回馈流水线](/post/28.html)**（三个上游 PR 待合并，见上方 2026-09-16 小节）。下一篇待写：约 2026-09-21 的 **G04 收录实战番外**——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。
+
 
 
 
