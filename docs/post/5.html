@@ -676,9 +676,85 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>CSS/修 bug</td>
 <td>✅</td>
 </tr>
+<tr>
+<td>B00</td>
+<td><a href="/post/30.html">地基篇总览：18 秒搭起 Gmeek，先认识 Issues、Actions 和 Pages 三块基石</a></td>
+<td>零起点系列开篇：三基石、三仓库地图、构建流水线、引擎/模板导游、B01–B08 规划</td>
+<td>地基篇</td>
+<td>✅</td>
+</tr>
 </tbody>
 </table></markdown-accessiblity-table>
 <p>更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 <code class="notranslate">edited</code> 事件，编辑即自动重建），所以这张表会一直是最新的。</p>
+<h2>地基篇（B 系列）：从零开始的八篇规划（2026-09-16 启动）</h2>
+<p>G 系列默认读者<strong>已经有一个博客</strong>。不少新读者反馈"连仓库都还没建，不知道该从哪篇看起"，于是另开一条零起点线：<a href="/post/30.html">B00 地基篇总览</a>已发布，讲清 Issues/Actions/Pages 三块基石、引擎/模板/自己三个仓库的关系、一次构建的完整流水线与 <code class="notranslate">runAll</code>/<code class="notranslate">runOne</code> 分支。后续八篇每篇一个主题，不跳步：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>编号</th>
+<th>主题</th>
+<th>核心内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B00</td>
+<td><a href="/post/30.html">地基篇总览</a></td>
+<td>三基石、三仓库、构建流水线、引擎导游</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>B01</td>
+<td>18 秒建站实录</td>
+<td>注册到首篇带标签文章上线；命名、Pages 开关、标签开关三考点</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>B02</td>
+<td>config.json 入门</td>
+<td>四个必填字段、JSON 逗号规则、改完全局重建、last 与锁版本</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>B03</td>
+<td>在 Issues 里过日子</td>
+<td>Markdown 写作、改稿、Pin 置顶、Close 删文、timestamp 补发旧文</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>B04</td>
+<td>评论与关于页</td>
+<td>utterances app 安装；singlePage 做 About 固定页</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>B05</td>
+<td>Actions 篇</td>
+<td>工作流 YAML 逐行、三种触发、红叉日志、自动提交是什么</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>B06</td>
+<td>Pages 篇</td>
+<td>artifact 部署 vs 分支部署、URL 推导、HTTPS/CDN/缓存、自定义域名</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>B07</td>
+<td>备份、搬家与升级</td>
+<td>backup 离线副本、blogBase.json、GMEEK_VERSION 升级、换账号迁移</td>
+<td>⏳</td>
+</tr>
+<tr>
+<td>B08</td>
+<td>轻装修与进阶指路</td>
+<td>三态主题、页脚、favicon、RSS；收尾后指路 G 系列</td>
+<td>⏳</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>地基篇与进阶篇的分工：<strong>B 系列让你拥有一个博客，G 系列让你拥有"你的"博客。</strong></p>
 <h2>收官之后：候选选题池（G17 起）</h2>
 <p>正篇 G01–G16 收官，<a href="/post/4.html">建设清单（前传 #4）</a>也已回填，但清单并非一无所有。2026-09-15 盘出以下候选，按写作意愿排序：</p>
 <markdown-accessiblity-table><table role="table">
@@ -784,7 +860,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
 <li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
 </ol>
-<p>G01–G16 正篇与 <strong><a href="/post/27.html">G17 SEO 收尾战</a></strong>（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有两篇：<strong><a href="/post/26.html">番外·给博客拍证件照</a></strong>（零依赖 CDP 无头截图，成品脚本在仓库 <code class="notranslate">tools/cdp-shot.js</code>）与 <strong><a href="/post/28.html">番外二·开源回馈流水线</a></strong>（三个上游 PR 待合并，见上方 2026-09-16 小节）。2026-09-16 另发布 <strong><a href="/post/29.html">G18 被浮动挤扁的"上一篇/下一篇"</a></strong>：G08 导航卡片在移动端被版权小字的 <code class="notranslate">float:right</code> + BFC 避让规则压成 60% 窄列、标题竖排；<code class="notranslate">clear:both</code> 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。下一篇待写：约 2026-09-21 的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。</p></div>
+<p>G01–G16 正篇与 <strong><a href="/post/27.html">G17 SEO 收尾战</a></strong>（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有两篇：<strong><a href="/post/26.html">番外·给博客拍证件照</a></strong>（零依赖 CDP 无头截图，成品脚本在仓库 <code class="notranslate">tools/cdp-shot.js</code>）与 <strong><a href="/post/28.html">番外二·开源回馈流水线</a></strong>（三个上游 PR 待合并，见上方 2026-09-16 小节）。2026-09-16 另发布 <strong><a href="/post/29.html">G18 被浮动挤扁的"上一篇/下一篇"</a></strong>：G08 导航卡片在移动端被版权小字的 <code class="notranslate">float:right</code> + BFC 避让规则压成 60% 窄列、标题竖排；<code class="notranslate">clear:both</code> 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。同日另开零起点地基篇，<strong><a href="/post/30.html">B00 总览</a></strong> 已发布，下一篇动手向为 <strong>B01 18 秒建站实录</strong>；G 系列方向下一篇待写仍是约 2026-09-21 的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
