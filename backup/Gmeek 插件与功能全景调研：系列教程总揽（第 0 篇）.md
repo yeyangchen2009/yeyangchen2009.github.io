@@ -171,7 +171,7 @@ favicon + ogImage 已由 **[G03](/post/9.html)** 完成：自制"叶"字 SVG 图
 
 ## 五、SEO：被问得最多，答案却最简单
 
-社区 issue [#145](https://github.com/Meekdai/Gmeek/issues/145) 里有人建议生成 `sitemap.xml`，作者的回复是：**`rss.xml` 已包含全站所有重要页面链接，他自己就是把 rss.xml 提交给 Google 的**；提问者随后验证，必应和谷歌都能正常识别 RSS 作为站点地图。
+社区 issue [#145](https://github.com/Meekdai/Gmeek/issues/145) 里有人建议生成 `sitemap.xml`，作者的回复是：**`rss.xml` 已包含全站所有重要页面链接，作者本人就是把 rss.xml 提交给 Google 的**；提问者随后验证，必应和谷歌都能正常识别 RSS 作为站点地图。
 
 **G04 已落地**（[教程](/post/10.html)）：
 

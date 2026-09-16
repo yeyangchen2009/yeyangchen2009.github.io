@@ -447,7 +447,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </ol>
 <p>写作技巧已由 <strong><a href="/post/13.html">G07</a></strong> 完成：Alert/公式零配置；Mermaid 非内置（GitHub API 只语法高亮不出图）。<strong><a href="/post/24.html">G15</a> 已把 mermaid 升级为自动检测、按需加载</strong>：<code class="notranslate">static/plugins/GmeekMermaid.js</code> 检测到 <code class="notranslate">highlight-source-mermaid</code> 块才动态加载 <code class="notranslate">static/mermaid.min.js</code>（v11，3.5MB），跟随三态主题重绘，作者零配置——G07 时代「含图文章末行手写挂载 JSON」的旧三件套已退役（末行 JSON 漏写即静默失败，是 G15 案发根因）。另有内联反引号  直出 HTML 的彩蛋（围栏代码块不生效）。</p>
 <h2>五、SEO：被问得最多，答案却最简单</h2>
-<p>社区 issue <a href="https://github.com/Meekdai/Gmeek/issues/145" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/145/hovercard">#145</a> 里有人建议生成 <code class="notranslate">sitemap.xml</code>，作者的回复是：<strong><code class="notranslate">rss.xml</code> 已包含全站所有重要页面链接，他自己就是把 rss.xml 提交给 Google 的</strong>；提问者随后验证，必应和谷歌都能正常识别 RSS 作为站点地图。</p>
+<p>社区 issue <a href="https://github.com/Meekdai/Gmeek/issues/145" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/145/hovercard">#145</a> 里有人建议生成 <code class="notranslate">sitemap.xml</code>，作者的回复是：<strong><code class="notranslate">rss.xml</code> 已包含全站所有重要页面链接，作者本人就是把 rss.xml 提交给 Google 的</strong>；提问者随后验证，必应和谷歌都能正常识别 RSS 作为站点地图。</p>
 <p><strong>G04 已落地</strong>（<a href="/post/10.html">教程</a>）：</p>
 <ul>
 <li>Google Search Console / Bing 站长工具直接提交 <code class="notranslate">rss.xml</code> 即可（Bing 添加站点时还能从 GSC 一键导入，验证状态继承）；</li>
