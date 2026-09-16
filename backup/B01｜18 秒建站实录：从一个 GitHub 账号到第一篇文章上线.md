@@ -26,7 +26,7 @@ Gmeek 官方把一个博客需要的全部脚手架放进了模板仓库 [Meekda
 
 表单里只需要关心三个地方：
 
-![待补截图：通过模板创建仓库的表单——Owner 选自己的账号，Repository name 填 用户名.github.io，Public 保持选中，底部绿色 Create repository 按钮清晰可见](/screenshots/b01-new-repo.png)
+![通过模板创建仓库的表单：顶部 Start with a template 已自动选好 Meekdai/Gmeek-template，Owner 是自己的账号，Repository name 留空待填，Configuration 里 Public 已选中，底部绿色 Create repository 按钮就位](/screenshots/b01-new-repo.png)
 
 1. **Owner**：选你自己的账号；
 2. **Repository name（仓库名）**：必须填 `你的用户名.github.io`，一个字符都不能差。叶扬填的是 `yeyangchen2009.github.io`；
@@ -40,7 +40,7 @@ Gmeek 官方把一个博客需要的全部脚手架放进了模板仓库 [Meekda
 
 进入新仓库的 **Settings（设置）** 标签页，左侧菜单找到 **Pages**，在 **Build and deployment → Source** 下拉里选择 **GitHub Actions**：
 
-![待补截图：仓库 Settings → Pages 页面，Build and deployment 的 Source 下拉展开，选中 GitHub Actions](/screenshots/b01-pages.png)
+![Settings → Pages 页面：Build and deployment 的 Source 下拉已展开，GitHub Actions 带着对勾（适合框架和自定义构建流程），下面是经典的 Deploy from a branch](/screenshots/b01-pages.png)
 
 这是四步里**遗忘率最高**的一步，也是新手第一大坑的来源：
 
@@ -73,7 +73,7 @@ Gmeek 官方把一个博客需要的全部脚手架放进了模板仓库 [Meekda
 - 正文框用 **Markdown** 写作，新手先试这几样就够了：`#` 加空格是小标题，`-` 加空格是列表，`**文字**` 加粗，图片直接截图后 Ctrl+V 粘贴（GitHub 会自动上传）；
 - 在右侧 **Labels** 下拉里勾上刚建的「博客」标签：
 
-![待补截图：New issue 页面，标题写着示意标题，右侧 Labels 下拉展开，「博客」标签处于勾选状态（示意即可，不要真的提交）](/screenshots/b01-label.png)
+![New issue 页面：标题已填好示例标题「我的第一篇博客：开张大吉」，右侧 Labels 菜单展开，「博客」标签处于勾选状态（演示画面，此时还没有点 Submit）](/screenshots/b01-label.png)
 
 最后点绿色的 **Submit new issue**。
 
@@ -128,7 +128,7 @@ https://你的用户名.github.io
 
 操作位置在 Actions → 左侧选 **build Gmeek** → 右侧的 **Run workflow** 下拉 → 再点绿色 **Run workflow**：
 
-![待补截图：build Gmeek 工作流页右侧 Run workflow 下拉展开，Branch 为 main，绿色 Run workflow 按钮可见](/screenshots/b01-run-workflow.png)
+![build Gmeek 工作流页：右侧 Run workflow 下拉已展开，Use workflow from 的 Branch 为 main，绿色 Run workflow 按钮就位——按下去才会真的触发一次全局重建](/screenshots/b01-run-workflow.png)
 
 点完会多出一条 `Manually run` 记录——就是上一张图里见过的那个类型。它和发文构建的区别是：**手动构建会清空产物、遍历你的全部 issue 重建一遍**，所以任何「改了但没生效」的疑难杂症，先来一发手动全局重建，往往药到病除。
 
@@ -169,3 +169,4 @@ https://你的用户名.github.io
 - [GitHub Pages 官方文档：About user/organization sites](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#types-of-github-pages-sites)
 - 上一篇：[B00 地基篇总览](/post/30.html)
 - 前传：[用 GitHub Issues 写博客：Gmeek 搭建全过程与原理](/post/1.html)
+
