@@ -5,11 +5,13 @@
  * 4) 文章页 BlogPosting JSON-LD（日期/标签/作者/发布者，数据取自 /postList.json）
  *
  * 作用域：config 的 script 字段只注入文章页与固定页底部，首页/列表页不会加载本插件；
- *         正则再兜底：只在 /post/N.html 与根级固定页（about.html/archive.html 等）生效。
+ *         正则再兜底：只在 /post/N.html 与固定页（about.html/archive.html 等，
+ *         取路径末段判断，兼容 project pages 子路径部署）生效。
  *         JSON-LD 仅普通文章生成；固定页只有 canonical + 摘要 + twitter。
  *
  * 已知边界：canonical/JSON-LD 等是运行时注入，静态 HTML 源码（curl）里看不到，
- *           依赖爬虫的渲染队列（Google/Bing 支持渲染，百度弱——本站本就跳过百度）。
+ *           依赖爬虫的渲染队列（Google/Bing 支持渲染；不渲染 JS 的爬虫读不到，
+ *           但框架构建期生成的静态 OG 标签不受影响，分享卡片仍可正常显示）。
  */
 (function () {
     'use strict';
@@ -18,7 +20,9 @@
 
     var pathname = location.pathname;
     var postMatch = pathname.match(/\/post\/(\d+)\.html$/);
-    var isFixedPage = /^\/[A-Za-z0-9_-]+\.html$/.test(pathname);
+    // 取末段文件名判断，兼容用户站（/about.html）与 project pages（/repo/about.html）
+    var baseName = pathname.split('/').pop();
+    var isFixedPage = /^[A-Za-z0-9_-]+\.html$/.test(baseName);
     if (!postMatch && !isFixedPage) return;
     if (!document.getElementById('postBody')) return; // 没有正文容器，不碰 head
 
@@ -111,7 +115,7 @@
                     '@type': 'BlogPosting',
                     headline: String(item.postTitle).slice(0, 110),
                     description: desc,
-                    image: image,
+                    image: image || undefined, // 未配置 ogImage 时省略，避免输出空字符串被富结果测试判错
                     datePublished: item.createdDate,
                     keywords: Array.isArray(item.labels) ? item.labels.join(', ') : '',
                     author: { '@type': 'Person', name: authorName },
