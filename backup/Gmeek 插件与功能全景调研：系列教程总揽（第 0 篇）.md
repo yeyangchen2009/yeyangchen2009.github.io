@@ -236,6 +236,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | 番外二 | [我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线](/post/28.html) | 11 件自研件过筛 + PR #319/#320/#321 + issue #322 + review #307 | 开源回馈/方法论 | ✅ |
 | G18 | [被浮动挤扁的"上一篇 / 下一篇"：一桩 BFC 避让案](/post/29.html) | float:right 与 BFC 避让致卡片被压窄；clear:both + 小屏去浮动 + meta 行合并，移动/桌面双修复 | CSS/修 bug | ✅ |
 | B00 | [地基篇总览：18 秒搭起 Gmeek，先认识 Issues、Actions 和 Pages 三块基石](/post/30.html) | 零起点系列开篇：三基石、三仓库地图、构建流水线、引擎/模板导游、B01–B08 规划 | 地基篇 | ✅ |
+| 番外三 | [浏览器外的屏幕怎么截：ffmpeg gdigrab 抓窗口三坑记](/post/31.html) | DComp 黑白窗 / 高 DPI 逻辑坐标 / 越界与 error 5；成品 `tools/shot-window.ps1` | 工具/方法论 | ✅ |
 
 更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 `edited` 事件，编辑即自动重建），所以这张表会一直是最新的。
 
@@ -266,6 +267,7 @@ G 系列默认读者**已经有一个博客**。不少新读者反馈"连仓库�
 | ~~**G17 SEO 收尾战**~~ | 文章页补 `<link rel="canonical">`、JSON-LD（BlogPosting 结构化数据）、twitter:card；顺手清洁 `meta description`——框架当前直接取正文开头，会把 `>` 引用符和 `[文字](链接)` 语法原样塞进搜索摘要。**成品 [`static/plugins/GmeekSEO.js`](https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/static/plugins/GmeekSEO.js)（135 行，运行时注入，挂 script 首位）** | #4 清单上仅剩的技术缺口 | ✅ 已发布（2026-09-15，[G17](/post/27.html)） |
 | ~~番外·给博客拍证件照~~ | 零依赖无头浏览器截图教程：Node 内置 WebSocket 直连 CDP（不装 puppeteer），Fetch 域拦截 CSS 破解 headless 样式加载失败、localStorage 注入暗色、2x 高清、元素级 clip 截全图；产物即本批 9 张教程插图。**成品脚本 [`tools/cdp-shot.js`](https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/tools/cdp-shot.js)** | 给 9 篇老教程补截图的完整实战 | ✅ 已发布（2026-09-15，[番外](/post/26.html)） |
 | ~~番外二·开源回馈流水线~~ | 11 个自研件按"需求佐证 / 形态匹配 / 兼容包袱"三标准过筛 → PR [#320](https://github.com/Meekdai/Gmeek/pull/320) GmeekExternal、[#321](https://github.com/Meekdai/Gmeek/pull/321) GmeekSEO（另带 #319 KeyError 修复），根治 issue [#322](https://github.com/Meekdai/Gmeek/issues/322)；帮 [#307](https://github.com/Meekdai/Gmeek/pull/307) 写验证式 review、[#318](https://github.com/Meekdai/Gmeek/issues/318) 贴对照日志；PR 前抓到两桩通用性 bug（project pages 子路径、空 ogImage）。**三个 PR 全部 Open 待合并，未被官方收录** | 维护者在 #145 亲口承诺"有空写插件"七个月未兑现 + #319 探路 | ✅ 已发布（2026-09-16，[番外二](/post/28.html)） |
+| ~~番外三·gdigrab 抓窗口~~ | 番外一的 cdp-shot.js 只管浏览器内；浏览器外改用 ffmpeg gdigrab 抓 desktop 合成表面再按窗口矩形裁剪。三坑：① `title=` 直抓 DirectComposition 窗口（Windows Terminal）非黑即白，只能抓 desktop 裁剪；② 150% 缩放下非 DPI 感知进程拿到逻辑坐标，必须先 `SetProcessDPIAware` 取物理像素；③ Win11 隐形边框致矩形越界 8px，用 `GetSystemMetrics` clamp，且 `SetForegroundWindow` 后偶发 `error 5`（ACCESS_DENIED）需重试。另记 PS 5.1 中文环境两坑（UTF-8 必须带 BOM、Stop 模式把原生命令 stderr 包装成终止错误）。**成品脚本 [`tools/shot-window.ps1`](https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/tools/shot-window.ps1)** | 番外一截图能力向浏览器外的自然延伸 | ✅ 已发布（2026-09-16，[番外三](/post/31.html)） |
 | **番外·收录实战** | G04 提交一周后，Google/Bing 真实收录数据对比、GSC"无法抓取"复查结论，回答"RSS 当 sitemap 到底有没有用"；顺带追踪三个上游 PR 的合并进展 | [G04](/post/10.html)、G16 结尾均已预告 | 📅 约 2026-09-21 后 |
 | 候选·备份双保险 | 用 Actions 把 `backup/` 定期镜像到私有仓库 | #4 运维章自己提的建议 | 待定 |
 | 候选·阅读进度条 | 文章顶部滚动进度条，G16 scrollspy 的姊妹篇 | 体验增强 | 选题偏薄，可能并入杂谈 |
@@ -314,7 +316,8 @@ G17 之后把 11 个自研件整体过了一遍筛子（详见 [番外二](/post
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G16 正篇与 **[G17 SEO 收尾战](/post/27.html)**（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有两篇：**[番外·给博客拍证件照](/post/26.html)**（零依赖 CDP 无头截图，成品脚本在仓库 `tools/cdp-shot.js`）与 **[番外二·开源回馈流水线](/post/28.html)**（三个上游 PR 待合并，见上方 2026-09-16 小节）。2026-09-16 另发布 **[G18 被浮动挤扁的"上一篇/下一篇"](/post/29.html)**：G08 导航卡片在移动端被版权小字的 `float:right` + BFC 避让规则压成 60% 窄列、标题竖排；`clear:both` 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。同日另开零起点地基篇，**[B00 总览](/post/30.html)** 已发布，下一篇动手向为 **B01 18 秒建站实录**；G 系列方向下一篇待写仍是约 2026-09-21 的 **G04 收录实战番外**——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。
+G01–G16 正篇与 **[G17 SEO 收尾战](/post/27.html)**（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有三篇：**[番外·给博客拍证件照](/post/26.html)**（零依赖 CDP 无头截图，成品脚本 `tools/cdp-shot.js`）、**[番外二·开源回馈流水线](/post/28.html)**（三个上游 PR 待合并，见上方 2026-09-16 小节）与 **[番外三·gdigrab 抓窗口](/post/31.html)**（浏览器外截图，成品脚本 `tools/shot-window.ps1`）。2026-09-16 另发布 **[G18 被浮动挤扁的"上一篇/下一篇"](/post/29.html)**：G08 导航卡片在移动端被版权小字的 `float:right` + BFC 避让规则压成 60% 窄列、标题竖排；`clear:both` 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。同日另开零起点地基篇，**[B00 总览](/post/30.html)** 已发布，又续发 **[番外三](/post/31.html)** 把截图工具箱扩到浏览器外；下一篇动手向仍为 **B01 18 秒建站实录**；G 系列方向下一篇待写仍是约 2026-09-21 的 **G04 收录实战番外**——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。
+
 
 
 

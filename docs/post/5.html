@@ -683,6 +683,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>地基篇</td>
 <td>✅</td>
 </tr>
+<tr>
+<td>番外三</td>
+<td><a href="/post/31.html">浏览器外的屏幕怎么截：ffmpeg gdigrab 抓窗口三坑记</a></td>
+<td>DComp 黑白窗 / 高 DPI 逻辑坐标 / 越界与 error 5；成品 <code class="notranslate">tools/shot-window.ps1</code></td>
+<td>工具/方法论</td>
+<td>✅</td>
+</tr>
 </tbody>
 </table></markdown-accessiblity-table>
 <p>更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 <code class="notranslate">edited</code> 事件，编辑即自动重建），所以这张表会一直是最新的。</p>
@@ -786,6 +793,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>✅ 已发布（2026-09-16，<a href="/post/28.html">番外二</a>）</td>
 </tr>
 <tr>
+<td><del>番外三·gdigrab 抓窗口</del></td>
+<td>番外一的 cdp-shot.js 只管浏览器内；浏览器外改用 ffmpeg gdigrab 抓 desktop 合成表面再按窗口矩形裁剪。三坑：① <code class="notranslate">title=</code> 直抓 DirectComposition 窗口（Windows Terminal）非黑即白，只能抓 desktop 裁剪；② 150% 缩放下非 DPI 感知进程拿到逻辑坐标，必须先 <code class="notranslate">SetProcessDPIAware</code> 取物理像素；③ Win11 隐形边框致矩形越界 8px，用 <code class="notranslate">GetSystemMetrics</code> clamp，且 <code class="notranslate">SetForegroundWindow</code> 后偶发 <code class="notranslate">error 5</code>（ACCESS_DENIED）需重试。另记 PS 5.1 中文环境两坑（UTF-8 必须带 BOM、Stop 模式把原生命令 stderr 包装成终止错误）。<strong>成品脚本 <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/tools/shot-window.ps1"><code class="notranslate">tools/shot-window.ps1</code></a></strong></td>
+<td>番外一截图能力向浏览器外的自然延伸</td>
+<td>✅ 已发布（2026-09-16，<a href="/post/31.html">番外三</a>）</td>
+</tr>
+<tr>
 <td><strong>番外·收录实战</strong></td>
 <td>G04 提交一周后，Google/Bing 真实收录数据对比、GSC"无法抓取"复查结论，回答"RSS 当 sitemap 到底有没有用"；顺带追踪三个上游 PR 的合并进展</td>
 <td><a href="/post/10.html">G04</a>、G16 结尾均已预告</td>
@@ -860,7 +873,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
 <li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
 </ol>
-<p>G01–G16 正篇与 <strong><a href="/post/27.html">G17 SEO 收尾战</a></strong>（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有两篇：<strong><a href="/post/26.html">番外·给博客拍证件照</a></strong>（零依赖 CDP 无头截图，成品脚本在仓库 <code class="notranslate">tools/cdp-shot.js</code>）与 <strong><a href="/post/28.html">番外二·开源回馈流水线</a></strong>（三个上游 PR 待合并，见上方 2026-09-16 小节）。2026-09-16 另发布 <strong><a href="/post/29.html">G18 被浮动挤扁的"上一篇/下一篇"</a></strong>：G08 导航卡片在移动端被版权小字的 <code class="notranslate">float:right</code> + BFC 避让规则压成 60% 窄列、标题竖排；<code class="notranslate">clear:both</code> 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。同日另开零起点地基篇，<strong><a href="/post/30.html">B00 总览</a></strong> 已发布，下一篇动手向为 <strong>B01 18 秒建站实录</strong>；G 系列方向下一篇待写仍是约 2026-09-21 的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。</p></div>
+<p>G01–G16 正篇与 <strong><a href="/post/27.html">G17 SEO 收尾战</a></strong>（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有三篇：<strong><a href="/post/26.html">番外·给博客拍证件照</a></strong>（零依赖 CDP 无头截图，成品脚本 <code class="notranslate">tools/cdp-shot.js</code>）、<strong><a href="/post/28.html">番外二·开源回馈流水线</a></strong>（三个上游 PR 待合并，见上方 2026-09-16 小节）与 <strong><a href="/post/31.html">番外三·gdigrab 抓窗口</a></strong>（浏览器外截图，成品脚本 <code class="notranslate">tools/shot-window.ps1</code>）。2026-09-16 另发布 <strong><a href="/post/29.html">G18 被浮动挤扁的"上一篇/下一篇"</a></strong>：G08 导航卡片在移动端被版权小字的 <code class="notranslate">float:right</code> + BFC 避让规则压成 60% 窄列、标题竖排；<code class="notranslate">clear:both</code> 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。同日另开零起点地基篇，<strong><a href="/post/30.html">B00 总览</a></strong> 已发布，又续发 <strong><a href="/post/31.html">番外三</a></strong> 把截图工具箱扩到浏览器外；下一篇动手向仍为 <strong>B01 18 秒建站实录</strong>；G 系列方向下一篇待写仍是约 2026-09-21 的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
