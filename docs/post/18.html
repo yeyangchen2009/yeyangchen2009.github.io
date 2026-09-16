@@ -153,7 +153,7 @@ Sitemap: https://yeyangchen2009.github.io/sitemap.xml
      <span class="pl-smi">window</span><span class="pl-kos">.</span><span class="pl-en">matchMedia</span><span class="pl-kos">(</span><span class="pl-s">'(prefers-color-scheme: dark)'</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-c1">matches</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
 <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">documentElement</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">'data-color-mode'</span><span class="pl-kos">,</span> <span class="pl-s1">dark</span> ? <span class="pl-s">'dark'</span> : <span class="pl-s">'light'</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
 <p>这样读者在主站选了暗色，手滑进 404 不会被白页闪瞎。注意这是独立页的折中方案——它不监听主题切换按钮（页面上压根没有），但进入瞬间的状态永远和主站一致。</p>
-<p><strong>3. 迷路时给内容，不只给按钮。</strong> 这页也 fetch 了 <code class="notranslate">postList.json</code>，取最新 5 篇文章（排序逻辑与 G08/G10 同款：日期倒序、编号兜底），渲染成"或者，从最新文章里挑一篇"。读者输错地址时，被接住的最好方式是直接给他可看的东西。fetch 失败整块隐藏——降级成只有两个按钮的简洁版，绝不报错。</p>
+<p><strong>3. 迷路时给内容，不只给按钮。</strong> 这页也 fetch 了 <code class="notranslate">postList.json</code>，取最新 5 篇文章（排序逻辑与 G08/G10 同款：日期倒序、编号兜底），渲染成"或者，从最新文章里挑一篇"。读者输错地址时，被接住的最好方式是直接给读者可看的东西。fetch 失败整块隐藏——降级成只有两个按钮的简洁版，绝不报错。</p>
 <p><strong>4. 零外部依赖。</strong> 不加载任何第三方 CSS/JS/字体，系统字体栈兜底。404 是"出错时刻"，页面必须在网络最差的时候也能秒开。</p>
 <p>页面结构就是一张居中卡片：渐变数字 404、一句叶扬式调侃（"这页大概是坐时光机走丢了"）、两个按钮（🏠 首页 / 🗂 归档——归档入口正好用上 G10 成果）、最新文章列表、页脚签名。</p>
 <p>实拍一张（故意访问一个不存在的地址）：</p>
