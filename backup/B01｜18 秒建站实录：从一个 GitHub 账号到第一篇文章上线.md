@@ -95,19 +95,13 @@ Gmeek 官方把一个博客需要的全部脚手架放进了模板仓库 [Meekda
 
 ```mermaid
 %%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'15px'}}}%%
-sequenceDiagram
-    actor 你
-    participant I as GitHub Issue
-    participant A as Actions 印刷厂
-    participant P as Pages 报刊亭
-    你->>I: 写好正文 + 勾选标签 + Submit
-    I->>A: 发出 opened 事件
-    A->>A: 云端 Ubuntu 跑 Gmeek.py
-    Note over A: 黄圆点转圈圈，约 1–2 分钟
-    A->>P: 产物打包部署
-    A-->>I: 绿色对勾
-    你->>P: 打开 用户名.github.io
-    P-->>你: 文章已经在首页
+flowchart TD
+    Y([你]) -->|写好正文 + 勾选标签 + Submit| I[GitHub Issue]
+    I -->|发出 opened 事件| A["Actions 印刷厂<br/>云端 Ubuntu 跑 Gmeek.py<br/>（黄圆点转圈圈，约 1–2 分钟）"]
+    A -->|产物打包部署| P[Pages 报刊亭]
+    A -.绿色对勾.-> I
+    Y -->|打开 用户名.github.io| P
+    P -.文章已经在首页.-> Y
 ```
 
 等黄圆点变成**绿对勾**，打开浏览器访问：
@@ -169,4 +163,5 @@ https://你的用户名.github.io
 - [GitHub Pages 官方文档：About user/organization sites](https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages#types-of-github-pages-sites)
 - 上一篇：[B00 地基篇总览](/post/30.html)
 - 前传：[用 GitHub Issues 写博客：Gmeek 搭建全过程与原理](/post/1.html)
+
 
