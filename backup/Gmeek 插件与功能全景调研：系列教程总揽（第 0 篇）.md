@@ -237,6 +237,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | G18 | [被浮动挤扁的"上一篇 / 下一篇"：一桩 BFC 避让案](/post/29.html) | float:right 与 BFC 避让致卡片被压窄；clear:both + 小屏去浮动 + meta 行合并，移动/桌面双修复 | CSS/修 bug | ✅ |
 | 番外三 | [浏览器外的屏幕怎么截：ffmpeg gdigrab 抓窗口三坑记](/post/31.html) | DComp 黑白窗 / 高 DPI 逻辑坐标 / 越界与 error 5；成品 `tools/shot-window.ps1` | 工具/方法论 | ✅ |
 | 番外四 | [点到为止：让 AI 借你已登录的浏览器截一张图](/post/33.html) | Win32 UI 自动化登录态截图六场翻车 + 安全边界；EnumWindows 正向定位/命令行委派导航/样式位辨真假全屏；成品 `tools/ui-shot.ps1`；截图三部曲收束 | 工具/方法论/AI 协作 | ✅ |
+| 番外五 | [踩坑手册怎样变成 AI 技能：博客、CLAUDE.md、记忆与 Skill 的分工](/post/37.html) | 以 mermaid v11 时序图不可读为贯穿案例讲四层归宿；渐进式披露/记忆索引常驻/CLAUDE.md 是 context 非强制配置；官方文档 code.claude.com 为凭 | AI 协作/方法论 | ✅ |
 
 更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 `edited` 事件，编辑即自动重建），所以这张表会一直是最新的。
 
@@ -307,9 +308,15 @@ G17 之后把 11 个自研件整体过了一遍筛子（详见 [番外二](/post
 
 **定位澄清（为什么做、不为什么做）：** 分发**不是为了给独立站引流**——平台外链是 `nofollow`/中转链接不传权重，百度基本不收录 github.io，独立站也没有订阅/产品等转化路径。真正的价值是：搜索占位（百度"Gmeek 教程"关键词目前是空坑）、防搬运抢原创、给上游 Gmeek 项目带新用户、跨平台账号资产。
 
-**同日排查上游官方入口的结论：** Gmeek 仓库 README 无教程区、Discussions 未启用、无 docs/awesome 仓库、作者博客只有自家【Gmeek进阶】系列；作者在 [#179](https://github.com/Meekdai/Gmeek/issues/179) 明确"没有交流群，issue 讨论即可"，无运营社区聚合的打算。唯一社区入口是 hst1189 发起的[#285 网站收录虫洞](https://github.com/Meekdai/Gmeek/issues/285)（`gmeek.dpdns.org` 随机跳转，收录网站而非教程，作者点过赞但非官方背书，今年仍活跃）。未来两个动作挂起：虫洞跟帖报名（一分钟）；等三个 PR 有合并进展后再开"系列教程自荐 issue"（届时身份是贡献者而非广告）。番外五发布后可去 [#311 Gmeek 发帖 Skill](https://github.com/Meekdai/Gmeek/issues/311) 分享"图片静态文件走 git commit"的解法（该帖唯一评论正卡在这个问题上）。
+**同日排查上游官方入口的结论：** Gmeek 仓库 README 无教程区、Discussions 未启用、无 docs/awesome 仓库、作者博客只有自家【Gmeek进阶】系列；作者在 [#179](https://github.com/Meekdai/Gmeek/issues/179) 明确"没有交流群，issue 讨论即可"，无运营社区聚合的打算。唯一社区入口是 hst1189 发起的[#285 网站收录虫洞](https://github.com/Meekdai/Gmeek/issues/285)（`gmeek.dpdns.org` 随机跳转，收录网站而非教程，作者点过赞但非官方背书，今年仍活跃）。未来两个动作挂起：虫洞跟帖报名（一分钟）；等三个 PR 有合并进展后再开"系列教程自荐 issue"（届时身份是贡献者而非广告）。番外五既已发布（2026-09-18），择机可去 [#311 Gmeek 发帖 Skill](https://github.com/Meekdai/Gmeek/issues/311) 分享"图片静态文件走 git commit"的解法（该帖唯一评论正卡在这个问题上）。
 
 **若未来启动，三步走：** ① 先写本地"多平台适配包"导出脚本（`gh issue view` 取 Markdown 源 → Mermaid 转 PNG → Alert 语法降级 → 输出 `dist/<n>/文章.md + images/`），纯本地零风险；② 博客园/Dev.to 走 API 自动化；③ 知乎/CSDN 半自动——脚本备好包，人工登录粘贴发布，文末仅留一行原文链接满足原创声明，正文操作链接指向上游仓库而非自己的站。
+
+### 2026-09-18 番外五发布：踩坑经验的四层归宿
+
+发布 **[番外五·踩坑手册怎样变成 AI 技能](/post/37.html)**，兑现番外四结尾的预告。全篇以"mermaid v11 时序图信号文字在亮色文章页不可读"这一个坑为贯穿案例，讲清一条经验的四层归宿——**博客写给人看、CLAUDE.md 每次会话全量在场立规矩、Auto memory 跨会话记事实（MEMORY.md 索引常驻、主题文件按需读）、Skill 只有 description 常驻而正文/脚本调用时才加载（渐进式披露）**。所有机制以官方文档 `code.claude.com/docs/en/memory` 与 `/skills` 为凭，关键结论：CLAUDE.md 与 memory 都是**上下文而非强制配置**（硬拦截要 PreToolUse hook）；多步流程应从记忆/规矩升级成 Skill。
+
+同一坑的四份归宿都已落地：① 博客——B01/B04 时序图已改 flowchart、本篇讲清原理；② CLAUDE.md——全局那份 Mermaid 约定里"时序图可追加 actorBkg 等变量"的条款已被 v11 证伪，待更新为"示意图一律 flowchart TD"（动用户全局文件，需本人确认后改）；③ memory——教程规划已记 v11 教训；④ Skill——`SKILL.md` 新增"重型运行时别赌固定 settle、改图先本地 file:// 预检、flowchart 优先"两段纪律。配图 8 张：1 张当晚 A/B 实测对比、1 张文内原生 flowchart、4 张纯本地 conhost（CLAUDE.md / memory 目录与索引 / SKILL.md frontmatter / 技能目录含 ui-shot.ps1 SAFETY 头）、2 张官方文档暗色实拍；全程零借窗。拍摄新增一条工具经验：Windows Terminal 会劫持 `Start-Process powershell` 的新窗成标签页，显式 `conhost.exe powershell.exe …` 才起独立经典控制台；Win11 经典控制台抓图要用 DWM 扩展框（`DwmGetWindowAttribute` attr 9）取物理几何，比 GetWindowRect 大约 1 倍 DPI 边框量。
 
 ## 参考资料汇总
 
@@ -330,7 +337,8 @@ G17 之后把 11 个自研件整体过了一遍筛子（详见 [番外二](/post
 2. **SEO 几乎零成本**——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
-G01–G16 正篇与 **[G17 SEO 收尾战](/post/27.html)**（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有四篇：**[番外·给博客拍证件照](/post/26.html)**（零依赖 CDP 无头截图，成品脚本 `tools/cdp-shot.js`）、**[番外二·开源回馈流水线](/post/28.html)**（三个上游 PR 待合并，见上方 2026-09-16 小节）、**[番外三·gdigrab 抓窗口](/post/31.html)**（浏览器外截图，成品脚本 `tools/shot-window.ps1`）与 **[番外四·点到为止](/post/33.html)**（借用户已登录浏览器窗口拍登录态页面，Win32 UI 自动化 + 安全边界，成品脚本 `tools/ui-shot.ps1`；截图三部曲——浏览器内 CDP／浏览器外 gdigrab／登录态借窗——至此收束）。2026-09-16 另发布 **[G18 被浮动挤扁的"上一篇/下一篇"](/post/29.html)**：G08 导航卡片在移动端被版权小字的 `float:right` + BFC 避让规则压成 60% 窄列、标题竖排；`clear:both` 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。零起点读者另走**地基篇（B 系列）**：[B00 地基篇总览](/post/30.html)以及 [B01 18 秒建站实录](/post/32.html)、[B02 毛坯房装修：认识 config.json](/post/34.html)、[B03 在 Issues 里过日子](/post/35.html) 均已发布；地基篇的路线图表与发布日志从 2026-09-17 起统一维护在 B00 一篇里（本文不再搬运），下一篇动手向为 **B04 评论与关于页**。G 系列方向下一篇待写仍是约 2026-09-21 的 **G04 收录实战番外**——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。
+G01–G16 正篇与 **[G17 SEO 收尾战](/post/27.html)**（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有五篇：**[番外·给博客拍证件照](/post/26.html)**（零依赖 CDP 无头截图，成品脚本 `tools/cdp-shot.js`）、**[番外二·开源回馈流水线](/post/28.html)**（三个上游 PR 待合并，见上方 2026-09-16 小节）、**[番外三·gdigrab 抓窗口](/post/31.html)**（浏览器外截图，成品脚本 `tools/shot-window.ps1`）、**[番外四·点到为止](/post/33.html)**（借用户已登录浏览器窗口拍登录态页面，Win32 UI 自动化 + 安全边界，成品脚本 `tools/ui-shot.ps1`；截图三部曲——浏览器内 CDP／浏览器外 gdigrab／登录态借窗——至此收束）与 **[番外五·踩坑手册怎样变成 AI 技能](/post/37.html)**（博客/CLAUDE.md/memory/Skill 四层归宿，见上方 2026-09-18 小节）。2026-09-16 另发布 **[G18 被浮动挤扁的"上一篇/下一篇"](/post/29.html)**：G08 导航卡片在移动端被版权小字的 `float:right` + BFC 避让规则压成 60% 窄列、标题竖排；`clear:both` 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。零起点读者另走**地基篇（B 系列）**：[B00 地基篇总览](/post/30.html)以及 [B01 18 秒建站实录](/post/32.html)、[B02 毛坯房装修：认识 config.json](/post/34.html)、[B03 在 Issues 里过日子](/post/35.html)、[B04 门铃与名片：评论区与 About 页](/post/36.html) 均已发布；地基篇的路线图表与发布日志统一维护在 B00 一篇里（本文不再搬运），下一篇动手向为 **B05 Actions 篇**（回收 B04"评论数为何不实时"的伏笔）。G 系列方向下一篇待写仍是约 2026-09-21 的 **G04 收录实战番外**——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。
+
 
 
 
