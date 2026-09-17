@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> 上一篇番外四的结尾，叶扬留了个话头：这些踩坑经验，为什么有的写成了博客，有的写进了 CLAUDE.md，有的沉淀成了随叫随到的 Skill。">
+<meta property="og:title" content="番外五｜踩坑手册怎样变成 AI 技能：博客、CLAUDE.md、记忆与 Skill 的分工">
+<meta property="og:description" content="> 上一篇番外四的结尾，叶扬留了个话头：这些踩坑经验，为什么有的写成了博客，有的写进了 CLAUDE.md，有的沉淀成了随叫随到的 Skill。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/37.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>番外五｜踩坑手册怎样变成 AI 技能：博客、CLAUDE.md、记忆与 Skill 的分工</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">番外五｜踩坑手册怎样变成 AI 技能：博客、CLAUDE.md、记忆与 Skill 的分工</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/37" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>上一篇番外四的结尾，叶扬留了个话头：这些踩坑经验，为什么有的写成了博客，有的写进了 CLAUDE.md，有的沉淀成了随叫随到的 Skill。这一篇就来把这四者的分工彻底讲清楚——而且，就用本系列自己当标本。</p>
+<p>先声明：这不是一篇教你"驯服 AI"的玄学文章。所有机制都有官方文档为凭，文末会放出出处链接，你可以逐条核对。</p>
+</blockquote>
+<h2>零、从一张看不清的图说起</h2>
+<p>写 B04 的那天晚上，mermaid 的一张时序图把叶扬难住了：actors 和注释框都好好的，<strong>唯独横飞的信号文字几乎看不见</strong>，浅灰色的字直接"印"在透明背景上，文章页又是白底，四个字概括——若隐若现。</p>
+<p>一开始以为是配色变量没给够，把官方列的 <code class="notranslate">actorBkg</code>、<code class="notranslate">signalColor</code>、<code class="notranslate">signalTextColor</code>、<code class="notranslate">labelBoxBkgColor</code> 逐个试了一遍，完全没用。最后查清楚：这是 mermaid v11 的渲染机制问题——<strong>sequenceDiagram 的信号文字是浅色 SVG 原生文本，天生没有背景盒元素</strong>，你给再多颜色变量，也找不到一个盒子可以刷底色。而 flowchart 的节点是不透明深色填充、边标签自带深色底盒，白页面上照样字字清晰。</p>
+<p>下面这张，就是当晚的 A/B 实测：上半 flowchart 一目了然，下半时序图的信号文字你得凑近了找。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra5-ab-compare.png"><img src="/screenshots/extra5-ab-compare.png" alt="A/B 实测：上方 flowchart TD 深色实心节点与深色边标签底盒在白底上清晰；下方 sequenceDiagram 只有 actor 黑框可读，横向信号文字浅灰透明、几乎隐身" style="max-width: 100%;"></a></p>
+<p>结论很硬：<strong>本博客所有示意图一律 flowchart TD，慎用 sequenceDiagram。</strong></p>
+<p>折腾了一个多小时的教训，叶扬没让它烂在聊天记录里。但有意思的是，这一条经验最后同时落进了四个不同的地方。为什么需要四个地方？这正是本篇的主角。</p>
+<h2>一、AI 为什么需要"记忆"</h2>
+<p>得先理解一个有点反直觉的事实：<strong>每次开启新的 Claude Code 会话，它面对的都是一扇"全新的上下文窗口"。</strong></p>
+<p>这话什么意思？你可以把一个会话想象成一间会议室：这一轮里聊的所有东西——你教它的规矩、一起踩的坑、改过的文件——都摊在会议桌上，它记得清清楚楚。可一旦会话结束（或者对话太长被自动压缩），桌子一收，下一位进来的，是个业务熟练但<strong>对你的项目一无所知</strong>的接班同事。</p>
+<p>所以官方在《<a href="https://code.claude.com/docs/en/memory" rel="nofollow">How Claude remembers your project</a>》里开宗明义：有两套机制把知识跨过会话地传下去——</p>
+<ul>
+<li><strong>CLAUDE.md 文件</strong>：你写给它的、持久生效的指令；</li>
+<li><strong>Auto memory（自动记忆）</strong>：它根据你的纠正和偏好，自己写下的笔记。</li>
+</ul>
+<p>再加上本篇的另外两个角色——<strong>博客文章</strong>与 <strong>Skill 技能</strong>，一条经验就有了四层归宿。</p>
+<h2>二、四层归宿：一条经验该往哪儿放</h2>
+<p>先看一张分工图。它本身就是用本文力荐的 flowchart TD 画的，而且此刻正由你博客里那个 3.5MB 的 mermaid 运行时实时渲染——算是一个小小的自我证明。</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>一次踩坑换来的经验&lt;<span class="pl-ent">br</span>/&gt;例：mermaid v11 时序图信号文字在白页面不可读<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">Q</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span>这条经验&lt;<span class="pl-ent">br</span>/&gt;该写给谁、怎么用？<span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">Q</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">要讲给读者听、讲清来龙去脉</span><span class="pl-k">|</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[(</span></span><span class="pl-s"><span class="pl-pds">"</span>博客文章&lt;<span class="pl-ent">br</span>/&gt;给人看 · 公开发布 · 可被搜索引擎检索<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">)]</span></span></span>
+    <span class="pl-ent">Q</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">每回干活都必须在场的铁律</span><span class="pl-k">|</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>CLAUDE.md&lt;<span class="pl-ent">br</span>/&gt;规矩与偏好&lt;<span class="pl-ent">br</span>/&gt;每次会话一开始全量在场<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">只需它跨会话知道的事实</span><span class="pl-k">|</span> <span class="pl-ent">M</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Auto memory&lt;<span class="pl-ent">br</span>/&gt;MEMORY.md 索引常驻&lt;<span class="pl-ent">br</span>/&gt;主题文件按需读取<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">一套可重复执行的操作步骤</span><span class="pl-k">|</span> <span class="pl-ent">S</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Skill 技能&lt;<span class="pl-ent">br</span>/&gt;只有描述常驻&lt;<span class="pl-ent">br</span>/&gt;用到时才加载正文与脚本<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">-.</span> <span class="pl-s">写太细会撑爆每次上下文</span> <span class="pl-k">.-&gt;</span> <span class="pl-ent">S</span>
+    <span class="pl-ent">M</span> <span class="pl-k">-.</span> <span class="pl-s">变成多步流程，就升级成技能</span> <span class="pl-k">.-&gt;</span> <span class="pl-ent">S</span></pre></div>
+<p>用大白话翻译这张图：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>归宿</th>
+<th>谁来写</th>
+<th>什么时候"在场"</th>
+<th>适合装什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>博客文章</strong></td>
+<td>你，写给别人看</td>
+<td>读者打开网页时</td>
+<td>想公开讲清的来龙去脉、教程、复盘</td>
+</tr>
+<tr>
+<td><strong>CLAUDE.md</strong></td>
+<td>你，给它立规矩</td>
+<td><strong>每次会话一开始就全量加载</strong></td>
+<td>简短的铁律、偏好、约定</td>
+</tr>
+<tr>
+<td><strong>Auto memory</strong></td>
+<td>Claude 替你记</td>
+<td>索引常驻，正文按需</td>
+<td>跨会话的事实、结论、你给过的反馈</td>
+</tr>
+<tr>
+<td><strong>Skill</strong></td>
+<td>你和它共建</td>
+<td>只有一句描述常驻，<strong>用到才加载全文</strong></td>
+<td>多步骤操作手册、可执行脚本</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>注意两条虚线：CLAUDE.md 写太细，会白白占掉每一次会话的上下文预算；一条记忆如果已经长成"第一步、第二步、第三步"的操作流程，就该从 memory 升级成 Skill。下面逐层拆。</p>
+<h2>三、CLAUDE.md：每次都在场的"办公室规矩"</h2>
+<p>CLAUDE.md 是<strong>你亲手写的指令文件</strong>，Claude 每次会话开始就把它读进来，当作必须遵守的背景。它是四层里最"强势"的一层——但官方也特意提醒：它本质上是<strong>上下文（context），不是强制配置（enforced configuration）</strong>，也就是说它靠"被读到"起效；如果你想要的是"无论如何都禁止某个动作"那种硬性闸门，那得用 PreToolUse 钩子（hook），不在本文范围。</p>
+<p>这台机器上的用户级规矩文件在 <code class="notranslate">~/.claude/CLAUDE.md</code>，通篇就是一条 Mermaid 图表约定：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra5-claudemd.png"><img src="/screenshots/extra5-claudemd.png" alt="终端里 Get-Content CLAUDE.md：标题 Mermaid 图表约定，规定一律暗色主题、画布与 subgraph 深色、文字近白、采用 GitHub Dark 配色，并给出必须放在代码块开头的 init 指令" style="max-width: 100%;"></a></p>
+<p>可以看到，这份规矩的特点是<strong>短、是命令、没有废话</strong>：用暗色主题、画布 <code class="notranslate">#0d1117<span class="ml-1 d-inline-block border circle color-border-subtle" style="background-color: #0d1117; height: 8px; width: 8px;"></span></code>、子图 <code class="notranslate">#161b22<span class="ml-1 d-inline-block border circle color-border-subtle" style="background-color: #161b22; height: 8px; width: 8px;"></span></code>、每个 mermaid 块开头必须加那段 init。它不解释"为什么"，只规定"怎么做"——这正是 CLAUDE.md 的正确用法。</p>
+<p>关于它还有几个实用知识点：</p>
+<ul>
+<li><strong>分四级</strong>：受管理策略（managed policy）、用户级（<code class="notranslate">~/.claude/CLAUDE.md</code>，对你所有项目生效）、项目级（仓库里的 <code class="notranslate">./CLAUDE.md</code>，可提交给团队共享）、本地级（<code class="notranslate">./CLAUDE.local.md</code>，只在本机不提交）。越具体的优先级越高。</li>
+<li><strong>宜短不宜长</strong>：官方建议单个文件控制在约 200 行以内。因为它每次全量加载，越长越费上下文。</li>
+<li><strong>能引入别的文件</strong>：用 <code class="notranslate">@路径</code> 可以导入，最多四层跳转；输入 <code class="notranslate">/context</code> 能当场查看究竟加载了哪些。</li>
+</ul>
+<p>最妙的是，本篇这条 mermaid 经验恰好暴露了 CLAUDE.md 的一个"天敌"——<strong>过时</strong>。文件最后那句"时序图可再追加 <code class="notranslate">actorBkg</code>/<code class="notranslate">signalTextColor</code> 等同色系变量"，就是写规矩时以为有效、结果被 v11 实测推翻的条款。规矩也得跟着工具版本一起维护，否则它会每次会话都认认真真地把一条错办法塞进上下文。这一条该怎么改，第七章揭晓。</p>
+<h2>四、Auto memory：它自己维护的跨会话笔记本</h2>
+<p>如果说 CLAUDE.md 是你立的规矩，Auto memory 就是<strong>它自己替你记的笔记</strong>。官方路径在：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">~/.claude/projects/&lt;项目名&gt;/memory/
+</code></pre>
+<p>本项目的记忆目录长这样（叶扬裁掉了一条与本篇无关的私人记录）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra5-memory.png"><img src="/screenshots/extra5-memory.png" alt="终端列出 memory 目录：article-tone、gmeek-tutorial-series、MEMORY、mermaid-autoloader-and-upstream、publishing-via-gh-cli、readme-custom-section 等带字节数的文件；下方打印 MEMORY.md 索引，每条记忆一行链接加一句提要" style="max-width: 100%;"></a></p>
+<p>看懂这张图，就懂了 memory 的全部结构：</p>
+<ul>
+<li><strong>一个主题一个 <code class="notranslate">.md</code> 文件</strong>，文件头用 YAML 标明类型（<code class="notranslate">user</code>/<code class="notranslate">feedback</code>/<code class="notranslate">project</code>/<code class="notranslate">reference</code>），正文是一条完整的事实。</li>
+<li><strong><code class="notranslate">MEMORY.md</code> 是总索引</strong>，每条记忆只占一行（标题链接 + 一句话提要）。会话开始时，自动读进上下文的<strong>只有这个索引</strong>（官方限制前 200 行或 25KB），它因此很短、很省；当某条记忆与当前任务相关时，才会去打开对应的主题文件细读——这跟 Skill 的"按需加载"是同一种节俭思路。</li>
+<li>四类内容分工：你是谁、什么背景（user）；你给的工作方式反馈（feedback）；项目的目标与约束（project）；外部资源的指针（reference）。</li>
+</ul>
+<p>该记什么、不该记什么，有条清晰的边界：<strong>凡是能从代码、git 历史、项目里直接读出来的东西，不记</strong>；CLAUDE.md 里已经写明的规矩，也不重复记。memory 存的是那些"代码里看不出来的结论和来龙去脉"。比如"本站 mermaid 是 v11.17.2、冷加载要 80 多秒、示意图一律 flowchart"这种用时间换来的判断，就值得记；而"post.html 第 91 行有个评论按钮守卫"这种翻代码就有的，不必记。</p>
+<p>两个要提醒的点：记忆文件就是普通 Markdown，发现哪条记错了、过期了，直接改/删即可（也可以用 <code class="notranslate">/memory</code> 命令管理）；另外它<strong>只存在本机、不随账号跨设备同步</strong>，换电脑不会自动跟过去。</p>
+<h2>三与四的差别，一句话：<strong>CLAUDE.md 是你命令它的，memory 是它讲给未来的自己听的。</strong></h2>
+<h2>五、Skill：描述常驻、正文随叫随到</h2>
+<p>最后一层，也是番外四真正的主角——Skill（技能）。</p>
+<p>什么时候该做技能？官方给了一个非常好判断的信号：<strong>当你发现自己在反复把同一段指令、同一份清单、同一套多步流程往对话框里粘贴时，当 CLAUDE.md 的某一节已经从"一条事实"膨胀成"一套流程"时</strong>，就该把它抽成技能。</p>
+<p>一个技能本质上就是一个目录，目录名就是技能名；目录里的 <code class="notranslate">SKILL.md</code> 用 YAML frontmatter 写清楚名字和一句 <code class="notranslate">description</code>，正文才是完整手册。本机这个截图技能位于 <code class="notranslate">~/.claude/skills/screenshot/</code>：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra5-skill.png"><img src="/screenshots/extra5-skill.png" alt="终端打印 SKILL.md 的前 13 行：YAML frontmatter 中 name 为 screenshot，description 一长段说明何时触发、浏览器内外两条路径；正文从&quot;截图手册 Windows 11 本机&quot;开始" style="max-width: 100%;"></a></p>
+<p>这里藏着 Skill 最精妙的设计——<strong>渐进式披露（progressive disclosure）</strong>。请回看上面那张 frontmatter 图：<code class="notranslate">name</code> 只有一个词，可 <code class="notranslate">description</code> 写得很卖力，详细列举"截图、截屏、拍一张、窗口图、网页截图……"一大堆触发场景。为什么？因为：</p>
+<ul>
+<li><strong>平时</strong>，所有技能只有 <code class="notranslate">description</code>（连同 when-to-use 信息，截断到约 1536 字符）待在上下文里。正文那几百行、那些脚本，一个字节都不占。</li>
+<li><strong>一旦判断用得上</strong>——可能是你显式敲 <code class="notranslate">/screenshot</code>，也可能是它读到"帮我截个图"后根据描述自动触发——完整的 <code class="notranslate">SKILL.md</code> 才被加载进来，而且加载后会在本轮持续在场。</li>
+</ul>
+<p>这就同时解决了 CLAUDE.md 的两个死结：怕写多了费上下文（技能正文平时不在场）、又怕写少了不够用（真用时整本手册都来了）。官方建议一份 <code class="notranslate">SKILL.md</code> 控制在 500 行以内。</p>
+<p>技能还<strong>不只是一个 Markdown</strong>。它能自带支撑文件：更长的 <code class="notranslate">reference.md</code>、示例、乃至可以直接执行的脚本。这个截图技能目录里，就带着番外四介绍过的借窗脚本 <code class="notranslate">ui-shot.ps1</code>：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra5-skilldir.png"><img src="/screenshots/extra5-skilldir.png" alt="终端先列出 screenshot 技能目录下的 SKILL.md 与 ui-shot.ps1 及字节数，再打印脚本开头的 SAFETY 英文注释：不开调试端口、不碰凭据、绝不瞄准提交类按钮、用完还原现场" style="max-width: 100%;"></a></p>
+<p>脚本开头那段大写的 SAFETY 注释也值得一看——番外四强调的安全边界（不开调试端口、不碰凭据、绝不点提交按钮、用完还原现场），直接刻在了工具的源码里。技能因此可以把"知识"和"动手能力"打包在一起：Markdown 负责判断与步骤，脚本负责稳定执行。</p>
+<p>存放位置上，放在 <code class="notranslate">~/.claude/skills/&lt;名字&gt;/</code> 是<strong>用户级</strong>，你所有项目都能用；放在某个仓库的 <code class="notranslate">.claude/skills/</code> 是项目级，还能随仓库分享给队友。</p>
+<h2>六、这些说法的官方出处</h2>
+<p>叶扬不喜欢把机制讲成"听说"。上面所有结论都能在 Claude Code 官方文档里查到，文档站已迁至 <code class="notranslate">code.claude.com</code>：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra5-doc-skills.png"><img src="/screenshots/extra5-doc-skills.png" alt="Claude Code 官方文档 skills 页暗色截图：标题 Extend Claude with skills，正文说创建 SKILL.md 即加入工具箱，关键句 unlike CLAUDE.md content, a skill's body loads only when it's used" style="max-width: 100%;"></a></p>
+<ul>
+<li><strong>技能</strong>：<a href="https://code.claude.com/docs/en/skills" rel="nofollow">Extend Claude with skills</a>——"Unlike CLAUDE.md content, a skill's body loads only when it's used, so long reference material costs almost nothing until you need it."（与 CLAUDE.md 不同，技能正文只在用到时加载，长篇参考资料在用不上时几乎零成本。）同页还讲了 frontmatter 字段、支撑文件、个人级/项目级路径、以及如何禁止模型自动触发。</li>
+</ul>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra5-doc-memory.png"><img src="/screenshots/extra5-doc-memory.png" alt="Claude Code 官方文档 memory 页暗色截图：标题 How Claude remembers your project，列出 CLAUDE.md files 与 Auto memory 两条跨会话机制，关键句 Claude treats them as context, not enforced configuration" style="max-width: 100%;"></a></p>
+<ul>
+<li><strong>记忆</strong>：<a href="https://code.claude.com/docs/en/memory" rel="nofollow">How Claude remembers your project</a>——同一页对照了 CLAUDE.md 与 auto memory，给出存储位置、工作方式、<code class="notranslate">/memory</code> 管理，并明确"Claude treats them as context, not enforced configuration"（把它们当作上下文而非强制配置），要硬拦截请用 PreToolUse hook。</li>
+</ul>
+<h2>七、一个坑，四份归宿</h2>
+<p>回到开场那张看不清的时序图。现在可以揭晓：这一个多小时的教训，是怎样同时落进四个地方的——</p>
+<ol>
+<li><strong>博客文章（给读者）</strong>：B01、B04 里原来的时序图已经换成 flowchart，本篇又把"为什么必须换"从头到尾讲给你听。代码会过时，但这篇讲清原理的文章会一直在。</li>
+<li><strong>CLAUDE.md（给每一次会话）</strong>：那份 Mermaid 约定需要修订——把"时序图可追加 <code class="notranslate">actorBkg</code> 等同色系变量"这句已被 v11 证伪的话，改成"示意图一律 flowchart TD；确需时序图时，信号文字需自备不透明底盒"。<strong>规矩短，且要跟得上版本。</strong></li>
+<li><strong>Auto memory（给跨会话的自己）</strong>：记忆库的教程规划里已经记下这条结论——"mermaid v11 教训：示意图一律 flowchart，不用 sequenceDiagram（亮色页面信号文字不可读），B04 与 B01 均已改"。一句话、一个结论、一次踩坑的编号，供以后任何会话快速调取。</li>
+<li><strong>Skill（给双手）</strong>：截图技能的 <code class="notranslate">SKILL.md</code> 里新增了两段操作纪律：面对 mermaid 这类重型运行时，<strong>别用固定等待秒数去赌</strong>（3.5MB 库冷加载曾测到 84.8 秒），要暖缓存 + 轮询等图真出现；改图前<strong>先在本地建单 HTML 预检</strong>，别把"编辑 issue→等构建→重拍"的昂贵循环当家常便饭。</li>
+</ol>
+<p>同一条经验，讲给人听的进博客，必须当场遵守的进 CLAUDE.md，只需知道的结论进 memory，需要反复执行的动作进 Skill。下次你再教给 AI 什么东西时，先问那句流程图里的问题：<strong>这条，该写给谁、怎么用？</strong></p>
+<h3>翻车急诊室</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>症状</th>
+<th>病因</th>
+<th>处方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>它老记不住某件事，每个新会话都要重讲</td>
+<td>你只是在聊天里说过，没写进任何持久层</td>
+<td>每次都要遵守的短规矩 → CLAUDE.md；只是要它知道的事实 → 让它写进 memory</td>
+</tr>
+<tr>
+<td>技能从来不自动触发，只有手动 <code class="notranslate">/名字</code> 才行</td>
+<td><code class="notranslate">description</code> 没把触发场景写清楚</td>
+<td>把"什么时候该用"用大白话、多给几个口语触发词写进描述（参考截图技能）</td>
+</tr>
+<tr>
+<td>CLAUDE.md 越写越长，动辄几百行</td>
+<td>把操作流程也塞进去了</td>
+<td>多步骤流程抽成 Skill，CLAUDE.md 只留铁律，官方建议单文件 &lt;200 行</td>
+</tr>
+<tr>
+<td>某条记忆明显错了/过时了</td>
+<td>memory 是会过期的笔记</td>
+<td>记忆就是普通 Markdown，直接编辑或删除，或用 <code class="notranslate">/memory</code> 管理；规矩同理，记得回头修订 CLAUDE.md</td>
+</tr>
+<tr>
+<td>换了台电脑，记忆全没了</td>
+<td>memory 只存本机、不跨设备同步</td>
+<td>把需要带走的放在项目级 CLAUDE.md / 项目级 Skill 里随 git 走，用户级 memory 不负责同步</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3>小结</h3>
+<ul>
+<li>AI 的"记忆"分四层：<strong>博客写给人、CLAUDE.md 每次在场立规矩、memory 跨会话记事实、Skill 按需加载装流程</strong>；</li>
+<li>CLAUDE.md 与 memory 都是上下文而非强制配置，前者你写、后者它记；</li>
+<li>Skill 靠"描述常驻、正文按需"既省上下文又能在需要时给出整本手册，还能自带脚本；</li>
+<li>经验要分层沉淀，而且每一层都需要定期回头维护——<strong>过时的规矩和错误的记忆，比没有更碍事。</strong></li>
+</ul>
+<p>下一篇回到地基主线，正式开写 <strong>B05：Actions 篇</strong>——B04 埋了个伏笔：为什么文章刚收到评论，列表上的评论数字却不立刻涨？答案就藏在 GitHub Actions 的触发机制里，到时候连"印刷厂几点上班、怎么加班"一起讲透。在那前后，等 G04 收录满一周拿到真实数据（约 9 月 21 日后），还会补一篇 Google 收录实战番外。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://code.claude.com/docs/en/memory" rel="nofollow">How Claude remembers your project（记忆与 CLAUDE.md）</a></li>
+<li><a href="https://code.claude.com/docs/en/skills" rel="nofollow">Extend Claude with skills（技能）</a></li>
+<li>上一篇番外：<a href="/post/33.html">番外四｜不开调试端口、不碰密码：Win32 自动化借你已登录的浏览器截个图</a></li>
+<li>相关主线：<a href="/post/36.html">B04｜门铃与名片：给博客装上评论区，再做一张 About 关于页</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
