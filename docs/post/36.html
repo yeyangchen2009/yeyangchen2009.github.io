@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> [B03](/post/35.html) 把编辑部的日常过了一遍：发稿、改稿、置顶、下架，印刷厂都伺候得好好的。">
+<meta property="og:title" content="B04｜门铃与名片：给博客装上评论区，再做一张 About 关于页">
+<meta property="og:description" content="> [B03](/post/35.html) 把编辑部的日常过了一遍：发稿、改稿、置顶、下架，印刷厂都伺候得好好的。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/36.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>B04｜门铃与名片：给博客装上评论区，再做一张 About 关于页</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">B04｜门铃与名片：给博客装上评论区，再做一张 About 关于页</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/36" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p><a href="/post/35.html">B03</a> 把编辑部的日常过了一遍：发稿、改稿、置顶、下架，印刷厂都伺候得好好的。可有一件事叶扬一直没好意思说——这间博客精装完、开业到现在，门口连个<strong>门铃</strong>都没有。</p>
+<p>读者读完文章想说两句，拉到页面最底下，干干净净，只能自己摸去 GitHub 仓库翻 issue、登录、留言，热情先凉一半。这一篇叶扬给博客装上两样门面：文章底部的<strong>评论区</strong>（门铃），和一张正式的 <strong>About 关于页</strong>（名片）。两样都不花钱，而且装完你会发现，它们跟前面 B 系列讲过的 issue、Actions，全是同一套水电。</p>
+</blockquote>
+<h2>一、utterances 是什么：拿 issue 当评论库的小挂件</h2>
+<p>Gmeek 选用的评论方案叫 <strong>utterances</strong>。它在官网的自我介绍只有一句："A lightweight comments widget built on GitHub issues"——一个建在 GitHub issue 之上的轻量评论挂件。主页在 <a href="https://utteranc.es" rel="nofollow">utteranc.es</a>，源码开源在 <a href="https://github.com/utterance/utterances">utterance/utterances</a>。</p>
+<p>原理三句话：</p>
+<ol>
+<li>文章页里放进一段它提供的 <code class="notranslate">client.js</code>；</li>
+<li>脚本在页面中生成一个 <strong>iframe</strong>（嵌套小窗口），窗口里就是一整套评论区界面；</li>
+<li>读者点 <strong>Sign in with GitHub</strong> 授权后留言，评论以 <strong>issue comment</strong> 的形式，存进你仓库的某个 issue。</li>
+</ol>
+<p>没有独立服务器，没有评论数据库，也没有另一套注册体系——<strong>GitHub issue 就是评论数据库，GitHub 账号就是评论账号</strong>。这跟 Gmeek 简直是天作之合：文章本身是 issue，评论还是 issue，一鱼两吃。唯一的"代价"是留言者需要有 GitHub 账号；对一个托管在 GitHub 上的技术博客来说，这几乎不构成门槛。</p>
+<h2>二、开通三步，其实只有一步要动手</h2>
+<h3>第一步：给仓库安装 utterances App（唯一的动作）</h3>
+<p>打开 App 安装页 <a href="https://github.com/apps/utterances">github.com/apps/utterances</a>，页面上能看到这个挂件的自我介绍与它申请的权限：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b04-app.png"><img src="/screenshots/b04-app.png" alt="GitHub 上的 utterances App 页面：标题 utterances，简介&quot;A lightweight comments widget built on GitHub issues&quot;，下方列出它将获得的 Issues 读写权限，右侧有 Install 安装按钮，深色主题" style="max-width: 100%;"></a></p>
+<p>点 <strong>Install</strong>，接下来选择把 App 装到哪个账号下：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b04-install-target.png"><img src="/screenshots/b04-install-target.png" alt="Install utterances 的账号选择页：&quot;Where do you want to install it?&quot;，列表中只有 yeyangchen2009 一个账号可选，页面停在选择步骤，尚未点最终确认" style="max-width: 100%;"></a></p>
+<p>选定账号后还要选<strong>仓库范围</strong>：所有仓库，还是只挑指定仓库。App 申请的是 issues 的读写权限——它要代表留言的读者，往对应 issue 底下追加 comment。按最小权限原则，选 <strong>Only select repositories</strong> 并指定博客仓库这一个就够了，不必 All repositories。</p>
+<h3>第二步：Gmeek 这边什么都不用配</h3>
+<p>这是 Gmeek 替你省事的地方：评论开关 <code class="notranslate">needComment</code> 的默认值就是 <code class="notranslate">1</code>（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L91">Gmeek.py 第 91 行</a>的默认配置里写着 <code class="notranslate">"needComment":1</code>）。连 utterances 官网让你自己复制粘贴的那段 <code class="notranslate">client.js</code>，模板也都提前写好了，<code class="notranslate">repo</code> 字段还会自动填成你自己的仓库名。</p>
+<p>所以这一步真的什么都不用做。只有一种情况需要动手：哪天想<strong>全站关闭评论</strong>，才在 <code class="notranslate">config.json</code> 里显式加一行 <code class="notranslate">needComment:0</code>。</p>
+<h3>第三步：拉到文末，点按钮验收</h3>
+<p>打开任意一篇文章，一路滚到最底部，一个宽宽的 <strong>评论</strong> 按钮就在那里：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b04-comment-button.png"><img src="/screenshots/b04-comment-button.png" alt="文章最底部的评论区位置：上方是上一篇文章导航卡（B02）与&quot;已经到尽头啦&quot;，正中是一个通栏深色「评论」按钮，尚未点开" style="max-width: 100%;"></a></p>
+<p>点下去，按钮先变成 <code class="notranslate">loading</code>，随后评论框从下方展开：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b04-comment-box.png"><img src="/screenshots/b04-comment-box.png" alt="点开后的 utterances 评论框：左上角显示&quot;0 Comments&quot;与 powered by utteranc.es，中间是 Write / Preview 切换标签，提示 Sign in to comment，右下角一颗蓝色 Sign in with GitHub 按钮" style="max-width: 100%;"></a></p>
+<p>上方是当前评论条数与 <code class="notranslate">powered by utteranc.es</code>，中间是 <strong>Write / Preview</strong> 两个标签，右下角一颗蓝色 <strong>Sign in with GitHub</strong>。登录、写两句、点 Comment，留言就成了——可以马上去这篇文章对应的 issue 页面看，评论原样躺在 issue 的回复区里。</p>
+<p>这里有个值得一说的贴心设计：<strong>评论脚本不是文章一打开就下载的</strong>。看 <a href="https://github.com/Meekdai/Gmeek/blob/main/templates/post.html#L91">post.html 的 openComments</a>，那段 <code class="notranslate">&lt;script&gt;</code> 是在按钮的 <code class="notranslate">onclick</code> 触发时，才由 JS 当场创建并插进页面的（脚本地址写死为 <code class="notranslate">https://utteranc.es/client.js</code>）。不点不加载——为每个只是读文章的人省下一次跨站请求；万一哪天评论服务抽风，文章本体也永远安然无恙。</p>
+<h2>三、评论去哪了：挂在"文章自己那个 issue"上</h2>
+<p>装完 utterances，不少人心里会打鼓：评论到底存哪了？会不会在我仓库里乱开新 issue？叶扬把模板翻到底，给个准话。</p>
+<p><code class="notranslate">openComments</code> 里真正决定评论去向的是两个字段：仓库名（自动填你的仓库）和 <strong><code class="notranslate">issue-term = title</code></strong>。意思是让 utterances 拿"当前网页的 <code class="notranslate">&lt;title&gt;</code>"，去指定仓库里找<strong>同名 issue</strong>，找到，就把评论区挂在那个 issue 下面。而 Gmeek 文章页的 <code class="notranslate">&lt;title&gt;</code> 就是 issue 标题，一字不差——于是：</p>
+<blockquote>
+<p>在 <code class="notranslate">/post/35.html</code> 页面下发的评论，就是 issue <strong>#35</strong> 里的一条 comment。</p>
+</blockquote>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">sequenceDiagram</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">R</span> <span class="pl-k">as</span> <span class="pl-ent">读者</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">P</span> <span class="pl-k">as</span> <span class="pl-ent">文章页</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">U</span> <span class="pl-k">as</span> <span class="pl-ent">utteranc.es</span>
+    <span class="pl-k">participant</span> <span class="pl-ent">I</span> <span class="pl-k">as</span> <span class="pl-ent">GitHub 仓库 issue</span>
+    <span class="pl-ent">R</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">P</span><span class="pl-k">:</span> <span class="pl-s">点「评论」按钮</span>
+    <span class="pl-ent">P</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">P</span><span class="pl-k">:</span> <span class="pl-s">按需插入 client.js</span>
+    <span class="pl-ent">P</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">U</span><span class="pl-k">:</span> <span class="pl-s">加载评论 iframe(repo + issue-term=title)</span>
+    <span class="pl-ent">U</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">I</span><span class="pl-k">:</span> <span class="pl-s">按页面标题找同名 issue</span>
+    <span class="pl-ent">I</span><span class="pl-k">--&gt;&gt;</span><span class="pl-ent">U</span><span class="pl-k">:</span> <span class="pl-s">返回该 issue 已有的 comments</span>
+    <span class="pl-ent">U</span><span class="pl-k">--&gt;&gt;</span><span class="pl-ent">P</span><span class="pl-k">:</span> <span class="pl-s">渲染评论框与历史留言</span>
+    <span class="pl-ent">R</span><span class="pl-k">-&gt;&gt;</span><span class="pl-ent">I</span><span class="pl-k">:</span> <span class="pl-s">Sign in 后提交，写入一条 issue comment</span></pre></div>
+<p>这正好回收了 <a href="/post/35.html">B03</a> 急诊室留下的担心：<strong>utterances 不会新建 issue</strong>。它只有在仓库里连一个同名 issue 都找不到时才会自建一个；而 Gmeek 的每个文章页都源自一个真实存在的 issue，同名 issue 必然在，永远走"复用"这一支。所以无标签 issue 把构建绊成 KeyError 那种事故，评论区这条线上根本碰不到。</p>
+<p>再说<strong>换肤</strong>。手动明暗模式下，<code class="notranslate">openComments</code> 会读浏览器里的主题记录：暗色给 <code class="notranslate">dark-blue</code>、亮色给 <code class="notranslate">github-light</code>、从没选过就给 <code class="notranslate">preferred-color-scheme</code> 跟随系统；等读者点月亮或太阳切换站点主题，页面还会通过 <code class="notranslate">postMessage</code> 通知 iframe 跟着换。评论区和你的博客，永远是一个色号。</p>
+<h2>四、About 名片：一个贴着 about 标签的 issue</h2>
+<p>帖子和固定页，是 Gmeek 里的两种货。帖子住在 <code class="notranslate">/post/N.html</code>，按时间排进行文流；<strong>固定页</strong>（关于、归档这类）住在网站根目录，不进文章列表，却在页头拥有一个固定入口。</p>
+<p>做一张 About 页简单到离谱：照常 <strong>New issue</strong>，标题写「关于叶扬」，正文用 Markdown 自我介绍，关键只有一个动作——在右侧 Labels 贴上 <strong><code class="notranslate">about</code></strong> 标签，提交。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b04-about-label.png"><img src="/screenshots/b04-about-label.png" alt="关于页对应的 issue #6：标题「关于叶扬」，右侧 Labels 区只有一枚紫色 about 单标签——它靠这个标签被识别为固定页" style="max-width: 100%;"></a></p>
+<p>构建时，引擎发现这个 issue 的第一个标签命中了 <code class="notranslate">config.json</code> 里的固定页名单（本站配置是 <code class="notranslate">"singlePage": ["about", "archive"]</code>），就把它分流处理：<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L315">addOnePostJson</a> 里，首标签在 <code class="notranslate">singlePage</code> 名单中的 issue 进 <code class="notranslate">singeListJson</code>，文件名直接<strong>拿标签名当名字</strong>（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L434">createFileName</a> 的 <code class="notranslate">useLabel</code> 分支）。于是 <code class="notranslate">about</code> 标签长出的页面，地址就是干干净净的 <code class="notranslate">/about.html</code>：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b04-about-page.png"><img src="/screenshots/b04-about-page.png" alt="About 固定页实拍：地址栏为 /about.html，页头是站点导航，正文是「关于叶扬」自我介绍，右侧自动生成了文章目录，整体深色主题" style="max-width: 100%;"></a></p>
+<p>固定页的入口出现在网站页头。渲染列表页时，引擎会把内置图标键和 <code class="notranslate">singlePage</code> 名单里的每一个键合并，各生成一个按钮：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b04-header-icons.png"><img src="/screenshots/b04-header-icons.png" alt="博客首页页头图标栏：从左到右依次是 about 人形图标、archive 盒子图标、RSS 订阅、主题切换月亮按钮，固定页入口就排在最前" style="max-width: 100%;"></a></p>
+<p><code class="notranslate">about</code> 是 Gmeek 内置认识的键，自动配一枚人形图标，<code class="notranslate">archive</code> 配盒子图标。要是哪天你自己新设一个标签（比如 <code class="notranslate">friends</code>）做友链页，页头会出现入口、但图标是空的——这时就得在 <code class="notranslate">config.json</code> 的 <code class="notranslate">iconList</code> 里给它补一个图标（<code class="notranslate">iconList</code> 的配法在 <a href="/post/34.html">B02</a> 讲过）。正文写法则与普通文章完全一致，Markdown、图片、链接照用；固定页还会自动隐去页脚那行版权小字，看起来更像一张"正式页面"。</p>
+<h2>五、翻车急诊室</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>症状</th>
+<th>原因</th>
+<th>处方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>点「评论」后一直 loading，框迟迟不出来</td>
+<td>iframe 要同时连通 utteranc.es 与 github.com，当前网络慢或受限时特别明显；这个嵌套窗口对运行环境很敏感</td>
+<td>多等十几秒、换个网络再试；文章本体不依赖它，阅读不受影响</td>
+</tr>
+<tr>
+<td>列表页标题旁的评论数小徽标不涨、不出现</td>
+<td>评论数是<strong>构建期</strong>读 <code class="notranslate">issue.get_comments().totalCount</code> 静态写进页面的（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L333">Gmeek.py 第 333 行</a>、<a href="https://github.com/Meekdai/Gmeek/blob/main/templates/plist.html#L93">plist.html 第 93 行</a>）；新评论不在 Actions 的触发名单里</td>
+<td>评论内容本身实时可见；数字手动 runAll 一次，或等每天北京时间 0 点的定时全量构建自动刷新</td>
+</tr>
+<tr>
+<td>留言时反复要求登录，或提示没有权限</td>
+<td>仓库没装 utterances App，或安装时选错了账号 / 仓库范围</td>
+<td>回 App 页面检查 Installation settings，确认覆盖到博客仓库</td>
+</tr>
+<tr>
+<td>About 页打开是 404</td>
+<td>标签字符串与 <code class="notranslate">singlePage</code> 名单不完全一致（如大小写、多空格），或贴标签后没有任何构建被触发</td>
+<td>标签改成精确的 <code class="notranslate">about</code>；随手编辑一次该 issue，或手动 runAll</td>
+</tr>
+<tr>
+<td>全站文章底下都找不到评论按钮</td>
+<td><code class="notranslate">config.json</code> 里把 <code class="notranslate">needComment</code> 改成了 <code class="notranslate">0</code></td>
+<td>删掉这一行，恢复默认值 <code class="notranslate">1</code> 后重建</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>小结</h2>
+<ul>
+<li>评论区 = utterances：<strong>给仓库装一次 App 是唯一的手动动作</strong>，Gmeek 侧默认全开、脚本自带、仓库名自动填；</li>
+<li>评论经 <code class="notranslate">issue-term=title</code> 直接挂在文章自己那个同名 issue 下，<strong>不新建 issue</strong>，与无标签 issue 的构建事故两条线；</li>
+<li>脚本按需加载，明暗主题联动；评论内容实时，但列表页的评论数徽标是构建期产物，靠手动或每日定时构建刷新；</li>
+<li>About 页 = 第一个标签命中 <code class="notranslate">singlePage</code> 名单的普通 issue，输出为根目录下的 <code class="notranslate">/about.html</code>，并获得页头固定入口；自造页名记得在 <code class="notranslate">iconList</code> 配图标。</li>
+</ul>
+<p>门铃装好了，名片也挂上了，博客终于像个能接待客人的地方。下一篇 B05，叶扬把这一系列里一直听见响声、却从没正式介绍过的"印刷厂"请上台面——<strong>GitHub Actions</strong>：工作流到底被哪些事件点火、每天 0 点那次 runAll 默默干了什么、手动构建和 issue 触发有什么区别。今天埋的"评论数为什么不实时"这个伏笔，到时一并回收。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://utteranc.es" rel="nofollow">utterances 官网</a> 与 <a href="https://github.com/utterance/utterances">源码仓库 utterance/utterances</a></li>
+<li><a href="https://github.com/apps/utterances">utterances GitHub App 安装页</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/templates/post.html#L91">Gmeek 模板 post.html：评论按钮与 openComments</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L91">Gmeek.py 源码：默认配置 needComment</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L315">Gmeek.py 源码：固定页分流 addOnePostJson</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L333">Gmeek.py 源码：构建期读取评论数</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L434">Gmeek.py 源码：固定页文件名取标签名</a></li>
+<li>上一篇：<a href="/post/35.html">B03｜在 Issues 里过日子</a></li>
+<li>地基篇目录：<a href="/post/30.html">B00｜从零开始的地基篇总览</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
