@@ -14,6 +14,7 @@
  *   --css <file>           用本地 CSS 文件应答匹配 --css-match 的请求（ Fetch 域拦截）
  *   --css-match <pattern>  CDP URL 通配模式，如 *Primer/21.0.7/primer.css*
  *   --browser <path>       本机浏览器可执行文件（默认探测常见 Edge/Chrome 路径，或用 CDP_BROWSER 环境变量）
+ *   --proxy <host:port>    走指定 HTTP 代理（默认直连；如 Clash 127.0.0.1:7890）
  *   --hash <anchor>       导航后设置 location.hash（用于触发平滑滚动/scrollspy）
  * --eval <js>             导航后执行 JS；若返回 {x,y,width,height} 即按返回矩形取景
  *   --click <selector>    手机端：导航后点击元素（如 ☰ 按钮）
@@ -52,7 +53,7 @@ function parseArgs(argv) {
     }
     const withValue = new Set(['theme', 'theme-key', 'theme-value', 'scale', 'css',
         'css-match', 'browser', 'hash', 'eval', 'click', 'settle', 'wait', 'scheme',
-        'profile-dir', 'done-flag']);
+        'profile-dir', 'done-flag', 'proxy']);
     const o = { url, out, width: +w, height: +h, scale: 2, settle: 3500, wait: 1500,
         theme: 'light', 'theme-key': 'meek_theme', 'theme-value': 'dark' };
     for (let i = 4; i < argv.length; i++) {
@@ -114,7 +115,8 @@ async function launchBrowser(browser, opt) {
     fs.mkdirSync(profile, { recursive: true });
     const args = [
         '--disable-gpu', '--hide-scrollbars', '--no-first-run',
-        '--no-proxy-server', '--ignore-certificate-errors',
+        opt.proxy ? '--proxy-server=' + opt.proxy : '--no-proxy-server',
+        '--ignore-certificate-errors',
         '--remote-debugging-port=0', '--remote-allow-origins=*',
         '--user-data-dir=' + profile, 'about:blank',
     ];
