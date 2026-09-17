@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> [B02](/post/34.html) 把招牌换好之后，编辑部其实只用过一次——开张那篇发刊词。">
+<meta property="og:title" content="B03｜在 Issues 里过日子：写稿、改稿、置顶与下架的编辑部日常">
+<meta property="og:description" content="> [B02](/post/34.html) 把招牌换好之后，编辑部其实只用过一次——开张那篇发刊词。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/35.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>B03｜在 Issues 里过日子：写稿、改稿、置顶与下架的编辑部日常</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">B03｜在 Issues 里过日子：写稿、改稿、置顶与下架的编辑部日常</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/35" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p><a href="/post/34.html">B02</a> 把招牌换好之后，编辑部其实只用过一次——开张那篇发刊词。真正住进来以后，每天打交道的是这些事：新写一篇、改个错别字、把目录长期顶在最上面、写坏的稿子下架、再把几年前的旧文补发进时间线。</p>
+<p>这一篇叶扬把编辑部的全套日常走一遍。动作都在 GitHub 网页上，简单到不好意思写教程，但每个动作<strong>会不会触发印刷厂开工、会不会动文章的位置</strong>，源码里全有明确答案。这一篇照例把答案翻给你看。</p>
+</blockquote>
+<h2>一、发稿台：New issue 页面的三件套</h2>
+<p>仓库顶部 <strong>Issues</strong> 标签页 → 绿色 <strong>New issue</strong> 按钮，就是发稿台。三样东西：</p>
+<ol>
+<li><strong>标题框</strong>：文章的标题，也是首页列表、浏览器标签、RSS 订阅里显示的名字；</li>
+<li><strong>正文框</strong>：用 Markdown 写作的地方；</li>
+<li><strong>右侧 Labels</strong>：标签选择器，B01 已经按过一次。</li>
+</ol>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b03-write.png"><img src="/screenshots/b03-write.png" alt="GitHub 的 New issue 发稿台：标题框里填着示例标题，正文框写着 Markdown 例文（各级标题、列表、引用、代码块、表格），右侧 Labels 已经贴好蓝色「博客」标签——草稿演示画面，尚未提交" style="max-width: 100%;"></a></p>
+<p>写的时候可以随时切到 <strong>Preview</strong> 标签看效果。这里有一颗很多人不知道的定心丸：你在 Preview 里看到的渲染效果，<strong>和博客页面上最终的样子出自同一个引擎</strong>。Gmeek 构建时并不自己解析 Markdown，而是把正文 POST 给 GitHub 官方的 <code class="notranslate">/markdown</code> 接口、模式指定为 <code class="notranslate">gfm</code>（GitHub Flavored Markdown），拿回渲染好的 HTML（见 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L128">Gmeek.py 的 markdown2html</a>）。所以 Preview 即所得，不存在"编辑器里一个样、博客上另一个样"。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b03-preview.png"><img src="/screenshots/b03-preview.png" alt="同一篇草稿切到 Preview：大标题、粗体斜体、行内代码、列表与引用块全部按 GitHub 的 GFM 样式渲染，与将来博客页面的排版一致" style="max-width: 100%;"></a></p>
+<h2>二、Markdown 日常够用清单</h2>
+<p>不用学全语法，写博客真正高频的就这些：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>写法</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate"># 标题</code> / <code class="notranslate">## 小标题</code></td>
+<td>一到六级标题，二级标题最常用</td>
+</tr>
+<tr>
+<td><code class="notranslate">**粗体**</code>、<code class="notranslate">*斜体*</code>、<code class="notranslate">~~删除线~~</code></td>
+<td>强调</td>
+</tr>
+<tr>
+<td><code class="notranslate">- 条目</code> 或 <code class="notranslate">1. 条目</code></td>
+<td>无序 / 有序列表，行首写 <code class="notranslate">- [ ]</code> 是任务列表</td>
+</tr>
+<tr>
+<td><code class="notranslate">&gt; 引用</code></td>
+<td>引用块；<code class="notranslate">&gt; [!NOTE]</code> 起头是彩色提示块（进阶玩法见 <a href="/post/13.html">G07</a>）</td>
+</tr>
+<tr>
+<td><code class="notranslate">[文字](网址)</code></td>
+<td>链接</td>
+</tr>
+<tr>
+<td><code class="notranslate">`代码`</code> 与三个反引号围栏</td>
+<td>行内代码与代码块</td>
+</tr>
+<tr>
+<td><code class="notranslate">![说明](图片地址)</code></td>
+<td>插图</td>
+</tr>
+<tr>
+<td>`</td>
+<td>列</td>
+</tr>
+<tr>
+<td><code class="notranslate">---</code> 单独一行</td>
+<td>分隔线</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>插图对新手最友好的方式是粘贴</strong>：在正文框里直接 Ctrl+V（或把文件拖进来），GitHub 会自动把图片传到它自己的图床 <code class="notranslate">user-images.githubusercontent.com</code> 并把 Markdown 地址填好，你什么都不用管，也不必往仓库的 <code class="notranslate">static/</code> 文件夹里塞东西。想要灯箱放大、图片完全由自己仓库托管的进阶玩法，G05 <a href="/post/11.html">《给文章图片装一盏灯》</a>讲过。</p>
+<p>公式和流程图（Mermaid）也是支持的，但属于加菜，G07 那篇有完整演示，这里先不展开。</p>
+<h2>三、标签仍是命根子：无标签的稿子引擎不收</h2>
+<p>B01 强调过"发文必须贴标签"，这一篇可以把源码翻开看为什么。引擎处理一篇 issue 的第一道门是（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L315">Gmeek.py:315</a>）：</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">def</span> <span class="pl-en">addOnePostJson</span>(<span class="pl-s1">self</span>, <span class="pl-s1">issue</span>):
+    <span class="pl-k">if</span> <span class="pl-en">len</span>(<span class="pl-s1">issue</span>.<span class="pl-c1">labels</span>) <span class="pl-c1">&gt;=</span> <span class="pl-c1">1</span>:      <span class="pl-c"># 至少有一个标签，后面才有故事</span>
+        ...</pre></div>
+<p>没有标签的 issue，引擎不把它收进任何文章列表；紧接着按编号取文章数据时还会因为找不到而抛出 <strong>KeyError</strong>，这一趟构建直接红叉。这不是假设——叶扬这个博客的 issue #22 当年就是一张没贴标签的工单，结结实实触发了一次这个红叉，后来修复思路还给上游提了 PR（来龙去脉见 <a href="/post/24.html">G15</a> 与<a href="/post/28.html">番外二</a>）。直到现在，无标签 issue 仍会被这道门挡住。</p>
+<p>标签还有两个进阶规矩：</p>
+<ul>
+<li><strong>第一个标签（labels[0]）是"主标签"</strong>：它决定这篇是普通文章还是固定页——主标签命中 <code class="notranslate">config.json</code> 里 <code class="notranslate">singlePage</code> 名单的（比如 <code class="notranslate">about</code>、<code class="notranslate">archive</code>），生成的是独立页面，不进文章流；</li>
+<li><strong>多贴的标签进分类页</strong>：每篇文章贴几个标签，就会出现在 <code class="notranslate">/tag.html</code> 对应的分类里，标签胶囊上的数字就是各分类的篇数：</li>
+</ul>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b03-tag.png"><img src="/screenshots/b03-tag.png" alt="本站 tag.html 分类页：顶部 All 30、博客 29、Gmeek 29、佛经 1 四个标签胶囊，下方是带日期色签的文章列表" style="max-width: 100%;"></a></p>
+<h2>四、改稿：保存就自动重建，但有两样东西不会变</h2>
+<p>文章发出去以后发现错别字？打开 issue 点铅笔（或右下角 <code class="notranslate">...</code> → Edit），改完 <strong>Save changes</strong>，收工。</p>
+<p>Gmeek 监听了 issue 的 <code class="notranslate">edited</code> 事件，保存即自动触发一次增量构建，一两分钟后线上就是新稿。但有两件事值得提前知道，免得以后纳闷：</p>
+<ol>
+<li><strong>改稿不改变文章的位置和日期。</strong> 文章的时间取的是 <strong>issue 的创建时间</strong>，不是最后编辑时间（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L366">Gmeek.py:366</a>：<code class="notranslate">issue.created_at</code>）。一篇 9 月 13 日发的文章，9 月 30 日改十遍，它还安安静静排在 9 月 13 日那个位置。这正是博客该有的样子——更新不刷屏。</li>
+<li><strong><code class="notranslate">urlMode:"issue"</code> 下，改标题不影响网址。</strong> 文章 URL 是编号制（<code class="notranslate">/post/34.html</code>），标题随便改，旧链接永远有效。</li>
+</ol>
+<p>另外每次构建，引擎都会把当期所有文章的全文自动备份进仓库的 <code class="notranslate">backup/</code> 文件夹（一篇一个 Markdown 文件），等于 GitHub 帮你存稿之外，印刷厂又归档了一份。</p>
+<h2>五、核心章：编辑部事件表——哪些动作会自动开工</h2>
+<p>新读者最常见的连环困惑是："我置顶了怎么没反应？""我把文章关了怎么页面还在？"答案全在工作流文件的触发条件里。模板自带的 <a href="https://github.com/Meekdai/Gmeek-template/blob/main/.github/workflows/Gmeek.yml">Gmeek.yml</a> 写得很克制：</p>
+<div class="highlight highlight-source-yaml"><pre class="notranslate"><span class="pl-ent">on</span>:
+  <span class="pl-ent">workflow_dispatch</span>:        <span class="pl-c"><span class="pl-c">#</span> 手动</span>
+  <span class="pl-ent">issues</span>:
+    <span class="pl-ent">types</span>: <span class="pl-s">[opened, edited] </span><span class="pl-c"><span class="pl-c">#</span> 只有"发文"和"改稿"两种</span>
+  <span class="pl-ent">schedule</span>:
+    - <span class="pl-ent">cron</span>: <span class="pl-s"><span class="pl-pds">"</span>0 16 * * *<span class="pl-pds">"</span></span>    <span class="pl-c"><span class="pl-c">#</span> 每天 UTC 16:00（北京时间 0 点）兜底</span></pre></div>
+<p>也就是说，<strong>只有发新文、改旧文会自动触发构建</strong>；其余编辑部动作一律只改 issue 本身的状态，印刷厂毫不知情：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>你在 issue 上的动作<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span>是哪一种<span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">发文 opened / 改稿 edited</span><span class="pl-k">|</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>GitHub 自动派发&lt;<span class="pl-ent">br</span>/&gt;runOne 增量构建<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">Pin 置顶 / Unpin 取消</span><span class="pl-k">|</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>只改 issue 的状态或事件时间线<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">Close 下架 / Reopen 复活</span><span class="pl-k">|</span> <span class="pl-ent">D</span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">加标签 / 删标签</span><span class="pl-k">|</span> <span class="pl-ent">D</span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">改 config / 加 static 文件</span><span class="pl-k">|</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>push 不在监听名单&lt;<span class="pl-ent">br</span>/&gt;连构建都不触发<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span>贴标签了吗<span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">有</span><span class="pl-k">|</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>单篇重建，一两分钟上线<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">无</span><span class="pl-k">|</span> <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>KeyError 红叉&lt;<span class="pl-ent">br</span>/&gt;引擎不收无标签稿<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>线上页面纹丝不动<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">I</span>
+    <span class="pl-ent">I</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">J</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>去 Actions 手动 Run workflow&lt;<span class="pl-ent">br</span>/&gt;runAll 全局重建后生效<span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<p>去 Actions 页翻运行记录，这套规律一目了然：标题里带文章名的是 <code class="notranslate">issues</code> 触发（opened/edited），叫 "build Gmeek" 的是手动，还有按点出现的 Scheduled：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b03-events.png"><img src="/screenshots/b03-events.png" alt="Actions 运行列表：能同时看到 Issue opened（发文自动）、Issue edited（改稿自动）、Manually run（手动全局）、Scheduled（每日定时）四种来源，全部绿色对勾" style="max-width: 100%;"></a></p>
+<p>记住一句话：<strong>发文改稿自动到，置顶下架标签动，改配置加图片——全部手动跑一遍。</strong></p>
+<h2>六、置顶 Pin：把一篇长期钉在首页第一行</h2>
+<p>适合置顶的是"总揽""目录""关于这个博客"这类长期有效的文章。操作：打开目标 issue，把<strong>右侧边栏一路拉到底</strong>，在 Participants 下方的操作区里找到 <strong>Pin issue</strong>，点一下即可（已置顶时这里变成 Unpin issue）。老版本 GitHub 把这个入口藏在帖子右下角的 <code class="notranslate">...</code> 菜单里，新版网页已经搬到侧栏底部，和 Transfer、Lock、Delete 这些"重型操作"放在一起：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b03-pin-menu.png"><img src="/screenshots/b03-pin-menu.png" alt="issue #34 右侧边栏底部操作区特写：Transfer / Clone / Lock / Pin issue 依次排列，Pin issue 清晰可见——本图只拍不按" style="max-width: 100%;"></a></p>
+<p>Pin 完首页不会立刻有变化——对上一章的表了，Pin 不在自动触发名单里。<strong>手动 Run workflow 全局重建后</strong>，引擎会翻阅这篇 issue 的事件时间线，看到 <code class="notranslate">pinned</code> 事件就把内部标记 <code class="notranslate">top</code> 置为 1（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L350">Gmeek.py:350-354</a>），首页排序键是 <code class="notranslate">(top, createdAt)</code>，置顶文于是排到所有普通文章之上：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b03-pinned-home.png"><img src="/screenshots/b03-pinned-home.png" alt="本站首页实拍：第一篇是 2026-09-13 的系列总揽，左侧带着红色图钉标记，遥遥领先于下方 09-17 的新文；日期没有因为置顶而改变" style="max-width: 100%;"></a></p>
+<p>注意两个细节：置顶只动排序，<strong>日期标签仍是原始发文日期</strong>（上图这篇是 9 月 13 日，却排在 9 月 17 日的文章前面）；全站可以置顶多篇，多篇之间再按日期排。</p>
+<h2>七、下架 Close：文章怎么"消失"，以及后悔药</h2>
+<p>不想要的稿子怎么删？Gmeek 的设计是<strong>不主张物理删除</strong>：打开 issue → 底部 <strong>Close issue</strong>：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b03-close.png"><img src="/screenshots/b03-close.png" alt="open 状态 issue 底部的 Close issue 按钮区：按钮就位但尚未按下——下架是可逆的，故本图只拍不按" style="max-width: 100%;"></a></p>
+<p>关掉之后会经历一个有点反直觉的过程：</p>
+<ol>
+<li>Close 不触发构建，<strong>此刻旧文章页还在网上，依旧能访问</strong>；</li>
+<li>等你手动 Run workflow 跑全局重建时，引擎只遍历 open 状态的 issue，closed 的稿子不再进入文章列表；输出目录又是整个清空重生成的，旧 HTML 随之消失——这时文章页才真正 404、从首页和 RSS 里退场；</li>
+<li>issue 本身仍保留在仓库的 Closed 列表里，正文、评论都在。</li>
+</ol>
+<p>后悔了？Reopen 重开 issue，再手动跑一次全局重建，文章原样回来。这比真的删除数据安全得多。</p>
+<h2>八、补发旧文：文末一行 timestamp</h2>
+<p>从其他平台搬家、或者想补发一篇几年前写的旧文，新 issue 的创建时间必然是今天，硬插进文章流会霸榜榜首。Gmeek 给了一个小灶：在正文<strong>最后一行</strong>写一段隐藏 JSON 注释：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-c">&lt;!-- ##{"timestamp": 1577836800}## --&gt;</span></pre></div>
+<p><code class="notranslate">timestamp</code> 是<strong>秒级 Unix 时间戳</strong>（上例是 2020-01-01 00:00 UTC），引擎读到它就用它替代创建时间（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L363">Gmeek.py:363</a>），文章于是归位到 2020 年。它牵动的不止排序：首页位置、日期标签颜色、RSS 发布时间都会跟着走。时间戳不会算？搜索 "unix timestamp 转换"，任意小工具都能按日期换出来。</p>
+<p>这段末行 JSON 还能给单篇文章挂专属样式、脚本、封面图，完整玩法是 <a href="/post/12.html">G06《文章末尾的秘密》</a>的主题。</p>
+<h2>九、翻车急诊室</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>症状</th>
+<th>病因</th>
+<th>处方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>发文后博客没文章，Actions 还红叉</td>
+<td>没贴标签，引擎 KeyError</td>
+<td>补标签，再 Edit 一次触发重建</td>
+</tr>
+<tr>
+<td>Pin / Close / 改标签后线上没变化</td>
+<td>这些动作都不触发构建</td>
+<td>手动 Run workflow 全局重建</td>
+</tr>
+<tr>
+<td>Close 后文章页居然还能打开</td>
+<td>还没跑全局重建，旧 HTML 仍在</td>
+<td>手动 runAll；想恢复就 Reopen 后再 runAll</td>
+</tr>
+<tr>
+<td>粘贴的图是裂的</td>
+<td>图还没传完就点了 Submit</td>
+<td>等编辑框里图片预览出来再提交</td>
+</tr>
+<tr>
+<td>改完标题收藏夹里的旧链接失效</td>
+<td>你用的是路径型 URL（标题拼音制）</td>
+<td>编号制（<code class="notranslate">/post/N.html</code>）无此问题；路径站改标题要同步通知读者</td>
+</tr>
+<tr>
+<td>补发旧文时间不生效</td>
+<td>JSON 没放在正文最后一行，或时间戳写成了毫秒</td>
+<td>末行无尾空行，秒级 10 位数；参考 G06</td>
+</tr>
+<tr>
+<td>标题里的 <code class="notranslate">/ : ?</code> 在文件名里变成 <code class="notranslate">-</code></td>
+<td>文件名非法字符会被正则清洗</td>
+<td>正常保护机制，不影响标题显示</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>小结</h2>
+<ul>
+<li>发文三要素：标题、Markdown 正文、至少一个标签；Preview 与博客同用 GitHub GFM 引擎，所见即所得；</li>
+<li>改稿自动重建，但<strong>位置和日期只认 issue 创建时间</strong>，编号制 URL 不随标题变；</li>
+<li>自动触发只有 <code class="notranslate">opened</code>/<code class="notranslate">edited</code>：Pin、Close、Reopen、标签变动、改 config、加 static，全部手动 runAll；</li>
+<li>置顶=事件时间线里的 <code class="notranslate">pinned</code> → <code class="notranslate">top=1</code>，只动排序不动日期；下架=Close + 全局重建，Reopen 是后悔药；</li>
+<li>补发旧文靠末行 JSON 的秒级 <code class="notranslate">timestamp</code>。</li>
+</ul>
+<p>至此，编辑部的日常你已经全都会了。下一篇 B04，叶扬给博客装上两样有人气的东西：文章底部的<strong>评论区</strong>（utterances，评论直接变成 GitHub issue 回复）和一张正式的 <strong>About 关于页</strong>（用 <code class="notranslate">singlePage</code> 做不进文章流的固定页）。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L128">Gmeek.py 源码：markdown2html / addOnePostJson / runOne</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L349">Gmeek.py 源码：pinned 事件与排序键</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek-template/blob/main/.github/workflows/Gmeek.yml">Gmeek-template 工作流（触发事件名单）</a></li>
+<li><a href="https://docs.github.com/en/issues/tracking-your-work-with-issues/pinning-an-issue-to-your-repository">GitHub Docs：Pinning an issue</a></li>
+<li>进阶阅读：<a href="/post/12.html">G06 文章末尾的秘密</a>、<a href="/post/13.html">G07 写作三件套</a>、<a href="/post/24.html">G15 Mermaid 翻车记</a></li>
+<li>上一篇：<a href="/post/34.html">B02｜毛坯房装修：认识 config.json</a></li>
+<li>地基篇目录：<a href="/post/30.html">B00｜从零开始的地基篇总览</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
