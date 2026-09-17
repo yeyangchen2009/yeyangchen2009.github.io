@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> [B01](/post/32.html) 走完，博客已经能访问、第一篇文章也上线了。">
+<meta property="og:title" content="B02｜毛坯房装修：认识 config.json，站名、头像换成你自己的">
+<meta property="og:description" content="> [B01](/post/32.html) 走完，博客已经能访问、第一篇文章也上线了。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/34.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>B02｜毛坯房装修：认识 config.json，站名、头像换成你自己的</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">B02｜毛坯房装修：认识 config.json，站名、头像换成你自己的</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/34" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p><a href="/post/32.html">B01</a> 走完，博客已经能访问、第一篇文章也上线了。但首页抬头一看，站名还赫然写着 <strong>Blog Title</strong>，副标题是 <strong>Blog description</strong>，浏览器标签上的小图标也是个来路不明的默认图标——毛坯房交付时，开发商挂的样板间标牌还没摘。</p>
+<p>这一篇叶扬带你认识装修总闸 <code class="notranslate">config.json</code>：四个必填字段逐个拆掉，亲手把站名、签名、头像换成自己的。另外附赠两条读源码读出来的冷知识：<strong>为什么改完配置首页毫无反应</strong>，以及 <code class="notranslate">GMEEK_VERSION</code> 里的 <code class="notranslate">last</code> 到底" last "在哪。</p>
+</blockquote>
+<h2>一、config.json 是谁：仓库里唯一的装修总闸</h2>
+<p>打开你自己的博客仓库（<code class="notranslate">用户名/用户名.github.io</code>），根目录下文件不多，<code class="notranslate">config.json</code> 就是其中之一。点进去长这样（下图是叶扬博客现在的版本，已经装修过，字段比较多）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b02-config-file.png"><img src="/screenshots/b02-config-file.png" alt="本站的 config.json 文件渲染页：路径面包屑指向 config.json，右侧铅笔编辑按钮清晰可见，18 行 JSON 里能看到 title、subTitle、avatarUrl、email、singlePage、GMEEK_VERSION 等字段" style="max-width: 100%;"></a></p>
+<p>而 B01 刚建完仓的时候，这个文件只有孤零零四行字段，是模板放进来的出厂配置：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate">{
+    <span class="pl-ent">"title"</span>: <span class="pl-s"><span class="pl-pds">"</span>Blog Title<span class="pl-pds">"</span></span>,
+    <span class="pl-ent">"subTitle"</span>: <span class="pl-s"><span class="pl-pds">"</span>Blog description<span class="pl-pds">"</span></span>,
+    <span class="pl-ent">"avatarUrl"</span>: <span class="pl-s"><span class="pl-pds">"</span>https://github.githubassets.com/favicons/favicon.svg<span class="pl-pds">"</span></span>,
+    <span class="pl-ent">"GMEEK_VERSION"</span>: <span class="pl-s"><span class="pl-pds">"</span>last<span class="pl-pds">"</span></span>
+}</pre></div>
+<p>关于这个文件，先建立三个认知：</p>
+<ol>
+<li><strong>它只在云端构建时被读取。</strong> 你在仓库里改完保存，本地、服务器上都没有任何常驻程序盯着它；只有 GitHub Actions 跑 Gmeek 构建脚本时，才会把它读进内存。</li>
+<li><strong>没写的字段不等于没有。</strong> Gmeek 源码 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L90"><code class="notranslate">defaultConfig()</code></a> 里准备了一整份默认值字典，随后用 <code class="notranslate">self.blogBase={**dconfig,**config}</code> 合并——你写了的字段盖掉默认值，没写的字段一律用默认的。所以四行配置也能撑起一个完整博客。</li>
+<li><strong>它是纯文本 JSON。</strong> 不需要任何专业工具，GitHub 网页上就能改，但要守 JSON 的语法规矩（第五节细讲）。</li>
+</ol>
+<h2>二、四个必填字段逐个拆</h2>
+<h3>1. <code class="notranslate">title</code>：站名</h3>
+<p>首页最醒目的大标题、浏览器标签页上显示的名字、RSS 订阅里的站点名，都取自这里。模板给的占位值是 <code class="notranslate">"Blog Title"</code>，改成你想要的名字即可，比如叶扬填的是 <code class="notranslate">"叶扬的博客"</code>。</p>
+<p>顺带一说，源码里还有个可选字段 <code class="notranslate">displayTitle</code>：不填时默认等于 <code class="notranslate">title</code>；将来想让浏览器标签显示短名、首页显示长名，可以研究它。新手忽略。</p>
+<h3>2. <code class="notranslate">subTitle</code>：一句话签名</h3>
+<p>站名下面那行小字，用来交代你是谁、博客写什么。写不写随你，但留着 <code class="notranslate">"Blog description"</code> 实在太像忘记交作业，建议哪怕填一句"随便写写"也比占位文字强。叶扬填的是 <code class="notranslate">"我是叶扬，人生苦短，我用AI～"</code>。</p>
+<h3>3. <code class="notranslate">avatarUrl</code>：头像地址</h3>
+<p>这是四个字段里唯一需要动点脑筋的：它要填的是<strong>一张图片的网址</strong>，不是本地上传的文件。新手最省事的玩法：</p>
+<pre class="notranslate"><code class="notranslate">https://github.com/你的用户名.png
+</code></pre>
+<p>比如叶扬的就是 <code class="notranslate">https://github.com/yeyangchen2009.png</code>。这是 GitHub 隐藏的固定地址，任何用户的头像都能这么取。好处显而易见：<strong>以后在 GitHub 换头像，博客头像自动跟着换</strong>，一个字都不用改。</p>
+<p>模板默认填的那个 <code class="notranslate">githubassets.com/favicons/favicon.svg</code> 是 GitHub 自己的标志，属于"样板间挂画"，务必换掉。</p>
+<p>再透传一个源码细节：站点小图标 <code class="notranslate">faviconUrl</code> 和社交分享卡片图 <code class="notranslate">ogImage</code>，<strong>只要你不显式配置，都会默认继承 <code class="notranslate">avatarUrl</code></strong>（见 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L100">Gmeek.py 第 100–104 行</a>）。也就是说头像改好，浏览器标签上的小图标、分享到微信/Twitter 时的卡片图，三处一起换新，一鱼三吃。</p>
+<h3>4. <code class="notranslate">GMEEK_VERSION</code>：引擎版本，先认识，别动</h3>
+<p>这个字段最唬人，但新手阶段<strong>保持 <code class="notranslate">"last"</code> 就是最佳实践</strong>。它到底控制什么、为什么还能填别的值，第六节专门讲。</p>
+<h2>三、动手：在网页上改一次</h2>
+<p>不用装 Git，不用敲命令，全程浏览器：</p>
+<ol>
+<li>在仓库根目录点进 <code class="notranslate">config.json</code>；</li>
+<li>点右上角的<strong>铅笔图标</strong>（Edit this file），进入网页编辑器；</li>
+<li>编辑器带行号和语法高亮，把 <code class="notranslate">title</code>、<code class="notranslate">subTitle</code>、<code class="notranslate">avatarUrl</code> 三个值改成自己的，其他一概不碰；</li>
+</ol>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b02-config-edit.png"><img src="/screenshots/b02-config-edit.png" alt="config.json 网页编辑器：Edit/Preview 切换标签、18 行带语法高亮的 JSON、右上角 Cancel changes 与绿色 Commit changes 按钮同屏——本图只演示界面，拍摄时并未点下提交" style="max-width: 100%;"></a></p>
+<ol start="4">
+<li>点右上角绿色 <strong>Commit changes...</strong> 按钮，弹窗里再点一次绿色 <strong>Commit changes</strong> 确认（Commit message 保持默认即可）。</li>
+</ol>
+<p>注意了：<strong>点完 Commit，你去刷新博客首页——什么都不会变。</strong></p>
+<p>这不是 bug，而且原因比你想的更有意思。</p>
+<h2>四、核心机制：改完配置，为什么首页毫无反应</h2>
+<p>B00 讲过一条定律：普通发文走增量构建，只有手动触发才是全局重建。这一节叶扬把源码翻开，看看到底是哪几行代码在"挡"你的新配置。</p>
+<p>Gmeek 构建脚本 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L457"><code class="notranslate">Gmeek.py</code> 的主流程</a>启动后，要回答两个问题：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>Actions 启动 Gmeek.py<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span>docs/blogBase.json&lt;<span class="pl-ent">br</span>/&gt;全站快照存在吗<span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--</span> <span class="pl-s">不存在：首次构建</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R</span>
+    <span class="pl-ent">B</span> <span class="pl-k">--</span> <span class="pl-s">存在</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span>issue_number 是 0 或空吗<span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--</span> <span class="pl-s">是：手动 Run / 每日定时</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>runAll 全局重建<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--</span> <span class="pl-s">否：issue 触发的增量</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>runOne 增量构建<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">R</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>cleanFile：清空 docs&lt;<span class="pl-ent">br</span>/&gt;重新复制 static 全部文件<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">R1</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>重新读取当前 config.json&lt;<span class="pl-ent">br</span>/&gt;重建所有文章与列表页<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">R2</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R3</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>写回新的 blogBase.json 快照<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>读出仓库里的旧 blogBase.json&lt;<span class="pl-ent">br</span>/&gt;逐项覆盖内存中的配置<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D1</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>只重建这一篇文章&lt;<span class="pl-ent">br</span>/&gt;新 config 的值全程被旧快照顶着<span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<p>关键在左边那条岔路。issue 触发增量构建时，脚本会执行这几行（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L469">Gmeek.py 第 469–474 行</a>）：</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-s1">f</span> <span class="pl-c1">=</span> <span class="pl-en">open</span>(<span class="pl-s">"blogBase.json"</span>, <span class="pl-s">"r"</span>)
+<span class="pl-s1">oldBlogBase</span> <span class="pl-c1">=</span> <span class="pl-s1">json</span>.<span class="pl-c1">loads</span>(<span class="pl-s1">f</span>.<span class="pl-c1">read</span>())
+<span class="pl-k">for</span> <span class="pl-s1">key</span>, <span class="pl-s1">value</span> <span class="pl-c1">in</span> <span class="pl-s1">oldBlogBase</span>.<span class="pl-c1">items</span>():
+    <span class="pl-s1">blog</span>.<span class="pl-c1">blogBase</span>[<span class="pl-s1">key</span>] <span class="pl-c1">=</span> <span class="pl-s1">value</span>   <span class="pl-c"># 用旧快照，把刚从新 config.json 读来的值一个个顶回去</span></pre></div>
+<p><code class="notranslate">blogBase.json</code> 是上一次<strong>全局</strong>重建时写下的全站快照（站名、头像、所有文章目录都在里面）。增量构建启动时，它会被原样读回、逐项覆盖内存配置——所以哪怕你把 <code class="notranslate">config.json</code> 改成花，只要跑的是增量构建，印刷厂里用的还是上一次全局重建时的旧厂址。</p>
+<p>再补一刀：<strong>提交 config.json 这个动作本身根本不触发构建</strong>。模板自带的工作流 <a href="https://github.com/Meekdai/Gmeek-template/blob/main/.github/workflows/Gmeek.yml"><code class="notranslate">.github/workflows/Gmeek.yml</code></a> 只监听三种情况——<code class="notranslate">issues</code>（发文/改文）、<code class="notranslate">workflow_dispatch</code>（手动）、<code class="notranslate">schedule</code>（每日定时），没有 <code class="notranslate">push</code>。</p>
+<p>两个事实合起来，结论非常明确：</p>
+<blockquote>
+<p><strong>改完 config.json，必须去 Actions 手动 Run workflow 触发一次全局重建。</strong></p>
+</blockquote>
+<p>具体按钮 B01 已经按过一次，就是这个下拉：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b01-run-workflow.png"><img src="/screenshots/b01-run-workflow.png" alt="build Gmeek 工作流页：右侧 Run workflow 下拉已展开，Use workflow from 的 Branch 为 main，绿色 Run workflow 按钮就位——按下去才会真的触发一次全局重建" style="max-width: 100%;"></a></p>
+<p>顺带把另一条定律也补齐了：<code class="notranslate">runAll</code> 的第一步 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L59"><code class="notranslate">cleanFile()</code></a> 会清空输出目录、把 <code class="notranslate">static/</code> 文件夹重新整体复制一遍。<strong>以后你往 <code class="notranslate">static/</code> 里放新图片、新文件，同样要靠全局重建才会上线</strong>——叶扬这个博客的每篇配图都是这么走的。</p>
+<p>如果懒得手动，每天凌晨（北京时间 0 点，对应 UTC 16:00）的定时构建也是一次 <code class="notranslate">runAll</code>，新配置届时自然生效。但写教程的人建议：改完就按，别等。</p>
+<h2>五、JSON 三戒：构建红叉绝大多数死在这</h2>
+<p><code class="notranslate">config.json</code> 是 JSON 格式，规矩少，但每条都是刚性的：</p>
+<ol>
+<li><strong>字段名和文本值必须用英文双引号包起来</strong>，单引号不行，中文引号 <code class="notranslate">" "</code> 更不行；</li>
+<li><strong>字段与字段之间用逗号隔开</strong>；</li>
+<li><strong>最后一个字段后面不许留逗号</strong>（JSON 比 Python 严格，尾随逗号直接判死刑），花括号、方括号也要成对。</li>
+</ol>
+<p>看一个最典型的翻车现场——就是在最后一行 <code class="notranslate">"GMEEK_VERSION": "last",</code> 手滑留了个逗号：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b02-json-check.png"><img src="/screenshots/b02-json-check.png" alt="经典控制台窗口：上半部分 python -m json.tool 校验带尾逗号的坏文件，报 Expecting property name enclosed in double quotes: line 6 column 1；下半部分校验删了逗号的好文件，整个 JSON 被正常打印；底部两行 BAD/GOOD 对照结论" style="max-width: 100%;"></a></p>
+<p>提交前自检，任选一种：</p>
+<ul>
+<li>电脑上有 Python：仓库目录里敲 <code class="notranslate">python -m json.tool config.json</code>，报错会精确指到第几行第几列；</li>
+<li>装了 jq：<code class="notranslate">jq . config.json</code>，效果一样；</li>
+<li>什么都没有：在 GitHub 网页编辑器里盯紧逗号——语法出错时代码下面会出现红色波浪提示，<strong>不要点 Commit</strong>。</li>
+</ul>
+<p>JSON 语法坏掉的后果是构建直接红叉，全站停在上一次成功的版本，所以这一步别省。</p>
+<h2>六、<code class="notranslate">"last"</code> 与锁版本：自动更新的便利与代价</h2>
+<p>回到第四个字段。工作流里有这么几行 shell（在 <a href="https://github.com/Meekdai/Gmeek-template/blob/main/.github/workflows/Gmeek.yml">Gmeek.yml</a> 的 "Clone source code" 步骤）：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">GMEEK_VERSION=<span class="pl-s"><span class="pl-pds">$(</span>jq -r <span class="pl-s"><span class="pl-pds">"</span>.GMEEK_VERSION<span class="pl-pds">"</span></span> config.json<span class="pl-pds">)</span></span>
+git clone https://github.com/Meekdai/Gmeek
+lastTag=<span class="pl-s"><span class="pl-pds">$(</span>git describe --tags <span class="pl-s"><span class="pl-pds">$(</span>git rev-list --tags --max-count=1<span class="pl-pds">)</span></span><span class="pl-pds">)</span></span>
+<span class="pl-k">if</span> [ <span class="pl-smi">$GMEEK_VERSION</span> <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">'</span>last<span class="pl-pds">'</span></span> ]<span class="pl-k">;</span> <span class="pl-k">then</span>
+    git checkout <span class="pl-smi">$lastTag</span>        <span class="pl-c"><span class="pl-c">#</span> last = 截止构建时刻最新的 release 标签</span>
+<span class="pl-k">else</span>
+    git checkout <span class="pl-smi">$GMEEK_VERSION</span>  <span class="pl-c"><span class="pl-c">#</span> 否则检出你亲手填的那个标签</span>
+<span class="pl-k">fi</span></pre></div>
+<p>注意 <code class="notranslate">last</code> <strong>不是一个具体版本号</strong>，而是"构建那一刻的最新 release 标签"。这意味着：</p>
+<ul>
+<li>填 <code class="notranslate">"last"</code>：每次全局重建、每天凌晨的定时构建，都会自动飘到当时最新版，新功能白拿，当然也可能摊上新版的 bug；</li>
+<li>填具体标签（如 <code class="notranslate">"v2.24"</code>）：引擎被钉死在这个版本，天塌下来页面行为都不变；想升级时自己改号、手动全局重建。</li>
+</ul>
+<p>版本号去哪查？引擎仓库的 Tags 页，按时间倒序排得明明白白：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b02-tags.png"><img src="/screenshots/b02-tags.png" alt="Gmeek 仓库 Tags 页：Tags 标签选中，列表从 v2.25（2 月 5 日，最新）往下依次是 v2.24、v2.23、v2.22、v2.21，每个标签带日期和提交号" style="max-width: 100%;"></a></p>
+<p>新手策略一句话：<strong>平时老老实实 <code class="notranslate">last</code>；万一某天凌晨定时构建后博客行为异常，去 Tags 页查上个稳定版本号（比如 <code class="notranslate">v2.25</code> 的上一个是 <code class="notranslate">v2.24</code>），填进 config.json 手动全局重建，先锁回去止血，再去给作者提 issue。</strong></p>
+<h2>七、翻车急诊室</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>症状</th>
+<th>病因</th>
+<th>处方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Commit 配置后首页毫无变化</td>
+<td>漏了全局重建；且提交 config 不触发任何工作流</td>
+<td>Actions → build Gmeek → Run workflow</td>
+</tr>
+<tr>
+<td>手动重建完还是没变</td>
+<td>CDN 缓存，或浏览器本地缓存</td>
+<td>等 1–2 分钟，Ctrl+F5 强刷 / 无痕窗口验证</td>
+</tr>
+<tr>
+<td>Actions 红叉，日志里有 <code class="notranslate">json.decoder</code> 字样</td>
+<td>JSON 语法坏了，八成是尾逗号或中文引号</td>
+<td>按第五节自检，修好后再全局重建</td>
+</tr>
+<tr>
+<td>头像位置是个裂图</td>
+<td>URL 填错，或图床禁止外链（防盗链）</td>
+<td>浏览器无痕窗口直接打开那个 URL 验证；新手换回 <code class="notranslate">https://github.com/用户名.png</code></td>
+</tr>
+<tr>
+<td>锁定版本后，别人博客的新功能自己没有</td>
+<td>版本钉死了，升级要手动</td>
+<td>去 Tags 页确认稳定新版，改号后全局重建</td>
+</tr>
+<tr>
+<td>浏览器标签图标 / 分享卡片图没跟着头像变</td>
+<td>之前显式配过 <code class="notranslate">faviconUrl</code> / <code class="notranslate">ogImage</code></td>
+<td>配过就不会继承头像；删掉这两个字段或改成新图地址</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>八、其他字段先混个脸熟</h2>
+<p>装修总闸远不止四个开关，源码默认值里躺着一批。叶扬挑常用的列一张脸熟表，<strong>现在不用记，知道它们归 config.json 管就行</strong>，后续地基篇会逐个讲到：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>字段</th>
+<th>作用（不填时的默认值）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">faviconUrl</code> / <code class="notranslate">ogImage</code></td>
+<td>标签小图标 / 社交分享卡片图（默认继承头像）</td>
+</tr>
+<tr>
+<td><code class="notranslate">singlePage</code></td>
+<td>独立页面清单，如关于页、归档页（默认空）</td>
+</tr>
+<tr>
+<td><code class="notranslate">bottomText</code></td>
+<td>页脚自定义文字</td>
+</tr>
+<tr>
+<td><code class="notranslate">startSite</code></td>
+<td>站点上线日期，控制首页"本站已运行 N 天"类展示</td>
+</tr>
+<tr>
+<td><code class="notranslate">onePageListNum</code></td>
+<td>首页每页文章数（默认 15）</td>
+</tr>
+<tr>
+<td><code class="notranslate">urlMode</code></td>
+<td>文章链接风格：默认 <code class="notranslate">pinyin</code> 取标题拼音，可选 <code class="notranslate">issue</code> 用编号</td>
+</tr>
+<tr>
+<td><code class="notranslate">i18n</code> / <code class="notranslate">themeMode</code> / <code class="notranslate">dayTheme</code> / <code class="notranslate">nightTheme</code></td>
+<td>语言、明暗主题模式与配色</td>
+</tr>
+<tr>
+<td><code class="notranslate">iconList</code> / <code class="notranslate">script</code> / <code class="notranslate">style</code> / <code class="notranslate">allHead</code></td>
+<td>自定义图标、注入脚本与样式——进阶玩家的乐园</td>
+</tr>
+<tr>
+<td><code class="notranslate">email</code> / <code class="notranslate">filingNum</code> / <code class="notranslate">exlink</code> / <code class="notranslate">needComment</code></td>
+<td>联系邮箱、备案号、外链映射、评论开关</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>完整版以 <a href="https://github.com/Meekdai/Gmeek">Gmeek 官方 README 的参数说明</a>和源码 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L90"><code class="notranslate">defaultConfig()</code></a> 为准。叶扬博客现在那份 18 行配置，就是从四行起步、一个个字段长出来的，不急。</p>
+<h2>小结</h2>
+<ul>
+<li><code class="notranslate">config.json</code> 是全站唯一的装修总闸，云端构建时才读取，没写的字段由源码默认值兜底；</li>
+<li>新手必改三件套：<code class="notranslate">title</code> 站名、<code class="notranslate">subTitle</code> 签名、<code class="notranslate">avatarUrl</code> 头像（<code class="notranslate">https://github.com/用户名.png</code> 自动跟随），<code class="notranslate">GMEEK_VERSION</code> 保持 <code class="notranslate">last</code>；</li>
+<li>两条源码级定律：<strong>改配置必须手动全局重建</strong>（增量构建被 <code class="notranslate">blogBase.json</code> 旧快照整体覆盖），<strong>新增 static 文件也必须全局重建</strong>（只在 <code class="notranslate">runAll</code> 的 <code class="notranslate">cleanFile</code> 阶段复制）；</li>
+<li>JSON 三戒：双引号、字段间逗号、末尾无逗号，提交前用 <code class="notranslate">python -m json.tool</code> 或 <code class="notranslate">jq</code> 自检；</li>
+<li><code class="notranslate">last</code> 是浮动的最新 release，翻车时填具体 tag 锁版止血。</li>
+</ul>
+<p>验收清单：① 首页大标题与副标题已是自己的；② 头像、标签小图标三处一致；③ Actions 最近一次是手动触发的绿勾；④ 无痕窗口打开域名确认更新。</p>
+<p>招牌换好了，店也正式像自己的店了。下一篇 B03，叶扬带你回到编辑部：在 Issues 里过日子——Markdown 怎么排版、文章怎么修改、不想要的稿子怎么下架。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Meekdai/Gmeek">Gmeek 引擎仓库（源码与 README 参数表）</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L90">Gmeek.py 源码：defaultConfig 默认值</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L404">Gmeek.py 源码：runAll / runOne 与旧快照覆盖逻辑</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek-template/blob/main/.github/workflows/Gmeek.yml">Gmeek-template 工作流 Gmeek.yml（版本检出与三种触发方式）</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek/tags">Gmeek Tags 页（版本号查询）</a></li>
+<li>上一篇：<a href="/post/32.html">B01｜18 秒建站实录</a></li>
+<li>地基篇目录：<a href="/post/30.html">B00｜从零开始的地基篇总览</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
