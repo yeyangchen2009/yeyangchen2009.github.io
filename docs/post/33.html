@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> [B01 建站实录](/post/32.html) 发布时，四张必须登录 GitHub 才能看到的页面图，叶扬先用占位图顶上，并跟读者打了张欠条。">
+<meta property="og:title" content="番外四｜点到为止：让 AI 借你已登录的浏览器截一张图">
+<meta property="og:description" content="> [B01 建站实录](/post/32.html) 发布时，四张必须登录 GitHub 才能看到的页面图，叶扬先用占位图顶上，并跟读者打了张欠条。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/33.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>番外四｜点到为止：让 AI 借你已登录的浏览器截一张图</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">番外四｜点到为止：让 AI 借你已登录的浏览器截一张图</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/33" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p><a href="/post/32.html">B01 建站实录</a> 发布时，四张必须登录 GitHub 才能看到的页面图，叶扬先用占位图顶上，并跟读者打了张欠条。第二天叶扬发来一句话：「我在用的 Edge 第二个窗口已经是登录好的 GitHub 界面，你能自己去操作截那 4 个图吗？」——能，但这意味着 AI 要把手指伸进一个真人的登录态会话里。这篇记录整个过程：六场翻车，和一条名叫「点到为止」的安全边界。</p>
+</blockquote>
+<h2>一、任务与三条自我约束</h2>
+<p>四张图分别是：用模板建仓的表单、仓库 Settings 里的 Pages 发布源、新建 Issue 时勾选「博客」标签、Actions 页手动触发工作流的下拉。共同点是：<strong>全都要求登录</strong>，无头浏览器访问只会被一脚踢到登录页。</p>
+<p>叶扬递过来的是日常使用的 Edge 窗口——里面登录着 GitHub、开着一堆私人标签页、收藏夹栏挂着书签。接过这个任务前，先立三条自我约束：</p>
+<ol>
+<li><strong>不经手凭据</strong>：不要求输入账号密码，不过问 2FA 验证码，登录态完全来自叶扬自己的浏览器会话；</li>
+<li><strong>不动浏览器配置</strong>：不给日常 Edge 加启动参数、不开远程调试端口、不重启进程——那等于把正在用的浏览器从叶扬手里抽走；</li>
+<li><strong>不按任何提交按钮</strong>：<code class="notranslate">Create repository</code>、<code class="notranslate">Submit new issue</code>、绿色的 <code class="notranslate">Run workflow</code>，一个都不点。可以展开下拉、勾选草稿标签、点空白处，但绝不能让任何请求真正发出去。</li>
+</ol>
+<h2>二、旧兵器为什么都不顺手</h2>
+<p>工具箱里本来有两把「相机」。</p>
+<p><a href="/post/26.html">番外一</a>的 <code class="notranslate">cdp-shot.js</code> 走 Chrome DevTools 协议，在无头浏览器里截页面，元素级取景样样精通。可 CDP 有个前提：浏览器实例得带着远程调试端口启动，或者干脆由脚本自己拉起一个新实例。日常 Edge 没有调试端口，事后也无法附加；自己拉起的新实例用的是全新 profile，里面没有任何人的登录态。B01 拍摄期间试过「专用 profile + 有头窗口」，结果碰上 Edge 首启的「正在所有设备同步浏览数据」模态挡页，还得请叶扬亲手在弹窗里登录——既然要惊动真人，这条路就已经输了一半。</p>
+<p><a href="/post/31.html">番外三</a>的 <code class="notranslate">shot-window.ps1</code> 走 ffmpeg gdigrab 抓桌面合成表面，对窗口截图百发百中。但它<strong>只会按快门</strong>：不会输入网址、不会展开下拉、不会勾选标签。给它一个停在正确页面的窗口，它能截得很好；让它自己走到那个页面，它无能为力。</p>
+<p>两条路一夹，第三条路露了出来：<strong>直接模拟真人操作那个已登录的窗口</strong>——找到窗口、提到前台、按 F11 全屏、命令行让浏览器开新标签、模拟鼠标点开下拉，最后 gdigrab 裁剪。用的全是 Win32 祖传 API，浏览器甚至感知不到操作者是人还是脚本。</p>
+<h2>三、Win32 老三样</h2>
+<p>脚本最终收成了 <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/tools/ui-shot.ps1"><code class="notranslate">tools/ui-shot.ps1</code></a>，和前两篇番外的工具同住 <code class="notranslate">tools/</code> 目录，除 ffmpeg 外零依赖。核心 API 只有三组：</p>
+<ul>
+<li><strong>找窗口</strong>：<code class="notranslate">EnumWindows</code> 枚举所有顶层窗口，配合 <code class="notranslate">GetWindowThreadProcessId</code> 按进程 ID 过滤。为什么要枚举？因为 Edge 的多个窗口同属一个 <code class="notranslate">msedge.exe</code> 进程，<code class="notranslate">Get-Process</code> 只给一个 <code class="notranslate">MainWindowHandle</code>，而目标偏偏是「第二个窗口」；</li>
+<li><strong>置前</strong>：后台进程直接调 <code class="notranslate">SetForegroundWindow</code> 经常被 Windows 拒绝（前台锁），需要先用 <code class="notranslate">AttachThreadInput</code> 把自己的输入队列 attach 到当前前台线程，再 <code class="notranslate">BringWindowToTop</code> + <code class="notranslate">SetForegroundWindow</code>；</li>
+<li><strong>模拟键鼠</strong>：<code class="notranslate">keybd_event</code> 发 F11（VK=0x7A）和 Ctrl 组合键，<code class="notranslate">mouse_event</code> 发点击；中文文本不走键盘，<code class="notranslate">Set-Clipboard</code> 加 Ctrl+V 粘贴，绕开输入法。</li>
+</ul>
+<p>思路一句话讲完了。接下来是流水账——这套组合拳<strong>没有一拳直接打中</strong>。</p>
+<h2>四、翻车流水账</h2>
+<h3>4.1 第一脚踢偏：F11 按错了窗口</h3>
+<p>枚举窗口发现目标 Edge 进程下有两个顶层窗口：一个是 GitHub 页，另一个标题里当时挂着「Anki 学习资料」。叶扬要的是前者。定位代码偷懒用了<strong>排除法</strong>：标题里不含「Anki」的那个就是目标。</p>
+<p>运行，F11，截图——拿回来的窗口标题是「AI破局俱乐部」。</p>
+<p>原来另一个 Edge 窗口是个多标签窗口，顶层标题跟随活动标签变化，此时活动标签早就不是 Anki 了。排除词失效，F11 结结实实按在了无关窗口上，把人家的页面切进了全屏。</p>
+<p>补救很快（再按一次 F11 退回原状），教训刻进石头：<strong>按特征选窗口，只能用「我要的窗口稳定拥有什么」做正向匹配，绝不能用「别的窗口大概没有什么」做排除</strong>。GitHub 页的标题里永远挂着登录用户名，于是改成正向匹配 <code class="notranslate">yeyangchen2009</code>，一次找准。成品脚本里 <code class="notranslate">-WindowTitle</code> 参数只接受正向子串，并且在帮助注释里把这条规矩写死。</p>
+<h3>4.2 按键信杳如黄鹤：SendKeys 静默失灵</h3>
+<p>窗口找对了，下一步是导航。最初的写法是经典三件套：<code class="notranslate">WScript.Shell</code> 的 <code class="notranslate">SendKeys</code> 发 Ctrl+L 聚焦地址栏、Ctrl+V 粘贴网址、回车访问。脚本无报错退出，截图一看——还停在原来的个人主页，地址栏里连个光标都没有，整套按键<strong>凭空消失了</strong>。</p>
+<p>合成输入在全屏 Chromium 窗口上的焦点处理相当玄学，逐个键调试没有尽头。叶扬换了个思路：<strong>不模拟按键，直接利用浏览器的单实例机制</strong>——在命令行运行：</p>
+<div class="highlight highlight-source-powershell"><pre class="notranslate"><span class="pl-c1">Start-Process</span> <span class="pl-c1">msedge.exe</span> <span class="pl-s"><span class="pl-pds">'</span>https://github.com/...<span class="pl-pds">'</span></span></pre></div>
+<p>已经有 Edge 实例在跑时，新进程不会另开炉灶，而是把 URL <strong>委派给现有实例</strong>，在最近活动的窗口里新开一个前台标签打开。先把目标窗口 ForceForeground，新标签就必定落进目标窗口。没有按键，没有焦点问题，甚至不用碰剪贴板。</p>
+<h3>4.3 真假全屏：矩形会骗人</h3>
+<p>新标签打开了，拍回来的图却露着完整的浏览器外壳——标签栏、地址栏、一整排收藏夹书签。F11 不是按过了吗？</p>
+<p>查窗口矩形：<code class="notranslate">(0,0,1920,1080)</code>，铺满全屏，于是脚本判定「已全屏」，没有补按 F11。但铺满屏幕有两种成因：真 F11 全屏是一种；<strong>任务栏设置成自动隐藏时，普通最大化窗口同样铺满</strong>，这是另一种。两者的画面差着一整个浏览器外壳。</p>
+<p>光看矩形会被骗，得看窗口样式位。<code class="notranslate">GetWindowRect</code> 之外再查 <code class="notranslate">GetWindowLong(GWL_STYLE)</code>：真全屏窗口的样式里没有 <code class="notranslate">WS_CAPTION</code>（标题栏）和 <code class="notranslate">WS_THICKFRAME</code>（可调边框），普通最大化窗口两个位都在。加了样式位双重判定后，真假全屏立刻分辨清楚。</p>
+<p>紧接着发现第二个连锁反应：<strong>命令行新开标签这个动作本身，会把 Edge 从 F11 全屏里踢出来</strong>。于是脚本的 <code class="notranslate">-EnsureFs</code> 逻辑定成：导航之后重新查一次样式位，掉出全屏就补按 F11，每次拍之前都确保是全屏态。</p>
+<h3>4.4 滑出条赖着不走：鼠标沉底没用，点一下空白才行</h3>
+<p>全屏之后还有个小脾气：鼠标碰到屏幕上沿时，Edge 会滑出一条半透明工具栏（标签栏+地址栏）方便操作，鼠标移开后它本该自动消失。可这条滑出条多次卡住不走，悬在画面顶部。</p>
+<p>先试「物理驱赶」：把鼠标瞬移到屏幕底部，再用 <code class="notranslate">mouse_event</code> 的相对移动事件左右抖动六下，等两秒——纹丝不动。（这里还踩了个小坑：<code class="notranslate">mouse_event</code> 的位移参数是 <code class="notranslate">uint</code>，PowerShell 传不进负数，最终在 C# 里用 <code class="notranslate">unchecked((uint)dx)</code> 让负位移以补码形式混进去。）</p>
+<p>真正管用的办法朴素得可笑：<strong>在网页空白处点一下</strong>。原因是滑出条卡住时，输入焦点停在浏览器外壳（chrome）上，外壳认为用户还在「操作浏览器」；点一下页面空白，焦点交还给网页渲染区，滑出条立刻收了回去。这个动作从此固定成拍摄前的标准仪式。</p>
+<h3>4.5 盲点的代价：一张跳去文档站的图</h3>
+<p>第四张图要在 Pages 设置页点空白处收工具栏。坐标怎么来的？凭感觉估了一个 <code class="notranslate">(1500,600)</code>，点下去，截图——画面变成了 GitHub Docs 的《Configuring a custom domain》文档页。</p>
+<p>盲点恰好落在设置页里「了解自定义域名」的链接文字上，一次真实跳转，标签页都换了。好在是只读页面，关掉标签无损，原路返回重拍。</p>
+<p>这条教训改了工作流，也写进了脚本参数的注释：<strong>没拍过的页面，先拍一张「布局图」，用 Read 亲眼看一遍、量准坐标，再点第二下</strong>。此后每一张图都是两步走：先布局，后操作。下拉按钮、标签复选框、<code class="notranslate">Run workflow</code> 按钮的坐标全部来自实测像素，零猜测。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra4-doc-misclick.png"><img src="/screenshots/extra4-doc-misclick.png" alt="第一次盲点的后果：Pages 设置页被点穿，跳到了 GitHub Docs 自定义域名文档" style="max-width: 100%;"></a></p>
+<h3>4.6 黑帧：合成表面的瞬态空白</h3>
+<p>Pages 页重开后拍布局图，拿到一张纯黑画面，只剩一个鼠标指针——ffmpeg/gdigrab 层面一切正常，exit code 也是 0。</p>
+<p>这其实是番外三的老熟人：新标签切换的瞬间，DirectComposition 合成表面正在重建，那一帧窗口内容就是空的，桌面合成器画出来一片黑。它不是错误，是时机问题。等三秒让表面重建完成，重拍，页面安然就位。<strong>遇到黑帧不要怀疑人生，等一等重拍即可。</strong></p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra4-black.png"><img src="/screenshots/extra4-black.png" alt="新标签切换瞬间抓到的纯黑帧：11 KB，全黑加一个鼠标指针，重拍即恢复" style="max-width: 100%;"></a></p>
+<p>顺带记两个 PowerShell 5.1 小坑：C# 内联代码里没有 <code class="notranslate">string.Like()</code> 这种方法（<code class="notranslate">Like</code> 是 PowerShell 运算符，写在 C# 里直接编译失败）；PowerShell 5.1 也不支持三元运算符 <code class="notranslate">?:</code>，条件表达式得老老实实写 <code class="notranslate">if</code>。</p>
+<h2>五、点到为止：一条安全边界</h2>
+<p>六场翻车之外，这篇真正想留下的是那份操作纪律。AI 的手伸进真人登录态会话时，<strong>「能点」和「该点」之间必须有一条清清楚楚的线</strong>。</p>
+<p><strong>点得的</strong>：展开下拉菜单（看完再点空白收起，不选项）、在尚未提交的草稿 Issue 上勾选标签（纯前端状态，不提交就没有请求）、点网页空白处收工具栏、用 Ctrl+W 关掉自己亲手开的标签、Ctrl+加减号调缩放、F11 切全屏——全是可逆的只读操作。</p>
+<p><strong>点不得的</strong>：<code class="notranslate">Create repository</code>、<code class="notranslate">Submit new issue</code>、绿色 <code class="notranslate">Run workflow</code>、<code class="notranslate">Unpublish site</code>、一切删除/保存/发布按钮。第四张图要求「下拉展开、绿色按钮可见」，按钮就停在画面里，鼠标绝不落下去。文字输入也只往标题框里灌一句示例标题，密码框、搜索框一概不碰。</p>
+<p><strong>干完要还原现场</strong>。四张图拍完，执行收尾清单：Ctrl+W 关掉新开的四个标签、Ctrl+0 把缩放复位到 100%、确认只剩叶扬原来的那个标签、停在原来的个人主页、保持全屏态，最后再拍一张「还原图」亲眼核验。借了人家的桌面，走的时候要比来时还整齐。</p>
+<p><strong>隐私检查是每张图的必经工序</strong>。4.3 节那张露出浏览器外壳的失败图，顶部收藏夹栏挂着一串私人书签——它从诞生起就被判了弃用，文章里不会出现。每一张候选图都用 Read 亲眼看：画面里有没有不该出镜的标签标题、书签、文件名、通知弹窗。拍摄脚本只负责产出，「能不能用」永远是人（和替叶扬把关的 AI）逐张判定。</p>
+<p>最终上线的四张成品：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra4-new-repo.png"><img src="/screenshots/extra4-new-repo.png" alt="成品一：模板建仓表单，模板已预填、Owner、仓库名空框、Public、绿色创建按钮一屏打尽" style="max-width: 100%;"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra4-pages.png"><img src="/screenshots/extra4-pages.png" alt="成品二：Pages 发布源下拉展开，GitHub Actions 带着对勾，下面是经典的分支部署" style="max-width: 100%;"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra4-label.png"><img src="/screenshots/extra4-label.png" alt="成品三：示例标题已填，Labels 菜单里「博客」标签勾选——草稿态，未提交" style="max-width: 100%;"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/extra4-run-workflow.png"><img src="/screenshots/extra4-run-workflow.png" alt="成品四：Run workflow 下拉展开，Branch 是 main，绿色按钮只露不按" style="max-width: 100%;"></a></p>
+<h2>六、三条路，一张决策树</h2>
+<p>至此，「截图」这件小事在叶扬的工具箱里长出了三条路径，各管一类目标：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">START</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">([</span></span><span class="pl-s"><span class="pl-pds">"</span>要截一张图<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">])</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">Q1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>画面在&lt;<span class="pl-ent">br</span>/&gt;浏览器里？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">Q1</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"否：终端 / 文件夹 / 桌面软件"</span><span class="pl-k">|</span> <span class="pl-ent">D1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>shot-window.ps1&lt;<span class="pl-ent">br</span>/&gt;Win32 矩形 + gdigrab 裁剪&lt;<span class="pl-ent">br</span>/&gt;番外三<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q1</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"是"</span><span class="pl-k">|</span> <span class="pl-ent">Q2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>页面需要登录态？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">Q2</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"否：公开网页"</span><span class="pl-k">|</span> <span class="pl-ent">C1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>cdp-shot.js&lt;<span class="pl-ent">br</span>/&gt;无头 CDP 元素级取景&lt;<span class="pl-ent">br</span>/&gt;番外一<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q2</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"是，需长期复用登录环境"</span><span class="pl-k">|</span> <span class="pl-ent">C2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>cdp-shot.js&lt;<span class="pl-ent">br</span>/&gt;--profile-dir --headed&lt;<span class="pl-ent">br</span>/&gt;用户亲自登录一次<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q2</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"是，用户明确同意&lt;br/&gt;借用日常浏览器窗口"</span><span class="pl-k">|</span> <span class="pl-ent">U1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>ui-shot.ps1&lt;<span class="pl-ent">br</span>/&gt;Win32 键鼠模拟&lt;<span class="pl-ent">br</span>/&gt;本篇<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D1</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">([</span></span><span class="pl-s"><span class="pl-pds">"</span>一张好图<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">])</span></span></span>
+    <span class="pl-ent">C1</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R</span>
+    <span class="pl-ent">C2</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R</span>
+    <span class="pl-ent">U1</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R</span></pre></div>
+<p>注意第三条路入口上挂着前置条件——<strong>用户明确同意</strong>。这不是客套：操作的是别人的登录态、别人的私人浏览器，每一次点击都可能产生真实后果。授权、边界、可还原，三者缺一不可。</p>
+<h2>七、闭环：占位图工作法与技能沉淀</h2>
+<p>这次任务还兑现了 B01 埋下联调设计。当时四张登录态页面来不及拍，叶扬先做了四张暗色「占位图」：一张虚线框卡片，写清楚目标 URL、画面要素、注意事项（比如「不要点创建」），文件名直接定成最终名 <code class="notranslate">b01-*.png</code> 随文章上线。这次实拍成品<strong>同名替换</strong>，文章正文一个字都没改——占位图工作法的核心就是把「文章发布」和「图片补齐」解耦，欠条随时可还。</p>
+<p><code class="notranslate">tools/ui-shot.ps1</code> 的参数覆盖了完整流程，常用几个：</p>
+<ul>
+<li><code class="notranslate">-WindowTitle</code> / <code class="notranslate">-Hwnd</code>：正向标题子串或显式句柄定位窗口；</li>
+<li><code class="notranslate">-EnterFullscreen</code> / <code class="notranslate">-ExitFullscreen</code>：幂等切换 F11（已在目标状态不重复按）；</li>
+<li><code class="notranslate">-Url</code>：命令行委派新标签导航，配 <code class="notranslate">-EnsureFs</code> 导航后自动补回全屏；</li>
+<li><code class="notranslate">-ClickX/-ClickY</code>：物理像素点击；<code class="notranslate">-Paste</code>：剪贴板粘贴文本；<code class="notranslate">-ZoomOut 2</code>：缩到 80% 让长表单一屏入镜；</li>
+<li><code class="notranslate">-CloseTab</code>、<code class="notranslate">-ZoomReset</code>：还原现场；<code class="notranslate">-Info</code>：打印窗口矩形、样式位、前台标题做诊断。</li>
+</ul>
+<p>脚本和全部踩坑（八条实测规矩、安全边界、收尾清单）已经一并沉淀成本机的 <code class="notranslate">screenshot</code> 技能「路径 C」。下次再遇到登录态页面，这套手艺开箱即用，不必重新踩一遍。</p>
+<h2>八、小结</h2>
+<p>「点到为止」在这篇里是双关：鼠标确实要点，点开下拉、点勾标签、点空白处；但<strong>点到为止</strong>——提交按钮一步之遥，手要收得住。</p>
+<p>回头看，Win32 模拟键鼠是几十年前的老技术，没有任何新奇之处。这篇真正的主题从来不是 API，而是 <strong>AI 代操作真人会话时的分寸感</strong>：最小权限（只碰完成任务必需的窗口和控件）、全程可见（每个动作都有截图为证）、处处可逆（Ctrl+W、Ctrl+0、F11 都能回到原状）、授权先行。技术翻车可以重拍，信任翻车没有重拍键。</p>
+<p>下一篇番外，叶扬打算聊聊这些踩坑手册是怎么变成 AI 技能的——为什么有的经验写进博客，有的要写进 CLAUDE.md，有的要做成随叫随到的 Skill。三者的分工，值得单独讲一篇。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="/post/32.html">B01｜18 秒建站实录：从一个 GitHub 账号到第一篇文章上线</a></li>
+<li><a href="/post/26.html">番外一｜给博客拍证件照：一个零依赖 CDP 截图器的诞生</a></li>
+<li><a href="/post/31.html">番外三｜浏览器外的屏幕怎么截：ffmpeg gdigrab 抓窗口三坑记</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enumwindows" rel="nofollow">Microsoft Learn：EnumWindows</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowthreadprocessid" rel="nofollow">Microsoft Learn：GetWindowThreadProcessId</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-attachthreadinput" rel="nofollow">Microsoft Learn：AttachThreadInput</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-keybd_event" rel="nofollow">Microsoft Learn：keybd_event / mouse_event</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/winmsg/window-styles" rel="nofollow">Microsoft Learn：GetWindowLong 与窗口样式</a></li>
+<li><a href="https://ffmpeg.org/ffmpeg-devices.html#gdigrab" rel="nofollow">ffmpeg 官方文档：gdigrab 输入设备</a></li>
+<li><a href="https://support.microsoft.com/en-us/microsoft-edge/keyboard-shortcuts-in-microsoft-edge-50d3edab-30d9-c7e4-21ce-37fe2811ab1b" rel="nofollow">Microsoft Edge 键盘快捷方式</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
