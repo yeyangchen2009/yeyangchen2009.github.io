@@ -299,6 +299,30 @@ G17 之后把 11 个自研件整体过了一遍筛子（详见 [番外二](/post
 - **第二梯队压着不提**：PrevNext/ReadTime/Pager/Archive 四个等维护者对前三连的响应节奏，不一次性轰炸；Mermaid（3.5MB 本地资产）与 articletoc（类名兼容包袱、原作者 PR 在排队）确认缓提。
 - PR 前的通用性加固已同步本站：`GmeekSEO.js` 兼容 project pages 子路径、未配 ogImage 时省略图片字段（commit `9e9f21e`，已重建上线）。
 
+### 2026-09-17 站外多平台分发调研（备忘，暂不执行）
+
+番外四发布后盘点了"把系列教程分发到知乎/CSDN 等平台"的可行性，结论先存档，**近期不做**，有传播需要时再启动。
+
+**平台 API 现状：**
+
+| 平台 | 官方发文 API | 备注 |
+| --- | --- | --- |
+| 博客园 | ✅ MetaWeblog（XML-RPC） | 后台开启即可脚本发布，最省心 |
+| Dev.to / Hashnode | ✅ REST / GraphQL | API key 直发，适合技术文 |
+| 自建 WordPress | ✅ REST + 应用密码 | 全自动，媒体也能上传 |
+| Medium | ⚠️ 半死 | 老 token 可用，新申请基本不批 |
+| 微信公众号 | ⚠️ 门槛高 | 个人订阅号接口权限受限 |
+| **知乎 / CSDN** | ❌ 无 | 只能 cookies/浏览器模拟，违反用户协议、风控严、**封号风险高，不拿主号试** |
+| 掘金 / 思否 / 简书 / 51CTO | ❌ 无 | 只能手工粘贴 |
+
+**两个所有平台通用的坑：** ① 知乎/CSDN/博客园都不渲染 Mermaid，必须先用本地 `mermaid.min.js` + CDP 渲染成 PNG 再上传；② 图片外链——知乎粘贴 Markdown 会自动转存，CSDN 有防盗链需重新上传。
+
+**定位澄清（为什么做、不为什么做）：** 分发**不是为了给独立站引流**——平台外链是 `nofollow`/中转链接不传权重，百度基本不收录 github.io，独立站也没有订阅/产品等转化路径。真正的价值是：搜索占位（百度"Gmeek 教程"关键词目前是空坑）、防止他人搬运抢原创、给上游 Gmeek 项目带新用户、跨平台账号资产。
+
+**同日排查上游官方入口的结论：** Gmeek 仓库 README 无教程区、Discussions 未启用、无 docs/awesome 仓库、作者博客只有自家【Gmeek进阶】系列；作者在 [#179](https://github.com/Meekdai/Gmeek/issues/179) 明确"没有交流群，issue 讨论即可"，无运营社区聚合的打算。唯一社区入口是 hst1189 发起的[#285 网站收录虫洞](https://github.com/Meekdai/Gmeek/issues/285)（`gmeek.dpdns.org` 随机跳转，收录网站而非教程，作者点过赞但非官方背书，今年仍活跃）。未来两个动作挂起：虫洞跟帖报名（一分钟）；等三个 PR 有合并进展后再开"系列教程自荐 issue"（届时身份是贡献者而非广告）。番外五发布后可去 [#311 Gmeek 发帖 Skill](https://github.com/Meekdai/Gmeek/issues/311) 分享"图片静态文件走 git commit"的解法（该帖唯一评论正卡在这个问题上）。
+
+**若未来启动，三步走：** ① 先写本地"多平台适配包"导出脚本（`gh issue view` 取 Markdown 源 → Mermaid 转 PNG → Alert 语法降级 → 输出 `dist/<n>/文章.md + images/`），纯本地零风险；② 博客园/Dev.to 走 API 自动化；③ 知乎/CSDN 半自动——脚本备好包，人工登录粘贴发布，文末仅留一行原文链接满足原创声明，正文操作链接指向上游仓库而非自己的站。
+
 ## 参考资料汇总
 
 - Gmeek 源码：<https://github.com/Meekdai/Gmeek>
