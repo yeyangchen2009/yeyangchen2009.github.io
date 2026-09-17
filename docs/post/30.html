@@ -321,68 +321,81 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b00-result-archive.png"><img src="/screenshots/b00-result-archive.png" alt="文章归档固定页：页面上的时间线全部由 GmeekArchive.js 在浏览器里读 postList.json 渲染" style="max-width: 100%;"></a></p>
 <p>插件怎么写属于进阶内容（G08–G10 是自研插件三连），地基篇你只要知道「<strong>配置里加一行 <code class="notranslate">&lt;script&gt;</code> 就能装插件</strong>」即可。</p>
 <h2>七、地基篇路线图：B01–B08</h2>
-<p>规划八篇，每篇控制在一个主题内，建议按顺序读：</p>
+<p>规划八篇，每篇控制在一个主题内，建议按顺序读（✅ 已发布 / ⏳ 计划中）：</p>
 <markdown-accessiblity-table><table role="table">
 <thead>
 <tr>
 <th>编号</th>
 <th>主题</th>
 <th>你会学会</th>
-<th>对应基本功</th>
+<th>状态</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td>B00</td>
+<td>本文：地基篇总览</td>
+<td>三基石、三仓库、构建流水线、引擎导游</td>
+<td>✅</td>
+</tr>
+<tr>
 <td>B01</td>
-<td>18 秒建站实录</td>
+<td><a href="/post/32.html">18 秒建站实录</a></td>
 <td>注册账号到第一篇带标签文章上线全流程；仓库命名、Pages 开关、标签开关三个必考点</td>
-<td>四步走 1–3</td>
+<td>✅</td>
 </tr>
 <tr>
 <td>B02</td>
-<td>config.json 入门</td>
+<td><a href="/post/34.html">毛坯房装修：认识 config.json</a></td>
 <td>四个必填字段怎么填、JSON 逗号规则、改完务必全局重建；<code class="notranslate">last</code> 与锁版本</td>
-<td>四步走 4 + 配置</td>
+<td>✅</td>
 </tr>
 <tr>
 <td>B03</td>
-<td>在 Issues 里过日子</td>
+<td><a href="/post/35.html">在 Issues 里过日子</a></td>
 <td>Markdown 写作、编辑改稿、Pin 置顶、Close 删文、末行 timestamp 补发旧文</td>
-<td>日常写作</td>
+<td>✅</td>
 </tr>
 <tr>
 <td>B04</td>
 <td>评论与关于页</td>
 <td>安装 utterances app 开通评论；<code class="notranslate">singlePage</code> 做一个不进文章流的 About 固定页</td>
-<td>自带功能</td>
+<td>⏳</td>
 </tr>
 <tr>
 <td>B05</td>
 <td>Actions 篇：读懂绿色对勾</td>
 <td>工作流 YAML 逐行讲解、三种触发方式、红叉日志怎么查、自动提交是什么</td>
-<td>原理（一）</td>
+<td>⏳</td>
 </tr>
 <tr>
 <td>B06</td>
 <td>Pages 篇：网页如何被全世界访问</td>
 <td>artifact 部署 vs 分支部署、URL 推导、HTTPS/CDN/缓存、可选的自定义域名</td>
-<td>原理（二）</td>
+<td>⏳</td>
 </tr>
 <tr>
 <td>B07</td>
 <td>备份、搬家与升级</td>
 <td>backup 离线副本、blogBase.json 的作用、GMEEK_VERSION 升级策略、换账号迁移</td>
-<td>运维</td>
+<td>⏳</td>
 </tr>
 <tr>
 <td>B08</td>
 <td>轻装修与进阶指路</td>
 <td>三态主题、页脚版权与运行天数、favicon、RSS 订阅；一站打通后指路 G 系列</td>
-<td>收尾</td>
+<td>⏳</td>
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
-<p>状态同样会在本文和 <a href="/post/5.html">G00 总揽（issue #5）</a>里持续更新：发一篇勾一篇。</p>
+<p><strong>发布日志</strong>（每发布一篇，叶扬回来在这里更新一行；2026-09-17 起从 G00 总揽迁来维护）：</p>
+<ul>
+<li><strong>2026-09-16 · B00 地基篇总览</strong>：本文，9 张配图。</li>
+<li><strong>2026-09-17 · <a href="/post/32.html">B01 18 秒建站实录</a></strong>：注册 → 模板建仓 → Pages 切 GitHub Actions → 建标签发 issue → 绿勾验收全流程，含时序图与六条翻车急诊室。4 张登录态截图不碰密码、用 Win32 UI 自动化借日常浏览器实拍（只拍不提交），这套"借窗"方法论的来龙去脉另见<a href="/post/33.html">番外四</a>。</li>
+<li><strong>2026-09-17 · <a href="/post/34.html">B02 毛坯房装修：认识 config.json</a></strong>：四必填字段逐个拆、<code class="notranslate">https://github.com/用户名.png</code> 头像技巧与 favicon/ogImage 默认继承、JSON 三戒；核心章翻源码讲透"改完配置为何不生效"——增量构建用旧快照逐项覆盖配置、且 push config 不在工作流触发事件里，故必须手动全局重建；另讲 <code class="notranslate">"last"</code> 浮动与锁版本止血。</li>
+<li><strong>2026-09-17 · <a href="/post/35.html">B03 在 Issues 里过日子</a></strong>：Preview 与博客同用 GitHub 官方 <code class="notranslate">/markdown</code> GFM 引擎；无标签 issue 在 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L315">Gmeek.py:315</a> 被跳过且后续取数 KeyError（#22 是现成活例）；改稿自动重建但日期只认创建时间；工作流触发名单事件表（Pin/Close/标签/config/static 全手动 runAll）；Pin 置顶只动排序不动日期、Close + 全局重建才下架、Reopen 是后悔药；末行 timestamp 秒级时间戳补发旧文。配图七张（四张借窗只拍不按、三张 CDP）；为拍真实置顶效果，经作者同意用 GraphQL 把 <a href="/post/5.html">G00 总揽</a>长期置顶（随时可取消）。</li>
+</ul>
+<p>状态只在本表与发布日志里维护：发一篇勾一篇。G00 总揽只管进阶篇（G 系列）的路线图，不再搬运地基篇进度。</p>
 <h2>八、进阶篇地图：地基之后往哪走</h2>
 <p>本站已有的 G 系列就是「装修好了之后」的世界，按主题分四片，入口都在 <a href="/post/5.html">G00 总揽</a>：</p>
 <ul>
