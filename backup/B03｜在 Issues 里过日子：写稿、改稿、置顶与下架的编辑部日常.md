@@ -98,9 +98,9 @@ flowchart TD
     I --> J[去 Actions 手动 Run workflow<br/>runAll 全局重建后生效]
 ```
 
-去 Actions 页翻运行记录，这套规律一目了然：标题里带文章名的是 `issues` 触发（opened/edited），叫 "build Gmeek" 的是手动，还有按点出现的 Scheduled：
+去 Actions 页翻运行记录，这套规律一目了然：副标题写 **Issue #N opened / edited by …** 的是发文、改稿自动触发（下图前两条就是改稿和发文）；只叫 build Gmeek、副标题是 **Manually run** 的是手动全局重建；另外每天北京时间 0 点还会躺着一条 **Scheduled** 定时兜底（一天只此一条，白天翻列表见不到它，但它确实每天按时上班）：
 
-![Actions 运行列表：能同时看到 Issue opened（发文自动）、Issue edited（改稿自动）、Manually run（手动全局）、Scheduled（每日定时）四种来源，全部绿色对勾](/screenshots/b03-events.png)
+![Actions 运行列表首屏：Issue #5 edited（改稿自动）、Issue #35 opened（发文自动）、Manually run（手动全局）依次排列，全部绿色对勾；Scheduled 每天北京 0 点出现一次](/screenshots/b03-events.png)
 
 记住一句话：**发文改稿自动到，置顶下架标签动，改配置加图片——全部手动跑一遍。**
 

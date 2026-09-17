@@ -190,8 +190,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>线上页面纹丝不动<span class="pl-pds"><span class="pl-sg">]</span></span></span>
     <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">I</span>
     <span class="pl-ent">I</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">J</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>去 Actions 手动 Run workflow&lt;<span class="pl-ent">br</span>/&gt;runAll 全局重建后生效<span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
-<p>去 Actions 页翻运行记录，这套规律一目了然：标题里带文章名的是 <code class="notranslate">issues</code> 触发（opened/edited），叫 "build Gmeek" 的是手动，还有按点出现的 Scheduled：</p>
-<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b03-events.png"><img src="/screenshots/b03-events.png" alt="Actions 运行列表：能同时看到 Issue opened（发文自动）、Issue edited（改稿自动）、Manually run（手动全局）、Scheduled（每日定时）四种来源，全部绿色对勾" style="max-width: 100%;"></a></p>
+<p>去 Actions 页翻运行记录，这套规律一目了然：副标题写 <strong>Issue #N opened / edited by …</strong> 的是发文、改稿自动触发（下图前两条就是改稿和发文）；只叫 build Gmeek、副标题是 <strong>Manually run</strong> 的是手动全局重建；另外每天北京时间 0 点还会躺着一条 <strong>Scheduled</strong> 定时兜底（一天只此一条，白天翻列表见不到它，但它确实每天按时上班）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b03-events.png"><img src="/screenshots/b03-events.png" alt="Actions 运行列表首屏：Issue #5 edited（改稿自动）、Issue #35 opened（发文自动）、Manually run（手动全局）依次排列，全部绿色对勾；Scheduled 每天北京 0 点出现一次" style="max-width: 100%;"></a></p>
 <p>记住一句话：<strong>发文改稿自动到，置顶下架标签动，改配置加图片——全部手动跑一遍。</strong></p>
 <h2>六、置顶 Pin：把一篇长期钉在首页第一行</h2>
 <p>适合置顶的是"总揽""目录""关于这个博客"这类长期有效的文章。操作：打开目标 issue，把<strong>右侧边栏一路拉到底</strong>，在 Participants 下方的操作区里找到 <strong>Pin issue</strong>，点一下即可（已置顶时这里变成 Unpin issue）。老版本 GitHub 把这个入口藏在帖子右下角的 <code class="notranslate">...</code> 菜单里，新版网页已经搬到侧栏底部，和 Transfer、Lock、Delete 这些"重型操作"放在一起：</p>
