@@ -40,6 +40,8 @@ param(
     [int]$ClickX = -1,
     [int]$ClickY = -1,
     [string]$Paste = '',
+    [string]$PasteFile = '',
+    [switch]$ClearField,
     [int]$ZoomOut = 0,
     [switch]$ZoomReset,
     [switch]$EnsureFs,
@@ -266,16 +268,6 @@ if ($ZoomOut -gt 0) {
     Start-Sleep -Milliseconds 400
 }
 
-if ($Paste) {
-    # e.g. a Chinese draft title: clipboard paste bypasses the IME entirely.
-    # The field must already have focus (issue title field does by default).
-    Set-Clipboard -Value $Paste
-    Start-Sleep -Milliseconds 400
-    Send-CtrlKey 0x56 1   # VK_V -> Ctrl+V
-    Write-Host "[info] pasted: $Paste"
-    Start-Sleep -Milliseconds 600
-}
-
 if ($ClickX -ge 0 -and $ClickY -ge 0) {
     # IMPORTANT: shoot a layout image first and measure coordinates from it;
     # blind clicks can land on links/buttons you never meant to touch
@@ -290,11 +282,43 @@ if ($ClickX -ge 0 -and $ClickY -ge 0) {
     Start-Sleep -Milliseconds 400
 }
 
+if ($ClearField) {
+    # Focus first (pass -ClickX/-ClickY); then select all and delete.
+    Send-CtrlKey 0x41 1   # VK_A -> Ctrl+A
+    Start-Sleep -Milliseconds 200
+    [Ui]::keybd_event(0x2E, 0, 0, [IntPtr]::Zero)   # VK_DELETE down
+    [Ui]::keybd_event(0x2E, 0, 2, [IntPtr]::Zero)   # VK_DELETE up
+    Write-Host "[info] field cleared"
+    Start-Sleep -Milliseconds 300
+}
+
+if ($PasteFile) {
+    # Multi-line draft bodies: load the whole file (UTF-8) into the clipboard.
+    Set-Clipboard -Value (Get-Content -Raw -Encoding UTF8 $PasteFile)
+    Start-Sleep -Milliseconds 400
+    Send-CtrlKey 0x56 1   # VK_V -> Ctrl+V
+    Write-Host "[info] pasted file: $PasteFile"
+    Start-Sleep -Milliseconds 700
+}
+elseif ($Paste) {
+    # e.g. a Chinese draft title: clipboard paste bypasses the IME entirely.
+    # The field must already have focus (issue title field does by default).
+    Set-Clipboard -Value $Paste
+    Start-Sleep -Milliseconds 400
+    Send-CtrlKey 0x56 1   # VK_V -> Ctrl+V
+    Write-Host "[info] pasted: $Paste"
+    Start-Sleep -Milliseconds 600
+}
+
+# Action-only invocations (paste/click/keys without a frame) end here.
+if (-not $Out) {
+    Write-Host "[ok] action-only run, no screenshot"
+    return
+}
+
 # park the cursor at the bottom (away from the top chrome) before shooting
 [Ui]::SetCursorPos($screenW / 2, $screenH - 60) | Out-Null
 Start-Sleep -Milliseconds 500
-
-if (-not $Out) { throw 'Provide -Out <path.png> for a screenshot' }
 $r = Get-WinRect
 $left = [Math]::Max(0, $r.Left)
 $top  = [Math]::Max(0, $r.Top)
