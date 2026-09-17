@@ -677,13 +677,6 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>✅</td>
 </tr>
 <tr>
-<td>B00</td>
-<td><a href="/post/30.html">地基篇总览：18 秒搭起 Gmeek，先认识 Issues、Actions 和 Pages 三块基石</a></td>
-<td>零起点系列开篇：三基石、三仓库地图、构建流水线、引擎/模板导游、B01–B08 规划</td>
-<td>地基篇</td>
-<td>✅</td>
-</tr>
-<tr>
 <td>番外三</td>
 <td><a href="/post/31.html">浏览器外的屏幕怎么截：ffmpeg gdigrab 抓窗口三坑记</a></td>
 <td>DComp 黑白窗 / 高 DPI 逻辑坐标 / 越界与 error 5；成品 <code class="notranslate">tools/shot-window.ps1</code></td>
@@ -697,99 +690,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>工具/方法论/AI 协作</td>
 <td>✅</td>
 </tr>
-<tr>
-<td>B01</td>
-<td><a href="/post/32.html">18 秒建站实录：从一个 GitHub 账号到第一篇文章上线</a></td>
-<td>零起点动手篇：注册→模板建仓→Pages 开关→建标签发 issue→看绿勾；user/project site 命名规则、三考点、翻车急诊室</td>
-<td>地基篇</td>
-<td>✅</td>
-</tr>
-<tr>
-<td>B02</td>
-<td><a href="/post/34.html">毛坯房装修：认识 config.json，站名、头像换成你自己的</a></td>
-<td>四必填字段、头像 URL 技巧与 favicon/ogImage 继承、JSON 三戒、runOne 旧快照覆盖源码机制、last 与锁版本</td>
-<td>地基篇</td>
-<td>✅</td>
-</tr>
-<tr>
-<td>B03</td>
-<td><a href="/post/35.html">在 Issues 里过日子：写稿、改稿、置顶与下架的编辑部日常</a></td>
-<td>Preview 与博客同用 GitHub <code class="notranslate">/markdown</code> GFM 引擎、无标签 315 行门与 #22 KeyError 活例、labels[0] 主标签、edited 自动重建但 createdAt 不变、yml 事件表实锤（pin/close/标签/config 全手动 runAll）、pinned→top=1 按 (top,createdAt) 排序、Close+runAll 两步下架与 Reopen、末行 timestamp 补发旧文</td>
-<td>地基篇</td>
-<td>✅</td>
-</tr>
 </tbody>
 </table></markdown-accessiblity-table>
 <p>更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 <code class="notranslate">edited</code> 事件，编辑即自动重建），所以这张表会一直是最新的。</p>
-<h2>地基篇（B 系列）：从零开始的八篇规划（2026-09-16 启动）</h2>
-<p>G 系列默认读者<strong>已经有一个博客</strong>。不少新读者反馈"连仓库都还没建，不知道该从哪篇看起"，于是另开一条零起点线：<a href="/post/30.html">B00 地基篇总览</a>已发布，讲清 Issues/Actions/Pages 三块基石、引擎/模板/自己三个仓库的关系、一次构建的完整流水线与 <code class="notranslate">runAll</code>/<code class="notranslate">runOne</code> 分支。后续八篇每篇一个主题，不跳步：</p>
-<markdown-accessiblity-table><table role="table">
-<thead>
-<tr>
-<th>编号</th>
-<th>主题</th>
-<th>核心内容</th>
-<th>状态</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>B00</td>
-<td><a href="/post/30.html">地基篇总览</a></td>
-<td>三基石、三仓库、构建流水线、引擎导游</td>
-<td>✅</td>
-</tr>
-<tr>
-<td>B01</td>
-<td><a href="/post/32.html">18 秒建站实录</a></td>
-<td>注册到首篇带标签文章上线；命名、Pages 开关、标签开关三考点</td>
-<td>✅</td>
-</tr>
-<tr>
-<td>B02</td>
-<td><a href="/post/34.html">毛坯房装修：认识 config.json</a></td>
-<td>四必填字段、头像 URL 与继承、JSON 三戒、旧快照覆盖源码机制、last 与锁版本</td>
-<td>✅</td>
-</tr>
-<tr>
-<td>B03</td>
-<td><a href="/post/35.html">在 Issues 里过日子</a></td>
-<td>GFM 同引擎、无标签不收、edited 自动重建但日期不变、事件表（pin/close/标签/config 全手动）、Pin 排序、Close 下架与 Reopen、timestamp 补发旧文</td>
-<td>✅</td>
-</tr>
-<tr>
-<td>B04</td>
-<td>评论与关于页</td>
-<td>utterances app 安装；singlePage 做 About 固定页</td>
-<td>⏳</td>
-</tr>
-<tr>
-<td>B05</td>
-<td>Actions 篇</td>
-<td>工作流 YAML 逐行、三种触发、红叉日志、自动提交是什么</td>
-<td>⏳</td>
-</tr>
-<tr>
-<td>B06</td>
-<td>Pages 篇</td>
-<td>artifact 部署 vs 分支部署、URL 推导、HTTPS/CDN/缓存、自定义域名</td>
-<td>⏳</td>
-</tr>
-<tr>
-<td>B07</td>
-<td>备份、搬家与升级</td>
-<td>backup 离线副本、blogBase.json、GMEEK_VERSION 升级、换账号迁移</td>
-<td>⏳</td>
-</tr>
-<tr>
-<td>B08</td>
-<td>轻装修与进阶指路</td>
-<td>三态主题、页脚、favicon、RSS；收尾后指路 G 系列</td>
-<td>⏳</td>
-</tr>
-</tbody>
-</table></markdown-accessiblity-table>
-<p>地基篇与进阶篇的分工：<strong>B 系列让你拥有一个博客，G 系列让你拥有"你的"博客。</strong></p>
+<h2>另一条线：地基篇（B 系列）</h2>
+<p>G 系列默认读者<strong>已经有一个博客</strong>。不少新读者反馈"连仓库都还没建，不知道该从哪篇看起"，于是另开了一条零起点线，从"一个 GitHub 账号都没有"讲起：</p>
+<p>👉 <strong>从零开始请直接读 <a href="/post/30.html">B00 地基篇总览</a></strong>，B01–B03 已发布、B04–B08 计划中；地基篇的路线图表与发布日志都维护在 B00 一篇里，本文不再搬运，以免两张表各说各话。</p>
+<p>两条线的分工一句话：<strong>B 系列让你拥有一个博客，G 系列让你拥有"你的"博客。</strong></p>
 <h2>收官之后：候选选题池（G17 起）</h2>
 <p>正篇 G01–G16 收官，<a href="/post/4.html">建设清单（前传 #4）</a>也已回填，但清单并非一无所有。2026-09-15 盘出以下候选，按写作意愿排序：</p>
 <markdown-accessiblity-table><table role="table">
@@ -954,7 +861,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
 <li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
 </ol>
-<p>G01–G16 正篇与 <strong><a href="/post/27.html">G17 SEO 收尾战</a></strong>（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有四篇：<strong><a href="/post/26.html">番外·给博客拍证件照</a></strong>（零依赖 CDP 无头截图，成品脚本 <code class="notranslate">tools/cdp-shot.js</code>）、<strong><a href="/post/28.html">番外二·开源回馈流水线</a></strong>（三个上游 PR 待合并，见上方 2026-09-16 小节）、<strong><a href="/post/31.html">番外三·gdigrab 抓窗口</a></strong>（浏览器外截图，成品脚本 <code class="notranslate">tools/shot-window.ps1</code>）与 <strong><a href="/post/33.html">番外四·点到为止</a></strong>（借用户已登录浏览器窗口拍登录态页面，Win32 UI 自动化 + 安全边界，成品脚本 <code class="notranslate">tools/ui-shot.ps1</code>；截图三部曲——浏览器内 CDP／浏览器外 gdigrab／登录态借窗——至此收束）。2026-09-16 另发布 <strong><a href="/post/29.html">G18 被浮动挤扁的"上一篇/下一篇"</a></strong>：G08 导航卡片在移动端被版权小字的 <code class="notranslate">float:right</code> + BFC 避让规则压成 60% 窄列、标题竖排；<code class="notranslate">clear:both</code> 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。2026-09-16 另开零起点地基篇，<strong><a href="/post/30.html">B00 总览</a></strong>、<strong><a href="/post/31.html">番外三</a></strong>（截图工具箱扩到浏览器外，成品 <code class="notranslate">tools/shot-window.ps1</code>）相继发布；2026-09-17 发布地基篇第一篇动手文 <strong><a href="/post/32.html">B01 18 秒建站实录</a></strong>（注册→模板建仓→Pages 开关→标签发文→绿勾验收全流程，含时序图与翻车急诊室）；同日补齐 4 张登录态实拍图——不碰凭据、不给日常 Edge 开调试端口，改用 Win32 UI 自动化（EnumWindows 按用户名正向定位窗口、F11 全屏、<code class="notranslate">msedge.exe &lt;url&gt;</code> 命令行委派新标签导航、剪贴板灌中文标题、mouse_event 点开下拉、gdigrab 裁剪），占位图同名替换零改正文；同日发布 <strong><a href="/post/33.html">番外四·点到为止</a></strong>（把 B01 补拍过程写成独立一篇：Win32 UI 自动化借用户已登录 Edge 拍登录态页的六场翻车——F11 按错窗口/SendKeys 静默失灵/任务栏自动隐藏骗全屏/工具栏滑出条/盲点跳 Docs/黑帧，灵魂章是"点到为止"安全边界——可点可逆 vs 绝不碰提交按钮、还原现场、逐张隐私检查；成品通用脚本 <code class="notranslate">tools/ui-shot.ps1</code>，已沉淀成本机 screenshot 技能"路径 C"）；同日发布地基篇第二篇动手文 <strong><a href="/post/34.html">B02 毛坯房装修：认识 config.json</a></strong>（title/subTitle/avatarUrl/GMEEK_VERSION 四必填字段逐个拆，<code class="notranslate">https://github.com/用户名.png</code> 头像技巧与 favicon/ogImage 默认继承，JSON 三戒配 <code class="notranslate">python -m json.tool</code>/<code class="notranslate">jq</code> 自检实拍；核心章翻开源码讲透"改完配置为何不生效"——runOne 启动时用 docs/blogBase.json 旧快照逐项覆盖新配置、且 push config 不在工作流触发事件里，故必须手动 runAll；cleanFile 只在 runAll 复制 static 的第二定律一并补齐；"last"=构建时刻最新 tag 的浮动机制与锁版止血；含 runAll/runOne 分支暗色 mermaid 流程图。配图两张走路径 C 借窗实拍文件页/编辑器页只拍不提交，tags 页 CDP，json 校验走 shot-window 拍经典控制台；期间给 <code class="notranslate">tools/cdp-shot.js</code> 加了 <code class="notranslate">--proxy</code> 选项）；同日发布地基篇第三篇动手文 <strong><a href="/post/35.html">B03 在 Issues 里过日子</a></strong>（编辑部全套日常：New issue 三件套与"Preview 即所得"的硬证据——构建走 GitHub 官方 <code class="notranslate">/markdown</code> GFM 接口与编辑器同引擎；翻源码讲透无标签 issue 在 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L315">Gmeek.py:315</a> 被跳过且编号取数 KeyError，#22 是现成活例；改稿监听 <code class="notranslate">edited</code> 自动重建但 createdAt 只认创建时间、编号制 URL 不随标题变；核心章用模板 yml 触发名单+暗色 mermaid 给"哪些动作自动开工"列事件表——只有 opened/edited 自动，Pin/Close/标签/config/static 全手动 runAll；Pin 原理是事件时间线 <code class="notranslate">pinned</code>→top=1、按 (top,createdAt) 排序只动序不动日；Close 后旧页要等 runAll 清空重生成才 404、Reopen 是后悔药；末行秒级 timestamp 补发旧文。配图七张：Write/Preview/Pin 菜单/Close 四张走路径 C 借窗只拍不按，tag 胶囊页与首页置顶实拍走 CDP——为拍真实置顶效果，经作者同意用 GraphQL <code class="notranslate">pinIssue</code> 把本总揽 #5 <strong>长期置顶</strong>（REST pin 端点对该 token 404，GraphQL 成功；随时可 Unpin 还原）；Actions 运行列表那张拍摄期遇 github.com 网页通道间歇中断，先上同名占位卡、当天通道恢复后已用真图（Issue opened / Issue edited / Manually run 三类同屏全绿；Scheduled 每日北京 0 点仅一条、无法与白天运行同屏，正文如实说明）替换并手动 runAll，正文零改动；期间给 <code class="notranslate">tools/ui-shot.ps1</code> 加了 <code class="notranslate">-PasteFile</code>（UTF-8 多行正文灌剪贴板）、<code class="notranslate">-ClearField</code>（Ctrl+A/Delete 清框）与无 -Out 的 action-only 模式，并把操作顺序重构为点击聚焦→清空→粘贴）；下一篇动手向为 <strong>B04 评论与关于页</strong>（utterances 评论区 + singlePage 做 About 固定页）；G 系列方向下一篇待写仍是约 2026-09-21 的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。</p></div>
+<p>G01–G16 正篇与 <strong><a href="/post/27.html">G17 SEO 收尾战</a></strong>（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有四篇：<strong><a href="/post/26.html">番外·给博客拍证件照</a></strong>（零依赖 CDP 无头截图，成品脚本 <code class="notranslate">tools/cdp-shot.js</code>）、<strong><a href="/post/28.html">番外二·开源回馈流水线</a></strong>（三个上游 PR 待合并，见上方 2026-09-16 小节）、<strong><a href="/post/31.html">番外三·gdigrab 抓窗口</a></strong>（浏览器外截图，成品脚本 <code class="notranslate">tools/shot-window.ps1</code>）与 <strong><a href="/post/33.html">番外四·点到为止</a></strong>（借用户已登录浏览器窗口拍登录态页面，Win32 UI 自动化 + 安全边界，成品脚本 <code class="notranslate">tools/ui-shot.ps1</code>；截图三部曲——浏览器内 CDP／浏览器外 gdigrab／登录态借窗——至此收束）。2026-09-16 另发布 <strong><a href="/post/29.html">G18 被浮动挤扁的"上一篇/下一篇"</a></strong>：G08 导航卡片在移动端被版权小字的 <code class="notranslate">float:right</code> + BFC 避让规则压成 60% 窄列、标题竖排；<code class="notranslate">clear:both</code> 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。零起点读者另走<strong>地基篇（B 系列）</strong>：<a href="/post/30.html">B00 地基篇总览</a>以及 <a href="/post/32.html">B01 18 秒建站实录</a>、<a href="/post/34.html">B02 毛坯房装修：认识 config.json</a>、<a href="/post/35.html">B03 在 Issues 里过日子</a> 均已发布；地基篇的路线图表与发布日志从 2026-09-17 起统一维护在 B00 一篇里（本文不再搬运），下一篇动手向为 <strong>B04 评论与关于页</strong>。G 系列方向下一篇待写仍是约 2026-09-21 的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
