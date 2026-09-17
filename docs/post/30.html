@@ -358,9 +358,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 <tr>
 <td>B04</td>
-<td>评论与关于页</td>
+<td><a href="/post/36.html">门铃与名片：评论区与 About 页</a></td>
 <td>安装 utterances app 开通评论；<code class="notranslate">singlePage</code> 做一个不进文章流的 About 固定页</td>
-<td>⏳</td>
+<td>✅</td>
 </tr>
 <tr>
 <td>B05</td>
@@ -394,6 +394,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>2026-09-17 · <a href="/post/32.html">B01 18 秒建站实录</a></strong>：注册 → 模板建仓 → Pages 切 GitHub Actions → 建标签发 issue → 绿勾验收全流程，含时序图与六条翻车急诊室。4 张登录态截图不碰密码、用 Win32 UI 自动化借日常浏览器实拍（只拍不提交），这套"借窗"方法论的来龙去脉另见<a href="/post/33.html">番外四</a>。</li>
 <li><strong>2026-09-17 · <a href="/post/34.html">B02 毛坯房装修：认识 config.json</a></strong>：四必填字段逐个拆、<code class="notranslate">https://github.com/用户名.png</code> 头像技巧与 favicon/ogImage 默认继承、JSON 三戒；核心章翻源码讲透"改完配置为何不生效"——增量构建用旧快照逐项覆盖配置、且 push config 不在工作流触发事件里，故必须手动全局重建；另讲 <code class="notranslate">"last"</code> 浮动与锁版本止血。</li>
 <li><strong>2026-09-17 · <a href="/post/35.html">B03 在 Issues 里过日子</a></strong>：Preview 与博客同用 GitHub 官方 <code class="notranslate">/markdown</code> GFM 引擎；无标签 issue 在 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L315">Gmeek.py:315</a> 被跳过且后续取数 KeyError（#22 是现成活例）；改稿自动重建但日期只认创建时间；工作流触发名单事件表（Pin/Close/标签/config/static 全手动 runAll）；Pin 置顶只动排序不动日期、Close + 全局重建才下架、Reopen 是后悔药；末行 timestamp 秒级时间戳补发旧文。配图七张（四张借窗只拍不按、三张 CDP）；为拍真实置顶效果，经作者同意用 GraphQL 把 <a href="/post/5.html">G00 总揽</a>长期置顶（随时可取消）。</li>
+<li><strong>2026-09-17 · <a href="/post/36.html">B04 门铃与名片：评论区与 About 页</a></strong>：评论用 utterances，唯一手动动作是给仓库装一次 App（Gmeek 默认 <code class="notranslate">needComment:1</code>、脚本与仓库名都自带）；<code class="notranslate">issue-term=title</code> 让评论直接挂文章同名 issue、<strong>不新建 issue</strong>，与无标签 issue 事故两条线；脚本点按钮才按需插入、明暗主题 postMessage 联动；评论内容实时但列表评论数徽标是构建期 <code class="notranslate">totalCount</code>（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L333">Gmeek.py:333</a>），靠手动/每日 0 点 runAll 刷新。About 页=首标签命中 <code class="notranslate">singlePage</code> 的普通 issue，输出根目录 <code class="notranslate">/about.html</code> 并获页头入口；自造页名需在 <code class="notranslate">iconList</code> 配图标。配图七张（CDP 四张、借窗三张含裁剪隐私处理；借窗误关的两个原标签已等价还原）。</li>
 </ul>
 <p>状态只在本表与发布日志里维护：发一篇勾一篇。G00 总揽只管进阶篇（G 系列）的路线图，不再搬运地基篇进度。</p>
 <h2>八、进阶篇地图：地基之后往哪走</h2>
