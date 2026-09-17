@@ -57,7 +57,7 @@ Gmeek 选用的评论方案叫 **utterances**。它在官网的自我介绍只�
 > 在 `/post/35.html` 页面下发的评论，就是 issue **#35** 里的一条 comment。
 
 ```mermaid
-%%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'15px'}}}%%
+%%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'15px','actorBkg':'#21262d','actorTextColor':'#e6edf3','actorBorder':'#58a6ff','actorLineColor':'#8b949e','signalColor':'#8b949e','signalTextColor':'#e6edf3','labelBoxBkgColor':'#21262d','labelBoxBorderColor':'#58a6ff','labelTextColor':'#e6edf3','noteBkgColor':'#161b22','noteBorderColor':'#58a6ff','noteTextColor':'#e6edf3'}}}%%
 sequenceDiagram
     participant R as 读者
     participant P as 文章页
