@@ -704,6 +704,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>地基篇</td>
 <td>✅</td>
 </tr>
+<tr>
+<td>B02</td>
+<td><a href="/post/34.html">毛坯房装修：认识 config.json，站名、头像换成你自己的</a></td>
+<td>四必填字段、头像 URL 技巧与 favicon/ogImage 继承、JSON 三戒、runOne 旧快照覆盖源码机制、last 与锁版本</td>
+<td>地基篇</td>
+<td>✅</td>
+</tr>
 </tbody>
 </table></markdown-accessiblity-table>
 <p>更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 <code class="notranslate">edited</code> 事件，编辑即自动重建），所以这张表会一直是最新的。</p>
@@ -733,9 +740,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 <tr>
 <td>B02</td>
-<td>config.json 入门</td>
-<td>四个必填字段、JSON 逗号规则、改完全局重建、last 与锁版本</td>
-<td>⏳</td>
+<td><a href="/post/34.html">毛坯房装修：认识 config.json</a></td>
+<td>四必填字段、头像 URL 与继承、JSON 三戒、旧快照覆盖源码机制、last 与锁版本</td>
+<td>✅</td>
 </tr>
 <tr>
 <td>B03</td>
@@ -940,7 +947,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>SEO 几乎零成本</strong>——RSS 直接当 sitemap 提交，robots/404 放静态目录即可；</li>
 <li><strong>真正有含金量的是自研三小件</strong>（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。</li>
 </ol>
-<p>G01–G16 正篇与 <strong><a href="/post/27.html">G17 SEO 收尾战</a></strong>（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有四篇：<strong><a href="/post/26.html">番外·给博客拍证件照</a></strong>（零依赖 CDP 无头截图，成品脚本 <code class="notranslate">tools/cdp-shot.js</code>）、<strong><a href="/post/28.html">番外二·开源回馈流水线</a></strong>（三个上游 PR 待合并，见上方 2026-09-16 小节）、<strong><a href="/post/31.html">番外三·gdigrab 抓窗口</a></strong>（浏览器外截图，成品脚本 <code class="notranslate">tools/shot-window.ps1</code>）与 <strong><a href="/post/33.html">番外四·点到为止</a></strong>（借用户已登录浏览器窗口拍登录态页面，Win32 UI 自动化 + 安全边界，成品脚本 <code class="notranslate">tools/ui-shot.ps1</code>；截图三部曲——浏览器内 CDP／浏览器外 gdigrab／登录态借窗——至此收束）。2026-09-16 另发布 <strong><a href="/post/29.html">G18 被浮动挤扁的"上一篇/下一篇"</a></strong>：G08 导航卡片在移动端被版权小字的 <code class="notranslate">float:right</code> + BFC 避让规则压成 60% 窄列、标题竖排；<code class="notranslate">clear:both</code> 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。2026-09-16 另开零起点地基篇，<strong><a href="/post/30.html">B00 总览</a></strong>、<strong><a href="/post/31.html">番外三</a></strong>（截图工具箱扩到浏览器外，成品 <code class="notranslate">tools/shot-window.ps1</code>）相继发布；2026-09-17 发布地基篇第一篇动手文 <strong><a href="/post/32.html">B01 18 秒建站实录</a></strong>（注册→模板建仓→Pages 开关→标签发文→绿勾验收全流程，含时序图与翻车急诊室）；同日补齐 4 张登录态实拍图——不碰凭据、不给日常 Edge 开调试端口，改用 Win32 UI 自动化（EnumWindows 按用户名正向定位窗口、F11 全屏、<code class="notranslate">msedge.exe &lt;url&gt;</code> 命令行委派新标签导航、剪贴板灌中文标题、mouse_event 点开下拉、gdigrab 裁剪），占位图同名替换零改正文；同日发布 <strong><a href="/post/33.html">番外四·点到为止</a></strong>（把 B01 补拍过程写成独立一篇：Win32 UI 自动化借用户已登录 Edge 拍登录态页的六场翻车——F11 按错窗口/SendKeys 静默失灵/任务栏自动隐藏骗全屏/工具栏滑出条/盲点跳 Docs/黑帧，灵魂章是"点到为止"安全边界——可点可逆 vs 绝不碰提交按钮、还原现场、逐张隐私检查；成品通用脚本 <code class="notranslate">tools/ui-shot.ps1</code>，已沉淀成本机 screenshot 技能"路径 C"）；下一篇动手向为 <strong>B02 config.json 入门</strong>；G 系列方向下一篇待写仍是约 2026-09-21 的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。</p></div>
+<p>G01–G16 正篇与 <strong><a href="/post/27.html">G17 SEO 收尾战</a></strong>（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有四篇：<strong><a href="/post/26.html">番外·给博客拍证件照</a></strong>（零依赖 CDP 无头截图，成品脚本 <code class="notranslate">tools/cdp-shot.js</code>）、<strong><a href="/post/28.html">番外二·开源回馈流水线</a></strong>（三个上游 PR 待合并，见上方 2026-09-16 小节）、<strong><a href="/post/31.html">番外三·gdigrab 抓窗口</a></strong>（浏览器外截图，成品脚本 <code class="notranslate">tools/shot-window.ps1</code>）与 <strong><a href="/post/33.html">番外四·点到为止</a></strong>（借用户已登录浏览器窗口拍登录态页面，Win32 UI 自动化 + 安全边界，成品脚本 <code class="notranslate">tools/ui-shot.ps1</code>；截图三部曲——浏览器内 CDP／浏览器外 gdigrab／登录态借窗——至此收束）。2026-09-16 另发布 <strong><a href="/post/29.html">G18 被浮动挤扁的"上一篇/下一篇"</a></strong>：G08 导航卡片在移动端被版权小字的 <code class="notranslate">float:right</code> + BFC 避让规则压成 60% 窄列、标题竖排；<code class="notranslate">clear:both</code> 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。2026-09-16 另开零起点地基篇，<strong><a href="/post/30.html">B00 总览</a></strong>、<strong><a href="/post/31.html">番外三</a></strong>（截图工具箱扩到浏览器外，成品 <code class="notranslate">tools/shot-window.ps1</code>）相继发布；2026-09-17 发布地基篇第一篇动手文 <strong><a href="/post/32.html">B01 18 秒建站实录</a></strong>（注册→模板建仓→Pages 开关→标签发文→绿勾验收全流程，含时序图与翻车急诊室）；同日补齐 4 张登录态实拍图——不碰凭据、不给日常 Edge 开调试端口，改用 Win32 UI 自动化（EnumWindows 按用户名正向定位窗口、F11 全屏、<code class="notranslate">msedge.exe &lt;url&gt;</code> 命令行委派新标签导航、剪贴板灌中文标题、mouse_event 点开下拉、gdigrab 裁剪），占位图同名替换零改正文；同日发布 <strong><a href="/post/33.html">番外四·点到为止</a></strong>（把 B01 补拍过程写成独立一篇：Win32 UI 自动化借用户已登录 Edge 拍登录态页的六场翻车——F11 按错窗口/SendKeys 静默失灵/任务栏自动隐藏骗全屏/工具栏滑出条/盲点跳 Docs/黑帧，灵魂章是"点到为止"安全边界——可点可逆 vs 绝不碰提交按钮、还原现场、逐张隐私检查；成品通用脚本 <code class="notranslate">tools/ui-shot.ps1</code>，已沉淀成本机 screenshot 技能"路径 C"）；同日发布地基篇第二篇动手文 <strong><a href="/post/34.html">B02 毛坯房装修：认识 config.json</a></strong>（title/subTitle/avatarUrl/GMEEK_VERSION 四必填字段逐个拆，<code class="notranslate">https://github.com/用户名.png</code> 头像技巧与 favicon/ogImage 默认继承，JSON 三戒配 <code class="notranslate">python -m json.tool</code>/<code class="notranslate">jq</code> 自检实拍；核心章翻开源码讲透"改完配置为何不生效"——runOne 启动时用 docs/blogBase.json 旧快照逐项覆盖新配置、且 push config 不在工作流触发事件里，故必须手动 runAll；cleanFile 只在 runAll 复制 static 的第二定律一并补齐；"last"=构建时刻最新 tag 的浮动机制与锁版止血；含 runAll/runOne 分支暗色 mermaid 流程图。配图两张走路径 C 借窗实拍文件页/编辑器页只拍不提交，tags 页 CDP，json 校验走 shot-window 拍经典控制台；期间给 <code class="notranslate">tools/cdp-shot.js</code> 加了 <code class="notranslate">--proxy</code> 选项）；下一篇动手向为 <strong>B03 在 Issues 里过日子</strong>；G 系列方向下一篇待写仍是约 2026-09-21 的 <strong>G04 收录实战番外</strong>——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
