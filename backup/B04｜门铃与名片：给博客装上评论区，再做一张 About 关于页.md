@@ -57,19 +57,14 @@ Gmeek 选用的评论方案叫 **utterances**。它在官网的自我介绍只�
 > 在 `/post/35.html` 页面下发的评论，就是 issue **#35** 里的一条 comment。
 
 ```mermaid
-%%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'15px','actorBkg':'#21262d','actorTextColor':'#e6edf3','actorBorder':'#58a6ff','actorLineColor':'#8b949e','signalColor':'#8b949e','signalTextColor':'#e6edf3','labelBoxBkgColor':'#21262d','labelBoxBorderColor':'#58a6ff','labelTextColor':'#e6edf3','noteBkgColor':'#161b22','noteBorderColor':'#58a6ff','noteTextColor':'#e6edf3'}}}%%
-sequenceDiagram
-    participant R as 读者
-    participant P as 文章页
-    participant U as utteranc.es
-    participant I as GitHub 仓库 issue
-    R->>P: 点「评论」按钮
-    P->>P: 按需插入 client.js
-    P->>U: 加载评论 iframe(repo + issue-term=title)
-    U->>I: 按页面标题找同名 issue
-    I-->>U: 返回该 issue 已有的 comments
-    U-->>P: 渲染评论框与历史留言
-    R->>I: Sign in 后提交，写入一条 issue comment
+%%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'15px'}}}%%
+flowchart TD
+    R([读者]) --> P[文章页]
+    P -->|点「评论」按钮<br/>才按需插入 client.js| U[utteranc.es 评论 iframe]
+    U -->|issue-term=title<br/>按页面标题找同名 issue| I[("GitHub issue #N<br/>(就是文章自己那个 issue)")]
+    I -->|返回该 issue 已有 comments| U
+    U -->|渲染评论框与历史留言| R
+    R -. Sign in 后写入一条 issue comment .-> I
 ```
 
 这正好回收了 [B03](/post/35.html) 急诊室留下的担心：**utterances 不会新建 issue**。它只有在仓库里连一个同名 issue 都找不到时才会自建一个；而 Gmeek 的每个文章页都源自一个真实存在的 issue，同名 issue 必然在，永远走"复用"这一支。所以无标签 issue 把构建绊成 KeyError 那种事故，评论区这条线上根本碰不到。
