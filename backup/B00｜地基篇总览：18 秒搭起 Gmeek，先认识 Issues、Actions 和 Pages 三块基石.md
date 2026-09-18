@@ -186,7 +186,7 @@ B 系列不要求你会写 Python，但看懂引擎的「房间分布」，以�
 | B03 | [在 Issues 里过日子](/post/35.html) | Markdown 写作、编辑改稿、Pin 置顶、Close 删文、末行 timestamp 补发旧文 | ✅ |
 | B04 | [门铃与名片：评论区与 About 页](/post/36.html) | 安装 utterances app 开通评论；`singlePage` 做一个不进文章流的 About 固定页 | ✅ |
 | B05 | [Actions 篇：读懂值班日志](/post/38.html) | 工作流 YAML 逐行讲解、三种点火、runAll 全量与 runOne 增量、红叉日志四步排查、自动提交是什么 | ✅ |
-| B06 | Pages 篇：网页如何被全世界访问 | artifact 部署 vs 分支部署、URL 推导、HTTPS/CDN/缓存、可选的自定义域名 | ⏳ |
+| B06 | [Pages 篇：网页如何被全世界访问](/post/39.html) | user/project 两类站点、Actions 与分支两种出版来源、deploy 作业逐行、Fastly CDN 缓存实测、绿勾却 404、自定义域名四步与额度 | ✅ |
 | B07 | 备份、搬家与升级 | backup 离线副本、blogBase.json 的作用、GMEEK_VERSION 升级策略、换账号迁移 | ⏳ |
 | B08 | 轻装修与进阶指路 | 三态主题、页脚版权与运行天数、favicon、RSS 订阅；一站打通后指路 G 系列 | ⏳ |
 
@@ -198,6 +198,7 @@ B 系列不要求你会写 Python，但看懂引擎的「房间分布」，以�
 - **2026-09-17 · [B03 在 Issues 里过日子](/post/35.html)**：Preview 与博客同用 GitHub 官方 `/markdown` GFM 引擎；无标签 issue 在 [Gmeek.py:315](https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L315) 被跳过且后续取数 KeyError（#22 是现成活例）；改稿自动重建但日期只认创建时间；工作流触发名单事件表（Pin/Close/标签/config/static 全手动 runAll）；Pin 置顶只动排序不动日期、Close + 全局重建才下架、Reopen 是后悔药；末行 timestamp 秒级时间戳补发旧文。配图七张（四张借窗只拍不按、三张 CDP）；为拍真实置顶效果，经作者同意用 GraphQL 把 [G00 总揽](/post/5.html)长期置顶（随时可取消）。
 - **2026-09-17 · [B04 门铃与名片：评论区与 About 页](/post/36.html)**：评论用 utterances，唯一手动动作是给仓库装一次 App（Gmeek 默认 `needComment:1`、脚本与仓库名都自带）；`issue-term=title` 让评论直接挂文章同名 issue、**不新建 issue**，与无标签 issue 事故两条线；脚本点按钮才按需插入、明暗主题 postMessage 联动；评论内容实时但列表评论数徽标是构建期 `totalCount`（[Gmeek.py:333](https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L333)），靠手动/每日 0 点 runAll 刷新。About 页=首标签命中 `singlePage` 的普通 issue，输出根目录 `/about.html` 并获页头入口；自造页名需在 `iconList` 配图标。配图七张（CDP 四张、借窗三张含裁剪隐私处理；借窗误关的两个原标签已等价还原）。
 - **2026-09-18 · [B05 读懂印刷厂值班日志](/post/38.html)**：run → job → step 三级层级；`Gmeek.yml` 逐行（三触发器、owner 守卫、write-all、`needs: build`）；核心是三种点火汇入两条路线——issues 带编号走 runOne 增量（沿用旧 blogBase 快照，[Gmeek.py:471-476](https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L471-L476)），手动/定时/首建走 runAll 全量（先 cleanFile，[Gmeek.py:404](https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L404-L420)），一次性回收 B02 改配置、B03 Pin/Close、B04 评论数三处伏笔；cron 名义北京零点，实测近五天 02:37–04:12 才开火（官方明说高负载会延迟甚至丢任务）。两个真实失败 run 现场教学：#22 无标签 `KeyError: None`（build 红 deploy 灰，四步排查法）、建站首日 Pages 来源未切（build 绿 deploy 红 status 500，留给 B06）。配图八张：实拍六张（全 CDP 暗色公开页，含 21 秒红叉现场与 13 步全绿流水线）、复用 B01 一张、文内原生 mermaid 一张（本地 UMD 预检通过后再上线，与线上像素一致）。
+- **2026-09-18 · [B06 网页怎样被全世界打开](/post/39.html)**：回收 B05 第二病例。user/project 两类站点与 `<owner>.github.io` 命名根源；Source 两选项（Deploy from a branch 经典 Jekyll vs GitHub Actions artifact 模式，Gmeek 是后者；API 里 build_type=workflow 但 source 仍名义回显 main）；deploy 作业逐行（needs:build、contents/pages/id-token 三道工牌、`concurrency: pages` 排队、deploy-pages@v4 实测 10 秒）；**核心是 CDN 缓存一手实测**——同一页连发两次 curl -I，X-Cache MISS→HIT、X-Served-By 新加坡 SIN 节点、Via varnish（Fastly）、Cache-Control max-age=600、Age/ETag，解释"绿勾后仍旧页"（10 分钟边缘保鲜，Ctrl+F5 强刷 no-cache 可破）；绿勾却 404 七条本地化排查；自定义域名四步（先填域名防子域接管→子域 CNAME 指账号.github.io 不带仓库名/apex 四条 A 记录 185.199.108-111.153→Let's Encrypt 自动证书→Enforce HTTPS；Windows 用 nslookup 验 dig；DNS 最长 24h；**Actions 模式不需要 CNAME 文件，官方明说已有也忽略**）；官方额度 1GB/100GB 月软带宽/部署 10 分钟超时，10 builds 每小时软限只管经典 Jekyll 不管自定义 Actions。配图五张：复用 B01 Pages 设置页、新拍 deploy 全绿作业、真实响应头 MISS/HIT 对比卡片（本地 HTML 渲染）、官方 DNS 对照表暗色文档实拍、文内原生 mermaid 投递链路（本地预检+线上复验一致）。
 
 状态只在本表与发布日志里维护：发一篇勾一篇。G00 总揽只管进阶篇（G 系列）的路线图，不再搬运地基篇进度。
 
