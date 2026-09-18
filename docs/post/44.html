@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# A02｜退出码 0，但硬盘上只有一个文件：65 集 AI 字幕下载记
+
+比报错危险得多的，是程序报告成功。">
+<meta property="og:title" content="A02｜退出码 0，但硬盘上只有一个文件：65 集 AI 字幕下载记">
+<meta property="og:description" content="# A02｜退出码 0，但硬盘上只有一个文件：65 集 AI 字幕下载记
+
+比报错危险得多的，是程序报告成功。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/44.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>A02｜退出码 0，但硬盘上只有一个文件：65 集 AI 字幕下载记</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">A02｜退出码 0，但硬盘上只有一个文件：65 集 AI 字幕下载记</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/44" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>A02｜退出码 0，但硬盘上只有一个文件：65 集 AI 字幕下载记</h1>
+<p>比报错危险得多的，是程序报告成功。</p>
+<p>这批字幕的下载过程里，叶扬被"成功"骗了两次：一次命令干干净净退出，硬盘上却只有一个字幕文件；另一次三十多集批量拉取一路绿灯，清点时发现少了三集，而平台连一句警告都没给。</p>
+<p>上一篇讲完 136 条规则怎么清洗字幕，这一篇往回走一步：<strong>那 47762 行字幕，是怎么到硬盘上的。</strong> 工具是开源的 <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a>（本机版本 2026.08.19），但 B 站这个目标给它备了好几样非标状况。</p>
+<h2>一、先问字幕在哪：三种形态</h2>
+<p>动手下载之前，先得搞清楚字幕到底存放在哪。叶扬对本地一个 mp4 跑了 ffprobe，流信息里只有两条：</p>
+<pre class="notranslate"><code class="notranslate">Stream #0:0 Video: av1 1920x1080
+Stream #0:1 Audio: aac 44100 Hz stereo
+（没有 subtitle stream）
+</code></pre>
+<p>字幕在世界上只有三种存法，提取工具完全不同：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>形态</th>
+<th>位置</th>
+<th>提取方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>外挂/网络字幕轨</td>
+<td>文件之外，平台 API 下发，播放器现场渲染</td>
+<td>yt-dlp 直接拉 srt</td>
+</tr>
+<tr>
+<td>内封字幕流</td>
+<td>容器里独立的 subtitle stream</td>
+<td><code class="notranslate">ffmpeg -map 0:s</code> 无损导出</td>
+</tr>
+<tr>
+<td>硬烧字幕</td>
+<td>画进像素</td>
+<td>只能 OCR</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>B 站的 CC/AI 字幕是第一种：<strong>它根本不在 mp4 里</strong>，是一条走 API 的独立轨（<code class="notranslate">ai-zh</code>）。所以 ffmpeg 对它无能为力——不是参数不对，是目标不在那儿。</p>
+<p>这又是"任务的形状决定工具"：先花两分钟看清数据在哪，省得对着 ffmpeg 调一下午。</p>
+<h2>二、第一次查询就被骗：未登录的假阴性</h2>
+<p>装好 yt-dlp，叶扬先按惯例查一眼这集有哪些字幕：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">yt-dlp --list-subs <span class="pl-s"><span class="pl-pds">"</span>https://www.bilibili.com/video/BV1vewnzqEuA/?p=8<span class="pl-pds">"</span></span></pre></div>
+<p>返回里只有一行 <code class="notranslate">danmaku xml</code>，外加一条警告：<code class="notranslate">Subtitles are only available when logged in</code>。</p>
+<p>这里有个高频误判：<strong>未登录时 B 站不返回字幕轨清单，这不等于没有字幕。</strong> <code class="notranslate">danmaku</code> 是弹幕——观众发的评论，不是讲课内容。接口的行为是"不给你看清单"，不是"清单是空的"。做过接口的都熟悉这种语义：401 和 404 是两回事，把"没权限看"读成"资源不存在"，后面所有决策全歪。</p>
+<p>要看真实清单，必须带登录态。</p>
+<h2>三、登录态这把钥匙，以及一个等价于密码的文件</h2>
+<p>yt-dlp 吃 cookie 有两种方式。</p>
+<p>第一种是直接从浏览器读：<code class="notranslate">--cookies-from-browser edge</code>。但浏览器运行时会<strong>独占锁住 cookie 数据库</strong>，叶扬实测五个 msedge 进程在后台挂着，读取直接报 <code class="notranslate">Could not copy Chrome cookie database</code>。注意 Edge/Chrome 默认允许后台常驻，点窗口右上角的 × 不够，要确认任务管理器里进程全部消失——为了下个字幕把浏览器整个关掉，代价也大了点。</p>
+<p>第二种、也是最终采用的方式：用 "Get cookies.txt LOCALLY" 一类扩展，在 bilibili.com 页面导出 Netscape 格式的 <code class="notranslate">cookies.txt</code>，用 <code class="notranslate">--cookies cookies.txt</code> 传入。浏览器照常开，互不打扰。</p>
+<p>文件到手后只做计数校验，<strong>不打印内容</strong>：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">head -1 cookies.txt        <span class="pl-c"><span class="pl-c">#</span> 应为 # Netscape HTTP Cookie File</span>
+grep -c bilibili cookies.txt   <span class="pl-c"><span class="pl-c">#</span> 应有若干行</span>
+grep -c SESSDATA cookies.txt   <span class="pl-c"><span class="pl-c">#</span> 必须为 1</span></pre></div>
+<p><code class="notranslate">SESSDATA</code> 这一条就是登录态本体，等价于账号密码：拿到的人可以直接操作这个 B 站账号。所以纪律有三条：校验只计数不 cat、用完立刻删除、绝不放在会同步网盘的目录里。这和生产环境对待 token 的方式没有区别——凭据的价值和文件名保不保露无关。</p>
+<p>带 cookie 再查一次，真正的清单出来了：</p>
+<pre class="notranslate"><code class="notranslate">Language  Formats
+danmaku   xml
+ai-zh     srt      ← 有这行，零算力直取
+</code></pre>
+<h2>四、合集 A：一条命令，和一次 HTTP 412</h2>
+<p>第一个目标合集 <code class="notranslate">BV1vewnzqEuA</code>，39 集，每集一小时上下，标题各不相同。这种"正常合集"一条命令就能遍历：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">yt-dlp --cookies cookies.txt \
+  --skip-download \
+  --write-subs --sub-langs ai-zh \
+  --sleep-requests 2 \
+  -o <span class="pl-s"><span class="pl-pds">"</span>%(playlist_index)02d - %(title)s.%(ext)s<span class="pl-pds">"</span></span> \
+  <span class="pl-s"><span class="pl-pds">"</span>https://www.bilibili.com/video/BV1vewnzqEuA/<span class="pl-pds">"</span></span></pre></div>
+<p>参数没有一个是多余的：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+<th>省略的后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">--skip-download</code></td>
+<td>只要字幕</td>
+<td>把 39 集视频全下下来</td>
+</tr>
+<tr>
+<td><code class="notranslate">--write-subs</code></td>
+<td>写出文件</td>
+<td>只查不存</td>
+</tr>
+<tr>
+<td><code class="notranslate">--sub-langs ai-zh</code></td>
+<td>只要 AI 字幕轨</td>
+<td>连弹幕 xml 一起拉</td>
+</tr>
+<tr>
+<td><code class="notranslate">--sleep-requests 2</code></td>
+<td>请求间隔 2 秒</td>
+<td><strong>大概率吃 412</strong></td>
+</tr>
+<tr>
+<td><code class="notranslate">-o "%(playlist_index)02d - ..."</code></td>
+<td>编号+标题命名</td>
+<td>文件名对不上集数</td>
+</tr>
+<tr>
+<td>合集 URL（不加 <code class="notranslate">--no-playlist</code>）</td>
+<td>遍历整个合集</td>
+<td>只下当前一集</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><code class="notranslate">--sleep-requests 2</code> 不是礼貌加分项，是硬约束。叶扬实测连续快速打约 30 个请求后，服务器开始回 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/412" rel="nofollow">HTTP 412 Precondition Failed</a>——风控的明确信号：你不像人，像脚本。加上两秒间隔，三十多集约两分钟跑完，字幕总体积只有 2–3 MB。</p>
+<p>跑完第一次清点，怪事来了：<strong>39 集，只产出 36 个 srt，缺 02、04、27。</strong></p>
+<p>命令全程没报错。怎么办？逐集单查：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">yt-dlp --cookies cookies.txt --no-playlist --list-subs \
+  <span class="pl-s"><span class="pl-pds">"</span>https://www.bilibili.com/video/BV1vewnzqEuA/?p=2<span class="pl-pds">"</span></span></pre></div>
+<p>三集查完，清单里真的没有 <code class="notranslate">ai-zh</code>——是<strong>平台本身没给这三集跑字幕</strong>，yt-dlp 静默跳过了。下载失败和资源不存在，必须用独立查询区分开，否则你会把平台的缺口当成自己的故障，反复重跑一个永远不会成功的命令。</p>
+<h2>五、合集 B：退出码 0，文件只有一个</h2>
+<p>真正的主菜是第二个合集 <code class="notranslate">BV1DBto6DEvY</code>。命令几乎一样，跑完终端一片祥和，退出码 0。叶扬去目录里一看——</p>
+<p><strong>只有一个文件：<code class="notranslate">NA - 印度佛教史.ai-zh.srt</code>。</strong></p>
+<p><code class="notranslate">NA</code> 是 yt-dlp 取不到 <code class="notranslate">playlist_index</code> 时的占位符。意思是：合集遍历根本没生效，工具把整个链接当成单个视频处理，下了一轨字幕，然后报告成功。</p>
+<h3>先证明它确实有 29 集</h3>
+<p>"会不会这链接本来就只有一集？"不能凭感觉，得找独立证据。用 yt-dlp 查各分 P 的时长：615.3 秒、1025.0 秒、542.2 秒、430.9 秒——四个 <code class="notranslate">?p=N</code> 拿到四个不同时长，铁证是多 P。</p>
+<p>那总共有多少 P？匿名访问合集稿件接口返回 <code class="notranslate">code:62002</code>（稿件不可见），拿不到分页清单。叶扬的探法是<strong>带着 cookie 二分探测边界</strong>：依次试 p=5、8、12、16、24、32，p29 成功、p30 失败——29 集，确定。这和调试时二分定位回归区间是同一个动作：边界未知，就用对数次查询把它夹出来。</p>
+<h3>同名，是第二个坑</h3>
+<p>就算让遍历生效，29 个分 P 的标题还<strong>完全相同</strong>，都叫"印度佛教史"。输出模板里的 <code class="notranslate">%(title)s</code> 无法区分它们，文件互相覆盖——一个文件名被写 29 遍，最后只剩一集内容。</p>
+<p>最终解法：绕开合集遍历，shell 循环逐集直打 <code class="notranslate">?p=N</code>，编号用 <code class="notranslate">printf '%02d'</code> 手动注入：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-k">for</span> <span class="pl-smi">p</span> <span class="pl-k">in</span> <span class="pl-s"><span class="pl-pds">$(</span>seq 1 29<span class="pl-pds">)</span></span><span class="pl-k">;</span> <span class="pl-k">do</span>
+  n=<span class="pl-s"><span class="pl-pds">$(</span>printf <span class="pl-s"><span class="pl-pds">'</span>%02d<span class="pl-pds">'</span></span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-smi">$p</span><span class="pl-pds">"</span></span><span class="pl-pds">)</span></span>
+  yt-dlp --cookies cookies.txt --no-playlist --skip-download \
+    --write-subs --sub-langs ai-zh --sleep-requests 2 \
+    -o <span class="pl-s"><span class="pl-pds">"</span><span class="pl-smi">$n</span> - %(title)s.%(ext)s<span class="pl-pds">"</span></span> \
+    <span class="pl-s"><span class="pl-pds">"</span>https://www.bilibili.com/video/BV1DBto6DEvY/?p=<span class="pl-smi">$p</span><span class="pl-pds">"</span></span>
+<span class="pl-k">done</span></pre></div>
+<p>两个关键开关：<code class="notranslate">--no-playlist</code> 强制把每个 URL 当单集处理（配合循环，恰好与合集 A 的用法相反——同一个参数，两种场景，方向完全反过来）；两位序号解决同名覆盖。跑完 29 个文件齐全，抽查内容各不相同：01 集 219 条 cue、15 集 297 条、29 集 292 条。</p>
+<p>整条决策链画成图：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>拿到 B 站合集链接<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>带 cookies.txt 查 --list-subs<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>清单里有什么？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"只有 danmaku + 登录警告"</span><span class="pl-k">|</span> <span class="pl-ent">Z</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>没有 AI 字幕&lt;<span class="pl-ent">br</span>/&gt;走 ASR 支线：抽音频→语音识别<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"有 ai-zh"</span><span class="pl-k">|</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>分 P 标题能区分吗？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"标题各异"</span><span class="pl-k">|</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>合集 URL 一条命令遍历&lt;<span class="pl-ent">br</span>/&gt;--sleep-requests 2<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"29 集全同名"</span><span class="pl-k">|</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>for 循环逐集 ?p=N&lt;<span class="pl-ent">br</span>/&gt;--no-playlist + printf 编号注入<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>验收：文件数 / cue 数 /&lt;<span class="pl-ent">br</span>/&gt;末尾时间戳 对 视频时长<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span>
+    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"缺集"</span><span class="pl-k">|</span> <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>逐集 --list-subs 单查<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">H</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"平台缺轨"</span><span class="pl-k">|</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>登记缺口，无法补救<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">H</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"轨还在"</span><span class="pl-k">|</span> <span class="pl-ent">E</span>
+    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"全绿"</span><span class="pl-k">|</span> <span class="pl-ent">J</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>65 个 srt 入库&lt;<span class="pl-ent">br</span>/&gt;接 A01 的 136 条规则清洗管线<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<h2>六、验收：报成功不等于下全</h2>
+<p>两次"假成功"教会叶扬一件事：<strong>批量下载必须带验收，而且验收数据要来自独立于下载工具的源头。</strong></p>
+<p>每集的检查有两项：cue 条数、最后一条 cue 的末尾时间戳。后者要对得上视频实际时长：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-k">for</span> <span class="pl-smi">f</span> <span class="pl-k">in</span> <span class="pl-k">*</span>.srt<span class="pl-k">;</span> <span class="pl-k">do</span>
+  <span class="pl-c1">printf</span> <span class="pl-s"><span class="pl-pds">"</span>%s | %s 条 | 末尾 %s\n<span class="pl-pds">"</span></span> \
+    <span class="pl-s"><span class="pl-pds">"</span><span class="pl-smi">$f</span><span class="pl-pds">"</span></span> \
+    <span class="pl-s"><span class="pl-pds">"</span><span class="pl-s"><span class="pl-pds">$(</span>grep -c <span class="pl-s"><span class="pl-pds">'</span> --&gt; <span class="pl-pds">'</span></span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-smi">$f</span><span class="pl-pds">"</span></span><span class="pl-pds">)</span></span><span class="pl-pds">"</span></span> \
+    <span class="pl-s"><span class="pl-pds">"</span><span class="pl-s"><span class="pl-pds">$(</span>grep <span class="pl-s"><span class="pl-pds">'</span> --&gt; <span class="pl-pds">'</span></span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-smi">$f</span><span class="pl-pds">"</span></span> <span class="pl-k">|</span> tail -1 <span class="pl-k">|</span> cut -d<span class="pl-s"><span class="pl-pds">'</span> <span class="pl-pds">'</span></span> -f3<span class="pl-pds">)</span></span><span class="pl-pds">"</span></span>
+<span class="pl-k">done</span></pre></div>
+<p>以第 8 集为例：939 条 cue，末尾 <code class="notranslate">00:56:15,150</code>，视频时长 56:18——差三秒，完整覆盖。</p>
+<p>但这里有个反向陷阱：末尾时间戳"偏早"不一定是截断。A 合集的 25、28 集本身就短，只有 15:39、19:43，字幕末尾与时长一致，是完整的短集。判断"截断"之前，你必须先知道视频有多长——这就是为什么验收要引用独立数据源：yt-dlp 自己报的成功不算数，文件自己的末尾时间戳也只能算半个证据，三者对上才闭环。这和写测试一个道理：断言里的期望值不能由被测函数自己生成。</p>
+<p>顺带一提，这批字幕后来还查出一个更隐蔽的"元数据级意外"：39 集那套第 25 讲之后是重录版，多集对应前面的内容——这种结构问题只有把语料整体拉通才看得见，细节在 A01 里讲过。</p>
+<h2>七、旁支：Git Bash、ffmpeg 与中文路径</h2>
+<p>下载本身没撞上这个坑，但 ASR 支线会，先记下来：在 Git Bash 里让 ffmpeg 处理中文文件名，会报 <code class="notranslate">Invalid argument</code>。原因是 Git Bash 按 UTF-8 传命令行参数，ffmpeg 是原生 Win32 程序，按 ANSI 解码，两边对不上。</p>
+<p>绕过办法是临时把文件改成 ASCII 名，处理完再改回来；还原命令前用 <code class="notranslate">;</code> 不用 <code class="notranslate">&amp;&amp;</code>，保证无论前面成败改名都一定执行。而 yt-dlp 是 Python 程序，走的是宽字符 API，中文路径全程没事——<strong>同一个文件名，在不同运行时眼里是两种字节序列</strong>，这类问题不搞清原理，重试一百遍也是同样的错。</p>
+<h2>八、没有 ai-zh 的那 30 集</h2>
+<p>第三套课程是李元祥《印度佛教史》（<code class="notranslate">BV1dt4y1m7FK</code>，30 集，2020 年前后的老视频）。p1–p4 和 p30 全查过，清单里一律只有 <code class="notranslate">danmaku</code>——平台当年没给它跑 AI 字幕，yt-dlp 这条路彻底走不通，只剩自己做语音识别：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>引擎</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/SYSTRAN/faster-whisper">faster-whisper</a></td>
+<td>有 N 卡首选，比原版快约 4 倍</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ggml-org/whisper.cpp">whisper.cpp</a></td>
+<td>纯 CPU，Windows 有预编译 exe，无 Python 依赖</td>
+</tr>
+<tr>
+<td>m-bain/whisperX</td>
+<td>要词级时间戳/说话人分离</td>
+</tr>
+<tr>
+<td><a href="https://github.com/modelscope/FunASR">FunASR</a>（SenseVoice）</td>
+<td>中文讲座，标点与识别常优于 whisper</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>抽音频用 <a href="https://ffmpeg.org" rel="nofollow">ffmpeg</a> 转 16kHz 单声道 wav 即可。另有一个针对术语课的关键技巧：把"补特伽罗""犊子部""摩揭陀"这类词喂给引擎当热词（whisper 系用 <code class="notranslate">--initial_prompt</code>/<code class="notranslate">hotwords</code>，FunASR 用热词表），识别率会肉眼可见地好一截——巧的是，那套课的下载清单里每集标题本身就是现成的术语表。</p>
+<p>这场仗还没真打（本机是 CPU 环境，大概率走飞书妙记或 whisper.cpp），所以这篇只给地图，不写战报。</p>
+<h2>急诊室</h2>
+<ul>
+<li><strong><code class="notranslate">HTTP Error 412</code></strong>：请求太勤被风控。加 <code class="notranslate">--sleep-requests 2</code>，已经被拦就停几分钟再继续。</li>
+<li><strong><code class="notranslate">Could not copy Chrome cookie database</code></strong>：浏览器锁着 cookie 库。完全退出浏览器进程，或改用扩展导出的 cookies.txt。</li>
+<li><strong><code class="notranslate">Subtitles are only available when logged in</code></strong>：cookie 缺失或过期，重新导出。</li>
+<li><strong>只得到一个 <code class="notranslate">NA - xxx.srt</code> 还报成功</strong>：同名分 P，合集遍历失效。上 <code class="notranslate">--no-playlist</code> 循环加 <code class="notranslate">printf %02d</code> 编号。</li>
+<li><strong>文件数比集数少</strong>：逐集 <code class="notranslate">--list-subs</code> 单查，先分清是平台缺轨还是下载失败——别为重不了的东西写重试。</li>
+<li><strong>cue 末尾时间戳偏早</strong>：先查视频真实时长再下结论，短集不是截断。</li>
+<li><strong>ffmpeg <code class="notranslate">Invalid argument</code>（中文路径）</strong>：Git Bash 与原生 Win32 的编码错位，临时 ASCII 文件名绕过；yt-dlp 不受影响。</li>
+</ul>
+<h2>写在最后</h2>
+<p>退出码 0 是程序能给出的最便宜的承诺。它只说"我这边没出错"，从来没说"你要的东西齐了"。</p>
+<p>这一趟下载里真正值钱的动作，没有一个是 yt-dlp 替叶扬做的：识别假阴性、二分探出 29 集边界、发现同名覆盖、拿视频时长反查字幕完整性。工具负责搬字节，人负责定义什么叫"完成"。</p>
+<p>等那 30 集老课的语音识别真跑完，A03 再交 ASR 支线的战报。</p>
+<blockquote>
+<p>说明：课程字幕仅供个人学习使用，不发布、不再分发；cookies.txt 用完即删。本文流程对 B 站任何带 AI 字幕的合集都适用，请把节奏放慢，对平台的服务器友好一点。</p>
+</blockquote></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
