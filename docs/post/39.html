@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# B06｜网页怎样被全世界打开：GitHub Pages 的投递站、CDN 缓存与自定义域名
+
+> B05 的两个红叉病例里，叶扬把悬念留在了第二例：build 作业全绿，deploy 作业却在第 5 秒报 `Failed to create deployment (status: 500)`。">
+<meta property="og:title" content="B06｜网页怎样被全世界打开：GitHub Pages 的投递站、CDN 缓存与自定义域名">
+<meta property="og:description" content="# B06｜网页怎样被全世界打开：GitHub Pages 的投递站、CDN 缓存与自定义域名
+
+> B05 的两个红叉病例里，叶扬把悬念留在了第二例：build 作业全绿，deploy 作业却在第 5 秒报 `Failed to create deployment (status: 500)`。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/39.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>B06｜网页怎样被全世界打开：GitHub Pages 的投递站、CDN 缓存与自定义域名</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">B06｜网页怎样被全世界打开：GitHub Pages 的投递站、CDN 缓存与自定义域名</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/39" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>B06｜网页怎样被全世界打开：GitHub Pages 的投递站、CDN 缓存与自定义域名</h1>
+<blockquote>
+<p>B05 的两个红叉病例里，叶扬把悬念留在了第二例：build 作业全绿，deploy 作业却在第 5 秒报 <code class="notranslate">Failed to create deployment (status: 500)</code>。印刷厂把纸印好了，投递站却没开门。这一篇就去看投递站的真面目——<strong>GitHub Pages</strong>，看它到底把网页放在哪、读者打开链接时经历了什么、为什么绿勾之后还要等十分钟、以及如何换成自己的域名。</p>
+</blockquote>
+<h2>一、Pages 是什么：开在 GitHub 里的免费静态托管</h2>
+<p>官方的定义很直白：GitHub Pages 是一项<strong>静态网站托管服务</strong>，直接从仓库里取 HTML、CSS、JavaScript 文件，经过可选的构建过程后发布网站（<a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages">官方文档原话</a>）。注意"静态"两个字——这里跑不了 PHP、Python 后端和数据库，能执行的只有浏览器里的 JS。Gmeek 正好是"构建时把所有内容烤成静态 HTML"，与 Pages 天生一对。</p>
+<p>读文章不花钱也不占本地磁盘，但托管方肯定有成本，所以官方给了额度，本章先建立个印象，第七章细算：站点发布体积 ≤1GB、软带宽 100GB/月（<a href="https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits">Pages limits</a>）。对一个文字加截图的博客来说，100GB 流量大约是每月几十万次浏览，绰绰有余。</p>
+<h2>二、两种站点，两种出版来源</h2>
+<h3>两种站点类型</h3>
+<p>官方把 Pages 站点分成<a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages">两类</a>：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th></th>
+<th>用户/组织站点（user site）</th>
+<th>项目站点（project site）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>仓库名必须</td>
+<td><code class="notranslate">&lt;账号名&gt;.github.io</code>（严格一致，大小写不敏感）</td>
+<td>随便</td>
+</tr>
+<tr>
+<td>默认网址</td>
+<td><code class="notranslate">https://&lt;账号名&gt;.github.io/</code></td>
+<td><code class="notranslate">https://&lt;账号名&gt;.github.io/&lt;仓库名&gt;/</code></td>
+</tr>
+<tr>
+<td>配额</td>
+<td>每个账号一个</td>
+<td>每个仓库一个</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>本站仓库叫 <code class="notranslate">yeyangchen2009.github.io</code>，所以是 user site，文章地址是干净的 <code class="notranslate">/post/38.html</code>；如果当年随便起个仓库名，所有链接都会多出一截 <code class="notranslate">/仓库名/</code>，连图片路径都要带这个前缀。B01 反复强调"仓库名就是终身大事"，规则根源在这张表里。</p>
+<h3>两种出版来源（Source）</h3>
+<p>在仓库 <strong>Settings → Pages</strong> 里，Build and deployment 的 Source 下拉有两个选项（B01 那天实拍）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b01-pages.png"><img src="/screenshots/b01-pages.png" alt="Settings 的 GitHub Pages 设置页暗色实拍：Source 下拉展开两个选项——GitHub Actions（Best for using frameworks…）与 Deploy from a branch（Classic Pages experience），下方 Enforce HTTPS 已勾选" style="max-width: 100%;"></a></p>
+<ul>
+<li><strong>Deploy from a branch（经典模式）</strong>：Pages 直接监视某个分支（通常是 main），push 上去后由 GitHub 内置的 Jekyll 构建器在服务端构建并发布，发布目录只能选根目录或 <code class="notranslate">/docs</code>。</li>
+<li><strong>GitHub Actions（自定义工作流模式）</strong>：不监视分支，发布动作完全由 Actions 完成——build 作业用 upload-pages-artifact 把 <code class="notranslate">docs/.</code> 打成一个叫 <code class="notranslate">github-pages</code> 的 artifact 包，deploy 作业再把这个包发布出去（<a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">配置出版来源</a>）。</li>
+</ul>
+<p>Gmeek 的工作流是后者。B05 那个 build 绿、deploy 红 500 的病例，病因就是建站第一天这里还停在经典分支模式，deploy-pages 动作去申请部署被服务端拒绝。切到 <strong>GitHub Actions</strong>，重跑即绿。</p>
+<p>一个有趣的旁证：用 GitHub API 查看本站配置，返回里 <code class="notranslate">build_type</code> 已经是 <code class="notranslate">workflow</code>，但同时还带着 <code class="notranslate">"source":{"branch":"main","path":"/"}</code>——那只是设置页的名义残留，真正掌权的是 workflow，push main 并不会触发 Pages 自己的构建（触发构建的是 B05 讲的 Gmeek.yml）。</p>
+<h2>三、deploy 作业逐行读：10 秒的投递</h2>
+<p>再回看 Gmeek.yml 里那个最短的作业，它在 build 成功后才开工，实测只要 10 秒：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b06-deploy-job.png"><img src="/screenshots/b06-deploy-job.png" alt="#38 那次 run 的 Deploy blog 作业页：succeeded in 10s，Set up job、Deploy to GitHub Pages、Complete job 三步全绿，左侧 Generate blog 同为绿勾" style="max-width: 100%;"></a></p>
+<p>整个作业的 YAML 翻译成大白话：</p>
+<div class="highlight highlight-source-yaml"><pre class="notranslate"><span class="pl-ent">deploy</span>:
+  <span class="pl-ent">needs</span>: <span class="pl-s">build            </span><span class="pl-c"><span class="pl-c">#</span> 没有 build 的 artifact 就不出门</span>
+  <span class="pl-ent">permissions</span>:
+    <span class="pl-ent">contents</span>: <span class="pl-s">write       </span><span class="pl-c"><span class="pl-c">#</span> 对仓库内容的写权限（例行配置）</span>
+    <span class="pl-ent">pages</span>: <span class="pl-s">write          </span><span class="pl-c"><span class="pl-c">#</span> 关键工牌：允许写 Pages 部署</span>
+    <span class="pl-ent">id-token</span>: <span class="pl-s">write       </span><span class="pl-c"><span class="pl-c">#</span> OIDC 身份令牌，部署接口靠它验明正身</span>
+  <span class="pl-ent">concurrency</span>:
+    <span class="pl-ent">group</span>: <span class="pl-s"><span class="pl-pds">"</span>pages<span class="pl-pds">"</span></span>
+    <span class="pl-ent">cancel-in-progress</span>: <span class="pl-s">false   </span><span class="pl-c"><span class="pl-c">#</span> 同名分组排队执行，绝不打断在飞的部署</span>
+  <span class="pl-ent">environment</span>:
+    <span class="pl-ent">name</span>: <span class="pl-s">github-pages    </span><span class="pl-c"><span class="pl-c">#</span> 绑定仓库的 github-pages 环境</span>
+  <span class="pl-ent">steps</span>:
+    - <span class="pl-ent">uses</span>: <span class="pl-s">actions/deploy-pages@v4   </span><span class="pl-c"><span class="pl-c">#</span> 官方动作，一步发布 artifact</span></pre></div>
+<p>三个细节值得记住：</p>
+<ol>
+<li><strong>三道 permissions 是最小工牌</strong>。特别是 <code class="notranslate">id-token: write</code>，B05 病例二的日志里能看到部署请求带了个 oidc_token——Pages 服务端就是靠这个短期令牌确认"是这台 runner 本人，不是冒名请求"。工牌缺失或环境没建，部署就会失败。</li>
+<li><strong>concurrency 保证新旧版本不会打架</strong>。连续发两篇文章会触发两次构建，但 <code class="notranslate">pages</code> 分组排队、<code class="notranslate">cancel-in-progress: false</code>，后到的等在飞的落定，永远不会出现半个站点是新版、半个是旧版。</li>
+<li><strong>deploy 不挑文件怎么来的</strong>。它只认 build 留下的那个 artifact 包，里面是整个 <code class="notranslate">docs/.</code> 目录。这给 B07 埋了个伏笔：只要包的结构对，备份恢复、版本回退、换账号重建，都是"换个 build 方式，投递站照收"。</li>
+</ol>
+<p>官方文档里这种 build/deploy 拆两个 job 的写法有专门一页：<a href="https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages">Use custom workflows</a>。</p>
+<h2>四、网页上线后发生了什么：一次 curl 实测的 CDN 课</h2>
+<p>deploy 显示绿色成功，网页就立刻在每个读者眼前更新了吗？——<strong>不是</strong>。这是全系列最反直觉、也最实用的一章，叶扬用本站真实响应头做个实验。对 B05 文章页连发两次 <code class="notranslate">curl -I</code>（只取响应头），间隔 37 秒：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b06-cdn-headers.png"><img src="/screenshots/b06-cdn-headers.png" alt="终端风格卡片对比同一页面两次请求的响应头：第一次 X-Cache MISS/Age 1/X-Cache-Hits 0，第二次 X-Cache HIT/Age 37/X-Cache-Hits 1，两次都有 Via 1.1 varnish 与 X-Served-By cache-sin-SIN 节点名，Cache-Control max-age=600" style="max-width: 100%;"></a></p>
+<p>逐行翻译：</p>
+<ul>
+<li><strong><code class="notranslate">Via: 1.1 varnish</code></strong>：应答你的不是 GitHub 的源站，而是一台跑着 varnish 缓存软件的边缘服务器。GitHub Pages 的 CDN 由 Fastly 提供。</li>
+<li><strong><code class="notranslate">X-Served-By: cache-sin-…-SIN</code></strong>：这台边缘服务器在<strong>新加坡</strong>（SIN = 新加坡机场代码，节点命名惯例）。中国大陆读者的请求被引到东南亚边缘，物理距离近，所以打开飞快。</li>
+<li><strong><code class="notranslate">X-Cache: MISS → HIT</code></strong>：第一次请求时该节点没存这页，回源站取（MISS，错过）；37 秒后第二次请求，副本已在节点上，直接吐缓存（HIT，命中）。</li>
+<li><strong><code class="notranslate">Age: 1 → 37</code></strong>：这份副本在边缘上已经存了多少秒。</li>
+<li><strong><code class="notranslate">Cache-Control: max-age=600</code></strong>：副本的保鲜期是 <strong>600 秒 = 10 分钟</strong>。过期后下一个请求重新回源取新版。</li>
+<li><strong><code class="notranslate">ETag: "6aac8975-adc4"</code></strong>：文件版本指纹。10 分钟内文件若没变，连内容都不用重传，回个 304 即可。</li>
+</ul>
+<p>整个投递链路画成图：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>deploy 作业&lt;<span class="pl-ent">br</span>/&gt;deploy-pages@v4 投递 artifact<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">O</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>GitHub Pages 源站<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">O</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"首次或缓存过期&lt;br/&gt;回源 MISS"</span><span class="pl-k">|</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>边缘节点 CDN&lt;<span class="pl-ent">br</span>/&gt;Fastly · varnish&lt;<span class="pl-ent">br</span>/&gt;本站落在新加坡 SIN<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"10 分钟内再访&lt;br/&gt;直接吐副本 HIT"</span><span class="pl-k">|</span> <span class="pl-ent">R</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>读者浏览器<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">O</span> <span class="pl-k">-.</span> <span class="pl-s">"刚部署完，旧副本或仍在边缘"</span> <span class="pl-k">.-&gt;</span> <span class="pl-ent">E</span></pre></div>
+<p>这张图解释了一个高频困惑：<strong>Actions 已经绿勾，刷新页面还是旧的。</strong> 因为你请求落到的那个边缘节点，10 分钟内可能还端着旧副本；deploy 更新的是源站，全球几百个边缘节点的副本要等各自保鲜期过期才陆续换新。想立刻验证新版，三招：</p>
+<ol>
+<li><strong>Ctrl+F5（Mac 是 Cmd+Shift+R）</strong>：强制刷新，请求头带 <code class="notranslate">no-cache</code>，绕过浏览器和中间缓存直接回源；</li>
+<li><strong>等 10 分钟</strong>：max-age 到期自然更新，最省心；</li>
+<li><strong>看响应头判断</strong>：F12 → Network 里点开文件，若 <code class="notranslate">X-Cache: HIT</code> 且 <code class="notranslate">Age</code> 还小，说明端上来的是缓存，不必怀疑构建失败。</li>
+</ol>
+<p>顺带一个隐私小点：官方文档说明，只要有人访问 Pages 站点，GitHub 会出于安全目的记录访问者 IP，无论访客是否登录 GitHub——这是平台行为，博客自身没装任何访客统计脚本。</p>
+<h2>五、绿勾之后仍 404：官方排查清单本地化</h2>
+<p>比"内容是旧的"更吓人的是"根本打不开"。GitHub 官方有一篇 <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/troubleshooting-404-errors-for-github-pages-sites">404 排查指南</a>，叶扬按 Gmeek 用户的实际遭遇重排：</p>
+<ol>
+<li><strong>Source 没切到 GitHub Actions</strong>：就是 B05 病例二。这是新手 404/500 的头号原因，deploy 作业直接失败；</li>
+<li><strong>首次部署的传播延迟</strong>：绿勾后等一两分钟再访问，边缘网络铺开需要时间；</li>
+<li><strong>user site 仓库名拼错</strong>：必须严格等于 <code class="notranslate">&lt;账号名&gt;.github.io</code>。拼成 <code class="notranslate">xxx-github-io</code> 就成了 project site，根路径全部带前缀；</li>
+<li><strong>免费版用了私有仓库</strong>：GitHub Free 只有公开仓库能用 Pages，私有仓需要付费套餐；</li>
+<li><strong>入口文件名</strong>：经典模式下 Pages 以 <code class="notranslate">index.html</code> 作为目录入口；Gmeek 已在 <code class="notranslate">docs/</code> 根生成了它，不用自己操心；</li>
+<li><strong>浏览器缓存</strong>：官方清单也列了这条，私有/旧缓存可能呈现过期的 404，Ctrl+F5 即可；</li>
+<li><strong>平台状态</strong>：罕见情况下是 GitHub 自身故障，先瞟一眼 githubstatus。</li>
+</ol>
+<p>至于 404 页面本身丑的问题，G11 已经给博客做了一张 GitHub Dark 风格的自定义 404（根目录放 <code class="notranslate">404.html</code>，Pages 对任意错误路径都会用它），见《<a href="/post/18.html">G11 运维两小件：robots.txt 与 404 页</a>》。</p>
+<h2>六、换成自己的域名：自定义域名与 HTTPS</h2>
+<p><code class="notranslate">yeyangchen2009.github.io</code> 能用，但想做个人品牌，迟早想换成 <code class="notranslate">blog.example.com</code> 这样的自有域名。Gmeek 官方手册没有专门章节，按 GitHub 官方文档操作即可，共四步。</p>
+<p><strong>第一步：在 Settings → Pages 的 Custom domain 框填域名，Save。</strong> 顺序很重要——<a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site">官方强调</a>先在 GitHub 登记域名、再去 DNS 服务商配置，反过来会留下子域被别人抢注接管的窗口；也不要用 <code class="notranslate">*.example.com</code> 通配符记录，官方警告即使验证了域名也挡不住接管。</p>
+<p><strong>第二步：去 DNS 服务商加解析记录。</strong> 选哪种记录取决于域名形态，官方 DNS 对照表就长这样：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b06-docs-cname.png"><img src="/screenshots/b06-docs-cname.png" alt="GitHub Docs 暗色页面 &quot;DNS records for your custom domain&quot;：表格列出 apex 域名用 A 记录指向 185.199.108.153 至 185.199.111.153 四个任播 IP、AAAA 四条 IPv6、子域用 CNAME 指向 USERNAME.github.io；上方黄色警告禁止通配符记录" style="max-width: 100%;"></a></p>
+<ul>
+<li><strong>子域名</strong>（推荐，如 <code class="notranslate">blog.example.com</code>）：加一条 <strong>CNAME</strong>，指向 <code class="notranslate">&lt;账号名&gt;.github.io</code>——注意<strong>不带仓库名</strong>，project site 也一样指根域名；</li>
+<li><strong>根域名（apex，如 <code class="notranslate">example.com</code>）</strong>：加四条 <strong>A 记录</strong>，分别指向 <code class="notranslate">185.199.108.153</code>、<code class="notranslate">.109.153</code>、<code class="notranslate">.110.153</code>、<code class="notranslate">.111.153</code> 四个任播 IP（有 IPv6 需求再补四条 AAAA）；DNS 商支持 ALIAS/ANAME 的也可以直接指到 <code class="notranslate">&lt;账号名&gt;.github.io</code>。</li>
+</ul>
+<p>Windows 没有官方示例用的 <code class="notranslate">dig</code> 命令，验证记录用系统自带的 <strong><code class="notranslate">nslookup blog.example.com</code></strong> 即可；DNS 全球生效最长可能等 24 小时。</p>
+<p><strong>第三步：等证书自动签发。</strong> GitHub 检测到域名解析正确后，会自动向 <strong>Let's Encrypt</strong> 申请免费 TLS 证书并部署到边缘节点，域名旁边出现绿勾即完成，期间可能要等一段时间。</p>
+<p><strong>第四步：勾选 Enforce HTTPS。</strong> 证书就绪后这个框才能勾，勾上后所有 <code class="notranslate">http://</code> 请求自动 301 跳转到 <code class="notranslate">https://</code>。默认的 github.io 域名本来就强制 HTTPS（响应头里还有一年期的 HSTS），这一步只对自定义域名必要。</p>
+<p>两个高频疑问一次说清：</p>
+<ul>
+<li><strong>要往仓库里放 CNAME 文件吗？</strong> 不用。那是"从分支部署"时代的机制——填域名时 GitHub 会往分支根目录提交一个 CNAME 文件。官方文档明确：<strong>用自定义 Actions 工作流发布时，不会创建 CNAME 文件，已有的也会被忽略、不要求存在</strong>。网上不少老教程还在教人往 static/ 里放 CNAME，对 Gmeek 这种 Actions 模式属于过时操作。</li>
+<li><strong>换域名后旧链接怎么办？</strong> Pages 会自动把旧的 github.io 地址 301 到新域名；但文章里写死的绝对 URL、sitemap、社交分享卡片要靠全局重建刷新，这正好是 B07 备份搬家篇的主题。</li>
+</ul>
+<h2>七、Pages 的官方额度：够用吗</h2>
+<p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits">官方限制页</a>把数字列得很清楚：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>额度</th>
+<th>官方值</th>
+<th>对本站的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>源仓库建议大小</td>
+<td>1 GB</td>
+<td>截图压一压，写几百篇无压力</td>
+</tr>
+<tr>
+<td>发布站点大小</td>
+<td>≤ 1 GB</td>
+<td>超限部署失败</td>
+</tr>
+<tr>
+<td>单次部署超时</td>
+<td>10 分钟</td>
+<td>Gmeek 全量构建通常 1 分钟内</td>
+</tr>
+<tr>
+<td>软带宽限制</td>
+<td>100 GB / 月</td>
+<td>约合几十万次文章浏览；软限=突发一般不拦，别拿去当图床分发</td>
+</tr>
+<tr>
+<td>构建频率软限</td>
+<td>10 次/小时</td>
+<td><strong>仅约束经典 Jekyll 构建；用自定义 Actions 工作流发布不适用此限</strong></td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>最后一行是 Gmeek 用户的定心丸：本文系列发布时一天触发十几次 Actions 构建是常事，走的是自定义工作流，不受"每小时 10 次"约束——真正要留意的反而是 B05 讲过的 schedule 高峰排队，那是 Actions 平台侧的事，与 Pages 构建限额无关。</p>
+<h2>八、翻车急诊室与小结</h2>
+<h3>翻车急诊室</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>症状</th>
+<th>病因</th>
+<th>处方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>deploy 红叉、<code class="notranslate">status: 500</code>，网页 404</td>
+<td>Pages 的 Source 没切 GitHub Actions</td>
+<td>Settings → Pages → Source 选 GitHub Actions，Re-run（B05 病例二）</td>
+</tr>
+<tr>
+<td>Actions 绿勾但页面还是旧的</td>
+<td>边缘节点 max-age=600 的旧副本</td>
+<td>等 10 分钟或 Ctrl+F5；F12 看 X-Cache/Age</td>
+</tr>
+<tr>
+<td>自己刷新是旧版，读者说是新版</td>
+<td>请求落在不同边缘节点，轮换节奏不同</td>
+<td>同上，以 max-age 到期后为准</td>
+</tr>
+<tr>
+<td>自定义域名提示证书错误/无 HTTPS 选项</td>
+<td>Let's Encrypt 证书还在签发</td>
+<td>等域名旁出现绿勾，再勾 Enforce HTTPS</td>
+</tr>
+<tr>
+<td>自定义域名完全打不开</td>
+<td>DNS 记录错或未生效</td>
+<td>nslookup 核对：子域 CNAME 指账号.github.io（不带仓库名），根域四条 A；最长等 24h</td>
+</tr>
+<tr>
+<td>http 能打开、https 不行</td>
+<td>证书未就绪或未强制</td>
+<td>绿勾出现后勾 Enforce HTTPS</td>
+</tr>
+<tr>
+<td>部署超时失败</td>
+<td>站点超 1GB 或构建超 10 分钟</td>
+<td>压缩图片、查 docs 体积</td>
+</tr>
+<tr>
+<td>所有路径都带 <code class="notranslate">/仓库名/</code> 才访问得到</td>
+<td>建成了 project site</td>
+<td>仓库改名为 <code class="notranslate">&lt;账号名&gt;.github.io</code> 或全程使用子路径</td>
+</tr>
+<tr>
+<td>往 static 放 CNAME 却不生效</td>
+<td>Actions 模式不需要也不读 CNAME 文件</td>
+<td>在 Settings → Pages 填域名即可</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3>小结</h3>
+<ul>
+<li>GitHub Pages 是<strong>纯静态托管</strong>；user site 仓库必须叫 <code class="notranslate">&lt;账号名&gt;.github.io</code>，Gmeek 用的是 <strong>Actions 出版模式</strong>（artifact 传递，不是分支监视）；</li>
+<li>deploy 作业靠 pages/id-token 工牌 + concurrency 排队，10 秒完成发布，但发布到的是<strong>源站</strong>；</li>
+<li>网页经 <strong>Fastly/varnish CDN</strong> 边缘节点投递，本站实测落在新加坡；<code class="notranslate">max-age=600</code> 决定了<strong>绿勾后最长 10 分钟的缓存差</strong>，Ctrl+F5 可破；</li>
+<li>自定义域名四步：设置页填域名（防接管）→ DNS（子域 CNAME / 根域四条 185.199 A 记录）→ 等 Let's Encrypt 证书 → Enforce HTTPS；<strong>Actions 模式不需要 CNAME 文件</strong>；</li>
+<li>额度 1GB 站点、100GB/月软带宽；每小时 10 构建的软限只管经典模式，Gmeek 不受约束。</li>
+</ul>
+<p>下一篇 <strong>B07 回到印刷厂内部谈"后事"</strong>：backup 目录离线副本里到底存了什么、blogBase.json 这份"户口本"坏了怎么办、GMEEK_VERSION 怎么升级才不翻车、换账号/换域名时怎样让整站原样复活——印刷厂的应急预案。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages">What is GitHub Pages?（两类站点定义）</a></li>
+<li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">Configuring a publishing source（两种出版来源）</a></li>
+<li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages">Use custom workflows with GitHub Pages（build/deploy 双作业）</a></li>
+<li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits">GitHub Pages limits（1GB/100GB/10 次限额）</a></li>
+<li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https">Securing your GitHub Pages site with HTTPS</a></li>
+<li><a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site">Managing a custom domain（DNS 记录与 CNAME 文件说明）</a></li>
+<li><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/troubleshooting-404-errors-for-github-pages-sites">Troubleshooting 404 errors</a></li>
+<li>上一篇：<a href="/post/38.html">B05｜读懂印刷厂值班日志：三种点火、全量与增量、红叉怎么查</a></li>
+<li>相关旧文：<a href="/post/18.html">G11 运维两小件：robots.txt 与 404 页</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
