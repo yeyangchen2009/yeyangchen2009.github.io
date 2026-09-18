@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# B05｜读懂印刷厂值班日志：GitHub Actions 的三种点火、全量与增量、红叉怎么查
+
+> B04 给博客装好了评论区，叶扬当时留了个悬念：文章刚收到一条评论，列表上的评论数字却不立刻涨，要等上一阵才更新。">
+<meta property="og:title" content="B05｜读懂印刷厂值班日志：GitHub Actions 的三种点火、全量与增量、红叉怎么查">
+<meta property="og:description" content="# B05｜读懂印刷厂值班日志：GitHub Actions 的三种点火、全量与增量、红叉怎么查
+
+> B04 给博客装好了评论区，叶扬当时留了个悬念：文章刚收到一条评论，列表上的评论数字却不立刻涨，要等上一阵才更新。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/38.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>B05｜读懂印刷厂值班日志：GitHub Actions 的三种点火、全量与增量、红叉怎么查</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">B05｜读懂印刷厂值班日志：GitHub Actions 的三种点火、全量与增量、红叉怎么查</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/38" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>B05｜读懂印刷厂值班日志：GitHub Actions 的三种点火、全量与增量、红叉怎么查</h1>
+<blockquote>
+<p>B04 给博客装好了评论区，叶扬当时留了个悬念：文章刚收到一条评论，列表上的评论数字却不立刻涨，要等上一阵才更新。这一篇就去幕后看个究竟——评论只是导火索，真正的主角是这座博客的全自动印刷厂：<strong>GitHub Actions</strong>。</p>
+<p>这篇不教你写工作流，只教你<strong>读懂值班日志</strong>：印刷厂几点上班、谁能点火、全量和增量有什么区别、红叉出现了按什么顺序查。读完之后，Actions 页面上那些密密麻麻的英文记录，在你眼里会变成一份条理清楚的值班表。</p>
+</blockquote>
+<h2>零、从"评论数不涨"说起</h2>
+<p>先回忆现象：B04 装完 utterances，读者在文章下面留了言，评论区本身秒开秒显示——因为评论数据存在第三方服务那里，跟博客仓库无关。但文章卡片上那个评论数字，是 Gmeek <strong>构建网页时</strong>数出来写进 HTML 的，评论发生时不会触发任何重建。</p>
+<p>那数字什么时候更新？答案取决于印刷厂什么时候再次开工。而开工时机，全写在一份叫 <code class="notranslate">Gmeek.yml</code> 的值班表里。这一篇要讲的，就是这份表，以及它背后的两种印刷模式。</p>
+<h2>一、Actions 在哪：每次开工都留一条值班记录</h2>
+<p>GitHub Actions 是 GitHub 自带的自动化流水线：仓库里发生某件事，就自动启动一台云端虚拟机，按剧本跑一串命令，跑完销毁，按分钟计的公开仓库免费。</p>
+<p>入口在仓库顶部的 <strong>Actions</strong> 标签。B01 建站那天叶扬第一次手动触发构建，看到的就是下面这张列表——每一行是一次"运行（run）"，左边的小圆圈表示成败，右边写着触发方式：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b01-actions-runs.png"><img src="/screenshots/b01-actions-runs.png" alt="Actions 运行列表：每行一次 run，绿色对勾成功，标注触发事件与时间，右侧可重新运行" style="max-width: 100%;"></a></p>
+<p>列表里值得认识三种字样，正好对应三种点火方式，下一章细讲：</p>
+<ul>
+<li><strong>issues</strong>：有人新建或编辑了 issue（对 Gmeek 来说就是发文章、改文章）；</li>
+<li><strong>workflow_dispatch</strong>：人在网页上手动点了 <strong>Run workflow</strong>；</li>
+<li><strong>schedule</strong>：定时器到点自动开火。</li>
+</ul>
+<p>一次 run 不是一锅粥，它由一个或多个<strong>作业（job）组成，Gmeek 的 run 固定有两个：<code class="notranslate">Generate blog</code>（印刷）和 <code class="notranslate">Deploy blog</code>（投递）。作业里再分若干步骤（step）</strong>。层级关系记住：<strong>run → job → step</strong>，查故障时就是沿着这条线往下找。</p>
+<h2>二、值班表 Gmeek.yml 逐行读</h2>
+<p>Actions 的剧本是仓库里的一个 YAML 文件，路径固定在 <code class="notranslate">.github/workflows/</code>。Gmeek 一键安装时会自动放好，名字就叫 <code class="notranslate">Gmeek.yml</code>，全文 95 行，不长：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b05-workflow-yml.png"><img src="/screenshots/b05-workflow-yml.png" alt="GitHub 暗色页面打开 .github/workflows/Gmeek.yml，显示 on 下三个触发器、jobs.build 与 if 守卫条件" style="max-width: 100%;"></a></p>
+<p>叶扬挑关键行翻译成人话：</p>
+<div class="highlight highlight-source-yaml"><pre class="notranslate"><span class="pl-ent">on</span>:
+  <span class="pl-ent">workflow_dispatch</span>:          <span class="pl-c"><span class="pl-c">#</span> ① 允许手动点 Run workflow</span>
+  <span class="pl-ent">issues</span>:
+    <span class="pl-ent">types</span>: <span class="pl-s">[opened, edited]    </span><span class="pl-c"><span class="pl-c">#</span> ② issue 新建或被编辑时触发</span>
+  <span class="pl-ent">schedule</span>:
+    - <span class="pl-ent">cron</span>: <span class="pl-s"><span class="pl-pds">"</span>0 16 * * *<span class="pl-pds">"</span></span>      <span class="pl-c"><span class="pl-c">#</span> ③ 国际标准时间每天 16:00 = 北京零点</span></pre></div>
+<p><code class="notranslate">on:</code> 就是点火条件清单。注意它<strong>只监听 opened 和 edited</strong>——加标签（labeled）、关闭（closed）、发评论（issue_comment）、push 代码，统统不在清单上。这一条请先存进脑子，第三章会反复用到。</p>
+<p>再看作业头上的守卫：</p>
+<div class="highlight highlight-source-yaml"><pre class="notranslate"><span class="pl-ent">if</span>: <span class="pl-s">${{ github.event.repository.owner.id == github.event.sender.id</span>
+       <span class="pl-s">|| github.event_name == 'schedule' }}</span></pre></div>
+<p>意思是：<strong>只有仓库主人自己触发的运行才放行</strong>，定时触发无条件放行。这条守卫防的是 fork 与陌生人——别人给你的仓库提 issue，不会白白燃起一台虚拟机。这也是为什么 Gmeek 要求用自己的账号建仓库，而不是在别人仓库里投稿。</p>
+<p>后面的 <code class="notranslate">permissions: write-all</code> 是作业的工牌：允许它往仓库推代码、部署 Pages。两个作业的关系是：</p>
+<div class="highlight highlight-source-yaml"><pre class="notranslate"><span class="pl-ent">jobs</span>:
+  <span class="pl-ent">build</span>:    <span class="pl-s">{ name: Generate blog, runs-on: ubuntu-24.04, ... }</span>
+  <span class="pl-ent">deploy</span>:   <span class="pl-s">{ needs: build, ... }   </span><span class="pl-c"><span class="pl-c">#</span> 必须等 build 成功才开工</span></pre></div>
+<p><code class="notranslate">needs: build</code> 决定了那个经典画面：<strong>build 红了，deploy 直接变灰（skipped）</strong>，第六章会亲眼见到。</p>
+<h2>三、三种点火，两种印法：runAll 与 runOne</h2>
+<p>这是全篇的核心。三种点火方式最终只汇入两条印刷路线，先看图（本博客的 mermaid 运行时实时渲染）：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">T</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>① issues：发布或编辑文章&lt;<span class="pl-ent">br</span>/&gt;② workflow_dispatch：手动 Run workflow&lt;<span class="pl-ent">br</span>/&gt;③ schedule：每天定时一次<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>issue_number&lt;<span class="pl-ent">br</span>/&gt;是空串吗？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"非空（①）"</span><span class="pl-k">|</span> <span class="pl-ent">ONE</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>runOne 增量&lt;<span class="pl-ent">br</span>/&gt;只重建这一篇 + 列表/feed<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"空（②③ 或首次建站）"</span><span class="pl-k">|</span> <span class="pl-ent">ALL</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>runAll 全量&lt;<span class="pl-ent">br</span>/&gt;清空目录，遍历全部文章<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">ONE</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>build 作业：装环境、生成 HTML&lt;<span class="pl-ent">br</span>/&gt;git 提交、打包 artifact<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">ALL</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">成功才放行</span><span class="pl-k">|</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>deploy 作业：发布到 GitHub Pages<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">W</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>网页上线<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">ONE</span> <span class="pl-k">-.</span> <span class="pl-s">沿用旧快照：改配置不生效、关闭只打印</span> <span class="pl-k">.-&gt;</span> <span class="pl-ent">TIP</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>这些变化要等全量：改 config · Pin/Close · 评论数<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">ALL</span> <span class="pl-k">-.</span> <span class="pl-s">定时是安全网：计划北京零点，实测排队到凌晨</span> <span class="pl-k">.-&gt;</span> <span class="pl-ent">TIP</span></pre></div>
+<p>工作流把触发它的那个 issue 编号通过命令行参数传给 Gmeek 主程序：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">python Gmeek.py <span class="pl-smi">$TOKEN</span> <span class="pl-smi">$REPO</span> --issue_number <span class="pl-s"><span class="pl-pds">'</span>${{ github.event.issue.number }}<span class="pl-pds">'</span></span></pre></div>
+<p>而主程序的岔路口写得明明白白（见 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L457-L476">Gmeek.py 第 457–476 行</a>）：</p>
+<ul>
+<li><strong>没有 blogBase.json</strong>（首次建站）：不管谁来，<code class="notranslate">runAll</code> 全量；</li>
+<li><strong>issue_number 是 0 或空串</strong>（手动触发、定时触发都不带编号）：<code class="notranslate">runAll</code> 全量；</li>
+<li><strong>带着具体编号</strong>（发文章、改文章）：<code class="notranslate">runOne</code> 增量。</li>
+</ul>
+<p>两条路线干的活差很多。<code class="notranslate">runAll</code>（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L404-L420">第 404 行</a>）一上来先 <code class="notranslate">cleanFile()</code> 清空产物目录，把 static 素材重新拷一遍，然后遍历仓库里<strong>全部</strong>文章逐篇重建，最后重生列表页与 feed；<code class="notranslate">runOne</code>（<a href="https://github.com/Meekdai/Gmeek.py#L422-L432">第 422 行</a>）只重建指定的那一篇，外加列表和 feed——它开工前还会把<strong>旧的 blogBase 快照整个读回来沿用</strong>（第 471–473 行）。</p>
+<p>理解了这条岔路，地基篇前几篇埋的所有"反直觉"瞬间一次性全部破案：</p>
+<p><strong>B02 的悬案：改了 config.json 为什么不生效？</strong> 因为发新文章触发的是 runOne，它沿用的是旧快照里的旧配置，config 里改的头像、昵称、插件开关全都不进场。想让改动生效，就得让它跑一次<strong>不带编号的全量</strong>——去 Actions 页面手动 <strong>Run workflow</strong>，或者安心等午夜的定时班车。</p>
+<p><strong>B03 的悬案：Pin issue 为什么不触发构建？</strong> 因为置顶在 GitHub 那里根本不发 opened/edited 事件，工作流压根没被点着；关闭文章同理——runOne 里对关闭状态的处理只有一行打印：<code class="notranslate">issue is closed</code>（第 432 行），网页不删也不改。想让关闭、置顶在页面上落实，同样要靠一次全量重建。</p>
+<p><strong>本篇开场的评论数：</strong> 评论数是构建那一刻调用接口数的（<a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L333">第 333 行</a> <code class="notranslate">get_comments().totalCount</code>），发评论不触发任何事件。它下次更新，要么是这篇文章被编辑（走一次 runOne，数字重数），要么是任何一次全量（所有文章一起重数）。</p>
+<p><strong>定时班车的小脾气：</strong> <code class="notranslate">cron: "0 16 * * *"</code> 写的是国际标准时间 16:00，即北京零点整。但 GitHub <a href="https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule">官方文档</a>实话实说：定时任务在高负载时段会排队延迟，只保证尽量在该窗口内执行，不保证准点。这个仓库最近五天的实际开火时间是北京凌晨 <strong>02:37 到 04:12</strong> 之间，最晚的一班晚点四个多小时（官方还警告高负载时排队任务可能被直接丢弃）。所以它是"安全网"，不是"闹钟"——等着上线的改动，永远手动 Run workflow，别等班车。</p>
+<p>一句话总结第三章：<strong>发改文章走增量，又快又省；配置、置顶、关闭、评论数这些"周边变化"，都要等全量。</strong></p>
+<h2>四、一次全绿的 run：build 作业的十三道工序</h2>
+<p>光看 YAML 不过瘾，进一次真实的成功 run 里逛逛。下面这张是一次 issues 触发的 build 作业页，十三道步骤全绿，总耗时 29 秒：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b05-build-steps.png"><img src="/screenshots/b05-build-steps.png" alt="成功 run 的 Generate blog 作业页：Set up job 到 Upload artifact 共十三个步骤全绿，左侧栏 Deploy blog 同样绿勾" style="max-width: 100%;"></a></p>
+<p>对照 <code class="notranslate">Gmeek.yml</code> 从上往下看，每一步都在给"印刷"做准备或收尾：</p>
+<ol>
+<li><strong>Set up job / Checkout</strong>：开机、把仓库拉到虚拟机；</li>
+<li><strong>Setup Pages</strong>：读取 GitHub Pages 配置；</li>
+<li><strong>Get config.json</strong>：打印配置内容，顺手装个 jq 工具；</li>
+<li><strong>Set up Python</strong>：Python 3.8 环境就位；</li>
+<li><strong>Clone source code</strong>：把上游 <code class="notranslate">Meekdai/Gmeek</code> 克隆到 <code class="notranslate">/opt/Gmeek</code>——版本号由 config 里的 <code class="notranslate">GMEEK_VERSION</code> 决定，填 <code class="notranslate">last</code> 就检出最新 release；</li>
+<li><strong>Install dependencies</strong>：安装 PyGithub、markdown 等依赖；</li>
+<li><strong>Generate new html</strong>：<strong>真正的印刷工序</strong>，执行 <code class="notranslate">python Gmeek.py ... --issue_number '编号'</code>，全量还是增量就在这一步内部分流；</li>
+<li><strong>Generate sitemap.xml</strong>：更新站点地图（B02 讲过的 SEO 物料）；</li>
+<li><strong>Rebuild README</strong>：按 README.custom.md 等模板重拼仓库首页说明；</li>
+<li><strong>update html</strong>：把产物 <code class="notranslate">git commit &amp;&amp; git push</code> 回仓库——下一章的主角；</li>
+<li><strong>Upload artifact</strong>：把整站打包成名叫 <code class="notranslate">github-pages</code> 的构建产物；</li>
+<li>最后 <strong>Post Set up Python / Complete job</strong> 是 GitHub 自动加的清理步。</li>
+</ol>
+<p>build 作业拿着产物收工，deploy 作业才登场：下载 artifact、调用 Pages 部署接口，把网页正式挂上 <code class="notranslate">*.github.io</code>。两个作业之间传递的就是那个 artifact 包，这也是为什么 deploy 写了 <code class="notranslate">needs: build</code>——没有包裹，投递员不出门。</p>
+<h2>五、🎉auto update by Gmeek action：机器人自己的提交</h2>
+<p>第四章第 10 步值得单独讲，因为很多新同学第一次看到都会心里一紧：<strong>我没提交代码啊，仓库里怎么多了一堆 commit？</strong></p>
+<p>打开仓库的提交历史，人和机器人的提交交错排列：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b05-commits.png"><img src="/screenshots/b05-commits.png" alt="main 分支提交历史：多条 🎉auto update by Gmeek action 由 vipbigdata 提交，与作者本人的中文提交交替" style="max-width: 100%;"></a></p>
+<p>凡是以 <strong>🎉auto update by Gmeek action</strong> 开头的提交，都是 build 作业第 10 步自动推的：每次印刷结束，工作流把新生成的 HTML、blogBase.json、README.md 等产物提交回 main 分支，于是 GitHub 仓库本身同时扮演了"源码仓"和"成品仓"两个角色。作者身份显示为配置里的公开邮箱，提交信息固定不变，所以历史里会出现一排排长得一模一样的"机器人打卡"。</p>
+<p>理解了这条，就明白两件事：一是<strong>不要手改 docs/ 下的生成产物</strong>，下次构建必被覆盖，要改内容就改 issue、要改样式就改 static/ 模板或插件；二是这些自动提交属于正常现象，不是账号被盗——它们的作者清一色是 Actions 机器人，时间与 Actions 列表里的 run 一一对应。</p>
+<h2>六、红叉怎么查：两次真实故障的现场教学</h2>
+<p>Actions 用久了，红叉迟早出现。叶扬把这个仓库建站以来仅有的三次失败翻出两次最典型的，教一套固定的排查动作。先给个定心丸：在有据可查的最近 <strong>167 次运行里，164 次成功、3 次失败</strong>，而且三次全部有明确的外部原因，没有一次是玄学。</p>
+<h3>排查四步法</h3>
+<ol>
+<li>进 <strong>Summary</strong> 页，看两个 job 哪个先红；</li>
+<li>点进红 job，找<strong>第一个变红的步骤</strong>——后面的灰色 skipped 是被连累的，不是病灶；</li>
+<li>展开该步骤日志，<code class="notranslate">##[error]</code> 行会高亮，Python 报错（Traceback）<strong>从下往上</strong>读，最后一行才是真正的死因；</li>
+<li>黄色 warning（比如 Node.js 20 deprecation）只是提醒，不影响成败，别被它带偏。</li>
+</ol>
+<h3>病例一：build 红，deploy 灰——文章没挂标签</h3>
+<p>2026-09-15，叶扬新建了 #22 号 issue（就是后来修 mermaid 自动加载的那篇），构建红了：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b05-fail-build.png"><img src="/screenshots/b05-fail-build.png" alt="失败 run 的 Summary：Triggered via issue，Generate blog 红叉 21s，Deploy blog 灰色 skipped，注解 Process completed with exit code 1" style="max-width: 100%;"></a></p>
+<p>左图信息已经能读出一半：<strong>Generate blog 红，Deploy blog 灰</strong>——这正是 <code class="notranslate">needs: build</code> 的效力，投递员没出门，问题在印刷车间。点进红 job：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b05-fail-log.png"><img src="/screenshots/b05-fail-log.png" alt="失败 job 的步骤清单：Checkout 到 Install dependencies 全绿，Generate new html 第一个变红，其后步骤全部跳过" style="max-width: 100%;"></a></p>
+<p>第一个红步骤是 <strong>Generate new html</strong>，后面的 sitemap、提交、打包全灰。展开日志，Traceback 最后一行写着：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">File "Gmeek.py", line 427, in runOne
+    self.createPostHtml(self.blogBase[listJsonName]["P"+number_str])
+KeyError: None
+</code></pre>
+<p>从下往上读：<code class="notranslate">KeyError: None</code> 意思是程序拿一个叫 None 的键去字典里找东西，没找到。为什么是 None？因为这篇 issue 创建时<strong>忘了挂"博客"标签</strong>——Gmeek 靠第一个标签判断文章归属与配色，没有标签，归属就是 None，增量印刷当场卡死。处方很简单：回到 issue 挂上"博客"标签，再去 Actions 手动 <strong>Run workflow</strong> 跑一次全量，文章就归队了。这次红叉的完整现场现在还挂在 <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/actions/runs/34912730993">run 34912730993</a>，可以亲手点开对照。</p>
+<h3>病例二：build 绿，deploy 红——Pages 还没切到 Actions 模式</h3>
+<p>第二种红叉更迷惑人：印刷车间一切正常，投递员摔了。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b05-fail-deploy.png"><img src="/screenshots/b05-fail-deploy.png" alt="失败 run 的 Summary：Manually triggered，Generate blog 绿勾 33s，Deploy blog 红叉 5s，注解 Failed to create deployment status 500" style="max-width: 100%;"></a></p>
+<p>这是建站第一天 2026-09-13 的一次手动运行。build 全绿，deploy 在第 5 秒报：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">Error: Failed to create deployment (status: 500) ...
+Server error, is githubstatus.com reporting a Pages outage?
+Please re-run the deployment at a later time.
+</code></pre>
+<p>日志客气地提示"是不是 GitHub 自己挂了，晚点再试"。但真实原因不是平台故障，而是<strong>仓库的 Pages 发布来源当时还没切换成 GitHub Actions</strong>（默认是从分支部署）——deploy 动作去创建部署，服务端不认，回了个 500。到设置里把 Source 切成 <strong>GitHub Actions</strong>，再点 <strong>Re-run all jobs</strong> 重跑，立刻转绿。这个设置页长什么样、怎么切，正是下一篇 B06 的主场，这里先记住结论：<strong>build 绿 deploy 红，病灶十有八九在 Pages 配置，不在文章内容。</strong></p>
+<h3>红叉之后的三个救命动作</h3>
+<ul>
+<li><strong>Re-run all jobs</strong>：run 页右上角的重跑按钮。偶发的网络抖动、平台 500，重跑一次常常就好；</li>
+<li><strong>手动 Run workflow（全量兜底）</strong>：标签漏挂、配置刚改、置顶关闭要生效，全靠它立刻来一次 runAll，不用等凌晨的班车；</li>
+<li><strong>定时班车</strong>：就算什么都不做，每天凌晨那次 schedule 也会自动全量——这是它存在的终极意义，一张每天自动巡检的安全网。</li>
+</ul>
+<h2>七、翻车急诊室与小结</h2>
+<h3>翻车急诊室</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>症状</th>
+<th>病因</th>
+<th>处方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>改了 config.json，刷新网站毫无变化</td>
+<td>发文章触发的是 runOne，沿用旧配置快照</td>
+<td>Actions 页手动 Run workflow 走全量；或等凌晨定时</td>
+</tr>
+<tr>
+<td>新评论早就显示了，卡片评论数不涨</td>
+<td>评论不触发构建，数字是构建时数的</td>
+<td>编辑一次该文章（runOne 重数），或等全量</td>
+</tr>
+<tr>
+<td>Close/Pin 之后页面毫无反应</td>
+<td>closed/labeled 不在 <code class="notranslate">on:</code> 清单里；关闭只打印一行</td>
+<td>手动 Run workflow 全量重建</td>
+</tr>
+<tr>
+<td>整个 run 红了，deploy 显示 skipped</td>
+<td>build 失败，deploy 被 <code class="notranslate">needs</code> 连坐</td>
+<td>查 build 第一个红步骤，别在 deploy 身上找原因</td>
+</tr>
+<tr>
+<td><code class="notranslate">KeyError: None</code> 一类报错</td>
+<td>文章 issue 没挂标签，程序找不到归属</td>
+<td>挂好"博客"标签，手动全量重跑</td>
+</tr>
+<tr>
+<td>build 绿、deploy 红，提示 status 500</td>
+<td>Pages 发布来源没切到 GitHub Actions</td>
+<td>仓库 Settings → Pages → Source 改 GitHub Actions，Re-run（详见 B06）</td>
+</tr>
+<tr>
+<td>半夜的定时构建两三点才出现</td>
+<td>schedule 高峰期排队，不保证准点</td>
+<td>正常现象；急着上线就手动触发</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3>小结</h3>
+<ul>
+<li>GitHub Actions 的层级是 <strong>run → job → step</strong>，Gmeek 有 build（印刷）与 deploy（投递）两个 job，后者 <code class="notranslate">needs</code> 前者；</li>
+<li>三种点火：<strong>issues 开/编辑、手动 Run workflow、定时 schedule</strong>；后两者与首次建站走 runAll 全量，发改文章走 runOne 增量；</li>
+<li>增量只重建一篇并沿用旧快照——<strong>改配置、置顶关闭、评论数都得等全量</strong>；全量可手动召唤，定时班车每天凌晨兜底但会晚点；</li>
+<li>每次构建第 10 步自动提交 🎉auto update by Gmeek action，产物进仓库是正常机制，别手改 docs/；</li>
+<li>查红叉四步：Summary 找红 job → 找第一个红 step → 日志看 <code class="notranslate">##[error]</code>、Traceback 从下往上读 → warning 不算病。</li>
+</ul>
+<p>下一篇 <strong>B06 就去拜访投递员的东家：GitHub Pages</strong>。build 全绿却 404、Pages 设置页到底怎么选、自定义域名与 HTTPS、为什么改了文章偶尔要 Ctrl+F5——印刷厂把纸印好了，投递这一站也有不少讲究。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L404-L476">Gmeek 主程序 Gmeek.py（runAll / runOne / 主入口在第 404–476 行）</a></li>
+<li><a href="https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule">GitHub 官方文档：触发工作流的事件（含 schedule 延迟说明）</a></li>
+<li><a href="https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch">GitHub 官方文档：手动触发 workflow_dispatch</a></li>
+<li>地基篇前文：<a href="/post/32.html">B01｜18 秒建站实录：从一个 GitHub 账号到第一篇文章上线</a>、<a href="/post/34.html">B02｜毛坯房装修：认识 config.json</a>、<a href="/post/35.html">B03｜在 Issues 里过日子：写稿、改稿、置顶与下架</a>、<a href="/post/36.html">B04｜门铃与名片：评论区与 About 关于页</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
