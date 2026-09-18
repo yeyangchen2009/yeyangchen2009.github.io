@@ -316,7 +316,7 @@ G17 之后把 11 个自研件整体过了一遍筛子（详见 [番外二](/post
 
 发布 **[番外五·踩坑手册怎样变成 AI 技能](/post/37.html)**，兑现番外四结尾的预告。全篇以"mermaid v11 时序图信号文字在亮色文章页不可读"这一个坑为贯穿案例，讲清一条经验的四层归宿——**博客写给人看、CLAUDE.md 每次会话全量在场立规矩、Auto memory 跨会话记事实（MEMORY.md 索引常驻、主题文件按需读）、Skill 只有 description 常驻而正文/脚本调用时才加载（渐进式披露）**。所有机制以官方文档 `code.claude.com/docs/en/memory` 与 `/skills` 为凭，关键结论：CLAUDE.md 与 memory 都是**上下文而非强制配置**（硬拦截要 PreToolUse hook）；多步流程应从记忆/规矩升级成 Skill。
 
-同一坑的四份归宿都已落地：① 博客——B01/B04 时序图已改 flowchart、本篇讲清原理；② CLAUDE.md——全局那份 Mermaid 约定里"时序图可追加 actorBkg 等变量"的条款已被 v11 证伪，待更新为"示意图一律 flowchart TD"（动用户全局文件，需本人确认后改）；③ memory——教程规划已记 v11 教训；④ Skill——`SKILL.md` 新增"重型运行时别赌固定 settle、改图先本地 file:// 预检、flowchart 优先"两段纪律。配图 8 张：1 张当晚 A/B 实测对比、1 张文内原生 flowchart、4 张纯本地 conhost（CLAUDE.md / memory 目录与索引 / SKILL.md frontmatter / 技能目录含 ui-shot.ps1 SAFETY 头）、2 张官方文档暗色实拍；全程零借窗。拍摄新增一条工具经验：Windows Terminal 会劫持 `Start-Process powershell` 的新窗成标签页，显式 `conhost.exe powershell.exe …` 才起独立经典控制台；Win11 经典控制台抓图要用 DWM 扩展框（`DwmGetWindowAttribute` attr 9）取物理几何，比 GetWindowRect 大约 1 倍 DPI 边框量。
+同一坑的四份归宿都已落地：① 博客——B01/B04 时序图已改 flowchart、本篇讲清原理；② CLAUDE.md——全局那份 Mermaid 约定里"时序图可追加 actorBkg 等变量"的条款已被 v11 证伪，2026-09-18 经本人确认已改为"示意图一律优先 flowchart TD、慎用 sequenceDiagram；确需时序图信号文字需自备不透明底盒"（配图 extra5-claudemd.png 为修订前实拍，留作 before 示意）；③ memory——教程规划已记 v11 教训；④ Skill——`SKILL.md` 新增"重型运行时别赌固定 settle、改图先本地 file:// 预检、flowchart 优先"两段纪律。配图 8 张：1 张当晚 A/B 实测对比、1 张文内原生 flowchart、4 张纯本地 conhost（CLAUDE.md / memory 目录与索引 / SKILL.md frontmatter / 技能目录含 ui-shot.ps1 SAFETY 头）、2 张官方文档暗色实拍；全程零借窗。拍摄新增一条工具经验：Windows Terminal 会劫持 `Start-Process powershell` 的新窗成标签页，显式 `conhost.exe powershell.exe …` 才起独立经典控制台；Win11 经典控制台抓图要用 DWM 扩展框（`DwmGetWindowAttribute` attr 9）取物理几何，比 GetWindowRect 大约 1 倍 DPI 边框量。
 
 ## 参考资料汇总
 
