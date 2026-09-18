@@ -10,17 +10,17 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="# A01｜'木亥佛教'与'solo王'：四万八千行 AI 字幕，136 条规则的清洗战
+<meta name="description" content="# A01｜136 条规则打败大模型：四万八千行 AI 字幕清洗战
 
-叶扬最近在学一门印度佛教史的课程，39 集，每集一小时上下。">
-<meta property="og:title" content="A01｜“木亥佛教”与“solo王”：四万八千行 AI 字幕，136 条规则的清洗战">
-<meta property="og:description" content="# A01｜'木亥佛教'与'solo王'：四万八千行 AI 字幕，136 条规则的清洗战
+先说结论：拿到四万八千行错误百出的 AI 字幕后，叶扬没有把它们丢给大模型，而是写了 136 条有序规则。">
+<meta property="og:title" content="A01｜136 条规则打败大模型：四万八千行 AI 字幕清洗战">
+<meta property="og:description" content="# A01｜136 条规则打败大模型：四万八千行 AI 字幕清洗战
 
-叶扬最近在学一门印度佛教史的课程，39 集，每集一小时上下。">
+先说结论：拿到四万八千行错误百出的 AI 字幕后，叶扬没有把它们丢给大模型，而是写了 136 条有序规则。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://yeyangchen2009.github.io/post/43.html">
 <meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
-<title>A01｜“木亥佛教”与“solo王”：四万八千行 AI 字幕，136 条规则的清洗战</title>
+<title>A01｜136 条规则打败大模型：四万八千行 AI 字幕清洗战</title>
 <link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
 
 
@@ -63,7 +63,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 
 <body>
     <div id="header">
-<h1 class="postTitle">A01｜“木亥佛教”与“solo王”：四万八千行 AI 字幕，136 条规则的清洗战</h1>
+<h1 class="postTitle">A01｜136 条规则打败大模型：四万八千行 AI 字幕清洗战</h1>
 <div class="title-right">
     <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
         <svg class="octicon" width="16" height="16">
@@ -87,8 +87,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"><h1>A01｜"木亥佛教"与"solo王"：四万八千行 AI 字幕，136 条规则的清洗战</h1>
-<p>叶扬最近在学一门印度佛教史的课程，39 集，每集一小时上下。为了通勤时能读、日后能检索，叶扬把 B 站的 AI 字幕整批拉了下来。拉下来一看，质量比预想的差很多，而且差得极有规律。</p>
+<div class="markdown-body" id="postBody"><h1>A01｜136 条规则打败大模型：四万八千行 AI 字幕清洗战</h1>
+<p>先说结论：拿到四万八千行错误百出的 AI 字幕后，叶扬没有把它们丢给大模型，而是写了 136 条有序规则。效果更好——而且好的原因和"AI 够不够强"没有关系，和任务的形状有关系。</p>
+<p>叶扬是程序员，日常写前后端和数据库；最近在学一门印度佛教史课程，39 集，每集一小时上下。为了通勤能读、日后能检索，叶扬把 B 站的 AI 字幕整批拉了下来。拉下来一看，质量比预想的差很多，而且差得极有规律。</p>
 <p>先看几行原始字幕，猜猜原意是什么：</p>
 <markdown-accessiblity-table><table role="table">
 <thead>
@@ -132,37 +133,41 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
-<p>"频婆娑罗王"是佛陀同时代的国王，被识别成了"平婆 solo 王"；佛教核心概念"自性"，两百多行里全部写成了"自信"。如果不洗一遍，这批字幕既没法读，也没法搜。</p>
-<p>这是新开的「AI 工作流」系列第一篇：记录一个非程序员怎样用开源工具加 AI，把一件真实的体力活跑通。本篇专攻其中最有意思的一段——<strong>字幕清洗</strong>。下载的故事（登录 cookie、412 风控、29 个同名分 P）放下一篇。</p>
-<h2>一、先摸清错误的形状</h2>
+<p>"频婆娑罗王"是佛陀同时代的国王，被识别成了"平婆 solo 王"；佛教核心概念"自性"，两百多行里全部写成了"自信"。不洗一遍，这批字幕既没法读，也没法搜。</p>
+<p>这是新开的「AI 工作流」系列第一篇。这个系列记的是叶扬在真实工程里遇到的问题——数据清洗、工具链、前后端、数据库——以及 AI 在每一层到底该站在哪。本篇先讲这批字幕的清洗。下载的故事（登录 cookie、412 风控、29 个同名分 P）放下一篇。</p>
+<h2>一、错误的形状</h2>
 <p>这批语料的规模：</p>
 <ul>
 <li>两套课程，共 <strong>65 个 srt 文件、47762 条字幕</strong>；</li>
 <li>其中 <strong>356 条混进了拉丁字母</strong>——大量是佛教术语被识别成了英文或拼音 token；</li>
 <li>全部讲稿约 <strong>47 万字</strong>。</li>
 </ul>
-<p>粗看几十条之后，叶扬发现错误不是随机散布的噪音，而是<strong>高度系统性</strong>的。可以分成四类：</p>
+<p>粗看几十条之后，结论很清楚：错误不是随机散布的噪声，而是<strong>高度系统性</strong>的。分四类：</p>
 <ol>
 <li><strong>音近替换</strong>：大圣/大胜/大盛/大神 → 大乘；小圣 → 小乘；元起 → 缘起；无名 → 无明。</li>
 <li><strong>术语缺位</strong>："部派""唯识""结集"这些词不在日常语料里，被强行映射到常用词——木亥佛教、维氏（唯识）、集结（结集）。</li>
 <li><strong>跨语言乱入</strong>：语音模型拿拉丁字母凑音——P 字佛（辟支佛）、阿 sir（阿阇梨）、solo 王（娑罗/频婆娑罗）、4Z（四部）。</li>
 <li><strong>专有名词</strong>：贵霜王朝被写成贵州/贵春/贵商/归庄王朝，笈多王朝有五种写法，戒日王朝成了烈日王朝。</li>
 </ol>
-<p>系统性错误意味着一个诱人的可能：<strong>它是可以枚举的</strong>。这正是规则派的战场。</p>
-<h2>二、为什么没让大模型直接改</h2>
-<p>2026 年了，看到几万条脏文本，第一反应难道不是丢给大模型："帮我把佛教术语错误改对"吗？</p>
-<p>叶扬认真想过这条路，最后没有选它当主力，理由有四个：</p>
+<p>系统性错误意味着一件关键的事：<strong>它是一个封闭词表上的确定性映射，可以枚举。</strong></p>
+<p>请记住这句判断，后面所有决策都是从它推出来的。</p>
+<h2>二、为什么第一选择不是大模型</h2>
+<p>2026 年了，看到几万行脏文本，第一反应难道不是丢给大模型："帮我把佛教术语错误改对"吗？</p>
+<p>这里要先引入一个框架。Karpathy 把软件分成三个时代：<a href="https://karpathy.github.io/2017/11/13/software/" rel="nofollow">Software 1.0</a> 是程序员手写明确规则，2.0 是用数据训出神经网络权重，<a href="https://x.com/karpathy/status/1886192184808149383" rel="nofollow">3.0</a> 是用自然语言提示 LLM——"最热门的新编程语言是英语"。清洗字幕听起来是语言任务，直觉该用 3.0。</p>
+<p>但直觉错了。这个任务的形状是 1.0 的：词表封闭、答案确定、要反复全量重跑。把它交给 3.0，会撞上四个工程问题：</p>
 <ol>
-<li><strong>要可复现</strong>。规则是死的，同一个词这次改什么、下次还改什么，65 个文件一把尺子量到底。大模型同一批跑两次，结果可能不完全一样，而字幕清洗是多轮迭代——第一轮的产物要成为第二轮的基线，不可复现就无法累积。</li>
-<li><strong>要可审计</strong>。每一条规则都写明"什么模式、换成什么、为什么"，错了能定位到具体那一行规则。模型给的 47 万字修订稿，没有 diff 级别的审计方法——你只能重新读一遍，等于没省人力。</li>
-<li><strong>要零成本可重跑</strong>。以后还有别的课程要洗（叶扬手头另一套 30 集的老课没有 AI 字幕，要走本地语音识别），脚本一秒重跑，不花一分 token。</li>
-<li><strong>模型有两种新错误</strong>：一是<strong>过度改写</strong>，把口语化但正确的表达"润色"成书面语，讲稿就失去了现场感；二是<strong>幻觉补全</strong>，遇到拿不准的术语，模型会自信地编一个听上去合理的词，比"木亥佛教"更危险——错得像对的。</li>
+<li><strong>不可复现。</strong> 同一批输入跑两次，模型给的修订不完全一样。而清洗是多轮迭代——第一轮的产物是第二轮的基线，基线必须稳定。生产管这叫 flaky build，没人想要一个每次构建结果不同的编译器。</li>
+<li><strong>不可审计。</strong> 136 条规则，每条写明匹配什么、换成什么、为什么，错了能定位到具体那一行。模型吐回来 47 万字修订稿，你没法 code review——只能重新通读一遍，人力一分没省。</li>
+<li><strong>没法写测试。</strong> 规则的验收可以是一条硬杠杠：登记过的错误形，全库 grep 必须零残留。prompt 没有回归测试。</li>
+<li><strong>尾部行为不受控。</strong> 平均案例上模型大概率表现不错，但它有一种人类不会犯的失败模式：遇到拿不准的术语，<strong>自信地换成一个听上去合理的词</strong>。"木亥佛教"至少一看就错；一个通顺但不存在的佛学概念混在正确文本里，你永远发现不了。报错不可怕，静默返回错误答案才可怕。</li>
 </ol>
-<p>但这<strong>不是</strong>"规则胜过 AI"的故事。真正的分工是：</p>
+<p>这也是为什么叶扬对现在各种"端到端 AI"演示保持警惕：demo 展示的是平均案例，部署考验的是最难的 5%。可靠性不由平均值决定，由尾部决定。</p>
+<p>顺带一说，语音识别本身就是锯齿状智能的活样本：模型在日常口语上的表现接近超人，在"阿鞞跋致""补特伽罗"上犯的错没有任何人类会犯。能力不是均匀分布的，是锯齿状的——凹陷点必须人工兜底。</p>
+<p>但这不是一篇"规则派战胜模型派"的檄文。真实分工是三句话：</p>
 <blockquote>
 <p><strong>AI 负责发现候选，人负责判定，规则负责执行。</strong></p>
 </blockquote>
-<p>通读讲稿、扫出可疑词这一步，是叶扬和 AI 协作完成的；"这个词在这门课里是不是恒等于那个术语"，由人拍板；拍板之后的几千次机械替换，交给一条命令。人在环上（on the loop），不在环里当替换零件。</p>
+<p>通读讲稿、扫出可疑词，是叶扬和 AI 协作完成的；"这个词在这门课里是不是恒等于那个术语"，由人拍板；拍板之后的一千多次机械替换，交给一条命令。人在环上设计系统，而不是人肉替换 1230 次，更不是被移出决策链。这是钢铁侠套装，不是钢铁侠机器人。</p>
 <h2>三、清洗流水线</h2>
 <p>整套流程长这样：</p>
 <div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
@@ -179,8 +184,8 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <span class="pl-ent">I</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">J</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>验收<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
     <span class="pl-ent">J</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"登记错误形零残留"</span><span class="pl-k">|</span> <span class="pl-ent">K</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>入库<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
     <span class="pl-ent">J</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"发现新错词"</span><span class="pl-k">|</span> <span class="pl-ent">C</span></pre></div>
-<p>注意那个回流箭头：这套流程实际跑了两遍以上。第二轮规则几乎全部来自"通读清洗后的第一讲讲稿"——机器把已知错误扫干净之后，藏得更深的错误才浮出来。</p>
-<p>脚本本体是一个 321 行的 Python 文件 <code class="notranslate">fix_subs.py</code>，无第三方依赖，核心数据结构就是一张有序规则表，每条规则三元组：<strong>匹配模式、替换词、说明</strong>：</p>
+<p>注意那个回流箭头：流程实际跑了两遍以上。第二轮规则几乎全部来自"通读清洗后的第一讲讲稿"——机器把已知错误扫干净之后，藏得更深的错误才浮出来。这和调 bug 一样：修完一层，测试重新跑红，下一层才可见。</p>
+<p>脚本本体是一个 321 行的 Python 文件 <code class="notranslate">fix_subs.py</code>，零第三方依赖，核心数据结构就是一张有序规则表，每条规则三元组：<strong>匹配模式、替换词、说明</strong>：</p>
 <div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-c1">RULES</span> <span class="pl-c1">=</span> [
     <span class="pl-c"># —— 初期/后期大乘的音近变体（必须排在"大圣→大乘"之前）——</span>
     (<span class="pl-s">r"(出席|出奇|初级|初奇|出其|出齐)大[圣胜盛神]"</span>, <span class="pl-s">"初期大乘"</span>, <span class="pl-s">"初期大乘(音近变体)"</span>),
@@ -195,12 +200,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     (<span class="pl-s">r"阿B8字|阿B拔字"</span>, <span class="pl-s">"阿鞞跋致"</span>, <span class="pl-s">"阿鞞跋致"</span>),
     <span class="pl-c"># ……共 136 条</span>
 ]</pre></div>
-<p>一条命令跑完，产出三样东西：修正后的 srt（序号时间码原样保留，可以挂回播放器）、纯文本讲稿、人工校对清单。原始字幕目录全程只读。</p>
+<p>一条命令跑完，产出三样东西：修正后的 srt（序号时间码原样保留，可以挂回播放器）、纯文本讲稿、人工校对清单。原始字幕目录全程只读——这是整条流水线的安全带。</p>
 <h2>四、四条军规</h2>
-<p>真正值钱的不是这 136 条规则本身（换一门课就得换词表），而是定规则时的四条纪律。</p>
-<h3>军规一：先定量，后替换</h3>
-<p>每个候选词，<strong>先统计它在全库出现多少次，再抽上下文人工判定</strong>，绝不看到一个错词就全局替换。</p>
-<p>原因很朴素：频次决定优先级，上下文决定能不能替。"大乘"的各种错误形出现了 800 多次，排第一优先；而有些错词只出现一两次，记下来顺带处理即可。统计报告还顺手回答了"这轮清洗到底修了多少东西"——最终实测命中 <strong>1230 次</strong>，排前五的是：</p>
+<p>值钱的不是这 136 条规则本身（换一门课就得换词表），是定规则时的四条纪律。每一条在普通软件工程里都有对应物。</p>
+<h3>军规一：先量化，再动手</h3>
+<p>训练神经网络的头号纪律是什么？第一步永远不是碰模型代码，是彻底检查数据。Karpathy 在 <a href="https://karpathy.github.io/2019/04/25/recipe/" rel="nofollow">《A Recipe for Training Neural Networks》</a> 里给过一条具体建议：把样本按损失降序排列，你保证会发现意料之外的、奇怪的、但有用的东西。</p>
+<p>洗字幕一模一样：每个候选词，<strong>先统计全库频次，再抽上下文判定</strong>，绝不看到一个错词就全局替换。频次决定优先级，上下文决定能不能替。最终实测命中 <strong>1230 次</strong>，排前五的是：</p>
 <markdown-accessiblity-table><table role="table">
 <thead>
 <tr>
@@ -223,7 +228,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 <tr>
 <td>部派（布派/木亥/步派等）</td>
-<td>100+</td>
+<td>143</td>
 </tr>
 <tr>
 <td>般若（波若等）</td>
@@ -231,54 +236,55 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
-<p>一个环境小坑：Windows 控制台默认 GBK 编码，Python 打印中文频次表会乱码甚至崩溃。对策是<strong>永远让脚本把报告写成 UTF-8 文件再读</strong>，不依赖控制台。</p>
-<h3>军规二：区分"安全替换"和"语境替换"</h3>
-<p>这是最重要的一条。</p>
-<p><strong>安全替换</strong>：这个错误形在本语料里恒等于目标词，闭眼替。</p>
+<p>825 次的错误排第一优先级，只出现一两次的记下来顺带处理。数据自己会告诉你先修什么。</p>
+<p>环境小坑：Windows 控制台默认 GBK 编码，Python 打印中文频次表会乱码甚至崩溃。对策是让脚本把报告写成 UTF-8 文件再读，不跟控制台较劲。</p>
+<h3>军规二：分清安全替换和语境替换——precision 优先</h3>
+<p>这是 precision 和 recall 的权衡，而叶扬明确倒向 precision：<strong>宁可漏改进清单，不可错改伤正文。</strong></p>
+<p><strong>安全替换</strong>：错误形在本语料里恒等于目标词，闭眼替。"摩羯"21 次全是"摩揭陀"（摩羯座不可能出现在印度佛教史课上）；"集结"全是"结集"，"涅盘"全是"涅槃"——安全。</p>
+<p><strong>语境替换</strong>：错误形本身是个真实常用词，只做短语，或者不替、进清单：</p>
 <ul>
-<li>"摩羯"出现 21 次，抽查全是"摩揭陀"（摩揭陀国），而黄道十二宫的摩羯座不可能出现在印度佛教史课上——安全。</li>
-<li>"集结"全是"结集"（经典结集），"涅盘"全是"涅槃"——安全。</li>
+<li><strong>自信 → 自性</strong>：最棘手的一个。253 行，万一是现代用法怎么办？叶扬先随机抽了几十行，又把不带"无"字的一百多行全部过目——清净自性、离言自性、自性与神我，没有一个是"自信一点"的那个自信，这才写进规则。合并这个 PR 的依据是抽样证据，不是感觉。</li>
+<li><strong>休息 → 修行</strong>：老师既会说"出家修行"，也会说"先休息一下"。规则只认短语，"先休息一下"原样保留进清单。</li>
+<li><strong>思路 → 丝路</strong>、<strong>D → 地/谛</strong>：全部进清单，不替。</li>
 </ul>
-<p><strong>语境替换</strong>：错误形本身是个真实存在的常用词，必须只做短语，或者干脆不替、进人工清单。</p>
-<ul>
-<li><strong>自信 → 自性</strong>：最棘手的一个。"自信"出现 253 行，万一是现代用法怎么办？叶扬先随机抽了几十行，又把不带"无"字的一百多行全部过目——清净自性、离言自性、自性与神我……没有一个是"自信一点"的那个自信，这才写进规则。判定依据是语料，不是感觉。</li>
-<li><strong>休息 → 修行</strong>：老师既会说"出家修行"，也会说"先休息一下"。规则只认短语：<code class="notranslate">出家休息|在家休息|想要休息 → 修行</code>，"先休息一下"原样保留，进清单人工看。</li>
-<li><strong>思路 → 丝路</strong>、<strong>D → 地/谛</strong>：同理，全部进清单，不替。</li>
-</ul>
-<p>后来的结果是：自动清单里留下 <strong>196 条真正需要人工核对的</strong>，另有 <strong>317 条中英混排</strong>——其中大多数是老师口头引用 BBC、DVD、slogan，属于正常表达，可直接忽略。分清"机器能做的"和"只有人能做的"，比追求全自动重要得多。</p>
-<h3>军规三：规则有序，长短语在前</h3>
-<p>规则表是<strong>从上到下顺序执行</strong>的，这就埋了一个雷：通用规则如果排在前面，会把短语规则的素材先吃掉。</p>
-<p>比如"出席大圣"实际是"初期大乘"。如果通用的 <code class="notranslate">大圣 → 大乘</code> 排前面，文本就先变成了"出席大乘"——一个谁也没见过的错误，再没有规则能救它。所以所有长短语规则必须排在通用规则之前：</p>
+<p>最后的产物是 <strong>196 条真正需要人工核对的清单</strong>，外加 <strong>317 条中英混排</strong>——其中大多数是老师口头引用 BBC、DVD、slogan，属正常表达，可直接忽略。好的系统不只输出修正，还输出一份诚实的"我不确定列表"。</p>
+<h3>军规三：规则有序，长短语在前——像编译器的 pass</h3>
+<p>规则表从上到下顺序执行，这就埋了雷：通用规则排在前面，会把短语规则的素材先吃掉。</p>
+<p>"出席大圣"实际是"初期大乘"。如果通用的 <code class="notranslate">大圣 → 大乘</code> 先跑，文本先变成"出席大乘"——一个谁也没见过的新错误，再没有规则救得回来。所以长短语规则必须排在通用规则之前：</p>
 <div class="highlight highlight-source-python"><pre class="notranslate">(<span class="pl-s">r"(出席|出奇|初级|初奇|出其|出齐)大[圣胜盛神]"</span>, <span class="pl-s">"初期大乘"</span>, ...),  <span class="pl-c"># 先跑</span>
 (<span class="pl-s">r"大[圣胜盛神]"</span>, <span class="pl-s">"大乘"</span>, ...),                                    <span class="pl-c"># 后跑</span></pre></div>
-<p>叶扬还亲手制造过一次反向事故：短语规则写宽了，把"在家休息"误替成了"出家修行"——方向都反了。修法是收紧短语表、重跑全库，再 grep 确认错误形零残留。<strong>规则的好处正是在这种时候体现的：误伤可以精确定位、可以回滚、可以补一条测试。</strong> 大模型的一次发挥失常，你连案发现场都找不到。</p>
-<h3>军规四：全部脚本化，一次编写、多次重跑</h3>
-<p>原始 srt 永远不动；所有知识沉淀在规则表里；产物一键重建。这带来三个好处：</p>
+<p>规则还会互相喂料（A 的产物命中 B），顺序本身就是语义的一部分。叶扬还亲手制造过一次反向事故：短语写宽了，"在家休息"被误替成"出家修行"，方向都反了。修法是收紧短语、全库重跑、grep 确认零残留——规则的好处正在这种时候兑现：误伤可以精确定位、可以回滚、可以补一条测试。模型的一次发挥失常，你连案发现场都找不到。</p>
+<h3>军规四：全部脚本化，输入只读，一秒重建</h3>
+<p>原始 srt 永远不动；所有知识沉淀在规则表里；产物一键重建。这就是字幕界的 CI：</p>
 <ol>
 <li>规则迭代后全库重跑只要一秒，不怕"改了规则要不要重来"；</li>
-<li>另一套 30 集老课将来用语音识别出字幕后，<strong>同一张规则表直接复用</strong>，术语错误是同一批；</li>
-<li>每条规则都带着中文说明，三个月后的自己看得懂当时为什么这么写。</li>
+<li>另一套 30 集老课将来用语音识别出字幕后，同一张词表直接复用，术语错误是同一批；</li>
+<li>每条规则带中文说明，三个月后的自己看得懂当时为什么这么写。</li>
 </ol>
-<p>讲稿生成也顺手做了：去时间码、合断句，并<strong>每隔 5 分钟插入一个〔mm:ss〕锚点</strong>。读到不通顺的地方，照着锚点就能跳回视频原位置核对——这是纯文本讲稿相对字幕的最大价值。</p>
+<p>讲稿生成也顺手做了两件事：去时间码、合断句，并<strong>每隔 5 分钟插一个〔mm:ss〕锚点</strong>。读到不通顺的地方，照锚点跳回视频原位置核对——纯文本相对字幕的最大价值。</p>
 <h2>五、验收，以及一个意外收获</h2>
-<p>清洗类工程最容易自欺欺人：跑了脚本，感觉通顺了，就算完了。叶扬的验收是两道硬杠杠：</p>
+<p>清洗工程最容易自欺欺人：跑了脚本，感觉通顺了，就算完。叶扬的验收是两道硬杠杠：</p>
 <ol>
-<li><strong>登记过的错误形，全库零残留</strong>——逐个 grep，一个都不能剩；</li>
-<li><strong>正确词的词频要合理</strong>——大乘 825、部派 143、自性 253、唯识约 70、无著 6、世亲 7……对照课程大纲，该高频的高频、该低频的低频。</li>
+<li><strong>登记过的错误形，全库零残留</strong>——逐个 grep，一个不剩，这就是回归测试；</li>
+<li><strong>正确词的词频要合理</strong>——大乘 825、部派 143、自性 253、唯识约 70、无著 6、世亲 7，对照课程大纲，该高频的高频、该低频的低频。这是在检查输出的分布形状，而不只是抽查几个样例。</li>
 </ol>
-<p>此外还白捡一个元数据层面的发现：比对两套课程的分 P 时发现，39 集那套的第 25 讲之后其实是<strong>重录版</strong>——25–28 讲重录第 1 讲，29 讲重录第 3 讲，32–39 讲对应 8–22 讲。学习时要按主题并轨，不能傻按编号顺序看，否则同一批内容学两遍。这种"字幕之外的结构问题"，只有把文本整体拉通之后才看得出来。</p>
-<h2>六、急诊室</h2>
+<p>此外白捡一个元数据层面的发现：比对两套课程的分 P 时发现，39 集那套的第 25 讲之后其实是<strong>重录版</strong>——25–28 讲重录第 1 讲，29 讲重录第 3 讲，32–39 讲对应 8–22 讲。学习要按主题并轨，不能傻按编号顺序看，否则同一批内容学两遍。这种"文本之外的结构问题"，只有把语料整体拉通之后才看得出来。</p>
+<h2>六、规则会在什么时候输</h2>
+<p>这套方法成立有一个前提，必须说清楚：<strong>错误分布高度集中、而且可以枚举。</strong> 术语密集的课程字幕恰好满足——136 条规则覆盖 1230 处错误，边界情况交给清单。</p>
+<p>换成开放域的日常语音、多人闲聊、带口音的即兴讲话，错误词表无穷无尽，规则会输，而且会输得很难看——那才是模型的主场。</p>
+<p>所以比"用规则还是用模型"更重要的一步，是先判断语料长什么样：<strong>错误是系统性的还是随机的，是封闭词表还是开放世界。</strong> 语料的形状，决定工具的形状。这句话对选数据库、选框架、选架构，同样成立。</p>
+<h2>急诊室</h2>
 <ul>
-<li><strong>替换完反而多出新词</strong>：先查规则顺序，大概率是通用规则抢跑；再查两条规则是否互相喂料（A 的产物命中 B）。</li>
+<li><strong>替换完反而多出新词</strong>：先查规则顺序，大概率是通用规则抢跑；再查两条规则是否互相喂料。</li>
 <li><strong>控制台中文全乱码</strong>：别和 GBK 较劲，脚本直接写 UTF-8 报告文件。</li>
-<li><strong>看到拉丁字母就判错</strong>：317 条混排里大多数是 BBC、DVD、slogan、型号名。先统计再判定，这条纪律对字母一样适用。</li>
-<li><strong>规则误伤无法回滚</strong>：如果你就地改了原始字幕，就真回不去了。<strong>输入只读、产物重建</strong>是这套流程的安全带。</li>
-<li><strong>AI 改稿看着通顺但不敢用</strong>：警惕"过度润色"和"合理的幻觉"。让人判断不了对错的修订，比保留原样更糟。</li>
+<li><strong>看到拉丁字母就判错</strong>：317 条混排里大多数是 BBC、DVD、slogan、型号名。先统计再判定，这条纪律对字母同样适用。</li>
+<li><strong>规则误伤无法回滚</strong>：如果你就地改了原始字幕，就真回不去了。输入只读、产物重建，是安全带。</li>
+<li><strong>AI 改稿看着通顺但不敢用</strong>：警惕"过度润色"和"合理的幻觉"。让人无法判断对错的修订，比保留原样更糟。</li>
 </ul>
-<h2>小结</h2>
-<p>这套方法没有一招鲜，它成立有一个前提：<strong>错误分布高度集中、而且可以枚举</strong>。一门术语密集的课程字幕恰好满足——一百多条规则覆盖了一千多处错误，剩下的边界情况老老实实交给清单。换成开放域的日常语音，规则表会无穷无尽，那才是模型的主场。</p>
-<p>所以比"用规则还是用模型"更重要的一步，是先判断你的语料长什么样：<strong>错误是系统性的还是随机的，是封闭词表还是开放世界。</strong> 语料的形状，决定工具的形状。</p>
-<p>下一篇 A02，回到这条流水线的起点：<strong>47000 行字幕是怎么从 B 站批量拉下来的</strong>——为什么不登录根本看不到字幕轨、连打 30 个请求会被 412 风控、29 个同名分 P 怎么逼出循环下载法。工具是开源的 <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a>，但正确的打开方式有不少讲究。</p>
+<h2>写在最后</h2>
+<p>136 条规则不是笨办法的耻辱柱。每一条，都是叶扬真正读懂一处错误之后留下的证据；规则表写满的那天，对这批语料的理解也就建完了。</p>
+<p>这大概是 Software 1.0 在 3.0 时代最公平的地方：模型给你的答案是模型的，你手写下来的每一行规则，都是你自己的。</p>
+<p>下一篇 A02，回到这条流水线的起点：<strong>四万八千行字幕是怎么从 B 站批量拉下来的</strong>——为什么不登录根本看不到字幕轨、连打 30 个请求会被 412 风控、29 个同名分 P 怎么逼出循环下载法。工具是开源的 <a href="https://github.com/yt-dlp/yt-dlp">yt-dlp</a>，但正确的打开方式有不少讲究。</p>
 <blockquote>
 <p>说明：课程字幕仅供个人学习使用，本文不发布任何字幕原文与讲稿内容，只展示错误词例与方法。这套流程对任何讲座、课程、会议录音的转写文本都适用。</p>
 </blockquote></div>
