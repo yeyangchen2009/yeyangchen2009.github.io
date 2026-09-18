@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# B08｜交房验收：三态主题、页脚与 favicon、RSS，以及进阶指路
+
+> B07 给印刷厂买好了失火保险，叶扬把 backup 镜像、blogBase 户口本、升级回滚和搬家路线逐一验明，心里踏实了。">
+<meta property="og:title" content="B08｜交房验收：三态主题、页脚与 favicon、RSS，以及进阶指路">
+<meta property="og:description" content="# B08｜交房验收：三态主题、页脚与 favicon、RSS，以及进阶指路
+
+> B07 给印刷厂买好了失火保险，叶扬把 backup 镜像、blogBase 户口本、升级回滚和搬家路线逐一验明，心里踏实了。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/41.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>B08｜交房验收：三态主题、页脚与 favicon、RSS，以及进阶指路</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">B08｜交房验收：三态主题、页脚与 favicon、RSS，以及进阶指路</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/41" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>B08｜交房验收：三态主题、页脚与 favicon、RSS，以及进阶指路</h1>
+<blockquote>
+<p>B07 给印刷厂买好了失火保险，叶扬把 backup 镜像、blogBase 户口本、升级回滚和搬家路线逐一验明，心里踏实了。地基篇走到这里，房子能盖（B01）、能装修（B02）、能过日子（B03）、有门铃（B04）、有值班日志（B05）、通邮路（B06）、买了保险（B07）——只差最后一道工序：<strong>轻装修与交房验收</strong>。这是地基篇的收官篇，先做四件不写代码也能完成的门面装修，再拿一张总验收单逐条打勾，最后把路标指向 G 系列进阶层。</p>
+</blockquote>
+<h2>一、三态主题：太阳、月亮与同步圆环</h2>
+<p>看本站右上角，主题按钮旁那一列圆圈图标里，最右边一个就是主题开关。它不是简单的明暗二选一，而是<strong>三态循环</strong>：在页面上点一下，顺序是亮色 → 暗色 → 跟随系统 → 再回亮色。三种状态各有各的图标与配色，下面三张是同一首页在三态下的实拍，连右上角的图标都不一样：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b08-theme-light.png"><img src="/screenshots/b08-theme-light.png" alt="本站首页亮色主题实拍：白底黑字，右上角主题按钮是橙色太阳图标，文章列表 SideNav 浅底，置顶 #5 标题左侧红色上箭头" style="max-width: 100%;"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b08-theme-dark.png"><img src="/screenshots/b08-theme-dark.png" alt="本站首页暗色主题实拍：GitHub Dark 深底白字，右上角主题按钮是青色月牙图标，SideNav 描边清晰，标签蓝绿胶囊照旧" style="max-width: 100%;"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b08-theme-auto.png"><img src="/screenshots/b08-theme-auto.png" alt="本站首页跟随系统主题实拍：模拟系统为暗色时页面呈深底，右上角主题按钮是灰色同步圆环图标，含义为跟随操作系统的深浅色设置" style="max-width: 100%;"></a></p>
+<p>三态的行为在引擎模板 <code class="notranslate">templates/base.html</code> 里写得很直白，可以当成一份小型的前端状态机来读：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-c">// &lt;html&gt; 上的 data-color-mode 决定整套 Primer 配色</span>
+<span class="pl-k">let</span> <span class="pl-s1">theme</span> <span class="pl-c1">=</span> <span class="pl-s1">localStorage</span><span class="pl-kos">.</span><span class="pl-en">getItem</span><span class="pl-kos">(</span><span class="pl-s">"meek_theme"</span><span class="pl-kos">)</span> <span class="pl-c1">||</span> <span class="pl-s">"light"</span><span class="pl-kos">;</span>
+<span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">documentElement</span><span class="pl-kos">.</span><span class="pl-en">setAttribute</span><span class="pl-kos">(</span><span class="pl-s">"data-color-mode"</span><span class="pl-kos">,</span> <span class="pl-s1">theme</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+
+<span class="pl-c">// 点击按钮：light → dark → auto，三态循环</span>
+<span class="pl-k">let</span> <span class="pl-s1">newMode</span> <span class="pl-c1">=</span> <span class="pl-s1">currentMode</span> <span class="pl-c1">===</span> <span class="pl-s">"light"</span> ? <span class="pl-s">"dark"</span>
+            : <span class="pl-s1">currentMode</span> <span class="pl-c1">===</span> <span class="pl-s">"dark"</span>  ? <span class="pl-s">"auto"</span> : <span class="pl-s">"light"</span><span class="pl-kos">;</span>
+<span class="pl-s1">localStorage</span><span class="pl-kos">.</span><span class="pl-en">setItem</span><span class="pl-kos">(</span><span class="pl-s">"meek_theme"</span><span class="pl-kos">,</span> <span class="pl-s1">newMode</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>三个要点：</p>
+<ol>
+<li><strong>选择存在浏览器本地。</strong> <code class="notranslate">localStorage</code> 的键叫 <code class="notranslate">meek_theme</code>，所以主题是"这台设备上这个浏览器"的个人选择，不影响其他读者，也不写进仓库。第一次访问、还没有存值时默认亮色（<code class="notranslate">|| "light"</code>）。</li>
+<li><strong>"跟随系统"靠的是 CSS 媒体查询。</strong> auto 态把决定权交给操作系统的深浅色设置，白天亮色、晚上系统一切暗色它就跟着暗——手机用户尤其喜欢这一档。</li>
+<li><strong>评论区会跟着换肤。</strong> 还记得 B04 的 utterances 吗？切换主题时页面会向评论 iframe 发一个 <code class="notranslate">postMessage</code>，把评论主题切成 <code class="notranslate">github-light</code> / <code class="notranslate">dark-blue</code> / <code class="notranslate">preferred-color-scheme</code>，文章和评论永远同色，不会一块亮一块暗。</li>
+</ol>
+<p>这套机制由 config 的 <code class="notranslate">themeMode</code> 字段掌管，默认值 <code class="notranslate">"manual"</code> 就是上面的手动三态；如果设成 <code class="notranslate">"fix"</code>，主题按钮会直接 <code class="notranslate">display:none</code> 藏起来，站点恒定一种配色——绝大多数博客用默认的 manual 即可，知道有这个开关就行。另外提醒一个截图圈才会遇到的冷知识：无头浏览器里如果样式表加载失败，页面会退回"白底 + 内联彩色标签"的半裸状态，排查时别误当成主题 bug（那是 Primer CSS 没加载，见番外一的白底怪案）。</p>
+<h2>二、页脚：网站运行 N 天，与一行版权小字</h2>
+<p>把任意一篇文章滚到最底，页脚区域其实塞了三样东西。这是 B07 那篇文章底部的实拍：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b08-footer.png"><img src="/screenshots/b08-footer.png" alt="文章页底部暗色实拍：右上是&quot;✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️&quot;小字；中部是上一篇 B06、下一篇&quot;已经到尽头啦&quot;两张导航卡与&quot;评论&quot;按钮；最底居中页脚写着 Copyright © 2026 叶扬的博客、网站运行 5 天 · 总浏览量 643 次 · Powered by Gmeek" style="max-width: 100%;"></a></p>
+<p>从下往上看：</p>
+<ul>
+<li><strong>版权年自动更新。</strong> 页脚第一行 <code class="notranslate">Copyright © 2026 叶扬的博客</code>，年份不是手写的，而是模板里一行 <code class="notranslate">new Date().getFullYear()</code> 现场算出——明年它自己会变成 2027，永远不用回来改。</li>
+<li><strong>网站运行 N 天。</strong> 第二行的"网站运行 5 天"由 <code class="notranslate">startSite</code> 字段驱动：模板拿今天减去建站日，<code class="notranslate">Math.floor(diff / 一天的毫秒数)</code> 取整。本站 <code class="notranslate">"startSite": "09/13/2026"</code>，发稿当天正好第 5 天。<strong>这个日期必须是 <code class="notranslate">MM/DD/YYYY</code> 斜杠格式</strong>，写成 ISO 横杠格式会被浏览器按 UTC 解析，导致"运行 -1 天"的灵异现象（G02 页脚装修那篇专门踩过）。留空则整段运行天数不显示。</li>
+<li><strong>Powered by Gmeek。</strong> 这是开源博客的礼貌署名，建议保留。</li>
+</ul>
+<p>图中那个"总浏览量 643 次"不是框架自带的，而是本站挂的 <code class="notranslate">GmeekVercount</code> 计数插件（config 的 <code class="notranslate">allHead</code> 字段，全站注入）；"本文浏览量 9 次"也是它。地基版不装它页脚照样完整，进阶想加再看官方插件清单。</p>
+<p>右上角那句 <code class="notranslate">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</code> 则是 config 的 <code class="notranslate">bottomText</code> 字段，每篇文章末尾右对齐的一行小字，写座右铭、版权声明、一句玩笑都行。它在模板里是个 <code class="notranslate">float:right</code> 的浮动元素——这个浮动后来还在手机上制造过一次"上一篇/下一篇被挤窄"的 BFC 事故，那是 G18 的故事。</p>
+<h2>三、favicon 与 og.png：浏览器标签和分享卡片上的脸</h2>
+<p>门面装修的第三件，是给站点两张"脸"。</p>
+<p>第一张是 <strong>favicon</strong>——浏览器标签页标题左边那个小图标。config 里用 <code class="notranslate">faviconUrl</code> 指定，本站指向自制的 <code class="notranslate">/favicon.svg</code>：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b08-favicon.png"><img src="/screenshots/b08-favicon.png" alt="favicon 明暗双态对比：左侧浅色模式浅灰底上一个白色圆角方块、绿色描边与绿色&quot;叶&quot;字；右侧暗色模式深灰底上一个深色圆角方块，描边变暗、&quot;叶&quot;字更亮，同一 SVG 自动适应" style="max-width: 100%;"></a></p>
+<p>这个 SVG 的巧妙处在于<strong>一个文件自适应明暗</strong>：文件内嵌了一段 <code class="notranslate">@media (prefers-color-scheme: dark)</code> CSS，浏览器标签在亮色主题下给它白底，暗色主题下自动换成 <code class="notranslate">#0d1117<span class="ml-1 d-inline-block border circle color-border-subtle" style="background-color: #0d1117; height: 8px; width: 8px;"></span></code> 深底，描边透明度也跟着调。读者切换系统主题，标签上的小方块会自己变色，不需要准备两份图标。自制 SVG favicon 与社交封面的完整做法（含"ogImage 只认 PNG/JPG 位图且必须绝对 URL"的坑）在 G03 里有全过程。</p>
+<p>有个省心的默认规则值得记住：<code class="notranslate">faviconUrl</code> 不配时，框架会让它<strong>自动继承头像</strong>——</p>
+<div class="highlight highlight-source-python"><pre class="notranslate"><span class="pl-k">if</span> <span class="pl-s">"faviconUrl"</span> <span class="pl-c1"><span class="pl-c1">not</span> <span class="pl-c1">in</span></span> <span class="pl-s1">self</span>.<span class="pl-c1">blogBase</span>:
+    <span class="pl-s1">self</span>.<span class="pl-c1">blogBase</span>[<span class="pl-s">"faviconUrl"</span>] <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-c1">blogBase</span>[<span class="pl-s">"avatarUrl"</span>]</pre></div>
+<p>所以零配置阶段，标签页上直接就是你的 GitHub 头像，并不空缺。</p>
+<p>第二张是 <strong>og.png 社交分享封面</strong>：读者把文章链接贴到微信、Twitter、Slack 等支持 Open Graph 的地方时，预览卡片上显示的 1200×630 大图。本站的封面长这样（这张图就部署在站点根目录 <code class="notranslate">/og.png</code>，可直接点开）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/og.png"><img src="/og.png" alt="1200×630 社交分享封面：深色背景，左侧绿色描边圆角方块内是绿色&quot;叶&quot;字图形标，右侧白色大字&quot;叶扬的博客&quot;、灰色副标题&quot;我是叶扬，人生苦短，我用 AI～&quot;，左下角&quot;Gmeek · 用 GitHub Issues 写博客&quot;，右有点阵装饰" style="max-width: 100%;"></a></p>
+<p>config 的 <code class="notranslate">ogImage</code> 字段填它的<strong>绝对网址</strong>即可。favicon 是"小而频"的品牌触点，og.png 是"大而稀"的分享门面，两张都就位，博客在标签栏和分享卡片里就都有了统一的脸。</p>
+<h2>四、RSS：不用上门，也能收到更新</h2>
+<p>第四件装修藏在页头那一排图标里——RSS 按钮（电波状图标），指向固定地址 <code class="notranslate">/rss.xml</code>。它是一份机器可读的"更新目录"，用浏览器直接打开是 XML 源码，用 RSS 阅读器订阅则会自动收到每一篇新文章。下面是本站 feed 的真实结构（2026-09-18 截取）：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b08-rss.png"><img src="/screenshots/b08-rss.png" alt="终端风格卡片展示 rss.xml：地址栏 https://yeyangchen2009.github.io/rss.xml，徽标 RSS 2.0 · 20.4 KB；正文 channel 含 title 叶扬的博客、link、description 副标题、generator python-feedgen、ttl 60、lastBuildDate；一个 item 含 B07 标题、link 指向 post/40.html、guid、pubDate、description 摘要；注释&quot;每篇文章一个 item，最新在前&quot;" style="max-width: 100%;"></a></p>
+<p>关于这份 feed，有四件事值得知道：</p>
+<ol>
+<li><strong>全自动，零配置。</strong> 每次构建（无论全量还是增量）引擎都会重新生成 <code class="notranslate">rss.xml</code>，用的是 <code class="notranslate">python-feedgen</code> 库。发一篇新文章，feed 里自动多一个 <code class="notranslate">&lt;item&gt;</code>，最新的排在最前。固定页 About、归档也在 feed 里，且排在最前。</li>
+<li><strong>摘要按句切。</strong> 每个 <code class="notranslate">&lt;item&gt;</code> 的 <code class="notranslate">&lt;description&gt;</code> 默认取正文第一句（<code class="notranslate">rssSplit: "sentence"</code>），读者在阅读器里看到引子，点链接回站读全文。</li>
+<li><strong><code class="notranslate">ttl=60</code> 是建议刷新间隔。</strong> 单位分钟，告诉阅读器"这份目录 60 分钟内不用反复来问"，是个礼貌的缓存提示，不是强制。</li>
+<li><strong>它同时是搜索引擎的藏宝图。</strong> G04 那篇里，叶扬直接把 <code class="notranslate">rss.xml</code> 当作 sitemap 提交给了 Google 和 Bing——每个 item 都是一篇文章的标准链接 + 标题 + 发布时间，结构上本就是一份合格的文章地图。</li>
+</ol>
+<p>读者怎么用？装一个 RSS 阅读器（各类平台都有免费选择），把 <code class="notranslate">https://用户名.github.io/rss.xml</code> 加进去即可。以后博客更新，阅读器自己来取，读者不必记住网址、也不用刷首页。在算法投喂的年代，这是一种"作者发布、读者主动订阅"的老式体面。</p>
+<h2>五、交房验收单：B01–B07 逐条打勾</h2>
+<p>装修做完，正式交房。下面这张单子把地基篇交过的东西列成可点、可看、可操作的验收项——建议打开自己的博客照着走一遍，全部通过，地基即合格：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>篇</th>
+<th>交付物</th>
+<th>怎么当场验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B01</td>
+<td>一个 <code class="notranslate">&lt;账号&gt;.github.io</code> 仓库 + 第一篇文章</td>
+<td>浏览器打开首页能看到文章，网址是根域名而非 <code class="notranslate">/仓库名/</code> 子路径</td>
+</tr>
+<tr>
+<td>B02</td>
+<td>属于自己的站名、副标题、头像</td>
+<td>首页大标题、副标题、头像都已换成你的；改过 config 后做过一次手动全量构建</td>
+</tr>
+<tr>
+<td>B03</td>
+<td>Issues 编辑部工作流</td>
+<td>能新建带标签文章；能编辑改稿；试过 Pin 置顶（首页顺序变化）与 Close 下架</td>
+</tr>
+<tr>
+<td>B04</td>
+<td>评论区 + About 页</td>
+<td>文章底部"评论"按钮能点开 utterances 并登录留言；<code class="notranslate">/about.html</code> 能打开</td>
+</tr>
+<tr>
+<td>B05</td>
+<td>看得懂 Actions 值班日志</td>
+<td>Actions 页能区分 workflow_dispatch / issues / schedule 三种触发；红叉会按四步排查法找第一个红 step</td>
+</tr>
+<tr>
+<td>B06</td>
+<td>通了的投递站 + 可选自定义域名</td>
+<td>绿勾后等 ≤10 分钟全网可访问；F12 能看到 <code class="notranslate">X-Cache</code>、<code class="notranslate">Age</code>、<code class="notranslate">max-age=600</code> 响应头</td>
+</tr>
+<tr>
+<td>B07</td>
+<td>失火预案</td>
+<td>本地有完整 <code class="notranslate">git clone</code>；知道 backup/blogBase/docs 都可再生、issues 才是真源；<code class="notranslate">GMEEK_VERSION</code> 知道去哪锁版</td>
+</tr>
+<tr>
+<td>B08</td>
+<td>四件轻装修 + 进阶地图</td>
+<td>主题三态可循环；页脚运行天数正确；favicon 与 og.png 就位；<code class="notranslate">/rss.xml</code> 能打开</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>还有几条贯穿全篇的"居住常识"，也一并收进验收单：自动提交 <code class="notranslate">🎉auto update by Gmeek action</code> 是正常现象（B05）；<code class="notranslate">docs/</code> 里的东西手改活不过下次构建（B05/B07）；改 <code class="notranslate">config.json</code> 或新增 static 文件后必须手动 Run workflow 全量（B02/B07）；无标签的文章会在构建时报 <code class="notranslate">KeyError</code>（B03/B05）。</p>
+<h2>六、进阶指路：G 系列地图</h2>
+<p>地基篇到这里就讲完了，但这套房子能做的远不止此。叶扬的博客在地基之上又盖了一整套"精装修"——G01 到 G18 共十八篇进阶文，外加五篇番外。按兴趣可以分三条路线走（本博客的 mermaid 运行时实时渲染）：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">START</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>地基篇 B00–B08 结业：能写、能发、能搬<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">START</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">W</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>✍️ 写作派<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">START</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>🎨 装修派<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">START</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">P</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>🛠️ 开发者派<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">W</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">W1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>G07 写作三件套&lt;<span class="pl-ent">br</span>/&gt;Alert · 公式 · Mermaid<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">W</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">W2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>G05 图片灯箱&lt;<span class="pl-ent">br</span>/&gt;G06 文末隐藏 JSON<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">W</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">W3</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>G04 让搜索引擎收录&lt;<span class="pl-ent">br</span>/&gt;RSS 当 sitemap<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>G01–G03 脸面三件&lt;<span class="pl-ent">br</span>/&gt;固定页 · 页脚 · favicon<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>G08–G10 自研插件&lt;<span class="pl-ent">br</span>/&gt;上下篇 · 阅读时长 · 归档页<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D3</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>G13/G14/G16 导航强化&lt;<span class="pl-ent">br</span>/&gt;分页条 · 手机目录 · 高亮目录<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">P</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">P1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>G11/G12 运维小件&lt;<span class="pl-ent">br</span>/&gt;robots · 404 · 外链新标签<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">P</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">P2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>G15 给上游提 PR&lt;<span class="pl-ent">br</span>/&gt;G17 SEO 收尾战<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">P</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">P3</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>G18 一桩 BFC 避让案<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">W3</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">EX</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>番外篇：截图流水线 · 提 PR 全记录&lt;<span class="pl-ent">br</span>/&gt;借浏览器的分寸 · 把踩坑变成 Skill<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D3</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">EX</span>
+    <span class="pl-ent">P3</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">EX</span>
+    <span class="pl-ent">EX</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">OPEN</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>博客没有“完工”那天&lt;<span class="pl-ent">br</span>/&gt;写下去，就是全部的装修<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<p>三条路线按需取用：</p>
+<ul>
+<li><strong>写作派</strong>最关心内容表达：G07 的 Alert 提示块、数学公式、Mermaid 图表，G05 的图片灯箱，G06 给单篇文章开小灶的隐藏 JSON，G04 的搜索引擎收录。</li>
+<li><strong>装修派</strong>想让博客更好用、更好看：G01–G03 脸面三件，G08–G10 三个自研插件（上一篇/下一篇、字数阅读时长、时间线归档页），G13/G14/G16 的分页条与两级文章目录。</li>
+<li><strong>开发者派</strong>喜欢刨根问底：G11/G12 的 robots、404、外链治理，G15 给 Gmeek 上游提 PR 的完整记录，G17 的 SEO 收尾战，G18 那个被浮动元素挤扁的 BFC 案例。</li>
+</ul>
+<p>五篇番外则是"工具与方法论"支线：无头浏览器截图流水线、ffmpeg 录屏、提 PR 的开源回馈、让 AI 借已登录浏览器截图的分寸感、以及怎样把踩坑手册沉淀成 AI 技能。它们和正篇交织，但不强依赖顺序，遇到对眼的标题随时跳进去。总目录在置顶的 <a href="/post/5.html">G00 总揽</a>。</p>
+<h2>七、翻车急诊室</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>症状</th>
+<th>病因</th>
+<th>处方</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>点主题按钮没反应/找不到按钮</td>
+<td>config 里 themeMode 设成了 fix</td>
+<td>改回默认 manual 后手动全量构建</td>
+</tr>
+<tr>
+<td>主题只在这台设备生效，换电脑又回亮色</td>
+<td>主题存 localStorage，本就是本地选择</td>
+<td>正常现象；想要暗色就再点一次或选跟随系统</td>
+</tr>
+<tr>
+<td>评论区颜色和文章不一致</td>
+<td>浏览器挡住了 utterances 的 postMessage，或评论 iframe 加载失败</td>
+<td>刷新重点评论按钮；确认没屏蔽第三方框架</td>
+</tr>
+<tr>
+<td>页脚显示"网站运行 -1 天"</td>
+<td>startSite 写成了 ISO 横杠日期</td>
+<td>改成 <code class="notranslate">MM/DD/YYYY</code> 斜杠格式（G02）</td>
+</tr>
+<tr>
+<td>填了 startSite 却不显示运行天数</td>
+<td>全量构建没跑，旧页面未更新</td>
+<td>手动 Run workflow 走 runAll</td>
+</tr>
+<tr>
+<td>标签页 favicon 还是默认头像</td>
+<td>faviconUrl 未配置或路径不对</td>
+<td>配置绝对/根路径 URL；不配置则默认继承头像</td>
+</tr>
+<tr>
+<td>分享链接没有大图预览</td>
+<td>ogImage 缺失、用了 SVG 或相对路径</td>
+<td>用 1200×630 PNG/JPG + 绝对 https URL（G03）</td>
+</tr>
+<tr>
+<td>RSS 阅读器报无法解析</td>
+<td>曾手改过 docs/rss.xml</td>
+<td>别手改，它每次构建自动重生成；重新全量即可</td>
+</tr>
+<tr>
+<td>新文章没进 RSS</td>
+<td>增量构建失败，或阅读器还在 ttl 缓存内</td>
+<td>看 Actions 绿勾；等过 60 分钟再刷新订阅</td>
+</tr>
+<tr>
+<td>无头截图/预览里页面白底裸奔</td>
+<td>Primer CSS 没加载成功</td>
+<td>网络问题，与站点配置无关（番外一白底怪案）</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>八、小结：房子交了，日子才刚开始</h2>
+<p>地基篇九篇（B00 总览 + B01–B08）到此收官。回头看这条线交出去的东西：</p>
+<ul>
+<li><strong>B01–B02</strong> 盖起毛坯房并刷好墙：仓库命名、Pages 切 Actions、第一篇文章、config.json 四必填；</li>
+<li><strong>B03–B04</strong> 配齐生活设施：Issues 写改置顶下架、utterances 评论门铃、About 名片；</li>
+<li><strong>B05–B06</strong> 打通后勤：Actions 三种点火与红叉排查、Pages 投递站与 CDN 缓存、自定义域名；</li>
+<li><strong>B07</strong> 买好保险：三层家当、镜像与户口本、升级回滚、搬家路线、备份三习惯；</li>
+<li><strong>B08（本篇）</strong> 轻装修并交房：三态主题、运行天数页脚、favicon 与 og.png、自动 RSS，外加一张验收单和进阶地图。</li>
+</ul>
+<p>从一个 GitHub 账号都没有，到一个能写、能发、能被全世界打开、丢了还能原样复活的博客——地基已经足够结实，够你在上面写很多年。</p>
+<p>但叶扬更想说的是最后一句：<strong>博客从来没有"完工"的那一天。</strong> 三态主题会换，运行天数会涨，插件可以一个个加，文章可以一篇篇写；装修派、写作派、开发者派的地图都摊在那里，随时可以挑一条路走。而所有这些装修的前提，都是你真的开始写。房子交了，日子才刚开始——下一篇见。</p>
+<h2>参考链接</h2>
+<ul>
+<li><a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py">Gmeek 引擎源码 Gmeek.py（favicon 继承、rss 生成、默认配置）</a></li>
+<li><a href="https://github.com/Meekdai/Gmeek/tree/main/templates">Gmeek 模板 base.html / footer.html（三态主题与运行天数）</a></li>
+<li><a href="/rss.xml">本站实时 RSS feed</a></li>
+<li><a href="http://www.rssboard.org/rss-specification" rel="nofollow">RSS 2.0 规范（ttl、item 字段含义）</a></li>
+<li><a href="https://web.dev/learn/html/metadata" rel="nofollow">web.dev：如何定义 favicon 与主题色</a></li>
+<li>地基篇上一篇：<a href="/post/40.html">B07｜印刷厂失火预案：backup、blogBase、升级与搬家</a></li>
+<li>进阶总目录：<a href="/post/5.html">G00 插件与功能全景调研</a> · <a href="/post/8.html">G02 页脚装修</a> · <a href="/post/9.html">G03 favicon 与社交封面</a> · <a href="/post/10.html">G04 RSS 提交搜索引擎</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
