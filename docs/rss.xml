@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>叶扬的博客</title><link>https://yeyangchen2009.github.io</link><description>我是叶扬，人生苦短，我用AI～</description><copyright>叶扬的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.com/yeyangchen2009.png</url><title>avatar</title><link>https://yeyangchen2009.github.io</link></image><lastBuildDate>Sat, 19 Sep 2026 03:00:52 +0000</lastBuildDate><managingEditor>叶扬的博客</managingEditor><ttl>60</ttl><webMaster>叶扬的博客</webMaster><item><title>博客地图｜系列文章从哪读起</title><link>https://yeyangchen2009.github.io/post/47.html</link><description># 博客地图｜系列文章从哪读起
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>叶扬的博客</title><link>https://yeyangchen2009.github.io</link><description>我是叶扬，人生苦短，我用AI～</description><copyright>叶扬的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.com/yeyangchen2009.png</url><title>avatar</title><link>https://yeyangchen2009.github.io</link></image><lastBuildDate>Sat, 19 Sep 2026 03:07:59 +0000</lastBuildDate><managingEditor>叶扬的博客</managingEditor><ttl>60</ttl><webMaster>叶扬的博客</webMaster><item><title>博客地图｜系列文章从哪读起</title><link>https://yeyangchen2009.github.io/post/47.html</link><description># 博客地图｜系列文章从哪读起
 
 不知道从哪篇开始，就先看这篇。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/47.html</guid><pubDate>Sat, 19 Sep 2026 02:38:44 +0000</pubDate></item><item><title>A00｜AI 工作流总览：程序员的 AI 数据流水线</title><link>https://yeyangchen2009.github.io/post/46.html</link><description># A00｜AI 工作流总览：程序员的 AI 数据流水线
 
@@ -60,6 +60,8 @@ G17 收官那天晚上，叶扬翻着 `static/plugins/` 目录里一排 `.js` �
 &gt; 上一期 [G01](/post/7.html) 搞定了 About 页，博客终于能回答'你是谁'。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/8.html</guid><pubDate>Sun, 13 Sep 2026 14:33:58 +0000</pubDate></item><item><title>G01 固定页面：用 singlePage 做一个不进文章流的 About 页</title><link>https://yeyangchen2009.github.io/post/7.html</link><description># G01 固定页面：用 singlePage 做一个不进文章流的 About 页
 
 &gt; 普通 Issue 一发布就会进入首页时间流和 RSS，但'关于页''友链页'这类内容不应该是一篇会被新文章冲走的日志。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/7.html</guid><pubDate>Sun, 13 Sep 2026 14:00:32 +0000</pubDate></item><item><title>Gmeek 插件与功能全景调研：系列教程总揽（第 0 篇）</title><link>https://yeyangchen2009.github.io/post/5.html</link><description># Gmeek 插件与功能全景调研：系列教程总揽（第 0 篇）
+
+&gt; 🗺 [博客地图](/post/47.html) ｜ 全部系列的总入口（本篇只管 G 进阶篇）
 
 &gt; 这是 Gmeek 系列教程的**第 0 篇**：一张完整的功能地图。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/5.html</guid><pubDate>Sun, 13 Sep 2026 13:06:05 +0000</pubDate></item><item><title>一个博客除了评论还需要什么：叶扬的博客基础功能建设清单</title><link>https://yeyangchen2009.github.io/post/4.html</link><description># 一个博客除了评论还需要什么：叶扬的博客基础功能建设清单&#13;
 &#13;
