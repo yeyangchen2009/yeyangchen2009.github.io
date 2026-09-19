@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# C00｜一个程序员为什么要啃印度佛教史
+
+叶扬硬盘里有个文件夹，躺着 117 万字。">
+<meta property="og:title" content="C00｜一个程序员为什么要啃印度佛教史">
+<meta property="og:description" content="# C00｜一个程序员为什么要啃印度佛教史
+
+叶扬硬盘里有个文件夹，躺着 117 万字。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/45.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>C00｜一个程序员为什么要啃印度佛教史</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">C00｜一个程序员为什么要啃印度佛教史</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/45" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>C00｜一个程序员为什么要啃印度佛教史</h1>
+<p>叶扬硬盘里有个文件夹，躺着 117 万字。</p>
+<p>那是一门 39 集的《印度佛教史》课程字幕。前面两篇文章讲过这 117 万字是怎么来的：65 个字幕文件的<a href="/post/44.html">下载历险记</a>，和 136 条规则的<a href="/post/43.html">清洗流水线</a>。工具人的活干完，真正的硬骨头才摆上桌——<strong>读懂它</strong>。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/c00-transcripts.png"><img src="/screenshots/c00-transcripts.png" alt="讲稿文件夹实拍：地址栏停在 BV1vewnzqEuA，列表首屏可见第 01–24 讲的字幕 txt，单个文件 25–49 KB（39 集里 36 集有字幕，剩下的在滚动条下方）" style="max-width: 100%;"></a></p>
+<p>于是就有了这个新系列。开篇先交代三件事：为什么学、文章为什么长这样、这门课的全景地图长什么样。</p>
+<h2>一、一个程序员，为什么要学佛教史</h2>
+<p>先说清楚，叶扬既没有出家的打算，也没有被谁点化。理由有三个，而且都很"职业病"。</p>
+<p><strong>第一，这是一部有完整版本记录的思想史，软件演化该有的环节它一个不缺。</strong></p>
+<p>从公元前 5 世纪佛陀说法，到公元 13 世纪佛教在印度本土消亡，前后一千八百年。打个软件行业的比方，这套系统经历了：五次大版本更新（根本佛教、部派佛教、初期大乘、后期大乘、秘密大乘）；一次剧烈的社区分叉——一群人把代码整个复制走另立门户，统一僧团裂成二十个各改各的分支；一次向下兼容的重构——新版本不删老功能，老用户照用，新思想直接在旧系统上面加层；三套互相竞争的架构方案（中观、唯识、真常），回应的是同一组老大难问题；后期疯狂照搬隔壁竞品（印度教，也就是竞争对手的产品）的功能，抄到两家越来越像，反而丢了自己的用户；最终在主场下线（1203 年那烂陀寺、超戒寺被毁），但装在海外用户设备上的客户端在西藏、汉地、日本、东南亚活了下来，各自长成了完全不同的样子。</p>
+<p>代码分叉、新旧兼容、欠技术债（补丁越打越多，债早晚要还）、本土市场打不过原生应用——软件业的这些经典剧情，这门课里一个不缺，只是时间尺度从几年拉成了一千八百年。</p>
+<p><strong>第二，它的核心问题，和程序员天天打交道的问题是同构的。</strong></p>
+<p>佛教最出名也最难的主张叫"无我"：没有一个常住不变的"我"。但它同时讲轮回、讲因果业报。问题立刻就来了——没有"我"，那上辈子造业、这辈子受报的，到底是不是同一个"我"？这个问题印度各派争了几百年，先后拿出过五六个解决方案，一个比一个精巧。</p>
+<p>用程序员的话说：<strong>一条数据没有固定的 id（数据库给每条记录发的"身份证号"），被改了无数次之后，你凭什么证明"它还是它"？</strong> 后来唯识学交出的答案——一个不断被读写、又不断被写入内容改写的存储层（存数据的底层）——和数据库的某些核心机制像得叶扬直拍桌子。当然，类比只是拐杖，这个系列会把拐杖什么时候该扔也标出来。</p>
+<p>不写代码的读者记住大白话版本就行：<strong>一个每时每刻都在变化的东西，怎么对自己的过去负责。</strong> 术语以后再给，先记住这个问题。</p>
+<p><strong>第三，这门课本身够硬，不是心灵按摩。</strong></p>
+<p>教材是印顺法师的《印度佛教思想史》，讲课老师全程在和教材辩论：书里说大乘是从大众部"发展"出来的，老师花两讲反驳；书里把如来藏思想判成密教化的先声，老师直接翻案。上这门课不是听人念经书，是围观一场师生之间持续了几十讲的学术吵架。这种课，值得认真对待。</p>
+<h2>二、这个系列不是什么</h2>
+<p>三句话先划界，免得点进来的读者期待错位。</p>
+<ul>
+<li><strong>不是传教。</strong> 叶扬在这个系列里的身份是学生，不是信徒。讲的是"历史上这些人怎么想、为什么这么想"，不是"你应该信什么"。</li>
+<li><strong>不是修行指南。</strong> 不教打坐、不教念佛、不指导任何宗教实践，只做思想史和教理的知识梳理。</li>
+<li><strong>不是字幕搬运。</strong> 课程字幕是叶扬个人学习材料，这个系列只讲一千多年来的公共历史知识，用自己的话重讲，并在文末给出原课程和参考书，感兴趣的读者可以自己去追源头。</li>
+</ul>
+<h2>三、为什么文章要写成这个样子</h2>
+<p>方法是现成的：<a href="https://baike.baidu.com/item/%E8%B4%B9%E6%9B%BC%E5%AD%A6%E4%B9%A0%E6%B3%95" rel="nofollow">费曼学习法</a>。核心操作只有一句话——<strong>如果你不能用大白话把一件事讲给外行听懂，那就是还没懂。</strong></p>
+<p>所以这个系列的每一篇，都按同一套结构来：</p>
+<ol>
+<li><strong>开场一个小白真问题</strong>。就是那种外行一听就会问、问出来还特别容易把人问住的问题，比如"没有我谁在轮回""空是不是什么都没有"。</li>
+<li><strong>大白话正文</strong>。所有术语第一次出现都"先白后专"：先讲一个不关机的后台进程，再给出"阿赖耶识"这个学名。</li>
+<li><strong>一个程序员类比</strong>。每篇至多一个，点到为止；程序员读者会心一笑，不写代码的读者也不用慌，每个类比后面都跟一句大白话。另外会主动交代类比的破洞在哪——所有类比都会在某处误导人，自己先说破，比让读者踩坑强。</li>
+<li><strong>吵架现场</strong>。把反方请上场。一个观点不经一两次攻击就不算讲清楚：婆罗门会怎么反驳佛陀？说一切有部会怎么挑中观的毛病？让反方真的开口吵。</li>
+<li><strong>叶扬的卡壳角</strong>。自曝学到哪儿卡住了、后来怎么打通的。一路全懂的讲解没人信，卡壳才是学习真正发生的地方。</li>
+<li>末尾一张图或一张表，加一个术语清单，再抛下一篇的钩子。</li>
+</ol>
+<h2>四、先给地图：五期一千八百年</h2>
+<p>细节后面一篇篇填，现在只需要记住主干。佛教在印度的历史就分五段：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>①根本佛教&lt;<span class="pl-ent">br</span>/&gt;前6–前5世纪&lt;<span class="pl-ent">br</span>/&gt;佛陀：四谛·缘起·无我·中道<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>②部派佛教&lt;<span class="pl-ent">br</span>/&gt;前5–前1世纪&lt;<span class="pl-ent">br</span>/&gt;僧团分叉，二十个部派争论相续与有无<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>③初期大乘&lt;<span class="pl-ent">br</span>/&gt;1–3世纪·贵霜王朝&lt;<span class="pl-ent">br</span>/&gt;龙树与中观：一切法空<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>④后期大乘&lt;<span class="pl-ent">br</span>/&gt;4–7世纪·笈多王朝&lt;<span class="pl-ent">br</span>/&gt;无著世亲与唯识 · 如来藏与佛性<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>⑤秘密大乘&lt;<span class="pl-ent">br</span>/&gt;7–13世纪·波罗王朝&lt;<span class="pl-ent">br</span>/&gt;仪轨化·密乘，形式越来越重<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>1203年 超戒寺被毁&lt;<span class="pl-ent">br</span>/&gt;佛教在印度本土消亡<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">-.</span><span class="pl-s">北上</span><span class="pl-k">.-&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>西藏：前弘·灭法·后弘·四大派<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">-.</span><span class="pl-s">东传</span><span class="pl-k">.-&gt;</span> <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>日本：南都六宗·平安二宗·镰仓新佛教<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">-.</span><span class="pl-s">北传</span><span class="pl-k">.-&gt;</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>汉地：三论·天台·华严·禅·净土<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<p>记五个关键词就够：<strong>根本、部派、中观、唯识、密乘</strong>。后面所有内容都是挂在这条时间线上的。</p>
+<p>另外有三条暗线，会在十二篇里反复出现，这里先埋个伏笔：</p>
+<ul>
+<li><strong>相续线</strong>：没有我，怎么解释轮回的延续？从佛陀到部派到唯识到如来藏，每一家都在给上一家的方案打补丁。</li>
+<li><strong>空义线</strong>："空"从"人没有我"一路深化到"一切事物都没有固定自体"，每深入一步都要防止有人把它读成"什么都没有"。</li>
+<li><strong>变质线</strong>：念佛、造像、持咒，这些形式最初是什么？什么时候还是修行，什么时候只剩壳子？这条线的终点是一个非常刺眼的历史教训。</li>
+</ul>
+<h2>五、卡壳角：开课前，叶扬错了两件事</h2>
+<p>想当然之一：以为佛教史就是寺庙史，讲讲哪朝建了什么庙、哪个和尚渡了海。结果第一讲是公元前两三千年的印度河文明、雅利安人迁徙、婆罗门教的三大纲领和六种外道——这是轴心时代的世界观混战，和中国的诸子百家、希腊的哲学家是同一时间刻度上的事。</p>
+<p>想当然之二：看到"大乘""小乘"的字样，下意识以为是"高级版/低级版"的关系，像旗舰款和入门款。后来才知道，"小乘"是大乘兴起后给对手起的名字，对方自己从不这么自称（今天礼貌的叫法是"上座部佛教"）；两派争的不是配置高低，而是<strong>修行的目标和方法论</strong>。打个广告业的比方：竞品 A 管竞品 B 叫"低配款"，你总不能拿对手的广告词当行业报告读吧？这个误会，恰恰是 C05 要专门拆的。</p>
+<h2>六、怎么读这个系列</h2>
+<ul>
+<li><strong>零基础可读</strong>，不需要任何宗教或哲学储备，按编号顺序读就行，每篇只依赖前几篇埋的概念。</li>
+<li>主教材是印顺《印度佛教思想史》，参考书是平川彰《印度佛教史》和吕澂《印度佛学源流略讲》（<a href="https://search.douban.com/book/subject_search?search_text=%E5%8D%B0%E5%BA%A6%E4%BD%9B%E6%95%99%E6%80%9D%E6%83%B3%E5%8F%B2" rel="nofollow">豆瓣可查各版本</a>），原课程在 <a href="https://www.bilibili.com/video/BV1vewnzqEuA/" rel="nofollow">B 站 BV1vewnzqEuA</a>。</li>
+<li>叶扬会边学更，讲错的地方欢迎评论区拍砖，勘误会在原文更新。</li>
+<li>全套暂定十二篇：C01 从佛陀出场前的古印度讲起，C12 用三条暗线收官。</li>
+</ul>
+<p>下一篇，C01：佛陀出场之前，印度人到底在信什么——种姓制度、吠陀、梵我合一，还有一群以各种姿势折磨自己的修行者。理解了佛陀反对的是什么，才能听懂佛陀到底说了什么。</p>
+<blockquote>
+<p>说明：本系列为个人学习笔记，讲的是公共历史知识，不引用课程字幕原文，也不代表任何宗教立场。原课程与教材版权归权利人所有，文末链接即是入口。</p>
+</blockquote></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
