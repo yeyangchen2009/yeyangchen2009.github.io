@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>叶扬的博客</title><link>https://yeyangchen2009.github.io</link><description>我是叶扬，人生苦短，我用AI～</description><copyright>叶扬的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.com/yeyangchen2009.png</url><title>avatar</title><link>https://yeyangchen2009.github.io</link></image><lastBuildDate>Sun, 20 Sep 2026 05:57:21 +0000</lastBuildDate><managingEditor>叶扬的博客</managingEditor><ttl>60</ttl><webMaster>叶扬的博客</webMaster><item><title>C07（上）｜阿赖耶识：一个没有 id 的数据库，靠什么记住每一世</title><link>https://yeyangchen2009.github.io/post/56.html</link><description>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>叶扬的博客</title><link>https://yeyangchen2009.github.io</link><description>我是叶扬，人生苦短，我用AI～</description><copyright>叶扬的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.com/yeyangchen2009.png</url><title>avatar</title><link>https://yeyangchen2009.github.io</link></image><lastBuildDate>Sun, 20 Sep 2026 07:09:50 +0000</lastBuildDate><managingEditor>叶扬的博客</managingEditor><ttl>60</ttl><webMaster>叶扬的博客</webMaster><item><title>C07（上）｜阿赖耶识：一个没有 id 的数据库，靠什么记住每一世</title><link>https://yeyangchen2009.github.io/post/56.html</link><description>
 &gt; 系列说明：这是叶扬的[印度佛教史学习笔记](/post/45.html)第七篇。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/56.html</guid><pubDate>Sun, 20 Sep 2026 05:56:54 +0000</pubDate></item><item><title>C06（下）｜龙树的空（下）：八个“不”字，和一个死于辩论的接班人</title><link>https://yeyangchen2009.github.io/post/55.html</link><description># C06（下）｜龙树的空（下）：八个'不'字，和一个死于辩论的接班人&#13;
 &#13;
 [上篇](/post/54.html)讲了龙树的工具：无自性、二谛、三是偈。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/55.html</guid><pubDate>Sun, 20 Sep 2026 04:27:03 +0000</pubDate></item><item><title>C06（上）｜龙树的空（上）："一切法空"为什么不是"什么都没有"</title><link>https://yeyangchen2009.github.io/post/54.html</link><description># C06（上）｜龙树的空（上）：'一切法空'为什么不是'什么都没有'
@@ -22,10 +22,10 @@
 
 &gt; 🗺 [博客地图](/post/47.html) ｜ 全部系列的总入口
 
-这个系列从一个很具体的麻烦开始：叶扬硬盘里躺着一门 39 集的课程，平台只给 AI 自动生成的字幕，错字连篇到「木亥佛教」「solo 王」遍地跑；另一门 30 集的课干脆连字幕轨都没有。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/46.html</guid><pubDate>Sat, 19 Sep 2026 02:33:20 +0000</pubDate></item><item><title>C00｜一个程序员为什么要啃印度佛教史</title><link>https://yeyangchen2009.github.io/post/45.html</link><description># C00｜一个程序员为什么要啃印度佛教史
-
-&gt; 🗺 [博客地图](/post/47.html) ｜ 全部系列的总入口
-
+这个系列从一个很具体的麻烦开始：叶扬硬盘里躺着一门 39 集的课程，平台只给 AI 自动生成的字幕，错字连篇到「木亥佛教」「solo 王」遍地跑；另一门 30 集的课干脆连字幕轨都没有。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/46.html</guid><pubDate>Sat, 19 Sep 2026 02:33:20 +0000</pubDate></item><item><title>C00｜一个程序员为什么要啃印度佛教史</title><link>https://yeyangchen2009.github.io/post/45.html</link><description># C00｜一个程序员为什么要啃印度佛教史&#13;
+&#13;
+&gt; 🗺 [博客地图](/post/47.html) ｜ 全部系列的总入口&#13;
+&#13;
 叶扬硬盘里躺着近 47 万字的课程讲稿。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/45.html</guid><pubDate>Sat, 19 Sep 2026 01:46:08 +0000</pubDate></item><item><title>A02｜退出码 0，但硬盘上只有一个文件：65 集 AI 字幕下载记</title><link>https://yeyangchen2009.github.io/post/44.html</link><description># A02｜退出码 0，但硬盘上只有一个文件：65 集 AI 字幕下载记
 
 比报错危险得多的，是程序报告成功。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/44.html</guid><pubDate>Fri, 18 Sep 2026 11:12:29 +0000</pubDate></item><item><title>A01｜136 条规则打败大模型：四万八千行 AI 字幕清洗战</title><link>https://yeyangchen2009.github.io/post/43.html</link><description># A01｜136 条规则打败大模型：四万八千行 AI 字幕清洗战
