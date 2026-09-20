@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="
+> 系列说明：这是叶扬的[印度佛教史学习笔记](/post/45.html)第七篇。">
+<meta property="og:title" content="C07（上）｜阿赖耶识：一个没有 id 的数据库，靠什么记住每一世">
+<meta property="og:description" content="
+> 系列说明：这是叶扬的[印度佛教史学习笔记](/post/45.html)第七篇。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/56.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>C07（上）｜阿赖耶识：一个没有 id 的数据库，靠什么记住每一世</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">C07（上）｜阿赖耶识：一个没有 id 的数据库，靠什么记住每一世</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/56" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>系列说明：这是叶扬的<a href="/post/45.html">印度佛教史学习笔记</a>第七篇。只讲公共历史知识，不引用任何课程字幕原文，术语第一次出现都带大白话。上篇讲唯识学派为什么要"立"一个阿赖耶识，中篇讲三性三无性与种子，下篇讲转识成智的实修操作。</p>
+</blockquote>
+<h2>小白问题：龙树不是把一切都"空"掉了吗，怎么一百多年后又有人"立"回来一个第八识？</h2>
+<p>这看起来像一次明目张胆的开倒车。</p>
+<p>龙树在 2–3 世纪把话说绝了：一切法无自性，不生不灭、不常不断，任何被称为"本体"的东西都挨了八不的刀。结果过了一百多年，到了 4 世纪，一群叫瑜伽行者的和尚不但立东西，还一口气立到了<strong>第八识</strong>——说在人的眼耳鼻舌身意六层认识活动底下，还藏着一个极深极细的心识，像仓库一样存着一切生命记录，名字叫<strong>阿赖耶识</strong>（梵文 ālaya-vijñāna，ālaya 是"宅、藏、依止处"的意思，所以又叫藏识）。</p>
+<p>空宗刚把仓库拆了，有宗又盖了一座更大的。这是怎么回事？阿赖耶识是不是换了个名字的灵魂？叶扬学到这里时，第一反应就是这个问题。而唯识学派对这个问题的准备之充分，让人怀疑无著和世亲在写第一页之前就专门等着这一问。</p>
+<h2>一、一百多年后的新战局：为什么"只破不立"不够用了</h2>
+<p>先看历史现场。</p>
+<p>龙树之后不到两百年，印度进入<strong>笈多王朝</strong>（约 4–5 世纪；旃陀罗笈多一世约 320 年开国）。这是印度教语境里的"黄金时代"，文化繁荣，但对佛教来说意味着一件事：<strong>老对手缓过来了</strong>。婆罗门教在这几百年里大规模升级，学佛教整理经典、建寺院、搞论辩，改头换面成了后来的印度教。它手里有两件佛教很难正面碰的大众级武器：</p>
+<ul>
+<li><strong>常住灵魂（梵我 ātman）</strong>：每个人生命深处有一个恒常不变的真我，修行就是回归宇宙本体（梵我合一）；</li>
+<li><strong>种姓定命</strong>：灵魂生生世世带着固定身份，婆罗门永远是婆罗门。</li>
+</ul>
+<p>你跟一个在这个观念里泡了一辈子的人开口就是"一切法空、什么都没有自性"，对方大概率听两句就走了：既听不懂，也不想懂。</p>
+<p>对内，龙树的药也出现了副作用。<a href="/post/54.html">C06（上）</a>讲过的<strong>恶取空</strong>——把"无自性"读成"什么都没有"——在龙树身后越演越烈：既然修行也无自性、成佛也无自性，那不如躺平。这是断灭见，是龙树生前最怕的误读。</p>
+<p>瑜伽行派就是带着两副担子上场的：<strong>对内，给恶取空打补丁</strong>（怎么打，中篇细讲）；<strong>对外，给"生命到底怎么相续、又怎么变迁"造一个比灵魂更好用的模型</strong>，让泡在灵魂观念里的人有台阶走进来。这副担子，就是阿赖耶识。</p>
+<h2>二、"虚妄"不是"虚假"：先校准这个词</h2>
+<p>瑜伽行派又叫唯识学派，印顺法师给它起过一个副标题，叫<strong>虚妄唯识论</strong>。这个"虚妄"两个字，是入门第一个坑。</p>
+<p>虚妄不等于虚假。课程里老师反复掰正这一点，叶扬觉得很要紧：</p>
+<p>人会被视错觉骗——两条一样长的线，两端加两个方向相反的箭头，看起来就一长一短。这说明眼睛给的报告<strong>不全真</strong>。但"不全真"不是"全是假"：眼睛大体上仍在提供有效信息，否则人连门都出不了。虚妄的准确意思是<strong>可以出错、可以被纠正</strong>。</p>
+<p>这句话反过来非常有劲：<strong>心识既然能被骗，就说明它也有认清的能力</strong>——你若根本没有"看清"的功能，怎么知道刚才被骗了？同理，心识既然能起烦恼、能制造轮回，它也就有不起烦恼、觉悟解脱的能力。生死轮回是心识干的，清净解脱也得是同一套心识干的，否则修行无从谈起。</p>
+<p>这也定下了两派的工作方式：</p>
+<ul>
+<li><strong>中观</strong>走"超越"路线：看穿相是假名，离相、破相，烦恼是假象，不必跟它纠缠；</li>
+<li><strong>唯识</strong>走"转化"路线：承认这套会被骗的认识机制真实地在运转，然后在它内部动手——转念、转识，把染污的部分一点点转成清净。</li>
+</ul>
+<p>一个说"别认真"，一个说"可以改"。所以这一派不叫唯识"学派"而叫瑜伽<strong>行派</strong>：它的大半理论不是逻辑推出来的，是一批禅修者在深定里观察心识怎么运作、逐层记录下来的。同期印度社会正流行瑜伽禅修，梵文称修禅者为 yogācāra。派名通行的说法得自《瑜伽师地论》，也恰好呼应了当时的瑜伽禅修风气，两种解释并不冲突。</p>
+<h2>三、三位主角：弥勒、无著、世亲</h2>
+<p>瑜伽行派的创立，传统上归于三个人。</p>
+<p><strong>弥勒</strong>（Maitreya）：排在最前。但"弥勒是谁"本身就是一桩公案，因为这个名字同时属于一位佛教徒人人皆知的大人物——现在兜率天内院、将来下生成佛的<strong>未来佛弥勒菩萨</strong>。无著（Asaṅga，约 4 世纪）所传的教法，传说就是夜里以神通上升兜率天，听弥勒亲讲，白天回人间转述的。汉传瑜伽系根本大典《瑜伽师地论》，署名就是"弥勒说"。</p>
+<p><strong>无著</strong>：学派真正的人间奠基人，相传先在部派佛教出家，因对旧教义不满足，多次上山求法，最后成为弥勒教法的集大成者。</p>
+<p><strong>世亲</strong>（Vasubandhu）：无著的弟弟，汉传传统说为同母兄弟，藏传传承亦同此说。据后世传记（真谛译《婆薮盘豆法师传》一系），世亲起初精研说一切有部教义，造《阿毗达磨俱舍论》——这部论虽以有部学说为底本，却大量吸收经部立场、反过来批评有部，本身就是小乘论书的巅峰；世亲还曾放话批评大乘。无著托人捎话、又安排世亲听闻大乘经论，世亲听完大悟，说自己过去用舌头毁谤大乘，如今恨不得割掉它。无著拦住弟弟：割舌有什么用？你这张舌头能毁谤，也能弘扬。世亲后来成为著论等身的唯识大师。</p>
+<p>三个人里最微妙的是弥勒。历史上到底有没有一位<strong>人间的</strong>弥勒论师？历来有三种说法：</p>
+<ol>
+<li>就是兜率天的当来下生弥勒佛，凡有疑难，修行人可入定升兜率请教（汉传此类传说不少，近代虚云老和尚被打成重伤、昏死中魂游兜率听法是著名一例）；</li>
+<li>当时印度北方有一位<strong>法名叫弥勒的上座</strong>，门下持"般若经是不了义、解深密经是了义"的立场；</li>
+<li>另有一位被尊称为弥勒菩萨的禅修导师，所传的禅观法与《瑜伽师地论》的四种所缘（禅修所缘境的四分法）完全吻合。</li>
+</ol>
+<p>印顺法师的考据倾向于把第 2、3 种合并：在未来弥勒信仰盛行的北方，确有一位被信众尊为"弥勒菩萨"的人间大德，造论传法，经无著、世亲发扬光大。天上来的弥勒与地上的弥勒，在传说里渐渐合成一人。叶扬的态度是：史归史，信归信——玄奘后来在那烂陀寺实实在在接上了从戒贤到长安的学脉，这一点不依赖弥勒的户籍地址。</p>
+<h2>四、一套书撑起一个学派</h2>
+<p>唯识这一派的"产品矩阵"，规模远超中观。</p>
+<p><strong>根本经典是《解深密经》</strong>（玄奘译，五卷八品）。经名的意思是：佛的智慧太深奥、隐密，这部经负责把它解释疏通。经里有个著名的自我评价：佛说法分三个时期，初时讲四谛（偏"有"），第二时讲般若一切法空（偏"空"，空得太简略，钝根人容易读歪），<strong>第三时讲《解深密经》，把空和有两边都说周全，叫"了义"</strong>。</p>
+<p>"了义"就是话说透了、讲详尽了；"不了义"是话只讲了一半、要靠人补。注意这个分寸：<strong>不了义不是"不究竟、低一等"</strong>，而是"对当时当机的人说到那个程度刚好"。唯识人说般若是不了义，意思是"那份说明书太简略，我们补一份详细版的"，不是说般若错了。这是教内著名的望文生义坑。</p>
+<p><strong>论的核心是一百卷的《瑜伽师地论》</strong>。"瑜伽师地"就是"禅修者的地盘"——像农民需要土地才能耕种，修行人需要一套完整的修行基础。全书分五部分：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>部分</th>
+<th>内容</th>
+<th>卷数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本地分</td>
+<td>核心中的核心，分<strong>十七地</strong>，把禅修中心识的状态从浅层到深层讲透（八识、寻伺、有心无心、定心位/散心位……），按境、行、果组织</td>
+<td>1–50</td>
+</tr>
+<tr>
+<td>摄抉择分</td>
+<td>对《解深密经》的深入抉择</td>
+<td>51–80</td>
+</tr>
+<tr>
+<td>摄释分、摄异门分、摄事分</td>
+<td>后三部分大量解释《阿含经》与禅修法</td>
+<td>81–100</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>叶扬注意到一个细节：百卷大论里有近二十卷在解释阿含。这派从来不是空中楼阁，声闻藏是它的地基，大乘唯识是盖在一楼上面的二楼。</p>
+<p>这部书还直接改写了中国历史。唐三藏玄奘西行的<strong>头号目标</strong>就是它——玄奘在国内读到的传本残缺不全，立志到佛教最高学府那烂陀寺，从当时唯识学泰斗戒贤论师受学全本。后来的故事大家都知道了：贞观年间玄奘取回梵本，在长安组织译场，百卷《瑜伽师地论》全部汉译。汉传佛教八大宗派里的<strong>法相唯识宗</strong>（玄奘—窥基一系）就是这么来的。</p>
+<p>三位主角的著作阵容，粗粗列一张表：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>人物</th>
+<th>代表作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>弥勒（托名/传承）</td>
+<td>"弥勒五论"：《瑜伽师地论》《辩中边论》《分别瑜伽论》《辩法法性论》《现观庄严论》（汉传课堂口径；汉藏五论名单有出入，如藏传另列《究竟一乘宝性论》而不列《瑜伽师地论》，《分别瑜伽论》无完整汉译）</td>
+</tr>
+<tr>
+<td>无著</td>
+<td>《摄大乘论》《显扬圣教论》《大乘阿毗达磨集论》《大乘庄严经论》《金刚般若论》等</td>
+</tr>
+<tr>
+<td>世亲</td>
+<td>《唯识二十论》《唯识三十颂》《十地经论》，以及对《法华经》《无量寿经》《涅槃经》等的大批论释</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>世亲一个人给几乎所有重要大乘经写了注释，堪称 5 世纪的"全覆盖型作者"：《十地经论》后来滋养了华严宗，《无量寿经论》（也称《往生论》）成为净土宗的核心论典，《唯识三十颂》在世亲身后有十大论师作注，玄奘把十家注释糅译成一部《成唯识论》——这是汉传唯识学的巅峰教材。一个学派给后来的汉传各宗"供货"供到这个程度，也是少见。</p>
+<h2>五、阿赖耶识登场：灵魂能干的它都干，灵魂干不了的它也干</h2>
+<p>铺垫完毕，主角上场。先看它要解决的问题。</p>
+<p>一切宗教都必须同时回答生命的两件事：</p>
+<ul>
+<li><strong>相续</strong>：人死后什么东西接到下一世？为什么业力不失？</li>
+<li><strong>变迁</strong>：人这一生明明在变，习惯、性格、命运都在改，凭什么？</li>
+</ul>
+<p>婆罗门教的常住灵魂能解释相续（一个恒常的"我"搬家），但解释不了变迁——一个<strong>定义上不变</strong>的东西怎么会改？种姓定命就是这么来的，灵魂是颗写死的常量。反过来，"一了百了"的断灭见倒是痛快地解释了变迁（什么都在散），代价是否定因果、否定道德。龙树的八不（不常不断）在哲学上把问题解了，但对修行人和普通信众，一个纯否定式的答案不好上手。</p>
+<p>瑜伽行派给出的正面模型是阿赖耶识：</p>
+<blockquote>
+<p>每个人的心识除了眼耳鼻舌身意这六层，底下还有一个极深的存储层。身口意的一切活动都会作为记录沉淀进去，这些记录叫<strong>种子</strong>；这一世结束时，物质身体散了，<strong>这层深层心识带着全部种子相续到下一世</strong>，像瀑流一样不断。种子的总体格局决定下一期生命的形态：人的业习成熟就生而为人，旁生的业习成熟就入旁生道。</p>
+</blockquote>
+<p>这个模型同时拿下两端：</p>
+<ul>
+<li><strong>相续</strong>：它跨越肉体死亡，过去、现在、未来三世不断——业力记账有了地方；</li>
+<li><strong>变迁</strong>：它内部的种子刹那生灭、有增有减，今天的行为就在改今天的账——命不是定的。</li>
+</ul>
+<p>所以中观那句"不生不灭"，在唯识这里被展开成一体两面：<strong>相续的一面说不生不灭，变迁的一面说生灭无常</strong>；种子念念生灭、善恶消长，却又相似相续——不是同一个，也不是断成两个。C00 里预告过的"一个不断被读写、又不断被写入内容改写的存储层"，就是它。</p>
+<p>那这套深层心识到底分几层？《解深密经》原文很克制，只说"六识之外有更深层的心识，名叫阿赖耶，也叫阿陀那（ādāna，执持义）"，没有排编号（此经《心意识相品》即阿陀那识偈的出处）。后来的瑜伽论师依禅修经验细分：深层里恒常执着"我"的那一层立为<strong>第七末那识</strong>（manas，意，思量义），仓库层立为<strong>第八阿赖耶识</strong>；中间一度还分过第九识（庵摩罗识，白净识）乃至第十识，分到底发现只是同一件事的过度切分，最终主流退回八识。</p>
+<p>最能说明阿赖耶不是灵魂的，是《解深密经》里佛陀自己的态度。经中有一首偈：</p>
+<blockquote>
+<p><strong>阿陀那识甚深细，一切种子如瀑流；我于凡愚不开演，恐彼分别执为我。</strong></p>
+</blockquote>
+<p>翻成白话：这个执持识太深太细，里头的一切种子像激流一样刹那生灭、奔流不住；我不对凡夫和二乘人详细讲它，怕凡愚望文生义，把它抓成一个"我"。</p>
+<p>——佛陀亲自给阿赖耶识贴了防灵魂标签。<a href="/post/50.html">C03</a>里那个"没有 id 的数据库"之问，到这里有了经里的回音：<strong>这层存储里没有主键叫"我"</strong>。</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-k">subgraph</span> <span class="pl-en">SUR</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>"表层：日常能觉察"<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">S5</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>前五识&lt;<span class="pl-ent">br</span>/&gt;眼耳鼻舌身——直接取境<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">S6</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>第六意识&lt;<span class="pl-ent">br</span>/&gt;判断、推理、喜欢讨厌<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-k">end</span>
+    <span class="pl-k">subgraph</span> <span class="pl-en">DEEP</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>"深层：定中方可观察"<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">S7</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>第七末那识&lt;<span class="pl-ent">br</span>/&gt;恒审思量，念念执『我』<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">S8</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>第八阿赖耶识&lt;<span class="pl-ent">br</span>/&gt;一切种子如瀑流，三世相续<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-k">end</span>
+    <span class="pl-ent">S5</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">S6</span>
+    <span class="pl-ent">S6</span> <span class="pl-k">-.-&gt;</span><span class="pl-k">|</span><span class="pl-s">"以末那为意根"</span><span class="pl-k">|</span> <span class="pl-ent">S7</span>
+    <span class="pl-ent">S7</span> <span class="pl-k">-.-&gt;</span><span class="pl-k">|</span><span class="pl-s">"恒执第八见分为自内我"</span><span class="pl-k">|</span> <span class="pl-ent">S8</span>
+    <span class="pl-ent">S8</span> <span class="pl-k">-.-&gt;</span><span class="pl-k">|</span><span class="pl-s">"种子生现行"</span><span class="pl-k">|</span> <span class="pl-ent">S6</span>
+    <span class="pl-ent">S6</span> <span class="pl-k">-.-&gt;</span><span class="pl-k">|</span><span class="pl-s">"现行熏种子（回写）"</span><span class="pl-k">|</span> <span class="pl-ent">S8</span></pre></div>
+<h2>六、一个程序员类比：一份每一世都在持续训练的模型权重</h2>
+<p>C03 叶扬用事件溯源讲过"无我"：没有一条固定的用户记录，只有一连串事件，"我"是这些事件的实时投影。唯识学现在补上了当时没讲完的下半截：<strong>事件存哪儿？系统重启之后谁还在？</strong></p>
+<p>答案像极了今天训练机器学习模型的工作方式：</p>
+<ul>
+<li><strong>阿赖耶识就是那份模型权重文件（checkpoint）</strong>。进程（这一世的身体）可以被杀掉，但权重落盘保存；新进程（下一期生命）启动时加载它，行为倾向、偏好、反射模式原封不动地续上——这是相续。</li>
+<li><strong>权重里没有一个叫"我"的神经元</strong>。你打开 checkpoint 翻遍全部参数，找不到任何一个神经元是"主人公"，可整套网络的倾向、习气、能力又是真实而稳定的——这是无我，也是"恒转如瀑流"。</li>
+<li><strong>每一次推理结果连同新数据回灌训练，权重就被改写一次</strong>。善的行为、恶的行为都在做梯度更新，文件每一刻都和上一刻略有不同——这是变迁，是"不常"；但它绝不会在两次更新之间断裂消失——这是相续，是"不断"。</li>
+<li>种子是<strong>本有</strong>（过去世带来的预训练权重）还是<strong>新熏</strong>（这一世 fine-tune 出来的）？唯识里有三家说法，主流答案是"新旧合生"：两个都有。这也是日常经验——同一家的孩子天性不同（本有），但家风会让一家人越来越像（新熏）。种子的细节中篇再展开。</li>
+</ul>
+<p>对照婆罗门教的灵魂，区别一目了然：灵魂是代码里写死的常量（<code class="notranslate">const SELF = 'brahmin'</code>，只读、不可改），阿赖耶是持续训练中的权重（没有冻结，每一 batch 都在更新）。一个导向定命，一个导向"可训练、可成佛"。</p>
+<p>不写代码的读者记大白话版本：<strong>阿赖耶识像一份带得走、又改得动的"习惯总档案"——你每一世的所作所为都在往里面写，这份档案也跟着你走下一世，但档案里没有一页写着"这就是我"。</strong></p>
+<p>按惯例，叶扬自己戳三个破洞：</p>
+<ol>
+<li><strong>权重是物质性的文件，阿赖耶不是大脑里的东西</strong>。模型参数存在显存和磁盘上，是色法；唯识的阿赖耶是功能性的施设，不定位在心脏或皮层（定位了反而是另一种"我"）。</li>
+<li><strong>这个类比把 AI 的硬问题原样暴露了</strong>：模型没有主人翁，只有前向计算——唯识会追问：对，所以人凭什么觉得自己有？末那识那一章正好接这个问题（下篇讲）。</li>
+<li>老破洞再来一遍：<strong>工程系统有设计者、有训练师，缘起没有造物主</strong>。权重文件背后有工程师，阿赖耶的瀑流是无始以来的因果运动，没有第一因，也没有人在机房值班。</li>
+</ol>
+<h2>七、吵架现场："这不就是灵魂改个名？"</h2>
+<p>这是任何唯识讲师都躲不掉的第一问，替外道和现代读者一起问出来。</p>
+<p><strong>问：你们佛教徒绕什么弯？阿赖耶识三世相续、三世因果、带着习气去投胎，这不就是 ātman 换了个梵文马甲？</strong></p>
+<p>答：马甲论恰恰把两边最关键的差别遮掉了。至少有四条分界线：</p>
+<ol>
+<li><strong>常与无常</strong>。灵魂的定义是"恒常、不变、单一"；阿赖耶的定义是"刹那生灭、如瀑流、是种子和现行的集合"。它更像一条河而不像一块玉——可以指着它说"这条河去下一世"，但此刻的水没有一滴停住。</li>
+<li><strong>一与多</strong>。灵魂是统一的主体；阿赖耶是仓库<strong>里的功能关系</strong>，能藏、所藏、执藏全是施设，连"仓库管理员"都是末那识错认出来的，没有总指挥。</li>
+<li><strong>定命与可改</strong>。灵魂论推出种姓与命定；阿赖耶的核心卖点是<strong>账随时可改</strong>——这正是"修行"二字在唯识体系里的全部依据。</li>
+<li><strong>终局相反</strong>。吠檀多的修行终点是发现"我就是梵"，回归真我；唯识修行的终点是<strong>阿赖耶识这个染净混合的状态整体转依</strong>（下篇详讲），连"藏识"这个名字都要退役。一个要亲证真我，一个要彻底转掉对"我"的误认——连大结局都是反的。</li>
+</ol>
+<p>再补一记来自经中的重锤：佛陀说《阿陀那识甚深细》那首偈时，理由就是"恐彼分别执为我"——<strong>怕的就是听众把阿赖耶听成灵魂</strong>。如果这个识本来就是灵魂，佛何必专门防这一手？</p>
+<p>当然，辩经现场不会这么轻易结束。反方还可以继续："一条河也得有个河道吧？相续总得有个载体，载体不就是我？"——唯识的回答是中篇的主菜："载体"这个想象本身，就是三性里的<strong>遍计所执</strong>——语言给集合贴了个标签，人就把标签当实体（C03 车喻的加强版）。要破这一层，得请出三性三无性。</p>
+<h2>八、卡壳角</h2>
+<p><strong>卡壳一：人间弥勒的考据，会不会败坏浪漫？</strong> 叶扬承认，初读到"弥勒可能是北方一位被神化的论师"时，是有点扫兴的——夜升兜率、昼宣瑜伽，这个画面多美。但转念一想：宗教史里"人间的好老师被记忆抬高"和"信仰中真实受教的兜率弥勒"，本来就在两个层面运作。一个回答史料问题，一个回应修行体验，论师们自己也并存两说。把户籍问题和传承价值分开，两边都不必死。</p>
+<p><strong>卡壳二：百卷地论和满屏名相的劝退感。</strong> 本地分十七地、寻伺、三摩呬多地、五种姓……唯识的名相密度是全佛教第一，很多人把它学成本科选修课，背完术语考完试，生活毫无改变。课程老师专门为此扼腕：唯识学在今天最大的流失，就是被当成纯粹的佛学研究。叶扬的对策是先抓一根主干，其余全部后置——<strong>主干就一句话：表层反应底下，有一个会记录、会相续、会被改写的深层存储。</strong> 三性、种子、转识，全是这一句话的展开。</p>
+<p><strong>卡壳三：阿赖耶到底"在哪儿"？</strong> 一旦承认这个识，人就本能地想给它定位：在心脏？在基因？在脑区？唯识不给坐标。因为它是<strong>依缘起施设的功能模型</strong>，不是解剖发现的器官。佛陀对"世界是否有边、命与身是一是异"这类形而上学问题一向拒绝作答（著名的毒箭之喻：中箭的人不该先研究箭羽的材质）；立阿赖耶的全部理由是<strong>修行操作需要它</strong>——要解释习气怎么存、怎么改、业力怎么不失。能操作，模型就成立，它不承诺提供宇宙的房间分布图。</p>
+<h2>九、一张图、一张表、一个钩子</h2>
+<p>图已经在上面了：八识结构加上"种子生现行、现行熏种子"的回流，就是整个唯识修行论的硬件拓扑。中篇讲这份拓扑里跑的数据结构，下篇讲怎么操作它。</p>
+<p><strong>本篇术语清单（按出场顺序）</strong>：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>术语</th>
+<th>大白话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>阿赖耶识（藏识）</td>
+<td>深层存储心识，记录一切行为种子，跨世相续又能被改写</td>
+</tr>
+<tr>
+<td>瑜伽行派 / 唯识学派</td>
+<td>4–5 世纪兴起、以禅修经验建立心识模型、主张"转识成智"的大乘派系</td>
+</tr>
+<tr>
+<td>虚妄唯识</td>
+<td>印顺给的副标；虚妄=认识不全真、可出错也可纠正，不是"全是假的"</td>
+</tr>
+<tr>
+<td>笈多王朝</td>
+<td>4–5 世纪印度"黄金时代"，婆罗门教复兴为印度教，佛教的竞争压力催生唯识</td>
+</tr>
+<tr>
+<td>弥勒、无著、世亲</td>
+<td>唯识三祖；弥勒身份有天界未来佛与人间论师两说</td>
+</tr>
+<tr>
+<td>《解深密经》</td>
+<td>唯识根本经，把"空"讲成空有双全的"了义"教；"阿陀那识甚深细"偈出此经</td>
+</tr>
+<tr>
+<td>《瑜伽师地论》</td>
+<td>弥勒说、百卷五分，禅修全流程手册；玄奘西行的头号取法目标</td>
+</tr>
+<tr>
+<td>末那识（第七识）</td>
+<td>深层里恒常执着"我"的心识</td>
+</tr>
+<tr>
+<td>阿陀那识</td>
+<td>阿赖耶的异名，"执持"义，执持种子与身体</td>
+</tr>
+<tr>
+<td>种子</td>
+<td>存进阿赖耶的行为记录/习气势能，遇缘会起现行（中篇展开）</td>
+</tr>
+<tr>
+<td>转依、转识成智</td>
+<td>把八识整体从染污转成清净（下篇展开）</td>
+</tr>
+<tr>
+<td>本有 / 新熏</td>
+<td>种子"先天带来"和"后天养成"两说，主流为新旧合生</td>
+</tr>
+<tr>
+<td>了义 / 不了义</td>
+<td>话说透了 / 只说到当机者需要的程度；非"究竟/不究竟"的等级判词</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>钩子</strong>：硬件拓扑有了，存储层里到底存的是什么格式的数据？为什么唯识敢说"外境是空、心识是有"——这话听起来简直像跟龙树对着干？答案是唯识最精密的一套数据模型：<strong>三性三无性</strong>，外加种子的六条运行规则。中篇见。</p>
+<blockquote>
+<p>说明：本文为个人学习笔记，讲的是公共历史知识，不代表任何宗教立场。参考课程：<a href="https://www.bilibili.com/video/BV1vewnzqEuA/" rel="nofollow">B站《印度佛教史》</a>第 14 讲与第 35 讲重录版；参考书：印顺《印度佛教思想史》、玄奘译《解深密经》《瑜伽师地论》。</p>
+</blockquote></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
