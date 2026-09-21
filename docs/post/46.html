@@ -104,7 +104,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
     <span class="pl-ent">SRC</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>原始素材：B 站课程视频<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
     <span class="pl-ent">A02</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>A02 下载篇&lt;<span class="pl-ent">br</span>/&gt;yt-dlp 取字幕轨 / 摸清分 P<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">A03</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>A03 ASR 篇（待发）&lt;<span class="pl-ent">br</span>/&gt;没字幕轨？四引擎语音转写<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">A03</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>A03 补档篇 已发&lt;<span class="pl-ent">br</span>/&gt;妙记转写三集 / 清洗“半成品”<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
     <span class="pl-ent">A01</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>A01 清洗篇&lt;<span class="pl-ent">br</span>/&gt;136 条规则 + 人在环上<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
     <span class="pl-ent">TXT</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>干净讲稿 txt（47 万字）<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
     <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>下游：C 系学习笔记 / Anki 制卡（候选）<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
@@ -148,9 +148,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </tr>
 <tr>
 <td>A03</td>
-<td>ASR 实战：30 集无字幕课程</td>
-<td>飞书妙记 / whisper.cpp / FunASR 等四引擎实测，术语热词，产物接回 A01 的清洗管线</td>
-<td>🔜（真跑完才写）</td>
+<td><a href="/post/66.html">ASR 交来的是“半成品”：三集补档实战</a></td>
+<td>飞书妙记转写、零宽字符、无时间码 txt、跨 cue 切断、五轮扩规、一次性任务选型，产物接回 A01</td>
+<td>✅</td>
 </tr>
 <tr>
 <td>候选</td>
@@ -172,6 +172,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>2026-09-18 · <a href="/post/43.html">A01 字幕清洗战</a></strong>：65 个字幕文件、47762 文本行、136 条规则、命中 1230 次修正全部脚本复核；Software 1.0/2.0 选型框架、长短语规则排序坑、UTF-8 报告绕开 GBK 控制台。当晚按 Karpathy 风格重写过一版。</li>
 <li><strong>2026-09-18 · <a href="/post/44.html">A02 字幕下载记</a></strong>：两次「假成功」破案——合集 URL 对 29 个同名分 P 只产出一个 <code class="notranslate">NA</code> 文件却退出码 0、36/39 集缺三集逐集证伪；SESSDATA 凭据三纪律（只计数不读内容、用完即删、不进同步目录）、<code class="notranslate">--sleep-requests</code> 防 412；李元祥 30 集（BV1dt4y1m7FK）只有弹幕，留给 A03。</li>
 <li><strong>2026-09-19 · A00 系列总览</strong>：本文。</li>
+<li><strong>2026-09-21 · <a href="/post/66.html">A03 补档实战</a></strong>：飞书妙记补转 P02/P04/P27 三集；18,432 个零宽字符、无时间码 txt、跨 cue 切断；fix_subs.py 三轮扩五轮、规则约 200→约 500；一次性任务选型（不自建 ASR）；下游变现番外一/二＋C04 补十事。</li>
 </ul>
 <h2>五、边界与读法</h2>
 <ul>
@@ -179,7 +180,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li>每篇独立可读，但按编号读体验最好——A03 的转写产物会直接接进 A01 的清洗规则，是同一条管线的上下游。</li>
 <li>叶扬是写前后端和数据库的程序员，类比默认面向同行；不写代码的读者记住每篇里那句大白话版即可，不影响主线。</li>
 </ul>
-<p>下一篇 <strong>A03</strong>：等四引擎在 30 集无字幕课程上真跑出结果，再带着数字回来更新这张表。</p></div>
+<p>A03 已发布（<a href="/post/66.html">见此</a>）。下一篇待定：候选 <strong>Anki / FSRS 自动制卡</strong>——干净文本的新下游，真做起来再带数字回来更新这张表。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
