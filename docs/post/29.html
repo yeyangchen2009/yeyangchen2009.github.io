@@ -10,13 +10,9 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="# G18｜被浮动挤扁的'上一篇 / 下一篇'：一桩 BFC 避让案
-
-[G08](/post/14.html) 给博客装上'上一篇 / 下一篇'导航之后，叶扬一直是在电脑上看的：两张卡片并排，箭头、标题、日期各就各位，像两篇文章之间一道体面的门。">
+<meta name="description" content="[G08](/post/14.html) 给博客装上'上一篇 / 下一篇'导航之后，叶扬一直是在电脑上看的：两张卡片并排，箭头、标题、日期各就各位，像两篇文章之间一道体面的门。">
 <meta property="og:title" content="G18｜被浮动挤扁的"上一篇 / 下一篇"：一桩 BFC 避让案">
-<meta property="og:description" content="# G18｜被浮动挤扁的'上一篇 / 下一篇'：一桩 BFC 避让案
-
-[G08](/post/14.html) 给博客装上'上一篇 / 下一篇'导航之后，叶扬一直是在电脑上看的：两张卡片并排，箭头、标题、日期各就各位，像两篇文章之间一道体面的门。">
+<meta property="og:description" content="[G08](/post/14.html) 给博客装上'上一篇 / 下一篇'导航之后，叶扬一直是在电脑上看的：两张卡片并排，箭头、标题、日期各就各位，像两篇文章之间一道体面的门。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://yeyangchen2009.github.io/post/29.html">
 <meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
@@ -87,8 +83,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"><h1>G18｜被浮动挤扁的"上一篇 / 下一篇"：一桩 BFC 避让案</h1>
-<p><a href="/post/14.html">G08</a> 给博客装上"上一篇 / 下一篇"导航之后，叶扬一直是在电脑上看的：两张卡片并排，箭头、标题、日期各就各位，像两篇文章之间一道体面的门。直到这天叶扬掏出手机随手翻了翻——门还在，但被挤成了两条竖匾。</p>
+<div class="markdown-body" id="postBody"><p><a href="/post/14.html">G08</a> 给博客装上"上一篇 / 下一篇"导航之后，叶扬一直是在电脑上看的：两张卡片并排，箭头、标题、日期各就各位，像两篇文章之间一道体面的门。直到这天叶扬掏出手机随手翻了翻——门还在，但被挤成了两条竖匾。</p>
 <p>这一篇记录这桩移动端事故的完整侦破过程：真凶不在手机上，也不在插件的媒体查询里，而在一个 2001 年的 CSS 布局老古董——<strong>浮动与 BFC 的避让规则</strong>身上。</p>
 <h2>一、手机截图抓现行</h2>
 <p>老规矩，先用 <a href="/post/26.html">番外一</a> 的零依赖截图器把现场固定下来（390×844，iPhone 逻辑分辨率，暗色主题）：</p>
