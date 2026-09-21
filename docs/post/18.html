@@ -10,13 +10,9 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="# G11 运维两小件：给爬虫的 robots.txt，给迷路读者的 404 页
-
-> 自研三连（G08–G10）写完插件，这一期叶扬处理两个建站起就欠着的小尾巴：G04 做 SEO 时测过本站的 robots.txt 是 **404**——没有 robots 文件时绝大多数爬虫默认'全站可抓'，所以没出事故，但 sitemap 的门牌号已经挂出去了，总不能还让 Googlebot 每次来都撞一扇没挂牌子的大门；另一边，输错地址的读者此前看到的是 GitHub Pages 默认的白地 404，和博客毫无关系。">
+<meta name="description" content="> 自研三连（G08–G10）写完插件，这一期叶扬处理两个建站起就欠着的小尾巴：G04 做 SEO 时测过本站的 robots.txt 是 **404**——没有 robots 文件时绝大多数爬虫默认'全站可抓'，所以没出事故，但 sitemap 的门牌号已经挂出去了，总不能还让 Googlebot 每次来都撞一扇没挂牌子的大门；另一边，输错地址的读者此前看到的是 GitHub Pages 默认的白地 404，和博客毫无关系。">
 <meta property="og:title" content="G11 运维两小件：给爬虫的 robots.txt，给迷路读者的 404 页">
-<meta property="og:description" content="# G11 运维两小件：给爬虫的 robots.txt，给迷路读者的 404 页
-
-> 自研三连（G08–G10）写完插件，这一期叶扬处理两个建站起就欠着的小尾巴：G04 做 SEO 时测过本站的 robots.txt 是 **404**——没有 robots 文件时绝大多数爬虫默认'全站可抓'，所以没出事故，但 sitemap 的门牌号已经挂出去了，总不能还让 Googlebot 每次来都撞一扇没挂牌子的大门；另一边，输错地址的读者此前看到的是 GitHub Pages 默认的白地 404，和博客毫无关系。">
+<meta property="og:description" content="> 自研三连（G08–G10）写完插件，这一期叶扬处理两个建站起就欠着的小尾巴：G04 做 SEO 时测过本站的 robots.txt 是 **404**——没有 robots 文件时绝大多数爬虫默认'全站可抓'，所以没出事故，但 sitemap 的门牌号已经挂出去了，总不能还让 Googlebot 每次来都撞一扇没挂牌子的大门；另一边，输错地址的读者此前看到的是 GitHub Pages 默认的白地 404，和博客毫无关系。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://yeyangchen2009.github.io/post/18.html">
 <meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
@@ -87,8 +83,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"><h1>G11 运维两小件：给爬虫的 robots.txt，给迷路读者的 404 页</h1>
-<blockquote>
+<div class="markdown-body" id="postBody"><blockquote>
 <p>自研三连（G08–G10）写完插件，这一期叶扬处理两个建站起就欠着的小尾巴：G04 做 SEO 时测过本站的 robots.txt 是 <strong>404</strong>——没有 robots 文件时绝大多数爬虫默认"全站可抓"，所以没出事故，但 sitemap 的门牌号已经挂出去了，总不能还让 Googlebot 每次来都撞一扇没挂牌子的大门；另一边，输错地址的读者此前看到的是 GitHub Pages 默认的白地 404，和博客毫无关系。两个文件，一个管机器、一个管人，都不用写 Python、不用动配置，放进 <code class="notranslate">static/</code> 就行。</p>
 </blockquote>
 <h2>先看现场</h2>
