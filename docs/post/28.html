@@ -10,13 +10,9 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="# 番外二｜我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线
-
-G17 收官那天晚上，叶扬翻着 `static/plugins/` 目录里一排 `.js` 文件，突然意识到一件事：这一个多星期叶扬给博客写了一大堆功能——目录、归档、分页条、上一篇下一篇、阅读时长、Mermaid 自动加载、外链新标签、SEO 四件套——但它们自始至终只服务了一个博客，就是叶扬自己的。">
+<meta name="description" content="G17 收官那天晚上，叶扬翻着 `static/plugins/` 目录里一排 `.js` 文件，突然意识到一件事：这一个多星期叶扬给博客写了一大堆功能——目录、归档、分页条、上一篇下一篇、阅读时长、Mermaid 自动加载、外链新标签、SEO 四件套——但它们自始至终只服务了一个博客，就是叶扬自己的。">
 <meta property="og:title" content="番外二｜我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线">
-<meta property="og:description" content="# 番外二｜我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线
-
-G17 收官那天晚上，叶扬翻着 `static/plugins/` 目录里一排 `.js` 文件，突然意识到一件事：这一个多星期叶扬给博客写了一大堆功能——目录、归档、分页条、上一篇下一篇、阅读时长、Mermaid 自动加载、外链新标签、SEO 四件套——但它们自始至终只服务了一个博客，就是叶扬自己的。">
+<meta property="og:description" content="G17 收官那天晚上，叶扬翻着 `static/plugins/` 目录里一排 `.js` 文件，突然意识到一件事：这一个多星期叶扬给博客写了一大堆功能——目录、归档、分页条、上一篇下一篇、阅读时长、Mermaid 自动加载、外链新标签、SEO 四件套——但它们自始至终只服务了一个博客，就是叶扬自己的。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://yeyangchen2009.github.io/post/28.html">
 <meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
@@ -87,8 +83,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"><h1>番外二｜我给 Gmeek 提了三个 PR：一次开源回馈的完整流水线</h1>
-<p>G17 收官那天晚上，叶扬翻着 <code class="notranslate">static/plugins/</code> 目录里一排 <code class="notranslate">.js</code> 文件，突然意识到一件事：这一个多星期叶扬给博客写了一大堆功能——目录、归档、分页条、上一篇下一篇、阅读时长、Mermaid 自动加载、外链新标签、SEO 四件套——但它们自始至终只服务了一个博客，就是叶扬自己的。</p>
+<div class="markdown-body" id="postBody"><p>G17 收官那天晚上，叶扬翻着 <code class="notranslate">static/plugins/</code> 目录里一排 <code class="notranslate">.js</code> 文件，突然意识到一件事：这一个多星期叶扬给博客写了一大堆功能——目录、归档、分页条、上一篇下一篇、阅读时长、Mermaid 自动加载、外链新标签、SEO 四件套——但它们自始至终只服务了一个博客，就是叶扬自己的。</p>
 <p>Gmeek 是开源的，白嫖这么久，是不是该回馈点什么？</p>
 <p>不过"我写了代码"和"这代码适合进上游"之间，隔着一整套筛选流程。有的功能自带 3.5MB 资产，上游不可能收；有的功能别人已经在做了，再提一遍是添乱；还有的代码在自己站里跑得好好的，换个人用立刻翻车——这个后面有实锤。</p>
 <p>这篇番外记录完整过程：怎么把 11 个自研件挨个过筛，最后产出 <strong>3 个 PR、1 个根治 issue、2 条高信息量评论</strong>，以及途中抓到的两桩"只有给别人用时才暴露"的 bug。</p>
