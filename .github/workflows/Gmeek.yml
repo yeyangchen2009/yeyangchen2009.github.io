@@ -61,6 +61,9 @@ jobs:
       - name: Rebuild README
         run: python tools/build-readme.py
 
+      - name: Pagefind index
+        run: npx -y pagefind@1.5.2 --site docs --output-subdir pagefind
+
       - name: update html
         run: |
           git config --local user.email "$(jq -r ".email" config.json)"
