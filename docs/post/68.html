@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script><script src='/plugins/GmeekPagefind.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> **Gmeek 折腾实录｜一次给博客加功能的完整实操**：从选型、本地实测、中文支持到 Actions 全自动。">
+<meta property="og:title" content="零后端全站搜索：给 Gmeek 博客接 Pagefind 的完整实操">
+<meta property="og:description" content="> **Gmeek 折腾实录｜一次给博客加功能的完整实操**：从选型、本地实测、中文支持到 Actions 全自动。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/68.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>零后端全站搜索：给 Gmeek 博客接 Pagefind 的完整实操</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">零后端全站搜索：给 Gmeek 博客接 Pagefind 的完整实操</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/68" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p><strong>Gmeek 折腾实录｜一次给博客加功能的完整实操</strong>：从选型、本地实测、中文支持到 Actions 全自动。这篇不占番外编号——番外四讲过借浏览器截图，番外五讲过 Skill，这次是真刀真枪给博客补上「搜索」这个缺了很久的功能。</p>
+</blockquote>
+<h2>一、小白问题：72 个页面，想找一句话怎么办</h2>
+<p>叶扬的博客写到现在，站上已经有 72 个页面，其中 62 篇是正文。想找之前写过的某个说法，怎么办？</p>
+<p>浏览器里 <code class="notranslate">Ctrl+F</code> 只能搜当前打开的这一页；标签页（<code class="notranslate">/tag.html</code>）能按标签过滤，可标签是粗粒度的——「我记得有篇文章里提过某个词，但想不起是哪篇、也不知道归在哪个标签下」，这两个工具都帮不上忙。这其实就是<strong>全文搜索</strong>的需求。</p>
+<p>常规的三条路：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>方案</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SaaS 搜索（Algolia 一类）</td>
+<td>要注册账号、管 API Key，多数有额度门槛，DocSearch 类还有项目资格要求</td>
+</tr>
+<tr>
+<td>自建搜索后端</td>
+<td>为一个搜索功能养一台服务器，违背静态站的初衷（B06 讲过 Pages 的边界）</td>
+</tr>
+<tr>
+<td><strong>Pagefind</strong></td>
+<td>构建时在本地<strong>离线</strong>建好索引，产物是纯静态文件；访客查询时，搜索引擎（WASM）在访客自己浏览器里运行</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>Pagefind 的思路可以这么理解：普通搜索引擎是「网站把数据发给服务器，查询时服务器现搜」；Pagefind 反过来——<strong>构建期就把整站预编译成一份搜索索引，连同一个微型搜索引擎一起发给访客</strong>。没有服务器，没有 Key，没有额度。</p>
+<h2>二、一条命令：72 页、3 秒、2 MB</h2>
+<p>Pagefind 由 CloudCannon 团队的 Liam Bigelow 发起，现在已独立为 Pagefind 项目。截至本文最新版 v1.5.2，GitHub 上 5000+ star，发版活跃。它是个 npm 包，不用装进项目依赖，<code class="notranslate">npx</code> 直接跑：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">npx -y pagefind@1.5.2 --site docs --output-subdir pagefind</pre></div>
+<p><code class="notranslate">--site docs</code> 指定静态站点目录（Gmeek 生成的 HTML 都在 <code class="notranslate">docs/</code>），<code class="notranslate">--output-subdir pagefind</code> 指定索引输出到 <code class="notranslate">docs/pagefind/</code>。跑完的输出：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">[Reading languages]
+Discovered 1 language: zh-cn
+[Building search indexes]
+  Indexed 72 pages
+  Indexed 14847 words
+Finished in 2.988 seconds
+</code></pre>
+<p>72 个页面、14847 个索引词、不到 3 秒。再看产物：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">docs/pagefind/
+├── fragment/            # 每个页面的正文片段（懒加载，搜中才下载）
+├── index/               # 索引主体（分片，查哪个词下哪片）
+├── pagefind-ui.js/.css  # 现成的搜索界面（可选，也可以只用底层 API）
+├── pagefind.js          # 底层搜索 API
+├── pagefind-worker.js   # v1.5 起搜索跑在 Web Worker 里
+└── wasm.*.pagefind      # WebAssembly 搜索引擎
+</code></pre>
+<p>整个目录 <strong>2.0 MB</strong>。注意这 2 MB 不是访客每次搜索都要全量下载——索引是分片的，输入查询时才下载相关的分片；2 MB 是全站索引的总上限。</p>
+<p>输出里还有两行提示值得解释：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">1 page found without an &lt;html&gt; element ... "/google1e7515c0f1de4bc9.html"
+</code></pre>
+<p>这是 Google 站长平台的验证码文件，本来就不是给人看的页面，跳过它完全正确（这种验证文件还必须永久留在站上，不能删）。</p>
+<pre lang="text" class="notranslate"><code class="notranslate">Note: Pagefind doesn't support stemming for the language zh-cn.
+</code></pre>
+<p>Stemming（词干提取）是英文这类语言需要的——把 <code class="notranslate">running / runs / ran</code> 归到同一个词根。中文根本没有词形变化，这条警告对中文无实际影响。</p>
+<h2>三、中文实测：分词是个真问题，Pagefind 交了卷</h2>
+<p>静态搜索工具挑中文博客，最大的坎是<strong>分词</strong>。英文天然靠空格分词，中文一句话是连写的——「阿赖耶识」四个字，是一个词、两个词还是四个词？索引时分错了，搜索就搜不中。</p>
+<p>Pagefind 的解法分两半（这是查了官方 CHANGELOG 核实过的，不是猜的）：</p>
+<ul>
+<li><strong>索引侧</strong>：<code class="notranslate">npx pagefind</code> 默认拉的是 <strong>extended（扩展）二进制</strong>，内置中文、日文分词词典，建索引时按词典把整句切成词。如果去 GitHub Releases 手动下载二进制，会看到标准版和扩展版两个附件——<strong>做中文站必须选扩展版</strong>，标准版不含中日分词。</li>
+<li><strong>查询侧</strong>：v1.5.0 起，搜索框里直接粘贴一整句中文也能搜——Pagefind 在浏览器里调用 <code class="notranslate">Intl.Segmenter</code>（现代浏览器内置的分词 API）把查询切开。CHANGELOG 里的例子：搜「这是一段简单的测试文本」，实际按「这 / 是 / 一段 / 简单 / 的 / 测试 / 文本」检索，和索引时的切法一致。</li>
+</ul>
+<p>说法归说法，叶扬在本地起了 Pagefind 自带的测试服务，用真实索引跑了一轮，用的是浏览器端 JS API（不是截图看效果，是真调接口数结果）：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>查询</th>
+<th>命中页面数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>阿赖耶</td>
+<td>13</td>
+</tr>
+<tr>
+<td>唯识</td>
+<td>20</td>
+</tr>
+<tr>
+<td>间隔重复</td>
+<td>3</td>
+</tr>
+<tr>
+<td>本有新熏</td>
+<td>4</td>
+</tr>
+<tr>
+<td>斯陀含</td>
+<td>9</td>
+</tr>
+<tr>
+<td>空（单字）</td>
+<td>47</td>
+</tr>
+<tr>
+<td>阿赖（两字片段）</td>
+<td>14</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>专有名词、长短语、单字都能命中。这里有个有意思的细节：搜「阿赖」有 14 条，比搜「阿赖耶」的 13 条还多——因为查询被切成更细的单位后，命中的是「包含这两个字」的页面，不要求连在一起。这是召回更宽的表现，算不算「更准」取决于场景，但至少证明中文用户不用再自己拿空格把查询切开。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/pagefind-light.png"><img src="/screenshots/pagefind-light.png" alt="pagefind 亮色搜索弹窗" style="max-width: 100%;"></a></p>
+<h2>四、接进 Actions：每次构建自动重跑，一次配好永久生效</h2>
+<p>本地验证通过，接下来是让索引在云端自动维护。Gmeek 的构建流程（B00 拆过）是：Actions 里 clone 上游源码 → 跑 Gmeek.py 生成 HTML 到 <code class="notranslate">docs/</code> → 生成 sitemap、拼 README → commit 回仓库 → 打包 <code class="notranslate">docs/</code> 部署到 Pages。</p>
+<p>Pagefind 的索引必须在 HTML 生成之后、部署之前插入，在 workflow 里加一个步骤：</p>
+<div class="highlight highlight-source-yaml"><pre class="notranslate">      - <span class="pl-ent">name</span>: <span class="pl-s">Pagefind index</span>
+        <span class="pl-ent">run</span>: <span class="pl-s">npx -y pagefind@1.5.2 --site docs --output-subdir pagefind</span></pre></div>
+<p>版本号写死（1.5.2），不写 <code class="notranslate">@latest</code>——构建工具要可复现，哪天 Pagefind 大改版，至少不会让博客的自动构建莫名其妙挂掉。</p>
+<p>位置上有个讲究：这一步放在 commit 之前，于是 <code class="notranslate">docs/pagefind/</code> 会像 sitemap、README 一样被 Actions 提交回仓库；同时它在打包部署之前，产物也会随 Pages 发出去。每次发文章 HTML 都重新生成，索引自然也要每次重跑——72 页只要 3 秒，成本可以忽略。</p>
+<h2>五、搜索入口：复用旧按钮、明暗两套配色</h2>
+<p>光有索引还不够，得让读者在每个页面都能点开搜索框。Gmeek 的页面结构不能直接改模板（每次构建都从上游 clone，改了会被覆盖），老办法：写一个前端插件，在浏览器里动态装配。插件 <code class="notranslate">GmeekPagefind.js</code> 做了这几件事：</p>
+<ol>
+<li>**列表页（首页）**本来就有一个搜索图标（旧版链接到标签页）——直接劫持这个按钮，图标不变，点击改为打开 Pagefind 弹窗，不新增多余按钮；</li>
+<li><strong>文章页、固定页、标签页</strong>没有 Pagefind 入口（标签页自带的是按标签过滤的旧搜索框，两回事），就在右上角按钮组里注入同款圆形搜索按钮；</li>
+<li>Pagefind 的界面 CSS/JS <strong>首次点击时才加载</strong>（懒加载），不增加日常页面体积；</li>
+<li>键盘党友好：按 <code class="notranslate">/</code> 唤起搜索，按 <code class="notranslate">Esc</code> 关闭；</li>
+<li>手机端搜索面板自动铺满全屏。</li>
+</ol>
+<p>弹窗用的是 Pagefind 自带 UI，但它默认是浅色变量。博客有明暗三态主题（B08 做的），暗色适配靠覆写它暴露的 CSS 变量，照 GitHub Dark 的色板来：</p>
+<div class="highlight highlight-source-css"><pre class="notranslate">[<span class="pl-c1">data-color-mode</span><span class="pl-c1">=</span><span class="pl-s">"dark"</span>] .<span class="pl-c1">pagefind-ui</span> {
+    <span class="pl-s1">--pagefind-ui-text</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>e6edf3</span>;
+    <span class="pl-s1">--pagefind-ui-background</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>161b22</span>;
+    <span class="pl-s1">--pagefind-ui-border</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>30363d</span>;
+    <span class="pl-s1">--pagefind-ui-primary</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>58a6ff</span>;
+    <span class="pl-s1">--pagefind-ui-tag</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>21262d</span>;
+}
+[<span class="pl-c1">data-color-mode</span><span class="pl-c1">=</span><span class="pl-s">"dark"</span>] .<span class="pl-c1">pagefind-ui</span> <span class="pl-ent">mark</span> {
+    <span class="pl-c1">background</span><span class="pl-kos">:</span> <span class="pl-en">rgba</span>(<span class="pl-c1">56</span><span class="pl-kos">,</span><span class="pl-c1">139</span><span class="pl-kos">,</span><span class="pl-c1">253</span><span class="pl-kos">,</span><span class="pl-c1">.4</span>);
+    <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>e6edf3</span>;
+}</pre></div>
+<p>界面文案也通过参数换成中文（「搜索文章…」「正在搜索…」「找到 13 篇和 "阿赖耶" 相关的文章」「找不到和 xxx 相关的文章」）。这里有个细节值得一说：官方自带的中文翻译文件其实已经覆盖了全部 26 个界面状态，直接引用就不会出现「界面一半中文一半英文」——只有想自定义措辞时才逐项覆写。另外摘要长度默认偏短、中文片段容易切碎，调 <code class="notranslate">excerptLength: 22</code> 后读起来正常多了。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/pagefind-dark.png"><img src="/screenshots/pagefind-dark.png" alt="pagefind 暗色搜索弹窗" style="max-width: 100%;"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/pagefind-mobile.png"><img src="/screenshots/pagefind-mobile.png" alt="pagefind 手机端搜索" style="max-width: 100%;"></a></p>
+<h2>六、坑清单：自己踩的，和留给上游的</h2>
+<p><strong>本地测试别只拷插件文件。</strong> 叶扬第一次在本地验证时，把插件 JS 拷进了 <code class="notranslate">docs/plugins/</code>，点击搜索按钮后页面直接跳走了。排查发现：<code class="notranslate">docs/</code> 里的 HTML 是改配置之前生成的，<code class="notranslate">&lt;head&gt;</code> 里根本没有插件的引用标签——文件在，但没有任何页面加载它。<code class="notranslate">docs/</code> 是<strong>构建产物</strong>，本地改它不算数，要从源头（<code class="notranslate">config.json</code> 的 <code class="notranslate">allHead</code> 字段）改完重新生成。这跟 B00 讲的「改东西要找到真源」是同一个道理。</p>
+<p><strong>无头浏览器验收照旧本地注入 primer CSS。</strong> 老坑：headless 环境拉不到 Primer 镜像，不加本地 CSS 拦截，整页透明白底。截图是最后一道防线，配图三张全部实拍过，图面零错字。</p>
+<p><strong>索引范围暂时是整页。</strong> 目前没有配置 <code class="notranslate">data-pagefind-body</code> 属性，Pagefind 索引的是整个 <code class="notranslate">&lt;body&gt;</code>——页头的导航、页脚的文字也会进索引，搜「首页」可能命中所有页面。精确圈定正文区域需要在生成的 HTML 上加标记，这要动 Gmeek 模板，适合给上游提 PR，目前整页索引的噪音对实际使用影响不大。</p>
+<p><strong>列表页本身也会成为搜索结果。</strong> 首页和翻页（<code class="notranslate">index.html / page2.html …</code>）都是完整 HTML，自然也被索引，搜宽词时结果里会混入列表页。v1.5.2 的命令行没有单独的页面排除参数（只能换文件匹配 glob），为一个小噪音改 glob 不划算；真介意的话，后续配合正文标记一起处理。</p>
+<p><strong>搜索弹窗本身也补了基础无障碍。</strong> 打开时锁住背景滚动，<code class="notranslate">Esc</code> 关闭后焦点还给刚才点的按钮；慢网或加载失败时会有明确提示，不会点了按钮毫无反应。</p>
+<h2>收尾：一笔成本账</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>项目</th>
+<th>数字</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>索引全站耗时</td>
+<td>约 3 秒</td>
+</tr>
+<tr>
+<td>索引总体积</td>
+<td>2.0 MB（分片懒加载）</td>
+</tr>
+<tr>
+<td>新增服务器</td>
+<td>0</td>
+</tr>
+<tr>
+<td>API Key / 账号</td>
+<td>0</td>
+</tr>
+<tr>
+<td>后续维护</td>
+<td>每次发文章自动重建</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>搜索框现在就挂在每个页面的右上角，或者按一下 <code class="notranslate">/</code>，随时可用。</p>
+<p>这是「GitHub 好项目实操」系列的第一篇。下一篇已经排上：终端操作演示的升级——用脚本化的方式生成终端录屏，让命令行教程不再只有静态截图。</p>
+<h2>术语表</h2>
+<ul>
+<li><strong>Pagefind</strong>：静态站点的零后端搜索工具；构建期建索引，查询在访客浏览器里完成</li>
+<li><strong>索引（index）</strong>：把正文切成词、记录每个词出现在哪些页面的检索数据结构；相当于给全站内容建一份「倒排目录」</li>
+<li><strong>Stemming（词干提取）</strong>：把同一词的不同形态归并（英文 run/runs/running）；中文无词形变化，用不上</li>
+<li><strong>分词（segmentation）</strong>：把连写的中文句子切成词；Pagefind 扩展版索引侧带词典，v1.5 查询侧用浏览器 <code class="notranslate">Intl.Segmenter</code></li>
+<li><strong>WASM（WebAssembly）</strong>：可以在浏览器里高速运行的二进制代码，Pagefind 的搜索引擎就编译成 WASM</li>
+<li><strong>Web Worker</strong>：浏览器的后台线程；Pagefind v1.5 起搜索在 Worker 里跑，打字时页面不卡</li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
