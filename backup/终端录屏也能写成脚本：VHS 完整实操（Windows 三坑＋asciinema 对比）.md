@@ -26,7 +26,7 @@ winget install tsl0922.ttyd
 第二条是它的运行依赖。VHS 的内部架构其实是"四件套"拼起来的：
 
 ```mermaid
-%%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'15px'}}%%
+%%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'15px'}}}%%
 flowchart TD
     A[".tape 纯文本脚本<br/>Output / Type / Enter / Sleep / Set"] --> B["vhs 编排器 (Go)"]
     B --> C["ttyd<br/>把 shell 暴露成 WebSocket"]
