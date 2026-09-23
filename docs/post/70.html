@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script><script src='/plugins/GmeekPagefind.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> 上一篇 VHS 把'录屏'变成了写脚本。">
+<meta property="og:title" content="一个 CLI 统管七十多种存储：rclone 备份同步完整实操（crypt 加密＋Actions 定时）">
+<meta property="og:description" content="> 上一篇 VHS 把'录屏'变成了写脚本。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/70.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>一个 CLI 统管七十多种存储：rclone 备份同步完整实操（crypt 加密＋Actions 定时）</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">一个 CLI 统管七十多种存储：rclone 备份同步完整实操（crypt 加密＋Actions 定时）</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/70" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>上一篇 VHS 把"录屏"变成了写脚本。这一篇轮到另一件更要紧的事——备份。把文件从电脑搬到网盘，能不能也不打开任何网盘客户端，只用一条可复现的命令？</p>
+</blockquote>
+<h2>一、小白问题：备份这件事，为什么手动做不靠谱</h2>
+<p>先说一个很多人都干过的事。</p>
+<p>担心文件丢，于是买了网盘会员，打开客户端，把一个文件夹拖进去，进度条走完，心满意足。三个月后想再备一次：客户端早就不自启了，登录态过期，重新装；网盘里那个文件夹跟本地现在是什么关系，说不清——哪些传过了、哪些改过了，只能靠肉眼；想再备一份到另一个网盘？再装一个客户端，再走一遍，每个网盘的客户端界面、限速规则、同步逻辑还都不一样。</p>
+<p>这种"备份"有三个硬伤。<strong>不可重复</strong>：全靠人记着、点着，漏一次就断档。<strong>不可验证</strong>：传完只知道进度条走完了，文件到底齐不齐、有没有损坏，没有答案。<strong>不可移植</strong>：换个网盘等于换一套手艺，经验全部作废。</p>
+<p>程序员看这套流程会觉得面熟：手动部署就是这个味道——而工程上早就用脚本和 CI 把它消灭了。备份也一样，它的本质是"在两个存储系统之间按规则同步文件"，天然是命令行工具的地盘。</p>
+<p>rclone 就是这门手艺的标准答案：一个开源 CLI，统一对接七十多种存储后端，本地磁盘、S3 兼容对象存储、WebDAV、各家网盘，全部用同一套命令说话。</p>
+<h2>二、rclone 是谁，winget 一条命令装完</h2>
+<p>rclone 是 Go 写的老牌开源工具，GitHub 上 rclone/rclone 项目数万 star，官方口径支持 <strong>Over 70</strong> 种云存储后端。Windows 上 winget 直接装：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">winget install Rclone.Rclone</pre></div>
+<p>装完验证：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">$ rclone version
+rclone v1.75.1
+- os/version: Microsoft Windows 11 Pro 25H2 25H2 (64 bit)   # 版本号重复是上游显示问题，原文如此
+</code></pre>
+<p>rclone 的核心抽象可以用一张图讲清楚：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-k">subgraph</span> <span class="pl-en">CMD</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>"rclone 命令层"<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>copy / sync / check&lt;<span class="pl-ent">br</span>/&gt;--filter / --bwlimit / --backup-dir<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-k">end</span>
+    <span class="pl-k">subgraph</span> <span class="pl-en">WRAP</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>"可选包裹层"<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">CR</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>crypt 加密&lt;<span class="pl-ent">br</span>/&gt;文件名 + 内容全加密<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-k">end</span>
+    <span class="pl-k">subgraph</span> <span class="pl-en">BACK</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>"统一后端接口 fs.Fs —— 七十多种实现"<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">B1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>local 本地磁盘<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">B2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>S3 / 对象存储<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">B3</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>WebDAV<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">B4</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>各厂商网盘 ...<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-k">end</span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">CR</span>
+    <span class="pl-ent">CR</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B1</span>
+    <span class="pl-ent">CR</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B2</span>
+    <span class="pl-ent">CR</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B3</span>
+    <span class="pl-ent">CR</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B4</span></pre></div>
+<p>不管底下是本地磁盘还是对象存储，上面用的命令一模一样——这就是"学一次，到处用"。本文为了不碰任何真实账号，全程在本机自建一个 WebDAV 服务当"网盘"，所有命令在真实网盘上原样可用，只需要把 remote 类型换掉。</p>
+<h2>三、配一个 remote：告诉 rclone "网盘"在哪</h2>
+<p>rclone 把一个存储目标叫做 <strong>remote</strong>，交互式配置是 <code class="notranslate">rclone config</code>，一路菜单选；但脚本化场景推荐直接 <code class="notranslate">config create</code> 一条命令搞定。配置文件在 Windows 上是 <code class="notranslate">%APPDATA%\rclone\rclone.conf</code>，在 Linux 上是 <code class="notranslate">~/.config/rclone/rclone.conf</code>（也可以用 <code class="notranslate">--config</code> 指定任意文件，本文的演示配置就独立存放，不碰全局）。</p>
+<p>先在本地把"网盘"起起来（真实场景这一步不存在，直接用你网盘的地址）：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone serve webdav serverdata --addr :8080 --user demo --pass demo-pass-123</pre></div>
+<p>然后配置一个名为 <code class="notranslate">wd</code> 的 WebDAV remote：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone --config local-demo.conf config create wd webdav \
+  url=http://127.0.0.1:8080 vendor=other \
+  user=demo pass=demo-pass-123</pre></div>
+<p>注意这里 <code class="notranslate">pass=</code> 给的是<strong>明文</strong>，rclone 会自动把它混淆（obscure）后再存进配置文件——配置文件里看到的不是明文，而是一串可逆的编码。这个 obscure 不是加密，只是防止路过的人一眼看到，后面会专门讲这里的坑。</p>
+<p>配好就能用了，先打个招呼：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone --config local-demo.conf lsd wd:</pre></div>
+<p>下文所有命令为了简洁都省略了 <code class="notranslate">--config local-demo.conf</code> 这一段，实际演示时全程带着它，绝不碰你的全局配置。</p>
+<h2>四、四大主力：copy、sync、check、--dry-run</h2>
+<p>rclone 命令不少，但日常 90% 的工作量靠四个。先用三个小文件当数据：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">src/budget.csv   month,amount / sep,100
+src/notes.txt    notes content v1
+src/readme.txt   hello from readme
+</code></pre>
+<h3>copy：只增不删</h3>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone copy src dst</pre></div>
+<pre lang="text" class="notranslate"><code class="notranslate">INFO  : budget.csv: Copied (new)
+INFO  : notes.txt: Copied (new)
+INFO  : readme.txt: Copied (new)
+Transferred: 3 / 3, 100%
+</code></pre>
+<p>copy 的语义要记牢：<strong>把源端的文件传到目标，只增不删</strong>。即使源端删了文件、目标端多了文件，再跑一次 copy，目标里多余的文件也不会被碰：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">$ rm src/budget.csv
+$ printf 'stale file only in dst\n' &gt; dst/stale-only-dst.txt
+$ rclone copy src dst
+INFO  : There was nothing to transfer
+$ ls dst
+budget.csv  notes.txt  readme.txt  stale-only-dst.txt
+</code></pre>
+<p>源里删掉的 budget.csv 还在 dst，dst 里多出来的 stale 文件也还在。copy 适合"我只想多备一份，别动我别的东西"。</p>
+<p>如果某个文件内容变了，copy 会只传变化的那一个：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">INFO  : notes.txt: Copied (replaced existing)
+</code></pre>
+<h3>sync：让目标变成源的镜像</h3>
+<p>进入 sync 之前，先把演示状态摆正：把 budget.csv 还原回 src，dst 里那个 stale 文件留着——于是当前是"src 三个文件、dst 四个文件（多一个 stale）"。</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-c1">printf</span> <span class="pl-s"><span class="pl-pds">'</span>month,amount\nsep,100\n<span class="pl-pds">'</span></span> <span class="pl-k">&gt;</span> src/budget.csv</pre></div>
+<p>sync 比 copy 多一个动作：<strong>删除目标端那些源端已经不存在的文件</strong>。因为删数据是危险操作，rclone 给了一个无价的安全开关 <code class="notranslate">--dry-run</code>——只打印"我本来要做什么"，一个字节都不动：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone sync src dst --dry-run</pre></div>
+<pre lang="text" class="notranslate"><code class="notranslate">NOTICE: stale-only-dst.txt: Skipped delete as --dry-run is set (size 23)
+Deleted: 1 (files), 0 (dirs), 23 B (freed)
+</code></pre>
+<p>看清楚它要删的就是那一个 23 字节的 stale 文件，再去掉 dry-run 真跑：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">$ rclone sync src dst
+INFO  : stale-only-dst.txt: Deleted
+$ ls dst
+budget.csv  notes.txt  readme.txt
+</code></pre>
+<p>从此 dst 与 src 严格一致。规矩很简单：<strong>所有 sync 默认先 --dry-run</strong>，确认删除清单没问题再真跑。这个习惯能救命。</p>
+<h3>check：验证备份到底齐不齐</h3>
+<p>备份传完怎么验证？rclone check 负责比对两端：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone check src dst</pre></div>
+<pre lang="text" class="notranslate"><code class="notranslate">NOTICE: Local file system at .../dst: 0 differences found
+NOTICE: Local file system at .../dst: 3 matching files
+</code></pre>
+<p>默认按 <strong>size + 哈希</strong>（两端共同支持的 MD5/SHA1）比对，<strong>不看修改时间</strong>——实测两端文件仅 mtime 不同、内容一致，check 照样报 0 differences。它还有两档：加 <code class="notranslate">--size-only</code> 只比大小、最快；加 <code class="notranslate">--download</code> 则把两端数据全部读出来实时比对，最严格、代价也最大：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone check src dst --size-only      <span class="pl-c"><span class="pl-c">#</span> 只比大小</span>
+rclone check src dst --download       <span class="pl-c"><span class="pl-c">#</span> 读完全部数据实时比对</span></pre></div>
+<p>如果两端后端没有共同哈希（比如 crypt 叠 WebDAV），check 会打印 <code class="notranslate">No common hash found</code>，自动退回只比 size。</p>
+<p>"传完即 check"，备份从此是可验证的，而不是看着进度条猜。</p>
+<h3>四个动作的分工速查</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>命令</th>
+<th>会删目标文件吗</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">copy</code></td>
+<td>不会</td>
+<td>增量备份，多放一份，最安全</td>
+</tr>
+<tr>
+<td><code class="notranslate">sync</code></td>
+<td>会</td>
+<td>镜像备份，要求两端严格一致</td>
+</tr>
+<tr>
+<td><code class="notranslate">check</code></td>
+<td>不会</td>
+<td>校验备份完整性</td>
+</tr>
+<tr>
+<td><code class="notranslate">--dry-run</code></td>
+<td>什么都不做</td>
+<td>sync 之前的必做彩排</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>本节四条命令的真实输出汇总：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/rclone-commands.png"><img src="/screenshots/rclone-commands.png" alt="rclone copy / sync / check 实战输出" style="max-width: 100%;"></a></p>
+<h2>五、安全网与精细控制</h2>
+<p>真实备份里还有三个常见需求：删了的文件能不能留个棺材本？不想全传怎么挑？占满带宽怎么办？</p>
+<h3>--backup-dir：被删/被覆盖的文件，server-side 留档</h3>
+<p>sync 要删的文件直接没了，终归有点慌。<code class="notranslate">--backup-dir</code> 让 rclone 在删除/覆盖前把旧文件<strong>移动到一个留档目录</strong>：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone sync src dst --backup-dir archive/sync-<span class="pl-s"><span class="pl-pds">$(</span>date +%s<span class="pl-pds">)</span></span></pre></div>
+<p>实测输出里可以看到旧文件是 server-side 移动过去的：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">INFO  : notes.txt: Moved (server-side)
+INFO  : notes.txt: Copied (new)
+INFO  : doomed.txt: Moved into backup dir
+</code></pre>
+<pre lang="text" class="notranslate"><code class="notranslate">archive/sync-1790153509/notes.txt
+archive/sync-1790153509/doomed.txt
+</code></pre>
+<p>配合一个带时间戳的目录，每次 sync 的"牺牲者"都有处可查，相当于给镜像备份加了个简易回收站。注意 backup-dir 必须在同一个后端上，rclone 才能走 server-side move。</p>
+<h3>过滤：--include / --exclude 与一个推荐写法</h3>
+<p>只想传特定类型的文件，用过滤规则：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone copy mix filtered --include <span class="pl-s"><span class="pl-pds">"</span>*.csv<span class="pl-pds">"</span></span> --include <span class="pl-s"><span class="pl-pds">"</span>*.txt<span class="pl-pds">"</span></span> --exclude <span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span></pre></div>
+<p>看上去规则按顺序匹配、最后的 <code class="notranslate">--exclude "*"</code> 兜底，但实测中 rclone 立刻给了一条很直白的提醒：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">ERROR : Using --filter is recommended instead of both --include and --exclude
+        as the order they are parsed in is indeterminate
+</code></pre>
+<p>即同时混用 <code class="notranslate">--include</code> 和 <code class="notranslate">--exclude</code> 时，两者的解析先后不确定。官方推荐统一用 <code class="notranslate">--filter</code> 写成一个有序列表：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone copy mix filtered \
+  --filter <span class="pl-s"><span class="pl-pds">"</span>+ *.csv<span class="pl-pds">"</span></span> \
+  --filter <span class="pl-s"><span class="pl-pds">"</span>+ *.txt<span class="pl-pds">"</span></span> \
+  --filter <span class="pl-s"><span class="pl-pds">"</span>- *<span class="pl-pds">"</span></span></pre></div>
+<p><code class="notranslate">+</code> 表示包含，<code class="notranslate">-</code> 表示排除，从上往下逐条匹配。写法啰嗦一点，但语义确定。</p>
+<h3>--bwlimit：别让备份占满网速</h3>
+<p>家里网络一边备份一边开视频会议，需要给 rclone 限个速：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone copy mix limited --include <span class="pl-s"><span class="pl-pds">"</span>big.bin<span class="pl-pds">"</span></span> --bwlimit 1M</pre></div>
+<pre lang="text" class="notranslate"><code class="notranslate">INFO  : Starting bandwidth limiter at 1Mi Byte/s
+Transferred: 20 MiB / 20 MiB, 100%, 1.001 MiB/s
+Elapsed time: 19.9s
+</code></pre>
+<p>20 MiB（约 21 MB）文件在 1 MiB/s 限速下稳定跑了 19.9 秒，限速准确。</p>
+<h2>六、crypt：网盘服务商也读不了你的数据</h2>
+<p>把文件丢给网盘，等于信任网盘运营方和它的安全防护。更谨慎的做法是<strong>在本地加密后再上传</strong>——服务端看到的只有密文。rclone 内置了 crypt 后端，专门干这个。</p>
+<p>crypt 的妙处在于它是一个"包裹层"：它自己不连任何服务，而是套在另一个 remote 外面。发给 crypt 的文件先加密，再交给底层 remote 上传；读的时候反过来。配置一条：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone config create secret crypt remote=wd: \
+  password=enc-password-456 password2=salt-salt-789 \
+  filename_encryption=standard</pre></div>
+<ul>
+<li><code class="notranslate">password</code> 是加密主密码，<code class="notranslate">password2</code> 是可选盐值，参与 scrypt 密钥派生，增强抗字典攻击能力；</li>
+<li><code class="notranslate">filename_encryption=standard</code> 表示<strong>连文件名一起加密</strong>。</li>
+</ul>
+<h3>同一份数据，两个世界</h3>
+<p>通过 crypt 视图看，一切正常，文件名、大小都是明文口径：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">rclone lsl secret:</pre></div>
+<pre lang="text" class="notranslate"><code class="notranslate">21 2026-09-23 16:52:12.000000000 budget.csv
+23 2026-09-23 16:52:12.000000000 notes.txt
+18 2026-09-23 16:52:12.000000000 readme.txt
+</code></pre>
+<p>但直接到服务端磁盘上看物理实况，文件名、目录名全部变成了随机串：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">serverdata/tgt7ip244a279o2vi5alvg61r0              &lt;- budget.csv
+serverdata/ev2hq35t7d188mt23kccul2oag              &lt;- notes.txt
+serverdata/18e3jdamjuhchvobinb5793iig              &lt;- readme.txt
+serverdata/u5ab5655p7cls71i15jn1212ko              &lt;- reports/ 目录
+serverdata/u5ab5655p7cls71i15jn1212ko/eq3dkoucgur30ontklj5psgvu4                  &lt;- reports/2026/
+serverdata/u5ab5655p7cls71i15jn1212ko/eq3dkoucgur30ontklj5psgvu4/ped9i30q70rv...  &lt;- september.csv
+</code></pre>
+<p>连多级目录的每一级名字都独立加密了。文件内容同样如此：走 crypt 读，内容完整还原；绕过 crypt 直接从底层 remote 读，拿到的是密文：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">$ rclone cat secret:budget.csv
+month,amount
+sep,100
+$ rclone cat <span class="pl-s"><span class="pl-pds">"</span>wd:tgt7ip244a279o2vi5alvg61r0<span class="pl-pds">"</span></span> <span class="pl-k">|</span> xxd <span class="pl-k">|</span> head -2
+00000000: 5243 4c4f 4e45 0000 af23 168d a90d 4636  RCLONE...<span class="pl-c"><span class="pl-c">#</span>....F6</span>
+00000010: 992b 3890 0121 c911 d662 3baa 9a79 0a0e  .+8..<span class="pl-k">!</span>...b<span class="pl-k">;</span>..y..</pre></div>
+<p>每个加密文件开头是 8 字节固定魔数 <code class="notranslate">RCLONE\x00\x00</code>，紧接着 24 字节随机 nonce，再往后才是带 Poly1305 认证标签的密文（XSalsa20 加密，每块最多 64 KiB）。这样即使有人从服务端把文件拖走，没有 crypt 密码也只能得到一坨二进制。左右两个世界的对照实拍：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/rclone-crypt.png"><img src="/screenshots/rclone-crypt.png" alt="crypt 解密视图 vs 服务端物理实况" style="max-width: 100%;"></a></p>
+<p><strong>密码丢了＝数据没了</strong>，这一点没有任何后门：rclone 官方也无法帮你找回。crypt 密码必须离线另存一份。</p>
+<h3>长文件名：没有"自动分段"，只有一条 143 字符安全线</h3>
+<p>文件名加密会膨胀：PKCS7 填充后做 EME 加密，再 base32 编码，输出比输入长出一大截。实测两个长度：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>源文件名</th>
+<th>加密名</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>93 字符</td>
+<td>154 字符</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>193 字符</td>
+<td>333 字符</td>
+<td>失败</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>注意 crypt <strong>不会</strong>把超长名字切开存放——加密后的名字作为一个整体组件写到底层。而绝大多数文件系统（NTFS、ext4 都一样）对单个路径组件的上限是 <strong>255 字节</strong>，333 字符直接超限。在本地磁盘后端，Windows 报：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">The filename, directory name, or volume label syntax is incorrect.
+</code></pre>
+<p>走 <code class="notranslate">rclone serve webdav</code> 时则是 PUT 被服务端拒绝：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">Failed to copy: unchunked simple update failed: Method Not Allowed: 405 Method Not Allowed
+</code></pre>
+<p>这跟操作系统无关——同一套命令在 ubuntu-latest 的 Linux runner 上同样 405，因为 serve webdav 落地的还是本地 ext4，255 的 NAME_MAX 谁也绕不过。</p>
+<p>官方给的安全线因此很好记：<strong>standard 模式下源文件名不超过 143 字符，任何网盘都不会出问题</strong>。非得起长名字，有三条退路：一是改用 <strong>obfuscation</strong> 模式（配置里的值写作 <code class="notranslate">filename_encryption=obfuscate</code>，只做简单旋转、不做 base32 膨胀），实测同一个 193 字符文件名顺利上传，服务端物理名是 <code class="notranslate">154.cdcdcd...vzv</code>，长度不到 200——代价是文件名只做轻度混淆、不算加密（文件内容仍然加密）；二是使用进阶选项 <code class="notranslate">filename_encoding</code>：<code class="notranslate">base64</code> 比 base32 短，但只适合<strong>大小写敏感</strong>的后端（如 Google Drive），在大小写不敏感的后端会发生文件名碰撞；OneDrive、Dropbox、Box 这类大小写不敏感且内部按 UTF-16 计长的后端，应选 <code class="notranslate">base32768</code> 大幅缩短；三最朴素，改短源文件名。两种模式的实测对照：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/rclone-longname.png"><img src="/screenshots/rclone-longname.png" alt="standard 失败 vs obfuscation 成功" style="max-width: 100%;"></a></p>
+<h2>七、搬进 GitHub Actions：让备份每天自己跑</h2>
+<p>本地命令跑顺了，最后一步是让它无人值守。GitHub Actions 可以按 cron 定时执行；rclone 是单个静态二进制，ubuntu runner 上已经预装，直接就能用，凭据全部走 Secrets，不进代码库。</p>
+<p>一个最小的定时备份 workflow 长这样：</p>
+<div class="highlight highlight-source-yaml"><pre class="notranslate"><span class="pl-ent">name</span>: <span class="pl-s">scheduled-backup</span>
+<span class="pl-ent">on</span>:
+  <span class="pl-ent">schedule</span>:
+    - <span class="pl-ent">cron</span>: <span class="pl-s"><span class="pl-pds">"</span>23 1 * * *<span class="pl-pds">"</span></span>      <span class="pl-c"><span class="pl-c">#</span> 每天 01:23 UTC 执行</span>
+  <span class="pl-ent">workflow_dispatch</span>:
+
+<span class="pl-ent">jobs</span>:
+  <span class="pl-ent">backup</span>:
+    <span class="pl-ent">runs-on</span>: <span class="pl-s">ubuntu-latest</span>
+    <span class="pl-ent">steps</span>:
+      - <span class="pl-ent">uses</span>: <span class="pl-s">actions/checkout@v4</span>
+
+      - <span class="pl-ent">name</span>: <span class="pl-s">Restore rclone config from Secret</span>
+        <span class="pl-ent">run</span>: <span class="pl-s">|</span>
+<span class="pl-s">          mkdir -p ~/.config/rclone</span>
+<span class="pl-s">          printf '%s' "${{ secrets.RCLONE_CONFIG }}" &gt; ~/.config/rclone/rclone.conf</span>
+<span class="pl-s"></span>
+<span class="pl-s"></span>      - <span class="pl-ent">name</span>: <span class="pl-s">Sync to encrypted remote</span>
+        <span class="pl-ent">run</span>: <span class="pl-s">|</span>
+<span class="pl-s">          rclone sync ./data secret: \</span>
+<span class="pl-s">            --backup-dir secret:backup-versions/$(date -u +%Y%m%d-%H%M%S) \</span>
+<span class="pl-s">            --filter "- /backup-versions/**" \</span>
+<span class="pl-s">            -v</span>
+<span class="pl-s">          # --download 实读比对，任何后端都通用；S3 等支持校验和的后端可换 rclone cryptcheck，省下载流量</span>
+<span class="pl-s">          rclone check ./data secret: --download</span></pre></div>
+<p>要点有四个。</p>
+<p><strong>凭据怎么放</strong>：在本地配好 rclone 后，整个 rclone.conf 的内容就是一串文本，把它原样贴进仓库的 GitHub Secret（如 <code class="notranslate">RCLONE_CONFIG</code>），CI 里落盘即可。这样所有网盘凭据、crypt 密码都以加密形式存在 Secrets 中，代码库里一个字都没有。</p>
+<p><strong>时间别卡点</strong>。GitHub 的 schedule 用 UTC 时间，且高峰期会延迟甚至丢触发——官方文档明说定时任务在高负载期间可能排队，不能保证准点。要备份关键数据，时间避开整点，并且不能只依赖 schedule：保留 <code class="notranslate">workflow_dispatch</code> 手动入口，关键节点主动触发一次。</p>
+<p><strong>backup-dir 必须跟目标在同一个 remote</strong>。实测中踩了一脚：把留档目录写成裸路径，rclone 直接报错退出（exit 7）：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">NOTICE: Failed to sync: parameter to --backup-dir has to be on the same
+        remote as destination
+</code></pre>
+<p>正确写法是 <code class="notranslate">secret:backup-versions/...</code>；同时别忘了加过滤把这个版本目录排除掉，否则下一次 sync 会把它当成目标端的多余内容删掉。</p>
+<p><strong>sync 后必校验</strong>：CI 里备份失败如果没人看日志，等于没备。注意验证 crypt 加密备份<strong>不能用普通 <code class="notranslate">rclone check</code></strong>——它没法正确比对加密对象的校验和（实测只回了一句 "2 hashes could not be checked"，等于只验了大小）。官方为此准备了 <code class="notranslate">rclone cryptcheck ./data secret:</code>：它把明文加密后，与底层对象的实际校验和逐一比对。不过它要求<strong>底层后端支持校验和</strong>，S3 这类对象存储没问题；而实测本地自建的 WebDAV "does not support any hashes"，cryptcheck 会直接失败——而且 cryptcheck 本身没有 <code class="notranslate">--download</code> 开关。这种后端就改用 <code class="notranslate">rclone check ./data secret: --download</code>，把两端数据真正读出来逐字节比对（实测对 crypt 同样有效，能正确报出匹配与大小不符）。把校验放在最后一步，比对不一致就让 job 失败，配合 GitHub 的失败通知邮件，备份才真正闭环。</p>
+<p>这套 workflow 在临时分支的 ubuntu-latest runner 上完整实测通过（rclone 安装、conf 落盘、crypt sync、check，19 秒跑完），跑完即删，主分支不留任何痕迹。</p>
+<h2>八、一个容易混的坑：serve --pass 要明文，配置文件存 obscure</h2>
+<p>演练过程中最容易把人绕进去的是这两套"密码规矩"。</p>
+<p>前面说过，<code class="notranslate">config create</code> 给 <code class="notranslate">pass=</code> 写明文，rclone 自动 obscure 存储。于是不少人（包括网上的教程）顺手把这套习惯带到了服务端命令上——给 <code class="notranslate">rclone serve</code> 的 <code class="notranslate">--pass</code> 也喂一个 obscure 字符串，结果客户端怎么连都是 401。</p>
+<p>实测把两种写法都请求一遍：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">$ rclone obscure demo-pass-123
+osHL8n8P3iTnuJhTjvgEirBX5bi9A4Hw3BknUzw
+$ curl -s -o /dev/null -w "%{http_code}" -u demo:demo-pass-123        http://127.0.0.1:8080/
+200
+$ curl -s -o /dev/null -w "%{http_code}" -u demo:osHL8n8P3iTn...      http://127.0.0.1:8080/
+401
+</code></pre>
+<p>明文密码 200，obscure 字符串当密码反而 401。读上游源码能确认为什么：serve 的认证中间件把传入的 <code class="notranslate">--pass</code> 直接做 MD5Crypt 后与客户端发来的凭据比较，它期待的就是<strong>明文字面量</strong>（v1.66 与 v1.75 两处源码一致，并不是什么版本变更）。而 obscure/reveal 是配置文件的存取编码，只在客户端配置这一侧使用。</p>
+<p>记住分界线即可：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>场景</th>
+<th>密码给什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">rclone serve ... --pass</code></td>
+<td>明文</td>
+</tr>
+<tr>
+<td><code class="notranslate">config create ... pass=</code></td>
+<td>写明文，rclone 自动 obscure 存储</td>
+</tr>
+<tr>
+<td>手工编辑 rclone.conf 的 <code class="notranslate">pass =</code></td>
+<td>必须填 obscure 后的值</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>九、rclone 与 restic：同步工具与版本化备份的分工</h2>
+<p>rclone 很强，但有一类需求它不擅长：<strong>去重和快照版本</strong>。rclone sync 加 --backup-dir 能留下旧文件，但每次都是整文件留档，重复数据反复占空间；想"回到三个月前某个时间点的整个目录状态"，也没有原生概念。</p>
+<p>这时候该看 restic——另一个开源备份工具。它的模型完全不同：</p>
+<ul>
+<li><strong>内容去重</strong>：文件按内容切块（chunk）存入仓库，相同的块只存一次。虚拟机镜像、只改了几行的大文件，增量极小；</li>
+<li><strong>快照版本</strong>：每次备份生成一个快照，能挂载、能浏览、能精确恢复到任意一次；</li>
+<li><strong>客户端加密</strong>：默认加密，和 rclone crypt 同样的"服务端只见密文"思路。</li>
+</ul>
+<p>两者不是替代关系，而是配合关系：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>需求</th>
+<th>选择</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>在本地与网盘/对象存储之间同步文件，要灵活的过滤、限速、镜像</td>
+<td>rclone</td>
+</tr>
+<tr>
+<td>一个后端多处复用，七十多种网盘随便换</td>
+<td>rclone</td>
+</tr>
+<tr>
+<td>长期备份、要历史版本、要去重省空间</td>
+<td>restic</td>
+</tr>
+<tr>
+<td>restic 仓库想搬到另一个对象存储</td>
+<td>rclone 搬运 restic 的仓库目录</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>一个常见组合：restic 负责往本地或对象存储做版本化备份，rclone 再把 restic 的仓库同步一份到异地——版本化和异地容灾一次齐活。</p>
+<h2>十、什么时候值得用，什么时候别用</h2>
+<p>收尾算账。</p>
+<p><strong>值得用的场景</strong>：数据在多网盘/对象存储之间流动、需要定时增量备份、要写进 CI 无人值守、希望备份过程可复现可验证。共同特征是把备份当成工程而不是家务。</p>
+<p><strong>别用的场景</strong>：只是偶尔给几张照片找个地方存，网盘官方客户端的自动相册反而更省心；需要块级去重和历史快照的长期归档，直接上 restic，别用 --backup-dir 硬凑；另外永远记住，crypt 密码一旦遗失数据即不可恢复，没有管理密码能力的场合别贸然加密。</p>
+<p>备份这行有句老话：没验证过的备份不算备份。rclone 给了 copy/sync/check 三件套，让"传完了"和"备好了"第一次变成了可以用脚本证明的事——再配上 Actions 定时触发，备份就从"想起来才做的家务"变成了"每天自动跑的系统"。</p>
+<p>下一篇轮到 restic：当备份还要求"内容去重、随时回到任意历史版本"，那是另一个工具的主场——而且它和 rclone 正好能拼成一对。</p>
+<h3>术语表</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>术语</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>remote</td>
+<td>rclone 对一个存储目标的配置称呼，如 <code class="notranslate">wd:</code>、<code class="notranslate">secret:</code></td>
+</tr>
+<tr>
+<td>backend</td>
+<td>存储后端，rclone 对七十多种存储的驱动实现</td>
+</tr>
+<tr>
+<td>obscure / reveal</td>
+<td>rclone 配置文件的可逆混淆编码，不是加密</td>
+</tr>
+<tr>
+<td>crypt</td>
+<td>rclone 的加密后端，包裹另一个 remote，加密内容与文件名</td>
+</tr>
+<tr>
+<td>copy</td>
+<td>只增不删的复制命令</td>
+</tr>
+<tr>
+<td>sync</td>
+<td>镜像同步，会删除目标端多余文件</td>
+</tr>
+<tr>
+<td>check</td>
+<td>按 size+哈希校验两端一致性；无共同哈希时仅比 size，另有 --size-only / --download 两档</td>
+</tr>
+<tr>
+<td>cryptcheck</td>
+<td>校验加密备份完整性的专用命令，需底层后端支持校验和；不支持时改用 check --download</td>
+</tr>
+<tr>
+<td>--dry-run</td>
+<td>只预演不执行，sync 前的必备彩排</td>
+</tr>
+<tr>
+<td>--backup-dir</td>
+<td>把被删/被覆盖文件移动到留档目录</td>
+</tr>
+<tr>
+<td>--bwlimit</td>
+<td>带宽限速，如 <code class="notranslate">1M</code></td>
+</tr>
+<tr>
+<td>restic</td>
+<td>去重、加密、快照版本化的备份工具，与 rclone 互补</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
