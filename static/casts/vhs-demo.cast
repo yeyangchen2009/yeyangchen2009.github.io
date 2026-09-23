@@ -1,0 +1,10 @@
+{"version":2,"width":88,"height":22}
+[0.5,"o","$ echo \"asciinema 录的是文本，不是画面\"\r\n"]
+[1.3,"o","asciinema 录的是文本，不是画面\r\n"]
+[2.0,"o","$ for i in 1 2 3; do echo \"[OK] backup batch $i\"; done\r\n"]
+[2.8,"o","[OK] backup batch 1\r\n[OK] backup batch 2\r\n[OK] backup batch 3\r\n"]
+[3.5,"o","$ head -n 3 tips.txt\r\n"]
+[4.3,"o","tips: 空格暂停/播放，进度条可拖拽\r\ntips: 右下角按钮切换 0.5x-3x 倍速\r\ntips: 终端文字可直接选中复制\r\n"]
+[5.1,"o","$ echo \"# 下次教程再见\"\r\n"]
+[5.8,"o","# 下次教程见\r\n"]
+[6.4,"o","$ "]
