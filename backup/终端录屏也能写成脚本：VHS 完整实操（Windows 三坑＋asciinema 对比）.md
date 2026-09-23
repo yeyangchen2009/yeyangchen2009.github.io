@@ -240,21 +240,35 @@ agg hand.cast hand.gif
 
 ![agg 渲染手写 cast](/screenshots/vhs-hand.gif)
 
-cast 真正不可替代的用法是**嵌进网页**。官方播放器 asciinema-player 把 cast 渲染成一个可交互的终端控件：先通过 CDN 或 npm 引入 `asciinema-player.css` 和 `asciinema-player.min.js`，下面代码里的 `castText` 就是 cast 文件的文本内容（也可以直接传 cast 文件的 URL 让播放器自行 fetch）：
+cast 真正不可替代的用法是**嵌进网页**。官方播放器 asciinema-player 把 cast 渲染成一个可交互的终端控件。本站已经把这条链路完整接好，做法对写作者只有一行：正文里用原生 HTML 写一个占位节点，声明 cast 文件的路径：
 
 ```html
-<div id="term"></div>
-<script>
-AsciinemaPlayer.create({data: castText}, document.getElementById('term'),
-  {autoPlay: true, loop: true, theme: 'dracula'});
-</script>
+<div class="asciinema-cast" data-src="/casts/vhs-demo.cast"></div>
 ```
 
-实拍效果，注意底部那条控制栏：
+本站自研的 GmeekCast 插件会自动扫描这种占位节点（没有占位的页面什么都不加载，零开销），发现之后才从 `/asciinema/` 目录按需拉取官方 player 的 css 和 js（共约 200 KB，仅含回放的文章承担），再把播放器挂载进占位节点。
 
-![asciinema player 网页嵌入实拍](/screenshots/vhs-player.png)
+下面就是这个页面里**真实可点的播放器**，不是图片——点左下角播放试试：
 
-播放/暂停、时间码、可拖拽的进度条、快捷键按钮、全屏——全在。访客还能直接在终端画面里**选中并复制命令文本**，因为播放器里本来就是文本。这些是任何 GIF、MP4 都给不了的。
+<div class="asciinema-cast" data-src="/casts/vhs-demo.cast"></div>
+
+它能做什么，挨个说。
+
+- **播放 / 暂停**：点左下角按钮，或键盘按空格键。
+- **进度跳转**：进度条可以直接用鼠标拖拽；键盘 ← / → 快退快进 5 秒，Shift+← / → 一次跳 10%，数字键 0–9 直接跳到 0%–90% 的对应位置；暂停状态下还能用 `,` 和 `.` 逐帧进退——排查操作细节时这比任何视频都精确。
+- **倍速**：这里有个曲折故事。官方 player 3.x 的 `speed` 只在创建播放器那一刻生效，控制栏上**根本没有运行时倍速按钮**（叶扬把源码翻了个底朝天确认的）。可倍速看终端操作实在太常用，于是 GmeekCast 插件自己补上了：控制栏上的倍速按钮按 1x → 1.25x → 1.5x → 2x → 3x → 0.5x → 0.75x 循环切换。切换时插件先记下当前进度和"正在播放还是暂停"，再以新速度重建播放器并 seek 回原位——播放中途切倍速也不会跳回开头。
+- **复制文本**：终端画面里的命令和输出可以直接用鼠标选中、Ctrl+C 复制，因为播放器渲染的本来就是文本而不是像素。
+- **全屏**：右下角按钮，或按 `f`。
+
+控制栏实拍，注意中间那颗 **0.5x** 按钮就是插件补出来的：
+
+![asciinema player 控制栏实拍](/screenshots/vhs-player.png)
+
+所有快捷键点控制栏上的键盘图标都能随时查到：
+
+![播放器快捷键面板](/screenshots/vhs-kbd.png)
+
+明暗主题也做了适配：亮色页面挂 player 的 github 主题，暗色页面挂 dracula；点页面右上角切换主题时，插件会以新主题重建播放器，进度同样保留，不会让读者读到一半被弹回开头。
 
 于是 VHS 和 asciinema 的分工非常清楚：
 
@@ -288,4 +302,6 @@ AsciinemaPlayer.create({data: castText}, document.getElementById('term'),
 | ConPTY | Windows 的伪终端机制，ttyd/PowerSession 在 Windows 上靠它与 shell 通信 |
 | cast v2 | asciinema 的会话文件格式：JSON 头加带时间戳的输出事件，纯文本 |
 | agg | asciinema 官方的 cast → GIF 渲染器 |
+| asciinema-player | asciinema 官方网页播放器，把 cast 渲染成可暂停、可拖拽跳转、可逐帧、可复制文本的终端控件 |
+| GmeekCast | 本站自研插件：扫描 `.asciinema-cast` 占位节点后按需加载 player，补上官方缺失的运行时倍速按钮，并按站点明暗主题挂载 |
 | TypingSpeed / PlaybackSpeed | 前者控制录制时按键间隔，后者控制成品快放倍数 |

@@ -270,15 +270,24 @@ Host your GIF on vhs.charm.sh: vhs publish &lt;file&gt;.gif
 <div class="highlight highlight-source-shell"><pre class="notranslate">agg hand.cast hand.gif</pre></div>
 <p>303 字节的文本被渲染成 12.7KB 的 GIF，内容一字不差：</p>
 <p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-hand.gif"><img src="/screenshots/vhs-hand.gif" alt="agg 渲染手写 cast" style="max-width: 100%;"></a></p>
-<p>cast 真正不可替代的用法是<strong>嵌进网页</strong>。官方播放器 asciinema-player 把 cast 渲染成一个可交互的终端控件：先通过 CDN 或 npm 引入 <code class="notranslate">asciinema-player.css</code> 和 <code class="notranslate">asciinema-player.min.js</code>，下面代码里的 <code class="notranslate">castText</code> 就是 cast 文件的文本内容（也可以直接传 cast 文件的 URL 让播放器自行 fetch）：</p>
-<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">id</span>="<span class="pl-s">term</span>"<span class="pl-kos">&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span>
-<span class="pl-kos">&lt;</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span>
-<span class="pl-v">AsciinemaPlayer</span><span class="pl-kos">.</span><span class="pl-en">create</span><span class="pl-kos">(</span><span class="pl-kos">{</span><span class="pl-c1">data</span>: <span class="pl-s1">castText</span><span class="pl-kos">}</span><span class="pl-kos">,</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'term'</span><span class="pl-kos">)</span><span class="pl-kos">,</span>
-  <span class="pl-kos">{</span><span class="pl-c1">autoPlay</span>: <span class="pl-c1">true</span><span class="pl-kos">,</span> <span class="pl-c1">loop</span>: <span class="pl-c1">true</span><span class="pl-kos">,</span> <span class="pl-c1">theme</span>: <span class="pl-s">'dracula'</span><span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
-<span class="pl-kos">&lt;/</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span></pre></div>
-<p>实拍效果，注意底部那条控制栏：</p>
-<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-player.png"><img src="/screenshots/vhs-player.png" alt="asciinema player 网页嵌入实拍" style="max-width: 100%;"></a></p>
-<p>播放/暂停、时间码、可拖拽的进度条、快捷键按钮、全屏——全在。访客还能直接在终端画面里<strong>选中并复制命令文本</strong>，因为播放器里本来就是文本。这些是任何 GIF、MP4 都给不了的。</p>
+<p>cast 真正不可替代的用法是<strong>嵌进网页</strong>。官方播放器 asciinema-player 把 cast 渲染成一个可交互的终端控件。本站已经把这条链路完整接好，做法对写作者只有一行：正文里用原生 HTML 写一个占位节点，声明 cast 文件的路径：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">class</span>="<span class="pl-s">asciinema-cast</span>" <span class="pl-c1">data-src</span>="<span class="pl-s">/casts/vhs-demo.cast</span>"<span class="pl-kos">&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span></pre></div>
+<p>本站自研的 GmeekCast 插件会自动扫描这种占位节点（没有占位的页面什么都不加载，零开销），发现之后才从 <code class="notranslate">/asciinema/</code> 目录按需拉取官方 player 的 css 和 js（共约 200 KB，仅含回放的文章承担），再把播放器挂载进占位节点。</p>
+<p>下面就是这个页面里<strong>真实可点的播放器</strong>，不是图片——点左下角播放试试：</p>
+<div></div>
+<p>它能做什么，挨个说。</p>
+<ul>
+<li><strong>播放 / 暂停</strong>：点左下角按钮，或键盘按空格键。</li>
+<li><strong>进度跳转</strong>：进度条可以直接用鼠标拖拽；键盘 ← / → 快退快进 5 秒，Shift+← / → 一次跳 10%，数字键 0–9 直接跳到 0%–90% 的对应位置；暂停状态下还能用 <code class="notranslate">,</code> 和 <code class="notranslate">.</code> 逐帧进退——排查操作细节时这比任何视频都精确。</li>
+<li><strong>倍速</strong>：这里有个曲折故事。官方 player 3.x 的 <code class="notranslate">speed</code> 只在创建播放器那一刻生效，控制栏上<strong>根本没有运行时倍速按钮</strong>（叶扬把源码翻了个底朝天确认的）。可倍速看终端操作实在太常用，于是 GmeekCast 插件自己补上了：控制栏上的倍速按钮按 1x → 1.25x → 1.5x → 2x → 3x → 0.5x → 0.75x 循环切换。切换时插件先记下当前进度和"正在播放还是暂停"，再以新速度重建播放器并 seek 回原位——播放中途切倍速也不会跳回开头。</li>
+<li><strong>复制文本</strong>：终端画面里的命令和输出可以直接用鼠标选中、Ctrl+C 复制，因为播放器渲染的本来就是文本而不是像素。</li>
+<li><strong>全屏</strong>：右下角按钮，或按 <code class="notranslate">f</code>。</li>
+</ul>
+<p>控制栏实拍，注意中间那颗 <strong>0.5x</strong> 按钮就是插件补出来的：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-player.png"><img src="/screenshots/vhs-player.png" alt="asciinema player 控制栏实拍" style="max-width: 100%;"></a></p>
+<p>所有快捷键点控制栏上的键盘图标都能随时查到：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-kbd.png"><img src="/screenshots/vhs-kbd.png" alt="播放器快捷键面板" style="max-width: 100%;"></a></p>
+<p>明暗主题也做了适配：亮色页面挂 player 的 github 主题，暗色页面挂 dracula；点页面右上角切换主题时，插件会以新主题重建播放器，进度同样保留，不会让读者读到一半被弹回开头。</p>
 <p>于是 VHS 和 asciinema 的分工非常清楚：</p>
 <markdown-accessiblity-table><table role="table">
 <thead>
@@ -348,6 +357,14 @@ Host your GIF on vhs.charm.sh: vhs publish &lt;file&gt;.gif
 <tr>
 <td>agg</td>
 <td>asciinema 官方的 cast → GIF 渲染器</td>
+</tr>
+<tr>
+<td>asciinema-player</td>
+<td>asciinema 官方网页播放器，把 cast 渲染成可暂停、可拖拽跳转、可逐帧、可复制文本的终端控件</td>
+</tr>
+<tr>
+<td>GmeekCast</td>
+<td>本站自研插件：扫描 <code class="notranslate">.asciinema-cast</code> 占位节点后按需加载 player，补上官方缺失的运行时倍速按钮，并按站点明暗主题挂载</td>
 </tr>
 <tr>
 <td>TypingSpeed / PlaybackSpeed</td>
