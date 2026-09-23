@@ -270,11 +270,11 @@ Host your GIF on vhs.charm.sh: vhs publish &lt;file&gt;.gif
 <div class="highlight highlight-source-shell"><pre class="notranslate">agg hand.cast hand.gif</pre></div>
 <p>303 字节的文本被渲染成 12.7KB 的 GIF，内容一字不差：</p>
 <p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-hand.gif"><img src="/screenshots/vhs-hand.gif" alt="agg 渲染手写 cast" style="max-width: 100%;"></a></p>
-<p>cast 真正不可替代的用法是<strong>嵌进网页</strong>。官方播放器 asciinema-player 把 cast 渲染成一个可交互的终端控件。本站已经把这条链路完整接好，做法对写作者只有一行：正文里用原生 HTML 写一个占位节点，声明 cast 文件的路径：</p>
-<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">class</span>="<span class="pl-s">asciinema-cast</span>" <span class="pl-c1">data-src</span>="<span class="pl-s">/casts/vhs-demo.cast</span>"<span class="pl-kos">&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span></pre></div>
-<p>本站自研的 GmeekCast 插件会自动扫描这种占位节点（没有占位的页面什么都不加载，零开销），发现之后才从 <code class="notranslate">/asciinema/</code> 目录按需拉取官方 player 的 css 和 js（共约 200 KB，仅含回放的文章承担），再把播放器挂载进占位节点。</p>
+<p>cast 真正不可替代的用法是<strong>嵌进网页</strong>。官方播放器 asciinema-player 把 cast 渲染成一个可交互的终端控件。本站已经把这条链路完整接好，做法对写作者只有一行：正文里写一个指向 cast 文件的普通 Markdown 链接：</p>
+<div class="highlight highlight-text-md"><pre class="notranslate"><span class="pl-s">[</span>▶ 点这里播放终端回放<span class="pl-s">]</span><span class="pl-s">(</span><span class="pl-corl">/casts/vhs-demo.cast</span><span class="pl-s">)</span></pre></div>
+<p>为什么不用更直观的 <code class="notranslate">&lt;div&gt;</code> 占位？叶扬一开始正是这么做的，结果发现 GitHub 的 Markdown 接口会剥掉 div 上的 class 和 data-* 属性，只留一个光秃秃的空标签，插件根本认不出来；而链接的 href 一定会原样保留。自研的 GmeekCast 插件扫描正文里指向 <code class="notranslate">/casts/*.cast</code> 的链接，把链接整体替换成播放器，发现之后才从 <code class="notranslate">/asciinema/</code> 目录按需拉取官方 player 的 css 和 js（共约 200 KB，仅含回放的文章承担；没有这种链接的页面什么都不加载，零开销）。插件万一没运行，读者看到的还是一个可以下载 cast 文件的链接，等于自带降级方案。</p>
 <p>下面就是这个页面里<strong>真实可点的播放器</strong>，不是图片——点左下角播放试试：</p>
-<div></div>
+<p><a href="/casts/vhs-demo.cast">▶ 播放命令行演示（真实播放器，不是截图）</a></p>
 <p>它能做什么，挨个说。</p>
 <ul>
 <li><strong>播放 / 暂停</strong>：点左下角按钮，或键盘按空格键。</li>
@@ -364,7 +364,7 @@ Host your GIF on vhs.charm.sh: vhs publish &lt;file&gt;.gif
 </tr>
 <tr>
 <td>GmeekCast</td>
-<td>本站自研插件：扫描 <code class="notranslate">.asciinema-cast</code> 占位节点后按需加载 player，补上官方缺失的运行时倍速按钮，并按站点明暗主题挂载</td>
+<td>本站自研插件：扫描正文里指向 cast 的链接并替换成播放器，按需加载 player，补上官方缺失的运行时倍速按钮，按站点明暗主题挂载</td>
 </tr>
 <tr>
 <td>TypingSpeed / PlaybackSpeed</td>

@@ -240,17 +240,17 @@ agg hand.cast hand.gif
 
 ![agg 渲染手写 cast](/screenshots/vhs-hand.gif)
 
-cast 真正不可替代的用法是**嵌进网页**。官方播放器 asciinema-player 把 cast 渲染成一个可交互的终端控件。本站已经把这条链路完整接好，做法对写作者只有一行：正文里用原生 HTML 写一个占位节点，声明 cast 文件的路径：
+cast 真正不可替代的用法是**嵌进网页**。官方播放器 asciinema-player 把 cast 渲染成一个可交互的终端控件。本站已经把这条链路完整接好，做法对写作者只有一行：正文里写一个指向 cast 文件的普通 Markdown 链接：
 
-```html
-<div class="asciinema-cast" data-src="/casts/vhs-demo.cast"></div>
+```markdown
+[▶ 点这里播放终端回放](/casts/vhs-demo.cast)
 ```
 
-本站自研的 GmeekCast 插件会自动扫描这种占位节点（没有占位的页面什么都不加载，零开销），发现之后才从 `/asciinema/` 目录按需拉取官方 player 的 css 和 js（共约 200 KB，仅含回放的文章承担），再把播放器挂载进占位节点。
+为什么不用更直观的 `<div>` 占位？叶扬一开始正是这么做的，结果发现 GitHub 的 Markdown 接口会剥掉 div 上的 class 和 data-* 属性，只留一个光秃秃的空标签，插件根本认不出来；而链接的 href 一定会原样保留。自研的 GmeekCast 插件扫描正文里指向 `/casts/*.cast` 的链接，把链接整体替换成播放器，发现之后才从 `/asciinema/` 目录按需拉取官方 player 的 css 和 js（共约 200 KB，仅含回放的文章承担；没有这种链接的页面什么都不加载，零开销）。插件万一没运行，读者看到的还是一个可以下载 cast 文件的链接，等于自带降级方案。
 
 下面就是这个页面里**真实可点的播放器**，不是图片——点左下角播放试试：
 
-<div class="asciinema-cast" data-src="/casts/vhs-demo.cast"></div>
+[▶ 播放命令行演示（真实播放器，不是截图）](/casts/vhs-demo.cast)
 
 它能做什么，挨个说。
 
@@ -303,5 +303,5 @@ cast 真正不可替代的用法是**嵌进网页**。官方播放器 asciinema-
 | cast v2 | asciinema 的会话文件格式：JSON 头加带时间戳的输出事件，纯文本 |
 | agg | asciinema 官方的 cast → GIF 渲染器 |
 | asciinema-player | asciinema 官方网页播放器，把 cast 渲染成可暂停、可拖拽跳转、可逐帧、可复制文本的终端控件 |
-| GmeekCast | 本站自研插件：扫描 `.asciinema-cast` 占位节点后按需加载 player，补上官方缺失的运行时倍速按钮，并按站点明暗主题挂载 |
+| GmeekCast | 本站自研插件：扫描正文里指向 cast 的链接并替换成播放器，按需加载 player，补上官方缺失的运行时倍速按钮，按站点明暗主题挂载 |
 | TypingSpeed / PlaybackSpeed | 前者控制录制时按键间隔，后者控制成品快放倍数 |
