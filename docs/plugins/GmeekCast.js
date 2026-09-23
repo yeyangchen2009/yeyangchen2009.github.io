@@ -1,8 +1,12 @@
 /* GmeekCast —— asciinema 终端回放自动检测、按需加载
- * 作用域：config 的 script 注入文章页/固定页；插件先找
- *         .asciinema-cast[data-src] 占位节点（正文用原生 HTML
- *         写 <div class="asciinema-cast" data-src="/casts/x.cast"></div>），
- *         没有占位立即退出，零开销。
+ * 作用域：config 的 script 注入文章页/固定页；写作者只需在正文
+ *         写一个普通 markdown 链接指向 cast：
+ *         [▶ 播放终端回放](/casts/x.cast)
+ *         （GitHub markdown API 会剥 div 的 class/data-* 属性，
+ *         但 a 的 href 一定保留。）插件扫描 #postBody 内 href
+ *         形如 /casts/*.cast 的链接，把链接替换成播放器；插件
+ *         未运行时链接仍是 cast 文件的下载入口，天然降级。
+ *         没有这种链接立即退出，零开销。
  * 有占位才动态加载 /asciinema/ 下官方 player（css+js，约 200KB，
  * 仅含回放的文章承担），按站点明暗主题挂载；播放器主题不支持
  * 运行时切换，故点"切换主题"时 dispose 后以新主题重建。
@@ -11,8 +15,21 @@
  * 与播放/暂停状态，dispose 后以新 speed 重建并 seek 回原位。
  */
 (function () {
-    var holders = document.querySelectorAll('.asciinema-cast[data-src]');
-    if (!holders.length) return;
+    var links = Array.prototype.filter.call(
+        document.querySelectorAll('#postBody a[href]'),
+        function (a) { return /^\/?casts\/.+\.cast$/.test(a.getAttribute('href')); }
+    );
+    if (!links.length) return;
+
+    // 链接换成自己的容器，同时记下 cast 路径
+    var holders = links.map(function (a) {
+        var src = a.getAttribute('href');
+        var box = document.createElement('div');
+        box.className = 'asciinema-cast';
+        box._castSrc = src;
+        a.parentNode.replaceChild(box, a);
+        return box;
+    });
 
     var THEME = { dark: 'dracula', light: 'github' };
     var SPEEDS = [1, 1.25, 1.5, 2, 3, 0.5, 0.75];
@@ -96,7 +113,7 @@
     function boot() {
         holders.forEach(function (el) {
             states.push({
-                el: el, src: el.getAttribute('data-src'),
+                el: el, src: el._castSrc,
                 player: null, speed: 1, playing: false
             });
         });
