@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script><script src='/plugins/GmeekPagefind.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> 上一篇《零后端全站搜索》把'搜索'从服务端搬进了访客浏览器。">
+<meta property="og:title" content="终端录屏也能写成脚本：VHS 完整实操（Windows 三坑＋asciinema 对比）">
+<meta property="og:description" content="> 上一篇《零后端全站搜索》把'搜索'从服务端搬进了访客浏览器。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/69.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>终端录屏也能写成脚本：VHS 完整实操（Windows 三坑＋asciinema 对比）</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">终端录屏也能写成脚本：VHS 完整实操（Windows 三坑＋asciinema 对比）</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/69" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>上一篇《零后端全站搜索》把"搜索"从服务端搬进了访客浏览器。这一篇轮到另一件日常小事：想给一段终端操作录个演示，能不能不打开录屏软件？答案是写一个 5 行的纯文本文件。</p>
+</blockquote>
+<h2>一、小白问题：录个终端，为啥要专门搞个工具</h2>
+<p>先想象一个特别常见的场景。</p>
+<p>叶扬写了一个命令行小工具，想给 README 配一段演示。传统做法是：打开录屏软件 → 调出终端 → 深吸一口气 → 开始操作。过程中，鼠标不小心滑进画面了，重来；微信弹窗闪了一下，重来；第三条命令打错一个字母，重来；好不容易录完，发现终端字体太小、窗口尺寸歪歪扭扭，还是重来。</p>
+<p>这还不是最麻烦的。半年后工具改了参数，README 里那段演示过时了——得把上面整套流程再走一遍，而且几乎不可能录出跟当年一模一样的节奏。</p>
+<p>问题出在哪？录屏软件的思路是"记录像素"，它把终端当成一块普通屏幕来拍。可终端会话根本不是屏幕，它是<strong>文本字节流</strong>：敲进去的字符是文本，跑出来的输出也是文本。既然原料是文本，演示这件事本来就应该可以"写"，而不是"录"——写进一个纯文本文件，能进 git，能 review，能在 CI 里随时重新渲染。</p>
+<p>VHS 就是把这个思路做到底的工具。</p>
+<h2>二、VHS 是谁，winget 两条命令装完</h2>
+<p>VHS 出自 Charm 之手——就是做 Gum、Bubble Tea 那套终端 UI 工具的那个团队，GitHub 上两万多 star。它的用法一句话讲完：写一个 <code class="notranslate">.tape</code> 脚本，声明要敲什么命令、每步等多久，vhs 负责把整个终端会话渲染成 GIF、MP4 或 WebM。</p>
+<p>安装在 Windows 上很省心，winget 里就有：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">winget install charmbracelet.vhs
+winget install tsl0922.ttyd</pre></div>
+<p>第二条是它的运行依赖。VHS 的内部架构其实是"四件套"拼起来的：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}<span class="pl-k">%%</span></span>
+<span class="pl-s1">flowchart <span class="pl-c1">TD</span></span>
+<span class="pl-s1">    <span class="pl-c1">A</span>[<span class="pl-s"><span class="pl-pds">"</span>.tape 纯文本脚本&lt;br/&gt;Output / Type / Enter / Sleep / Set<span class="pl-pds">"</span></span>] <span class="pl-c"><span class="pl-c">--&gt;</span></span> <span class="pl-c1">B</span>[<span class="pl-s"><span class="pl-pds">"</span>vhs 编排器 (Go)<span class="pl-pds">"</span></span>]</span>
+<span class="pl-s1">    <span class="pl-c1">B</span> <span class="pl-c"><span class="pl-c">--&gt;</span></span> <span class="pl-c1">C</span>[<span class="pl-s"><span class="pl-pds">"</span>ttyd&lt;br/&gt;把 shell 暴露成 WebSocket<span class="pl-pds">"</span></span>]</span>
+<span class="pl-s1">    <span class="pl-c1">B</span> <span class="pl-c"><span class="pl-c">--&gt;</span></span> <span class="pl-c1">D</span>[<span class="pl-s"><span class="pl-pds">"</span>headless 浏览器 (go-rod)&lt;br/&gt;页面里跑 xterm.js<span class="pl-pds">"</span></span>]</span>
+<span class="pl-s1">    <span class="pl-c1">C</span> <span class="pl-c"><span class="pl-c">--&gt;</span></span> <span class="pl-c1">D</span></span>
+<span class="pl-s1">    <span class="pl-c1">D</span> <span class="pl-c"><span class="pl-c">--&gt;</span></span> <span class="pl-c1">E</span>[<span class="pl-s"><span class="pl-pds">"</span>逐帧截图&lt;br/&gt;frame-text / frame-cursor PNG<span class="pl-pds">"</span></span>]</span>
+<span class="pl-s1">    <span class="pl-c1">E</span> <span class="pl-c"><span class="pl-c">--&gt;</span></span> <span class="pl-c1">F</span>[<span class="pl-s"><span class="pl-pds">"</span>ffmpeg 合成<span class="pl-pds">"</span></span>]</span>
+<span class="pl-s1">    <span class="pl-c1">F</span> <span class="pl-c"><span class="pl-c">--&gt;</span></span> <span class="pl-c1">G</span>[<span class="pl-s"><span class="pl-pds">"</span>GIF / MP4 / WebM<span class="pl-pds">"</span></span>]</span></pre></div>
+<p>看懂这张图，后面所有的坑都能对号入座。流程是：vhs 先启动 ttyd，ttyd 在本地开一个 WebSocket 端口，背后跑着真正的 shell（Windows 上默认是 cmd）；同时 vhs 用 go-rod 拉起一个无头浏览器，页面里是 ttyd 配套的 xterm.js 终端，连上 WebSocket。随后 <code class="notranslate">.tape</code> 里的每条 Type、Enter，本质都是往这个终端投喂按键；浏览器按固定帧率对终端画面截图；最后 ffmpeg 把成百上千张 PNG 合成视频。</p>
+<p>程序员对这套东西应该有天然的熟悉感：<code class="notranslate">.tape</code> 是源代码，vhs 是编译器驱动，截图是中间产物 <code class="notranslate">.o</code> 文件，ffmpeg 是链接器，GIF 是最终的可执行产物。源代码改一行，重新"编译"一次就行——这正是它比录屏软件强的根本原因。</p>
+<p>装完可以跑一句 <code class="notranslate">vhs --version</code> 验证。它在启动录制时会检查 ffmpeg 在不在 PATH 里，并检查 ttyd 的版本（要求不低于 1.7.2）。ffmpeg 如果没装，Windows 上推荐去官网下一个 build，解压把 bin 目录加进 PATH。另外第一次真正运行 tape 时，go-rod 可能会自行下载一个无头 Chromium，属正常现象，等它下完即可。</p>
+<h2>三、第一条 tape：五行换一个 GIF</h2>
+<p>来写最小例子，整个文件只有 5 行：</p>
+<div class="highlight highlight-source-vhs"><pre class="notranslate"><span class="pl-k">Output <span class="pl-s">first.gif</span></span>
+
+<span class="pl-k">Type</span> <span class="pl-s">"echo hello, this is vhs"</span>
+<span class="pl-k">Enter</span>
+<span class="pl-k">Sleep</span> <span class="pl-c1">1</span><span class="pl-k">s</span></pre></div>
+<p>逐行看：</p>
+<ul>
+<li><code class="notranslate">Output first.gif</code>：声明渲染产物。还可以同时写多行 Output，一次录制产出多种格式。</li>
+<li><code class="notranslate">Type "..."</code>：模拟键盘逐字输入，不是粘贴——观众能看到字符一个个蹦出来。</li>
+<li><code class="notranslate">Enter</code>：回车，没什么悬念。</li>
+<li><code class="notranslate">Sleep 1s</code>：停 1 秒。这行给命令执行和观众阅读留出时间。</li>
+</ul>
+<p>跑它：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">vhs first.tape</pre></div>
+<p>终端里会回显解析后的脚本，然后打印 <code class="notranslate">Creating first.gif...</code>，当前目录下就多出来一个 GIF：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-first.gif"><img src="/screenshots/vhs-first.gif" alt="第一条 tape 的渲染产物" style="max-width: 100%;"></a></p>
+<p>从这一刻起，"录屏"这件事就变成了"编辑一个文本文件"。命令想换？改字符串。节奏嫌快？加 Sleep。整个过程没有鼠标、没有弹窗、没有手抖，只要把终端握手的余量留够（坑 3 会讲），每次渲染结果都一致。</p>
+<h2>四、Windows 三连坑（本文最值钱的部分）</h2>
+<p>如果故事到这里就结束，那这篇文章未免太顺。真实情况是：在 Windows 上，叶扬连撞三个坑，每一个都查了上游源码才搞明白。挨个讲。</p>
+<h3>坑 1：ttyd 一连接就崩，报 error 267</h3>
+<p>第一次跑 tape，vhs 在 Setup 阶段直接 panic 退出，堆栈落在 go-rod 的 MustEval 上——页面刚加载，连接就断了。手动启动 ttyd 模拟了一遍，浏览器一发起连接，ttyd 立刻退出，日志里的关键一句是：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">CreateProcessW failed with error 267: The directory name is invalid.
+</code></pre>
+<p>错误码 267 是 Windows 的 ERROR_DIRECTORY：ttyd 要启动 shell 时，拿到的工作目录是无效路径。这是 ttyd Windows 版一个挂了很久的 bug（上游 issue <a href="https://github.com/tsl0922/ttyd/issues/1292" data-hovercard-type="issue" data-hovercard-url="/tsl0922/ttyd/issues/1292/hovercard">tsl0922/ttyd#1292</a> 虽已关闭，但给 ttyd 设置默认工作目录的修复 <a href="https://github.com/tsl0922/ttyd/issues/1413" data-hovercard-type="issue" data-hovercard-url="/tsl0922/ttyd/issues/1413/hovercard">tsl0922/ttyd#1413</a> 至今没有合并，又赶上 ttyd 两年多没发新版，winget 里的 1.7.7 版本仍带着这个毛病），VHS 这边对应的修复 PR <a href="https://github.com/charmbracelet/vhs/pull/773" data-hovercard-type="pull_request" data-hovercard-url="/charmbracelet/vhs/pull/773/hovercard">charmbracelet/vhs#773</a> 至今还是 OPEN——修法是在启动 ttyd 时显式传工作目录参数 <code class="notranslate">-w .</code>。</p>
+<p>既然新版没发、PR 没合，最干净的绕行办法是做一个包装器。新建一个 <code class="notranslate">wrap</code> 目录，里面放 <code class="notranslate">ttyd.cmd</code>：</p>
+<div class="highlight highlight-source-batchfile"><pre class="notranslate"><span class="pl-k">@</span><span class="pl-k">echo</span> <span class="pl-k">off</span>
+<span class="pl-s"><span class="pl-pds">"</span>C:\...\ttyd.exe<span class="pl-pds">"</span></span> -w . <span class="pl-v">%*</span></pre></div>
+<p>然后让这个目录在 PATH 里排在真 ttyd 前面。vhs 调用 <code class="notranslate">ttyd</code> 时找到的就是包装器，<code class="notranslate">-w .</code> 被悄悄注入，<code class="notranslate">%*</code> 把 vhs 自己的一长串参数原样透传。</p>
+<p>这里还有个 Windows 专属的次级坑：在 Git Bash 里给 PATH 前置目录，必须写成 Unix 风格：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-k">export</span> PATH=<span class="pl-s"><span class="pl-pds">"</span>/f/Data/gmeek-site/Temp/vhs-work/wrap:<span class="pl-smi">$PATH</span><span class="pl-pds">"</span></span></pre></div>
+<p>如果图省事写成 <code class="notranslate">F:/Data/...</code>，MSYS 不会做路径转换，原生进程拿到的 PATH 里那串是无效的，vhs 会一脸真诚地告诉你 <code class="notranslate">ttyd is not installed</code>。</p>
+<h3>坑 2：v0.12.0 笑着说成功，文件根本不存在</h3>
+<p>包装器做好，ttyd 不崩了，Type/Enter/Sleep 全部正常执行，屏幕打印：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">Creating first.gif...
+Host your GIF on vhs.charm.sh: vhs publish &lt;file&gt;.gif
+</code></pre>
+<p>进程退出码 0。一翻目录——<code class="notranslate">first.gif</code> 不存在。</p>
+<p>一个工具报告成功却没产物，这种 bug 最坑人。排查走了两步。</p>
+<p><strong>第一步，先确认帧抓到了没有。</strong> VHS 的帧存在系统临时目录下、<code class="notranslate">vhs</code> 开头的随机目录里（注意浏览器自己的 profile 目录是 <code class="notranslate">vhs-</code> 开头带连字符的，别抓错）。趁录制还在进行，把帧目录里的 PNG 复制出来看：54 帧，每帧都是真画面——第一帧里终端刚打出 <code class="notranslate">&gt; e</code>，逐字输入的过程清清楚楚。所以这不是上游传闻的"canvas 空帧"问题（<a href="https://github.com/charmbracelet/vhs/issues/721" data-hovercard-type="issue" data-hovercard-url="/charmbracelet/vhs/issues/721/hovercard">charmbracelet/vhs#721</a>，headless Chrome 里 WebGL 不可用时 canvas 层会抓到空白帧，修复 PR <a href="https://github.com/charmbracelet/vhs/pull/722" data-hovercard-type="pull_request" data-hovercard-url="/charmbracelet/vhs/pull/722/hovercard">#722</a> 同样 OPEN）。帧是好的，问题出在最后的合成。</p>
+<p><strong>第二步，读 ffmpeg 是怎么被调起来的。</strong> VHS 渲染走的是 <code class="notranslate">Render()</code> 函数，里面用 <code class="notranslate">exec.CommandContext(ctx, "ffmpeg", ...)</code> 构造命令。关键在于这个 <code class="notranslate">ctx</code> 从哪来——读 evaluator.go 的主流程：</p>
+<div class="highlight highlight-source-go"><pre class="notranslate"><span class="pl-s1">ctx</span>, <span class="pl-s1">cancel</span> <span class="pl-c1">:=</span> <span class="pl-s1">context</span>.<span class="pl-c1">WithCancel</span>(<span class="pl-s1">ctx</span>)
+<span class="pl-s1">ch</span> <span class="pl-c1">:=</span> <span class="pl-s1">v</span>.<span class="pl-c1">Record</span>(<span class="pl-s1">ctx</span>)
+<span class="pl-c">// ... 执行完 tape 里的所有命令 ...</span>
+<span class="pl-s1">teardown</span>()                       <span class="pl-c">// 内部调用 cancel()</span>
+<span class="pl-k">if</span> <span class="pl-s1">err</span> <span class="pl-c1">:=</span> <span class="pl-s1">v</span>.<span class="pl-c1">Render</span>(<span class="pl-s1">ctx</span>); <span class="pl-s1">err</span> <span class="pl-c1">!=</span> <span class="pl-c1">nil</span> {  <span class="pl-c">// ctx 此时已经取消</span></pre></div>
+<p>看明白了：<code class="notranslate">teardown()</code> 在 Render 之前执行，顺手把 ctx cancel 了；然后 Render 拿着这个<strong>已经取消的 context</strong> 去启动 ffmpeg。Go 的 CommandContext 发现 ctx 已取消，ffmpeg 刚起步就被终止——于是打印了 "Creating..."，却永远不会有文件。而 Render 对 ffmpeg 的失败只是悄悄记日志、自己仍然返回 nil，所以进程退出码还是 0。</p>
+<p>这是 v0.12.0 引入的回归：v0.11.0 的同一处代码是 <code class="notranslate">v.Render()</code>，根本不收 ctx，内部自己用活的 context。上游 issue <a href="https://github.com/charmbracelet/vhs/issues/787" data-hovercard-type="issue" data-hovercard-url="/charmbracelet/vhs/issues/787/hovercard">charmbracelet/vhs#787</a> 报告的也是这件事，而且报告者用的是 ubuntu-24.04——跟平台无关，Linux、Windows 一起中招。</p>
+<p>绕行方案因此非常明确：<strong>不用 v0.12.0，钉死 v0.11.0</strong>。GitHub Releases 直接下：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">gh release download v0.11.0 --repo charmbracelet/vhs \
+  --pattern <span class="pl-s"><span class="pl-pds">"</span>vhs_0.11.0_Windows_x86_64.zip<span class="pl-pds">"</span></span></pre></div>
+<p>换上 v0.11.0 再跑，15.8KB 的 GIF 顺利产出。</p>
+<h3>坑 3：第一个字母神秘失踪</h3>
+<p>钉了版本，又冒出一个诡异现象：在某些次录制里，<code class="notranslate">echo</code> 变成了 <code class="notranslate">cho</code>，终端回一句 <code class="notranslate">bash: cho: command not found</code>。tape 文件逐字检查，明明写得好好的。</p>
+<p>这是个时序竞争（race）：vhs 打印完解析结果立刻开始 Type，而此刻无头浏览器里的终端刚跟 ttyd 建立连接，xterm.js 还没完全就绪，第一下按键就喂给了空气。大部分时候启动足够快，按键不丢——所以这坑时隐时现，格外折磨人。</p>
+<p>修法简单得不值钱，但必须知道：<strong>第一条 Type 之前先 Sleep</strong>，给终端留足握手时间：</p>
+<div class="highlight highlight-source-vhs"><pre class="notranslate"><span class="pl-k">Sleep</span> <span class="pl-c1">800</span><span class="pl-k">ms</span>
+<span class="pl-k">Type</span> <span class="pl-s">"echo 'theme: Github'"</span></pre></div>
+<p>三个坑汇总成一张表，后来者照单抓药：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>坑</th>
+<th>现象</th>
+<th>根因</th>
+<th>绕行</th>
+<th>上游状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ttyd 崩溃</td>
+<td>一连接就退出，error 267</td>
+<td>ttyd 1.7.7 工作目录处理 bug</td>
+<td>ttyd.cmd 包装器注入 <code class="notranslate">-w .</code>，PATH 用 <code class="notranslate">/f/</code> 风格</td>
+<td>vhs PR #773 OPEN</td>
+</tr>
+<tr>
+<td>无产物</td>
+<td>"Creating..." 后 exit 0，无文件</td>
+<td>v0.12.0 给 Render 传了已取消的 ctx，ffmpeg 被杀</td>
+<td>换用 v0.11.0</td>
+<td>issue #787 OPEN</td>
+</tr>
+<tr>
+<td>首字丢失</td>
+<td>偶尔 echo 变 cho</td>
+<td>终端连接未就绪即开始 Type</td>
+<td>第一条 Type 前 Sleep 800ms</td>
+<td>时序竞争</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>五、让片子像样：主题、字体、格式、速度</h2>
+<p>跑通之后，默认样式其实还很素。VHS 真正好玩的是用 <code class="notranslate">Set</code> 指令把整片"美术风格"参数化。demo 的配置头长这样（后面照旧接 Type / Enter / Sleep，这里省略）：</p>
+<div class="highlight highlight-source-vhs"><pre class="notranslate"><span class="pl-k">Output <span class="pl-s">demo.gif</span></span>
+<span class="pl-k">Output <span class="pl-s">demo.mp4</span></span>
+<span class="pl-k">Output <span class="pl-s">demo.webm</span></span>
+
+<span class="pl-k">Set</span> <span class="pl-ent">Theme</span> <span class="pl-s">"Catppuccin Mocha"</span>
+<span class="pl-k">Set</span> <span class="pl-ent">FontSize</span> <span class="pl-c1">22</span>
+<span class="pl-k">Set</span> <span class="pl-ent">Width</span> <span class="pl-c1">1100</span>
+<span class="pl-k">Set</span> <span class="pl-ent">Height</span> <span class="pl-c1">640</span>
+<span class="pl-k">Set</span> <span class="pl-ent">Padding</span> <span class="pl-c1">24</span>
+<span class="pl-k">Set</span> <span class="pl-ent">TypingSpeed</span> <span class="pl-c1">70</span><span class="pl-k">ms</span>
+<span class="pl-k">Set</span> <span class="pl-ent">Shell</span> bash
+<span class="pl-c"># 下面接 Type / Enter / Sleep，同第三节</span></pre></div>
+<p>几个要点挨个说。</p>
+<p><strong>主题</strong>。VHS 内置了三百多个终端主题，从 Dracula、Nord 到各种 Catppuccin 变体都有，一行切换。但主题名是区分大小写、且拼写常常不按直觉来的：GitHub 主题实际叫 <code class="notranslate">Github</code>，Gruvbox 暗色叫 <code class="notranslate">GruvboxDark</code>，Nord 干脆是小写 <code class="notranslate">nord</code>——写错了 vhs 会报 "did you mean ..." 或 "theme does not exist"。同一段内容、四个主题实拍：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-themes.png"><img src="/screenshots/vhs-themes.png" alt="VHS 内置主题矩阵" style="max-width: 100%;"></a></p>
+<p><strong>格式与体积</strong>。同一段 4.76 秒的 demo，三种格式实测体积：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>格式</th>
+<th>体积</th>
+<th>怎么选</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GIF</td>
+<td>61 KB</td>
+<td>最大，但任何页面、聊天工具都能直接放，兼容性无敌</td>
+</tr>
+<tr>
+<td>MP4</td>
+<td>34 KB</td>
+<td>网页 <code class="notranslate">&lt;video&gt;</code> 首选，无音轨、配合 <code class="notranslate">muted autoplay</code> 可自动播；但需要 HTML 标签，聊天工具大多不内联支持</td>
+</tr>
+<tr>
+<td>WebM</td>
+<td>25 KB</td>
+<td>最小，现代浏览器都支持</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>一次录制、三个 Output 同时产出，选型没有试错成本。</p>
+<p><strong>两种速度别搞混</strong>。<code class="notranslate">Set TypingSpeed 70ms</code> 管的是录制阶段——每个按键之间间隔多久，改它会改变录制总时长；<code class="notranslate">Set PlaybackSpeed 2</code> 管的是渲染阶段——录制照常，成品按倍数快放。实测 2 倍速：4.76 秒压到 1.84 秒，而体积不降反升（GIF 61KB → 82KB）。听着反直觉，道理是视频压缩靠相邻帧"差不多"来省数据，快放之后每帧之间差异变大、每秒塞的信息更密，压缩率自然下降。</p>
+<p><strong>截图是即时的</strong>。除了视频，还可以用 <code class="notranslate">Screenshot demo-end.png</code> 在脚本任意位置拍一张静态图。要注意它截的是<strong>那一刻</strong>的画面，不等任何东西——叶扬第一版 demo 在最后一条命令后立刻 Screenshot，结果 ls 的输出还没渲染出来，画面停在命令行上。想拍到完整输出，老规矩，先 Sleep。配合 Mocha 主题的最终成片：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-demo-end.png"><img src="/screenshots/vhs-demo-end.png" alt="Catppuccin Mocha 主题成片" style="max-width: 100%;"></a></p>
+<p>动态版长这样：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-demo.gif"><img src="/screenshots/vhs-demo.gif" alt="demo 动态版" style="max-width: 100%;"></a></p>
+<h2>六、asciinema：另一条路线，录的是文本不是画面</h2>
+<p>VHS 解决的是"把文本渲染成视频"。还有一个同源但更激进的思路：<strong>干脆不要视频，直接录文本</strong>。这就是 asciinema。</p>
+<p>它的产物 <code class="notranslate">.cast</code> 文件是纯文本，v2 格式简单到一眼看完：第一行是一段 JSON 头，记录终端行列数等元信息；之后每行是一个事件数组——<code class="notranslate">[时间戳, "o", 数据]</code>，即"第几秒，终端输出了什么"。一次完整的终端会话，本质就是一串带时间戳的文本块。</p>
+<p>先看 Windows 生态的现实：asciinema 官方 3.x 只发布了 macOS 和 Linux 二进制，没有 Windows 版；Windows 上有兼容工具 PowerSession，实测它对管道喂入的非控制台 stdin 处理不稳，直接报 ReadFile failed；老牌的 asciinema 2.x（Python 编写）又依赖 Unix pty，在 Windows 上用不了。</p>
+<p>但理解了格式就会发现，根本不需要录制器——<code class="notranslate">.cast</code> 是文本，<strong>直接手写</strong>一份：</p>
+<div class="highlight highlight-source-json"><pre class="notranslate">{<span class="pl-ent">"version"</span>: <span class="pl-c1">2</span>, <span class="pl-ent">"width"</span>: <span class="pl-c1">90</span>, <span class="pl-ent">"height"</span>: <span class="pl-c1">16</span>}
+[<span class="pl-c1">0.1</span>, <span class="pl-s"><span class="pl-pds">"</span>o<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>$ echo 'asciinema records TEXT, not video'<span class="pl-cce">\r\n</span><span class="pl-pds">"</span></span>]
+[<span class="pl-c1">0.7</span>, <span class="pl-s"><span class="pl-pds">"</span>o<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>asciinema records TEXT, not video<span class="pl-cce">\r\n</span><span class="pl-pds">"</span></span>]
+[<span class="pl-c1">1.1</span>, <span class="pl-s"><span class="pl-pds">"</span>o<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>$ for i in 1 2 3 4 5; do echo <span class="pl-cce">\"</span>line $i<span class="pl-cce">\"</span>; done<span class="pl-cce">\r\n</span><span class="pl-pds">"</span></span>]
+[<span class="pl-c1">1.7</span>, <span class="pl-s"><span class="pl-pds">"</span>o<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>line 1<span class="pl-cce">\r\n</span>line 2<span class="pl-cce">\r\n</span>line 3<span class="pl-cce">\r\n</span>line 4<span class="pl-cce">\r\n</span>line 5<span class="pl-cce">\r\n</span><span class="pl-pds">"</span></span>]
+[<span class="pl-c1">2.2</span>, <span class="pl-s"><span class="pl-pds">"</span>o<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>$ <span class="pl-pds">"</span></span>]</pre></div>
+<p>整个文件 303 字节。这可能是对"文本格式"最彻底的证明：一个终端演示，在任何文本编辑器里凭空就能造出来，能 diff，能 review。</p>
+<p>手写的东西格式对不对？用官方的 agg（asciinema 的 cast→GIF 渲染器，winget 可装）验证：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">agg hand.cast hand.gif</pre></div>
+<p>303 字节的文本被渲染成 12.7KB 的 GIF，内容一字不差：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-hand.gif"><img src="/screenshots/vhs-hand.gif" alt="agg 渲染手写 cast" style="max-width: 100%;"></a></p>
+<p>cast 真正不可替代的用法是<strong>嵌进网页</strong>。官方播放器 asciinema-player 把 cast 渲染成一个可交互的终端控件：先通过 CDN 或 npm 引入 <code class="notranslate">asciinema-player.css</code> 和 <code class="notranslate">asciinema-player.min.js</code>，下面代码里的 <code class="notranslate">castText</code> 就是 cast 文件的文本内容（也可以直接传 cast 文件的 URL 让播放器自行 fetch）：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-kos">&lt;</span><span class="pl-ent">div</span> <span class="pl-c1">id</span>="<span class="pl-s">term</span>"<span class="pl-kos">&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">div</span><span class="pl-kos">&gt;</span>
+<span class="pl-kos">&lt;</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span>
+<span class="pl-v">AsciinemaPlayer</span><span class="pl-kos">.</span><span class="pl-en">create</span><span class="pl-kos">(</span><span class="pl-kos">{</span><span class="pl-c1">data</span>: <span class="pl-s1">castText</span><span class="pl-kos">}</span><span class="pl-kos">,</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">getElementById</span><span class="pl-kos">(</span><span class="pl-s">'term'</span><span class="pl-kos">)</span><span class="pl-kos">,</span>
+  <span class="pl-kos">{</span><span class="pl-c1">autoPlay</span>: <span class="pl-c1">true</span><span class="pl-kos">,</span> <span class="pl-c1">loop</span>: <span class="pl-c1">true</span><span class="pl-kos">,</span> <span class="pl-c1">theme</span>: <span class="pl-s">'dracula'</span><span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-kos">&lt;/</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span></pre></div>
+<p>实拍效果，注意底部那条控制栏：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/vhs-player.png"><img src="/screenshots/vhs-player.png" alt="asciinema player 网页嵌入实拍" style="max-width: 100%;"></a></p>
+<p>播放/暂停、时间码、可拖拽的进度条、快捷键按钮、全屏——全在。访客还能直接在终端画面里<strong>选中并复制命令文本</strong>，因为播放器里本来就是文本。这些是任何 GIF、MP4 都给不了的。</p>
+<p>于是 VHS 和 asciinema 的分工非常清楚：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>诉求</th>
+<th>选择</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>README 头部、社交群里发，要求点开就自动播、零门槛</td>
+<td>VHS 渲染 GIF</td>
+</tr>
+<tr>
+<td>教程正文，读者可能要暂停读输出、复制命令、按自己节奏看</td>
+<td>cast + asciinema-player</td>
+</tr>
+<tr>
+<td>源头要可维护的纯文本，同时又想要 GIF 到处分发</td>
+<td>维护 cast，用 agg 导出 GIF</td>
+</tr>
+<tr>
+<td>需要漂亮主题、圆角、留白这些"包装"</td>
+<td>VHS（agg 的样式选项少得多）</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>七、什么时候值得用，什么时候别用</h2>
+<p>收尾算账。</p>
+<p><strong>值得用的场景</strong>：CLI 工具的 README 演示、教程文章里的操作步骤、团队内部的可复现文档。共同特征是内容是纯终端、且你预期它会变——<code class="notranslate">.tape</code> 和 cast 进版本库，改一次重新渲染一次，边际成本几乎为零。</p>
+<p><strong>别用的场景</strong>：演示里有鼠标操作的图形界面，VHS 管不到；一次性的口头沟通，截个静态图反而更快；输出不确定、无法脚本化的交互（比如要真人临场判断的调试），硬写成脚本只会反复返工。</p>
+<p>最后补一句 CI 的价值。这篇文章里 Windows 本地连踩三坑，但把 <code class="notranslate">.tape</code> 放进 GitHub Actions 的 Linux runner 上，叶扬实测 ttyd 的坑不会出现、首字 race 也没再复现（无头环境反而干净），只要记得把 vhs 版本钉在 v0.11.0 绕开 ctx 回归即可。官方推荐的团队用法正是这样：每次发版自动重新渲染演示，README 里的 GIF 永远跟最新代码一致。演示从此不是"录出来的资产"，而是"构建出来的产物"。</p>
+<p>下一篇实操轮到文件同步与备份的瑞士军刀——rclone：一个命令行工具统一对接七十多种存储后端，把"备份到网盘"也变成可脚本化的工程。</p>
+<h3>术语表</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>术语</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">.tape</code></td>
+<td>VHS 的脚本格式，纯文本，描述按键、等待、输出与样式</td>
+</tr>
+<tr>
+<td>ttyd</td>
+<td>把命令行 shell 通过 WebSocket 共享出去的服务，VHS 用它驱动真实终端</td>
+</tr>
+<tr>
+<td>go-rod</td>
+<td>Go 的浏览器自动化库，VHS 用它拉起无头 Chrome/Edge 渲染 xterm.js</td>
+</tr>
+<tr>
+<td>xterm.js</td>
+<td>浏览器里的终端模拟器，VHS 画面的实际渲染者</td>
+</tr>
+<tr>
+<td>ConPTY</td>
+<td>Windows 的伪终端机制，ttyd/PowerSession 在 Windows 上靠它与 shell 通信</td>
+</tr>
+<tr>
+<td>cast v2</td>
+<td>asciinema 的会话文件格式：JSON 头加带时间戳的输出事件，纯文本</td>
+</tr>
+<tr>
+<td>agg</td>
+<td>asciinema 官方的 cast → GIF 渲染器</td>
+</tr>
+<tr>
+<td>TypingSpeed / PlaybackSpeed</td>
+<td>前者控制录制时按键间隔，后者控制成品快放倍数</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script>
+
+</html>
