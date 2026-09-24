@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script><script src='/plugins/GmeekPagefind.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="上一篇用 rclone，解决的是「把数据多搬一份到别处」。">
+<meta property="og:title" content="误删改坏能回到任意一天：restic 版本化备份完整实操（分块去重＋客户端加密＋rclone 异地）">
+<meta property="og:description" content="上一篇用 rclone，解决的是「把数据多搬一份到别处」。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/71.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>误删改坏能回到任意一天：restic 版本化备份完整实操（分块去重＋客户端加密＋rclone 异地）</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">误删改坏能回到任意一天：restic 版本化备份完整实操（分块去重＋客户端加密＋rclone 异地）</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/71" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><p>上一篇用 rclone，解决的是「把数据多搬一份到别处」。但有一种倒霉，rclone 救不了。</p>
+<p>文件没丢，是被自己改坏了，或者误删了——而同步恰好发生在改坏之后。<code class="notranslate">copy</code> 忠实，<code class="notranslate">sync</code> 更忠实，连坏的带删的一起给你镜像过去。等发现不对，哪一份副本里都没有上周那个能用的版本了。</p>
+<p>这时候缺的不是「副本」，是「历史版本」。该换一个思路的工具上场了：restic。</p>
+<h2>一、先说 restic 是什么</h2>
+<p>restic 是一个用 Go 写的备份程序，单个可执行文件，当前版本 0.19.1，<code class="notranslate">winget install restic.restic</code> 就能装。它干的事可以概括成三句：</p>
+<ul>
+<li><strong>每次备份生成一个快照（snapshot）</strong>，历史版本全部留着，想回到哪天就回到哪天；</li>
+<li><strong>内容分块去重</strong>，同一个块不管在多少个版本里出现，仓库里只存一次；</li>
+<li><strong>客户端加密</strong>，仓库整个是密文，存到哪儿都不怕被人看。</li>
+</ul>
+<p>跟 rclone 的分工一句话说清：<strong>rclone 管「搬到哪」，restic 管「备份的版本和完整性」。</strong> 这俩还能合体——后面专门讲。</p>
+<h2>二、仓库里到底有什么：四个名词</h2>
+<p>要看懂后面的输出，先认识四个词：仓库、快照、块、包。</p>
+<ul>
+<li><strong>repository（仓库）</strong>：备份的目的地，可以是本地文件夹，也可以是对象存储、rclone 远端。</li>
+<li><strong>snapshot（快照）</strong>：一次备份的时间点，记下当时的目录树。</li>
+<li><strong>blob（块）</strong>：仓库里最小的数据单元，分两种——data blob 装文件内容，tree blob 装目录结构。</li>
+<li><strong>pack（包）</strong>：blob 攒起来打成一个带加密的文件，存在磁盘上。</li>
+</ul>
+<p>这套结构对程序员来说有个现成的类比：<strong>Git</strong>。Git 也是内容寻址——文件内容算个哈希当指纹存成 object，commit 指向 tree、tree 指向 blob。restic 几乎一一对应：snapshot 约等于 commit，tree blob 约等于 tree object，data blob 约等于 blob，pack 约等于 packfile。白话版：数据不是按「文件名＋路径」存的，是按「内容指纹」存的，内容一样，就是同一个块。</p>
+<p>所以仓库的物理目录长这样：<code class="notranslate">data/</code> 下面是 00 到 ff 共 256 个哈希桶，桶里是 pack 文件；另外四个目录各司其职——<code class="notranslate">snapshots/</code> 存快照、<code class="notranslate">index/</code> 存索引、<code class="notranslate">keys/</code> 存密钥、<code class="notranslate">locks/</code> 存锁。<code class="notranslate">init</code> 之后整个仓库只有 50K，配置文件里写明仓库版本号 version 2 和一个分块多项式 <code class="notranslate">chunker_polynomial</code>——这两个东西后面都会讲到。</p>
+<h2>三、第一次备份</h2>
+<p>初始化和备份各一条命令，<code class="notranslate">-r</code> 指定仓库路径，<code class="notranslate">--tag</code> 给快照贴个标签：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">restic init -r repo
+restic backup -r repo data --tag demo</pre></div>
+<p>第一次备份的输出，逐行都值得看：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">no parent snapshot found, will read all files
+Files:           5 new,     0 changed,     0 unmodified
+Added to the repository: 5.292 MiB (5.290 MiB stored)
+snapshot ee6ed6fd saved
+</code></pre>
+<p>仓库密码通过环境变量 <code class="notranslate">RESTIC_PASSWORD</code> 给，写脚本时也可以用 <code class="notranslate">--password-file</code> 指定一个文件，免得密码出现在命令行历史里。第一次没有「父快照」做参照，restic 老老实实把所有文件读了一遍，5 个文件全是新的，存进去 5.292 MiB。注意括号里的 5.290 MiB stored——压缩后实际写入比逻辑值还略少一点，省的主要是元数据；那 5MB 随机文件本身压不动。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/restic-backup.png"><img src="/screenshots/restic-backup.png" alt="restic init 与三次备份的增量输出" style="max-width: 100%;"></a></p>
+<h2>四、去重：四份数据，为什么只占一份多一点</h2>
+<p>光看一次备份不稀奇，连着备四次才看得出这套设计的厉害。叶扬拿同一个目录做了四轮：</p>
+<p><strong>第二轮，一个字没改，又备一次。</strong> restic 自动找到上一个快照当 parent，逐个文件比对，结果是「5 unmodified，Added 0 B」——快照照样存了，但没往仓库里加一个字节。</p>
+<p><strong>第三轮，改 1 个小文件、新增 1 个文件。</strong> 输出「1 new, 1 changed，Added 5.095 KiB」，只存变化的那点东西。</p>
+<p><strong>第四轮最能说明问题：只改了一个 5MB 大文件中间的 1KB。</strong> 如果按传统「整文件增量」备份，这一下至少得再存一个 5MB；restic 的输出是「Added 760.498 KiB」——只有受影响的那部分块重新存了，文件的其余大块原样复用。</p>
+<p>把四个快照列出来，再用 stats 算总账：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">ID        Time                 Tags   Size
+ee6ed6fd  2026-09-24 15:14:55  demo   5.286 MiB
+293aaf58  2026-09-24 15:14:57  demo   5.286 MiB
+241c539e  2026-09-24 15:14:58  demo   5.286 MiB
+245a9769  2026-09-24 15:15:03  demo   5.286 MiB
+
+Stats in restore-size mode:
+     Total File Count:  34
+           Total Size:  21.145 MiB
+</code></pre>
+<p>逻辑上，四个快照展开是 21.145 MiB、34 个文件；物理仓库呢？<strong>5.4M。</strong></p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/restic-dedup.png"><img src="/screenshots/restic-dedup.png" alt="4 个快照展开 21MiB，物理仓库只占 5.4M" style="max-width: 100%;"></a></p>
+<p>这中间的魔法就是前面配置文件里那个分块多项式，学名 <strong>CDC（Content-Defined Chunking，内容定义分块）</strong>。restic 不按固定长度切文件，而是拿一个滚动哈希窗口在字节流上滑，哈希满足某个条件的地方才下刀切块。于是文件中间插入或修改一点内容，只有附近一两个块的边界会变，前后的块指纹纹丝不动，直接复用。这个思路跟 rsync 传增量、跟编译器「只重编译改动过的 .c 文件」是一个道理——把昂贵操作限制在真正变化的那一小块。</p>
+<h2>五、恢复：备份唯一的验收标准，是真的能恢复</h2>
+<p>备份圈有句不好笑的实话：没做过恢复演练的备份，等于没有备份。restic 给了几种取数据的姿势。</p>
+<p>整份还原，用 restore，<code class="notranslate">--target</code> 指定落地目录：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">restic restore 241c539e -r repo --target restored/v3
+<span class="pl-c"><span class="pl-c">#</span> Summary: Restored 9 files/dirs (5.286 MiB) in 0:00</span></pre></div>
+<p>只想捞一个文件，不必整份恢复，dump 直接吐到标准输出，可以重定向存档：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">restic dump 241c539e data/docs/todo.txt -r repo</pre></div>
+<p>这里有个 <strong>Windows 专属的坑</strong>：路径不能加前导斜杠。写成 <code class="notranslate">/data/docs/todo.txt</code>，restic 会把它当成 Windows 盘符路径，报 <code class="notranslate">path "\D:" not found</code>。去掉前导斜杠写 <code class="notranslate">data/docs/todo.txt</code>，或者写成 <code class="notranslate">//data/docs/todo.txt</code>，才正常。配合 <code class="notranslate">find</code>（全仓库搜文件在哪些快照里）和 <code class="notranslate">ls</code>（列出某个快照的目录树），定位东西很方便。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/restic-restore.png"><img src="/screenshots/restic-restore.png" alt="restore、dump、forget、prune 全流程实拍" style="max-width: 100%;"></a></p>
+<p>叶扬的习惯是每开一个新仓库，第一次备份完立刻 restore 到临时目录，跟源文件比对一遍。这一步花两分钟，省的是灾难来临时才发现「备份是坏的」那种绝望。</p>
+<h2>六、密码、密钥和锁</h2>
+<p>安全相关的几件事，一次说清。</p>
+<p><strong>一把仓库可以挂多个密码。</strong> <code class="notranslate">restic key list</code> 看现有密钥，<code class="notranslate">restic key add</code> 加一把新的。这在轮换密码、或者多人共用仓库时有用——新密码告知相关方、旧密码随后移除，中间不会断档。实测用新密码能正常打开仓库，输错密码则干脆利落地回一句 <code class="notranslate">wrong password or no key found</code>，没有任何可钻的空子。</p>
+<p>密钥派生用的是 scrypt，参数写在每个 key 文件里：N=32768、r=8、p=1，专门用来把「人脑记得住的密码」慢哈希成加密密钥，扛得住暴力穷举；数据本身用 AES-256 加密、Poly1305 做完整性认证。老规矩必须再说一遍：<strong>密码丢了没有后门，仓库里的数据永久不可恢复。</strong></p>
+<p><strong>仓库是靠锁协作的。</strong> 备份、清理这类写操作会在 <code class="notranslate">locks/</code> 里加锁，防止两个进程同时把仓库改坏。如果进程被强杀、留下没清掉的 stale lock，后续操作会报错，<code class="notranslate">restic unlock</code> 清掉即可。</p>
+<p>另外提一个退出码：备份时有些文件读不到（Windows 上最常见，比如正被别的程序打开的文件），restic 不会装作成功，它会记下无法读取的文件，快照照样存，但<strong>退出码是 3</strong>。写自动化脚本时别只判断「非零即失败」，要认得这个「部分成功」。</p>
+<h2>七、快照也要定期清扫：forget 加 prune</h2>
+<p>快照一直留着当然安全，可仓库不会自己变小。restic 把「删快照」和「清数据」刻意拆成两步。</p>
+<p><strong>forget 只删快照引用</strong>，并且支持一套保留策略，按时间梯度留底：<code class="notranslate">--keep-last N</code>（留最近 N 个）、<code class="notranslate">--keep-daily</code>、<code class="notranslate">--keep-weekly</code>、<code class="notranslate">--keep-monthly</code>、<code class="notranslate">--keep-yearly</code> 分别按日、周、月、年保留。强烈建议先加 <code class="notranslate">--dry-run</code> 预演，看清楚「keep 哪些、remove 哪些」再真跑。也可以直接指定快照 ID 精确删除。</p>
+<p>但 forget 之后，那些没人引用的块还在 pack 里躺着——<strong>prune 才真正回收磁盘</strong>，它会重写 pack、剔掉无引用数据。叶扬删掉第四轮快照和随后的零增量快照再 prune，账面对得严丝合缝：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">to delete:   5 blobs / 758.800 KiB
+remaining:  19 blobs / 5.291 MiB
+仓库体积      6.2M → 5.4M
+</code></pre>
+<p>日常自动化可以一条 <code class="notranslate">restic forget --prune</code> 连着做，再挂到计划任务上，备份和清理就都不用人管了。<code class="notranslate">restic tag</code> 还能事后给快照补标签——和 Git 改历史一样，这会重写快照、生成新的快照 ID，是内容寻址的必然结果。</p>
+<h2>八、和 rclone 合体：异地容灾</h2>
+<p>备份只放在一块硬盘上不叫容灾。restic 和 rclone 这对搭档有三种合体姿势，叶扬全部实测过。</p>
+<p><strong>姿势一，restic 的原生 rclone 后端。</strong> 仓库路径写成 <code class="notranslate">rclone:远端名:路径</code>，restic 会在后台自动拉起 rclone 与远端通信：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">restic -r rclone:offsite:offsite-disk/restic-repo init
+restic -r rclone:offsite:offsite-disk/restic-repo backup data</pre></div>
+<p>init、backup、check 一路通过，check 在远端仓库上照样报 no errors found。这意味着 restic 能直接把版本化备份落到 rclone 支持的七十多种存储上。</p>
+<p><strong>姿势二，用 rclone 搬运整个仓库。</strong> restic 仓库是自包含的，<code class="notranslate">rclone copy repo offsite:repo-copy</code> 整体搬过去，副本可以直接当仓库用——snapshots、check 全部正常。这特别适合「本地一份高速仓库，定期往异地推一份镜像」。</p>
+<p><strong>姿势三，restic copy 跨仓库智能复制。</strong> 它不是搬文件，而是按快照复制，而且去重也保持在 pack 级别——四个快照同步过去，实际只复制了 2 个 pack。这里有个实打实的坑：copy 涉及两个仓库，<strong>源仓库的密码要用 <code class="notranslate">--from-password-file</code> 单独给</strong>，漏了它会报一个看着摸不着头脑的错：<code class="notranslate">an empty password is not allowed</code>。</p>
+<p>三条路组合起来的最佳实践很清晰：本地或常连的仓库负责日常高频备份，rclone 后端放异地，再用 copy 定期把快照推过去——本地可秒级恢复，异地能扛火灾和勒索。</p>
+<h2>九、Windows 上的两个「没有」</h2>
+<p>跨平台工具在 Windows 上总有边界，restic 这两条提前知道，能省掉翻文档的时间：</p>
+<ul>
+<li><strong>没有 mount 命令。</strong> Linux 上可以把快照挂成一个目录，像浏览普通文件夹一样翻看历史版本；Windows 构建里干脆没有这个命令。要取数据，用 restore、dump、ls 替代。</li>
+<li><strong>没有 VSS 卷影副本。</strong> restic 在 Windows 上不会去拍系统卷快照，所以正被应用独占打开的文件读不到，备份会以退出码 3 收场。要么先关掉相关应用，要么先把数据导出到普通文件再备。</li>
+</ul>
+<p>至于压缩，version 2 仓库默认 auto 策略：文本和元数据正常压，已经是压缩格式的内容不白费力气。前面那 5MB 随机数据，5.292 MiB 进去、5.290 MiB 存储，几乎没变化，就是因为随机数据本就压不动。</p>
+<h2>十、什么时候值得用，什么时候别用</h2>
+<p>值得 restic 上场的场景很明确：文档、代码、照片这类要长期保存、又怕误删改坏的东西，想要一条能回到任意历史版本的退路。它的快照、去重、加密和校验，正好补齐 rclone 不做版本化的那块。</p>
+<p>但也别拿它干所有活。<strong>整机系统盘、要还原到「能开机」的裸机备份</strong>，restic 不擅长，那种场景该选磁盘映像类工具。restic 管的是文件层面的数据资产。</p>
+<p>最后还是那句最朴素的话：备份软件再靠谱，也请亲手 restore 一次。能存进去不算本事，能取回来、取回来的东西一字不差，才算这条备份链路真正通了。</p>
+<h2>术语表</h2>
+<ul>
+<li><strong>repository（仓库）</strong>：备份的存储目的地，本地或远端皆可，整体加密。</li>
+<li><strong>snapshot（快照）</strong>：一次备份的时间点，记录当时的目录树与文件版本。</li>
+<li><strong>blob（块）</strong>：最小数据单元，data blob 装文件内容，tree blob 装目录结构。</li>
+<li><strong>pack（包）</strong>：若干 blob 打包加密后的物理文件。</li>
+<li><strong>CDC 内容定义分块</strong>：用滚动哈希按内容决定切块边界，局部修改只影响局部块，是去重高效的根源。</li>
+<li><strong>parent snapshot（父快照）</strong>：本次备份参照的上一个快照，用来快速识别哪些文件没变。</li>
+<li><strong>forget / prune</strong>：前者删除快照引用，后者真正清理无引用数据、回收空间。</li>
+<li><strong>rclone 后端</strong>：restic 仓库写成 <code class="notranslate">rclone:远端:路径</code>，底层借 rclone 访问七十多种存储。</li>
+<li><strong>restic copy</strong>：跨仓库复制快照，按 pack 去重传输；源仓库密码需用 <code class="notranslate">--from-password-file</code> 单独提供。</li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script><script src='/plugins/GmeekCast.js'></script>
+
+</html>
