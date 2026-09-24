@@ -241,6 +241,7 @@ Gmeek 没有独立插件市场，[issue #167「插件分享基地」](https://gi
 | 实操一 | [零后端全站搜索：给 Gmeek 博客接 Pagefind 的完整实操](/post/68.html) | Pagefind：Actions 每次构建自动索引（72 页/2MB）＋GmeekPagefind 插件全站入口＋明暗适配；中文 extended 二进制词典分词＋Intl.Segmenter；**「GitHub 好项目实操」系列开篇** | 好项目实操 | ✅ |
 | 实操二 | [终端录屏也能写成脚本：VHS 完整实操（Windows 三坑＋asciinema 对比）](/post/69.html) | VHS：`.tape` 声明式脚本渲染终端 GIF/MP4/WebM，三百多主题；Windows 三坑＝ttyd error 267（`-w .` 包装器）/v0.12.0 已取消 ctx（钉 v0.11.0）/首字 race（先 Sleep）；asciinema cast 纯文本＋player 可暂停复制 | 好项目实操 | ✅ |
 | 实操三 | [一个 CLI 统管七十多种存储：rclone 备份同步完整实操（crypt 加密＋Actions 定时）](/post/70.html) | rclone：copy 只增不删 / sync 镜像（必先 `--dry-run`）/ check 验证；`--backup-dir` 留档＋`--filter` 有序过滤＋`--bwlimit` 限速；crypt 包裹层把内容与文件名全加密（RCLONE 魔数、143 字符安全线、obfuscation 退路、filename_encoding）；坑＝serve `--pass` 要明文别喂 obscure；Actions 定时备份（凭据走 Secrets）；restic 去重快照分工 | 好项目实操 | ✅ |
+| 实操四 | [误删改坏能回到任意一天：restic 版本化备份完整实操（分块去重＋加密＋rclone 异地）](/post/71.html) | restic：每次备份留快照版本 / CDC 内容分块去重（4 份展开 21.1MiB，物理仅 5.4M；改 5MB 中间 1KB 只增 760KiB）/ 客户端 AES-256 加密＋Poly1305；restore/dump 恢复、forget 保留策略＋prune 回收、key 多密码；rclone 原生后端＋restic copy 异地容灾；坑＝Windows 无 mount/VSS、dump 路径不加前导 `/`、copy 要 `--from-password-file`、部分失败退出码 3 | 好项目实操 | ✅ |
 
 更新方式：每篇教程发布后，叶扬会回来编辑本文（Gmeek 监听 issue 的 `edited` 事件，编辑即自动重建），所以这张表会一直是最新的。
 
@@ -263,7 +264,8 @@ G 系列默认读者**已经有一个博客**。不少新读者反馈"连仓库�
 | ~~番外二·开源回馈流水线~~ | 11 个自研件按"需求佐证 / 形态匹配 / 兼容包袱"三标准过筛 → PR [#320](https://github.com/Meekdai/Gmeek/pull/320) GmeekExternal、[#321](https://github.com/Meekdai/Gmeek/pull/321) GmeekSEO（另带 #319 KeyError 修复），根治 issue [#322](https://github.com/Meekdai/Gmeek/issues/322)；帮 [#307](https://github.com/Meekdai/Gmeek/pull/307) 写验证式 review、[#318](https://github.com/Meekdai/Gmeek/issues/318) 贴对照日志；PR 前抓到两桩通用性 bug（project pages 子路径、空 ogImage）。**三个 PR 全部 Open 待合并，未被官方收录** | 维护者在 #145 亲口承诺"有空写插件"七个月未兑现 + #319 探路 | ✅ 已发布（2026-09-16，[番外二](/post/28.html)） |
 | ~~番外三·gdigrab 抓窗口~~ | 番外一的 cdp-shot.js 只管浏览器内；浏览器外改用 ffmpeg gdigrab 抓 desktop 合成表面再按窗口矩形裁剪。三坑：① `title=` 直抓 DirectComposition 窗口（Windows Terminal）非黑即白，只能抓 desktop 裁剪；② 150% 缩放下非 DPI 感知进程拿到逻辑坐标，必须先 `SetProcessDPIAware` 取物理像素；③ Win11 隐形边框致矩形越界 8px，用 `GetSystemMetrics` clamp，且 `SetForegroundWindow` 后偶发 `error 5`（ACCESS_DENIED）需重试。另记 PS 5.1 中文环境两坑（UTF-8 必须带 BOM、Stop 模式把原生命令 stderr 包装成终止错误）。**成品脚本 [`tools/shot-window.ps1`](https://github.com/yeyangchen2009/yeyangchen2009.github.io/blob/main/tools/shot-window.ps1)** | 番外一截图能力向浏览器外的自然延伸 | ✅ 已发布（2026-09-16，[番外三](/post/31.html)） |
 | **番外·收录实战** | G04 提交一周后，Google/Bing 真实收录数据对比、GSC"无法抓取"复查结论，回答"RSS 当 sitemap 到底有没有用"；顺带追踪三个上游 PR 的合并进展 | [G04](/post/10.html)、G16 结尾均已预告 | 📅 约 2026-09-21 后 |
-| 实操四·restic 版本化备份 | restic/restic：内容分块去重＋快照版本＋客户端加密的备份工具，[实操三](/post/70.html)已对比分工；可与 rclone 组合（rclone 搬运 restic 仓库做异地容灾） | 好项目实操系列，实操三结尾已预告 | ⏳ 下一篇 |
+| ~~实操四·restic 版本化备份~~ | restic：内容分块去重＋快照版本＋客户端加密；与 rclone 组合异地容灾 | 好项目实操系列 | ✅ 已发布（2026-09-25，[实操四](/post/71.html)） |
+| 实操五·Vaultwarden 自托管密码库 | dani-garcia/vaultwarden：轻量 Bitwarden 兼容服务，密码库自己掌管；呼应实操三/四的加密与数字遗产主题（也可换 n8n 自动化、Umami 站点统计） | 好项目实操系列，安全刚需 | ⏳ 下一篇（选题可换） |
 | 候选·备份双保险 | 用 Actions 把 `backup/` 定期镜像到私有仓库 | #4 运维章自己提的建议 | 待定 |
 | 候选·阅读进度条 | 文章顶部滚动进度条，G16 scrollspy 的姊妹篇 | 体验增强 | 选题偏薄，可能并入杂谈 |
 | 候选·图片懒加载 | 正文 `img` 补 `loading="lazy"` | #4 清单（灯箱做了、懒加载没做） | 本站每篇图极少，价值低 |
@@ -342,6 +344,7 @@ G17 之后把 11 个自研件整体过了一遍筛子（详见 [番外二](/post
 3. **真正有含金量的是自研三小件**（上下篇、阅读时长、归档页），它们会逼出"如何写一个 Gmeek 插件"的完整方法论，那才是这个系列从"会用"走向"会造"的分水岭。
 
 G01–G16 正篇与 **[G17 SEO 收尾战](/post/27.html)**（canonical + JSON-LD + twitter:card + 清洁 description，前传 #4 清单清零）均已完成；方法论番外已有五篇：**[番外·给博客拍证件照](/post/26.html)**（零依赖 CDP 无头截图，成品脚本 `tools/cdp-shot.js`）、**[番外二·开源回馈流水线](/post/28.html)**（三个上游 PR 待合并，见上方 2026-09-16 小节）、**[番外三·gdigrab 抓窗口](/post/31.html)**（浏览器外截图，成品脚本 `tools/shot-window.ps1`）、**[番外四·点到为止](/post/33.html)**（借用户已登录浏览器窗口拍登录态页面，Win32 UI 自动化 + 安全边界，成品脚本 `tools/ui-shot.ps1`；截图三部曲——浏览器内 CDP／浏览器外 gdigrab／登录态借窗——至此收束）与 **[番外五·踩坑手册怎样变成 AI 技能](/post/37.html)**（博客/CLAUDE.md/memory/Skill 四层归宿，见上方 2026-09-18 小节）。2026-09-16 另发布 **[G18 被浮动挤扁的"上一篇/下一篇"](/post/29.html)**：G08 导航卡片在移动端被版权小字的 `float:right` + BFC 避让规则压成 60% 窄列、标题竖排；`clear:both` 拿回全宽、小屏去浮动、meta 行合并，移动/桌面同取景前后对比验收。零起点读者另走**地基篇（B 系列）**：[B00 地基篇总览](/post/30.html)以及 [B01 18 秒建站实录](/post/32.html)、[B02 毛坯房装修：认识 config.json](/post/34.html)、[B03 在 Issues 里过日子](/post/35.html)、[B04 门铃与名片：评论区与 About 页](/post/36.html) 均已发布；地基篇的路线图表与发布日志统一维护在 B00 一篇里（本文不再搬运），下一篇动手向为 **B05 Actions 篇**（回收 B04"评论数为何不实时"的伏笔）。G 系列方向下一篇待写仍是约 2026-09-21 的 **G04 收录实战番外**——用 Google/Bing 的真实收录数据回答"RSS 当 sitemap 提交到底有没有用"，届时一并验收 G17 富结果与清洁摘要的真实生效情况、追踪上游 PR 进展。更远的候选见上方选题池。
+
 
 
 
