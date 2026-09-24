@@ -31,7 +31,7 @@
         return box;
     });
 
-    var THEME = { dark: 'dracula', light: 'github' };
+    var THEME = { dark: 'dracula', light: 'solarized-light' };
     var SPEEDS = [1, 1.25, 1.5, 2, 3, 0.5, 0.75];
 
     function mode() {
