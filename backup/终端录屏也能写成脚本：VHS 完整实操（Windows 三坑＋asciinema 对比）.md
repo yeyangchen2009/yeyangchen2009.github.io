@@ -268,7 +268,7 @@ cast 真正不可替代的用法是**嵌进网页**。官方播放器 asciinema-
 
 ![播放器快捷键面板](/screenshots/vhs-kbd.png)
 
-明暗主题也做了适配：亮色页面挂 player 的 github 主题，暗色页面挂 dracula；点页面右上角切换主题时，插件会以新主题重建播放器，进度同样保留，不会让读者读到一半被弹回开头。
+明暗主题也做了适配：亮色页面挂 solarized-light 主题（米白底），暗色页面挂 dracula；点页面右上角切换主题时，插件会以新主题重建播放器，进度同样保留，不会让读者读到一半被弹回开头。这里还踩过一个坑：叶扬凭直觉想给亮态挂 `github` 主题，结果终端一片黑——官方 3.17.0 内置的 9 个主题（asciinema、dracula、gruvbox-dark、monokai、nord、seti、solarized-dark、solarized-light、tango）里根本没有 github，传了不存在的主题名会静默 fallback 到默认黑底，不报错。
 
 于是 VHS 和 asciinema 的分工非常清楚：
 
