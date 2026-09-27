@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script><script src='/plugins/GmeekPagefind.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="
+> 这是叶扬「AI 工作流」系列第五篇。">
+<meta property="og:title" content="A05｜不碰发布按钮：用 CDP 把博客自动填进知乎草稿箱（一个 2^53 的长 ID 坑）">
+<meta property="og:description" content="
+> 这是叶扬「AI 工作流」系列第五篇。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/77.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>A05｜不碰发布按钮：用 CDP 把博客自动填进知乎草稿箱（一个 2^53 的长 ID 坑）</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">A05｜不碰发布按钮：用 CDP 把博客自动填进知乎草稿箱（一个 2^53 的长 ID 坑）</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/77" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>这是叶扬「AI 工作流」系列第五篇。前四篇都在处理课程素材：<a href="/post/43.html">A01 清洗篇</a> 把四万八千行脏文本洗干净，<a href="/post/44.html">A02 下载篇</a> 逐集取回字幕，<a href="/post/66.html">A03 补档篇</a> 给缺字轨的课程造文本，<a href="/post/67.html">A04 记忆卡片篇</a> 让干净文本真正进脑子。这一篇换个方向——素材变成文章、文章发在博客上之后，怎么让站外平台的读者也看到。叶扬挑了最难自动化、也最值得自动化的知乎，目标只有一句话：<strong>脚本把一切准备好存进草稿箱，人只做最后一步。</strong></p>
+</blockquote>
+<h2>小白问题：写个脚本把 Markdown 往知乎编辑器里一塞，十分钟收工？</h2>
+<p>博客攒到七十多篇的时候，叶扬开始认真琢磨分发这件事。知乎是首选：长文友好、技术话题有人看。</p>
+<p>乍一听这事毫无难度：本地有 Markdown 源稿，知乎写文章页有个大输入框，写个脚本把内容塞进去，再模拟点一下「发布」——收工。手工发的话，复制粘贴加修格式，一篇文章折腾二十分钟，七十多篇就是整整两天的体力活。</p>
+<p>真动手，叶扬发现知乎编辑器是块硬骨头：</p>
+<ul>
+<li>正文不是普通的 <code class="notranslate">&lt;textarea&gt;</code>，是 <strong>Draft.js</strong>（Meta 开源的富文本编辑器框架），编辑器的内容活在 JS 状态里，直接往 DOM 上写文本，状态不认；</li>
+<li>粘贴 Markdown 之后，页面弹一个浮条问要不要「确认并解析」，浮条一秒上下就自动消失，点晚了内容就以一堆 <code class="notranslate">##</code>、<code class="notranslate">![]()</code> 的原样躺平；</li>
+<li>好不容易填好、想删掉自动保存产生的重复草稿时，删除按钮<strong>点了没反应</strong>——这一问最后查出一个连排查方向都想不到的根因。</li>
+</ul>
+<p>这篇文章就按踩坑的先后顺序讲：怎么跟浏览器接线、怎么骗过 Draft.js、怎么抢那个浮条、以及那场"删除按钮失灵"的血案。代码是真跑通的，数字是当场核的。</p>
+<h2>一、先画线：脚本到草稿箱为止，发布按钮永远人来点</h2>
+<p>动手之前先定边界，这条边界决定了后面所有技术选型：</p>
+<p><strong>脚本只负责把内容填进草稿箱，「发布」按钮永远由叶扬本人点。</strong></p>
+<p>理由有三条，每一条都很实在：</p>
+<ol>
+<li><strong>发布不可逆</strong>。文章一旦发出去就进了知乎的时间线、搜索索引和关注者的通知里，删了也留痕。草稿没有任何外部影响，存坏了删掉重来就是；</li>
+<li><strong>发布前的判断无法脚本化</strong>。标题要不要再改、话题挂哪几个、封面用哪张、有没有哪句话发出去不妥——这些都值得活人在点按钮之前过一遍；</li>
+<li><strong>风控</strong>。一个账号突然由脚本高频发文章，是平台风控最典型的异常画像。而"脚本填草稿、人审后发布"，从知乎服务器看到的行为序列是：正常粘贴、自动保存草稿、<strong>人手动点发布</strong>——和真人的操作一模一样。</li>
+</ol>
+<p>配套措施是给自动化单独准备一个 <strong>Edge profile</strong>（用户配置目录），在里面登录一次知乎，之后长期复用。脚本从不接触密码，登录态由浏览器自己保管；这个 profile 也跟叶扬日常浏览用的 profile 完全隔离，自动化脚本只能看到自己那摊东西。</p>
+<h2>二、请出浏览器真身：CDP 9222 的四个接口</h2>
+<p>要让浏览器听脚本指挥，得先以<strong>远程调试模式</strong>启动 Edge：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">msedge.exe --remote-debugging-port=9222 --user-data-dir=<span class="pl-s"><span class="pl-pds">"</span>C:\...\edge-profile<span class="pl-pds">"</span></span></pre></div>
+<p><code class="notranslate">--remote-debugging-port</code> 一开，Edge 就在本机 9222 端口提供一套 HTTP + WebSocket 接口，这套协议叫 <strong>CDP（Chrome DevTools Protocol）</strong>，Chrome 和 Edge 通用。脚本通过它能让浏览器执行任意 JS、截图、甚至派发"物理级"的鼠标键盘事件。</p>
+<p>工具脚本 <code class="notranslate">zhihu-draft.js</code> 只用到四个 HTTP 接口，都很朴素：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>接口</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="notranslate">GET /json/version</code></td>
+<td>确认调试端口在线、浏览器版本</td>
+</tr>
+<tr>
+<td><code class="notranslate">GET /json/list</code></td>
+<td>列出当前所有标签页，每个标签带一个 WebSocket 地址</td>
+</tr>
+<tr>
+<td><code class="notranslate">PUT /json/new?&lt;url&gt;</code></td>
+<td>新开标签页</td>
+</tr>
+<tr>
+<td><code class="notranslate">GET /json/close/&lt;id&gt;</code></td>
+<td>关闭标签页</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>这里有两个不大不小的坑，都属于"文档没强调、踩了才知道"：</p>
+<ul>
+<li><strong>开标签必须用 PUT</strong>。新版浏览器对 <code class="notranslate">/json/new</code> 的 GET 请求只回一句 "Using unsafe HTTP verb GET to invoke /json/new. Use PUT instead."，标签根本不开；</li>
+<li><strong>关标签的返回不是 JSON</strong>。<code class="notranslate">/json/close/*</code> 成功时回的是纯文本 <code class="notranslate">Target is closing</code>，脚本若按 JSON 解析直接报错——工具里为此单独写了一个 <code class="notranslate">getText()</code>，跟返回 JSON 的接口区别对待。</li>
+</ul>
+<p>拿到标签页的 WebSocket 地址后，后续的好戏都在这条长连接上：发 <code class="notranslate">Runtime.evaluate</code> 让页面执行 JS，发 <code class="notranslate">Page.captureScreenshot</code> 截图。Node.js 较新版本自带全局 <code class="notranslate">WebSocket</code>，连依赖都不用装。</p>
+<p>整条自动化的骨架先看一张总图：脚本活动范围严格止于草稿，发布那一步有一道“人工审批门”：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/zhihu-mermaid/post-77-1.png"><img src="/screenshots/zhihu-mermaid/post-77-1.png" alt="架构图：脚本到草稿为止，人工点发布" style="max-width: 100%;"></a></p>
+<h2>三、第一回合：编辑器找到了，内容塞不进去</h2>
+<p>第一步是"侦察"。新开知乎的写文章页（<code class="notranslate">zhuanlan.zhihu.com/write</code>），让浏览器执行一段 JS 摸清结构：</p>
+<ul>
+<li><strong>标题框</strong>：一个普通的 <code class="notranslate">&lt;textarea&gt;</code>，placeholder 写着「请输入标题（最多 100 个字）」；</li>
+<li><strong>正文框</strong>：一个 <code class="notranslate">contenteditable</code> 的 <code class="notranslate">div</code>，class 里带着 <code class="notranslate">public-DraftEditor-content</code>——Draft.js 编辑器的标志性类名。</li>
+</ul>
+<p>叶扬先拿标题框试手。最直觉的写法是 <code class="notranslate">textarea.value = '标题'</code>，结果页面毫无反应。原因是现代前端框架给表单元素挂了自己的事件监听，<strong>直接改 value 属性不会触发框架内部的状态更新</strong>——值确实写进 DOM 了，但框架"不知道"。</p>
+<p>标准解法是模拟真人输入的完整事件序列：用<strong>原生 setter</strong> 写值，再派发一个 <code class="notranslate">input</code> 事件：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-s1">ta</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'textarea'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">ta</span><span class="pl-kos">.</span><span class="pl-en">focus</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">const</span> <span class="pl-s1">setter</span> <span class="pl-c1">=</span> <span class="pl-v">Object</span><span class="pl-kos">.</span><span class="pl-en">getOwnPropertyDescriptor</span><span class="pl-kos">(</span>
+    <span class="pl-smi">window</span><span class="pl-kos">.</span><span class="pl-c1">HTMLTextAreaElement</span><span class="pl-kos">.</span><span class="pl-c1">prototype</span><span class="pl-kos">,</span> <span class="pl-s">'value'</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-c1">set</span><span class="pl-kos">;</span>
+<span class="pl-s1">setter</span><span class="pl-kos">.</span><span class="pl-en">call</span><span class="pl-kos">(</span><span class="pl-s1">ta</span><span class="pl-kos">,</span> <span class="pl-s">'一个 CLI 统管七十多种存储：rclone 备份同步完整实操'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">ta</span><span class="pl-kos">.</span><span class="pl-en">dispatchEvent</span><span class="pl-kos">(</span><span class="pl-k">new</span> <span class="pl-v">Event</span><span class="pl-kos">(</span><span class="pl-s">'input'</span><span class="pl-kos">,</span> <span class="pl-kos">{</span> <span class="pl-c1">bubbles</span>: <span class="pl-c1">true</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>标题这一关过了。正文才是真正的 Boss——对一个 Draft.js 编辑器，<code class="notranslate">innerText = '...'</code> 这种写法连 DOM 这一层都站不住，光标一点就现原形。要让 Draft.js 老老实实接收一大段富文本，得用编辑器唯一无条件信任的输入通道：<strong>粘贴</strong>。</p>
+<h2>四、第二回合：合成一次"以假乱真"的粘贴</h2>
+<p>人在网页上按 Ctrl+V 的时候，浏览器会往页面派发一个 <code class="notranslate">paste</code> 事件，事件里挂着一个 <code class="notranslate">clipboardData</code> 对象，里面是剪贴板内容（纯文本、HTML、图片……）。富文本编辑器监听这个事件、读取内容、写进自己的状态。</p>
+<p>脚本要做的，就是把这个事件<strong>合成</strong>出来。难点有两个：</p>
+<ol>
+<li><code class="notranslate">paste</code> 事件的 <code class="notranslate">clipboardData</code> 是只读的，构造时塞不进去；</li>
+<li>得真有一个地方放剪贴板内容——浏览器提供了 <code class="notranslate">DataTransfer</code> 对象（拖拽和剪贴板共用的数据容器）。</li>
+</ol>
+<p>组合起来，先把 Markdown 全文放进 <code class="notranslate">DataTransfer</code> 的 <code class="notranslate">text/plain</code>，再创建 <code class="notranslate">ClipboardEvent</code>，用 <code class="notranslate">Object.defineProperty</code> 把 <code class="notranslate">clipboardData</code> 强行挂上去：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-s1">editor</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'[contenteditable=true]'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">editor</span><span class="pl-kos">.</span><span class="pl-en">focus</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">const</span> <span class="pl-s1">dt</span> <span class="pl-c1">=</span> <span class="pl-k">new</span> <span class="pl-v">DataTransfer</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">dt</span><span class="pl-kos">.</span><span class="pl-en">setData</span><span class="pl-kos">(</span><span class="pl-s">'text/plain'</span><span class="pl-kos">,</span> <span class="pl-s1">markdown全文</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">const</span> <span class="pl-s1">ev</span> <span class="pl-c1">=</span> <span class="pl-k">new</span> <span class="pl-v">ClipboardEvent</span><span class="pl-kos">(</span><span class="pl-s">'paste'</span><span class="pl-kos">,</span> <span class="pl-kos">{</span> <span class="pl-c1">bubbles</span>: <span class="pl-c1">true</span><span class="pl-kos">,</span> <span class="pl-c1">cancelable</span>: <span class="pl-c1">true</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// clipboardData 只读，靠 defineProperty 把 DataTransfer 塞进去</span>
+<span class="pl-v">Object</span><span class="pl-kos">.</span><span class="pl-en">defineProperty</span><span class="pl-kos">(</span><span class="pl-s1">ev</span><span class="pl-kos">,</span> <span class="pl-s">'clipboardData'</span><span class="pl-kos">,</span> <span class="pl-kos">{</span> <span class="pl-c1">value</span>: <span class="pl-s1">dt</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">editor</span><span class="pl-kos">.</span><span class="pl-en">dispatchEvent</span><span class="pl-kos">(</span><span class="pl-s1">ev</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>事件一派发，Draft.js 的粘贴处理流程就被完整触发了——和叶扬本人按 Ctrl+V 走的是同一套代码路径。</p>
+<p>这里有个一度让人犹豫的岔路口：粘贴内容其实可以同时带 <code class="notranslate">text/html</code>，即把 Markdown 预先渲染成 HTML 再贴，这样排版一步到位。实测结论是<strong>不能用</strong>：<code class="notranslate">text/html</code> 贴进去格式确实漂亮，但 Draft.js 的 HTML 导入逻辑会<strong>把外链图片全部丢弃</strong>（出于安全，不允许从粘贴内容里直接引入第三方图片地址）。而只带 <code class="notranslate">text/plain</code> 让知乎自己解析 Markdown，文中的 <code class="notranslate">![](图片URL)</code> 会被知乎服务器主动抓取、转存到知乎自己的图床——这才是想要的效果：图片永久托管在平台侧，不依赖任何外链。</p>
+<h2>五、800 毫秒的浮条：赶在「确认并解析」消失之前</h2>
+<p>Markdown 贴进去，新状况出现：正文上方浮出一个临时浮条，大意为"检测到 Markdown 内容"，带两个按钮，其中一个是「<strong>确认并解析</strong>」。</p>
+<p>这是知乎给手动粘贴设计的确认环节——毕竟有人贴一段纯文本只是想原样保留。问题在于这个浮条<strong>只在页面上停留很短一段时间，大约几百毫秒到一秒出头，超时自动消失</strong>。人看到再点都得手快，脚本更不能等：粘贴并填好标题之后睡 800 毫秒，然后在页面里搜出那个按钮、点下去。</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">await</span> <span class="pl-k">new</span> <span class="pl-v">Promise</span><span class="pl-kos">(</span><span class="pl-s1">r</span> <span class="pl-c1">=&gt;</span> <span class="pl-en">setTimeout</span><span class="pl-kos">(</span><span class="pl-s1">r</span><span class="pl-kos">,</span> <span class="pl-c1">800</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">const</span> <span class="pl-s1">els</span> <span class="pl-c1">=</span> <span class="pl-kos">[</span>...<span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelectorAll</span><span class="pl-kos">(</span><span class="pl-s">'button,span,a,div'</span><span class="pl-kos">)</span><span class="pl-kos">]</span>
+    <span class="pl-kos">.</span><span class="pl-en">filter</span><span class="pl-kos">(</span><span class="pl-s1">e</span> <span class="pl-c1">=&gt;</span> <span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span><span class="pl-kos">.</span><span class="pl-en">trim</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-c1">===</span> <span class="pl-s">'确认并解析'</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-c1">children</span><span class="pl-kos">.</span><span class="pl-c1">length</span> <span class="pl-c1">===</span> <span class="pl-c1">0</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">els</span><span class="pl-kos">[</span><span class="pl-s1">els</span><span class="pl-kos">.</span><span class="pl-c1">length</span> <span class="pl-c1">-</span> <span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">.</span><span class="pl-en">click</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
+<p>按钮一点，解析才真正发生：<code class="notranslate">##</code> 变成标题、表格变成表格、<code class="notranslate">![]()</code> 里的图片 URL 被依次抓取上传。图片转存是网络活，一篇带八张图的长文，得传十几秒。脚本的等法是<strong>轮询正文里的图片数量</strong>：每秒数一次，连续五次数字不变且图片数大于 0，才算上传完成（无图文章另走超时兜底）——而不是傻等一个拍脑袋的固定时长。</p>
+<p>到这里，"注入"这条链路就通了。工具的 <code class="notranslate">fill</code> 命令把全过程串了起来：新开写文章页 → 探编辑器 → 合成 paste → 点浮条 → 等图传完。第一次端到端跑通时，命令行输出干脆利落：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">编辑器探查： {"hasTitle":true,"hasBody":true}
+正文注入结果： {"len":13535,"imgs":0}
+确认并解析：{"found":true}
+解析后正文图片数：8
+</code></pre>
+<h2>六、★血案：删除按钮失灵，DELETE 全是 404</h2>
+<p>真正的硬仗在填完之后。</p>
+<p>知乎有自动保存草稿的机制，而脚本每跑一次 <code class="notranslate">fill</code> 都新开一个写文章页——页面一打开就先生成一份空草稿，再加上注入过程中的多次自动保存，<strong>第一篇文章跑完，草稿箱里躺了三份标题相同的草稿</strong>。留一份完整的，另外两份得删掉。</p>
+<p>叶扬点开草稿箱，点删除——<strong>什么都没发生</strong>。没有确认弹窗，没有网络抖动，草稿纹丝不动。</p>
+<h3>先怀疑权限：两种点击都失败</h3>
+<p>第一反应是事件不够"真"。脚本合成事件派出去的 <code class="notranslate">.click()</code>，<code class="notranslate">isTrusted</code> 属性是 <code class="notranslate">false</code>——页面理论上能区分"这是脚本点的"还是"这是人点的"，有些站点的敏感操作只认真实点击。</p>
+<p>那就上最重的手段：CDP 的 <code class="notranslate">Input.dispatchMouseEvent</code>，让浏览器在删除按钮的<strong>物理像素坐标</strong>上模拟鼠标按下、抬起。这种点击的 <code class="notranslate">isTrusted</code> 是 <code class="notranslate">true</code>，跟真人动鼠标没有任何区别。结果——<strong>还是没反应</strong>。</p>
+<p>到这一步，"权限"这条怀疑路径基本走到头了。物理点击都删不掉，问题一定在别处。</p>
+<h3>网络面板抓现行：404</h3>
+<p>排查方向转向网络。给浏览器挂上网络监听，再点一次删除——请求确实发出去了，方法是 <code class="notranslate">DELETE</code>，而服务器的回应清清楚楚：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">DELETE /api/articles/2087485493244179700/draft  →  404 Not Found
+</code></pre>
+<p><strong>404</strong>。浏览器请求删除的那个草稿，服务器说"不存在"。</p>
+<p>可草稿明明就在列表里。再定睛一看 URL 里的 ID——<code class="notranslate">...4179700</code>。而草稿列表数据里，这份草稿的 ID 结尾并不是这个数。浏览器拿着一个<strong>错误的 ID</strong> 去删，服务器当然找不着。</p>
+<p>ID 是怎么错的？草稿箱前端自己生成的删除链接，怎么会指向一个不存在的 ID？</p>
+<h3>根因：19 位 ID 撞上 2^53</h3>
+<p>把草稿 ID 抄出来看：<code class="notranslate">2087485493244179789</code>——十九位数字。</p>
+<p>程序员对这个量级应该有点警觉了。JavaScript 里所有数字都是 IEEE 754 <strong>双精度浮点数</strong>，能精确表示的最大整数是：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">Number.MAX_SAFE_INTEGER = 2^53 − 1 = 9007199254740991   （十六位）
+</code></pre>
+<p>而知乎草稿的新 ID 是十九位，<strong>远超 2^53</strong>。超过这条线之后，并不是"数字不能用了"，而是精度开始一格一格地丢——相邻可表示的数字间距变成 256，落在格子之间的整数会被自动"吸"到最近的可表示值上。</p>
+<p>草稿箱页面加载列表时，服务器返回的 JSON 里 ID 本来是精确的，但前端一 <code class="notranslate">JSON.parse</code>，ID 就变成了 JS Number，精度当场丢失。可以在 Node 里一行复现：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-smi">console</span><span class="pl-kos">.</span><span class="pl-en">log</span><span class="pl-kos">(</span><span class="pl-c1">2087485493244179789</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// 输出：2087485493244179700</span></pre></div>
+<p>真实 ID 结尾是 <code class="notranslate">...79789</code>，parse 一遍变成 <code class="notranslate">...79700</code>——<strong>末三位被悄悄改写</strong>。</p>
+<p>三种状态同屏对比，失真发生在 parse 那一瞬间：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/a05-id-round.png"><img src="/screenshots/a05-id-round.png" alt="长 ID 的三种状态：精确 → 舍入 → 404" style="max-width: 100%;"></a>列表项上的删除、编辑链接全是用这个舍入后的 ID 拼出来的，请求打到服务器上，对应草稿不存在，404。</p>
+<p>这就是"按钮点了没反应"的全部秘密：不是权限问题、不是风控、不是事件不够真，是<strong>前端用浮点数存了主键</strong>。这是一个工程史上反复上演的经典事故类型——用 <code class="notranslate">float</code>/<code class="notranslate">double</code> 存金额，账目对不上；用它存 ID，记录找不着。只不过这次事故发生在知乎自己的页面上，而"受害者"是想删草稿的叶扬。</p>
+<p>顺带一提：旧的、ID 比较短的草稿（十位数）一切正常，这也解释了为什么这个 bug 能一直存在——老数据根本不触发。</p>
+<h3>绕行：禁 JSON.parse，从原始文本里正则提 ID</h3>
+<p>知道了根因，绕行方案也就明确了：<strong>绝不让长 ID 经过 Number 转换，全程当字符串处理。</strong></p>
+<p>脚本直接请求草稿箱列表 API，但不取 JSON——取<strong>原始响应文本</strong>，然后用正则表达式把 ID 一段段"抠"出来。正则匹配的结果天然是字符串，十九位数字一个字符都不会少：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-s1">t</span> <span class="pl-c1">=</span> <span class="pl-k">await</span> <span class="pl-kos">(</span><span class="pl-k">await</span> <span class="pl-en">fetch</span><span class="pl-kos">(</span>
+    <span class="pl-s">'/api/articles/my_drafts?limit=10&amp;offset=0'</span><span class="pl-kos">,</span>
+    <span class="pl-kos">{</span> <span class="pl-c1">credentials</span>: <span class="pl-s">'include'</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">text</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>        <span class="pl-c">// 注意是 .text()，不是 .json()</span>
+<span class="pl-c">// 每个草稿对象以 "content_length" 字段开头，按它切块</span>
+<span class="pl-k">const</span> <span class="pl-s1">marks</span> <span class="pl-c1">=</span> <span class="pl-kos">[</span>...<span class="pl-s1">t</span><span class="pl-kos">.</span><span class="pl-en">matchAll</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-s">"</span><span class="pl-s">c</span><span class="pl-s">o</span><span class="pl-s">n</span><span class="pl-s">t</span><span class="pl-s">e</span><span class="pl-s">n</span><span class="pl-s">t</span><span class="pl-s">_</span><span class="pl-s">l</span><span class="pl-s">e</span><span class="pl-s">n</span><span class="pl-s">g</span><span class="pl-s">t</span><span class="pl-s">h</span><span class="pl-s">"</span><span class="pl-cce">\s</span><span class="pl-c1">*</span><span class="pl-s">:</span><span class="pl-cce">\s</span><span class="pl-c1">*</span><span class="pl-kos">(</span><span class="pl-cce">\d</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-c1">/</span>g</span><span class="pl-kos">)</span><span class="pl-kos">]</span><span class="pl-kos">;</span>
+<span class="pl-c">// seg = 两个相邻 content_length 锚点之间的文本块（示例取第一块）</span>
+<span class="pl-k">const</span> <span class="pl-s1">seg</span> <span class="pl-c1">=</span> <span class="pl-s1">t</span><span class="pl-kos">.</span><span class="pl-en">slice</span><span class="pl-kos">(</span><span class="pl-s1">marks</span><span class="pl-kos">[</span><span class="pl-c1">0</span><span class="pl-kos">]</span><span class="pl-kos">.</span><span class="pl-c1">index</span><span class="pl-kos">,</span> <span class="pl-s1">marks</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span> ? <span class="pl-s1">marks</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">.</span><span class="pl-c1">index</span> : <span class="pl-s1">t</span><span class="pl-kos">.</span><span class="pl-c1">length</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// 在块内正则提 ID —— 匹配结果是字符串，精度完好</span>
+<span class="pl-k">const</span> <span class="pl-s1">id</span> <span class="pl-c1">=</span> <span class="pl-s1">seg</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-s">"</span><span class="pl-s">i</span><span class="pl-s">d</span><span class="pl-s">"</span><span class="pl-cce">\s</span><span class="pl-c1">*</span><span class="pl-s">:</span><span class="pl-cce">\s</span><span class="pl-c1">*</span><span class="pl-kos">(</span><span class="pl-cce">\d</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-c1">/</span></span><span class="pl-kos">)</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">;</span></pre></div>
+<p>这里还藏着一个实现细节：切块的锚点选的是 <code class="notranslate">"content_length"</code> 而不是 <code class="notranslate">"id"</code>。因为 ID 字段在每个草稿对象的<strong>后半部分</strong>，对象里还嵌套着带 <code class="notranslate">id</code> 的子结构，按 <code class="notranslate">id</code> 切块会把对象切乱；按每个对象开头的 <code class="notranslate">content_length</code> 切块，再在块内找 <code class="notranslate">id</code>，位置就准了。</p>
+<p>拿到真实 ID，删除就是一句直白的 <code class="notranslate">fetch</code>：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-s1">xsrf</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">cookie</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-kos">(?:</span><span class="pl-cce">^</span><span class="pl-c1">|</span><span class="pl-s">;</span><span class="pl-cce">\s</span><span class="pl-c1">*</span><span class="pl-kos">)</span><span class="pl-s">_</span><span class="pl-s">x</span><span class="pl-s">s</span><span class="pl-s">r</span><span class="pl-s">f</span><span class="pl-s">=</span><span class="pl-kos">(</span><span class="pl-kos">[</span><span class="pl-c1">^</span><span class="pl-c1">;</span><span class="pl-kos">]</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-c1">/</span></span><span class="pl-kos">)</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">;</span>
+<span class="pl-k">const</span> <span class="pl-s1">r</span> <span class="pl-c1">=</span> <span class="pl-k">await</span> <span class="pl-en">fetch</span><span class="pl-kos">(</span>
+    <span class="pl-s">'https://zhuanlan.zhihu.com/api/articles/2087485493244179789/draft'</span><span class="pl-kos">,</span> <span class="pl-kos">{</span>
+        <span class="pl-c1">method</span>: <span class="pl-s">'DELETE'</span><span class="pl-kos">,</span>
+        <span class="pl-c1">headers</span>: <span class="pl-kos">{</span> <span class="pl-s">'x-xsrftoken'</span>: <span class="pl-en">decodeURIComponent</span><span class="pl-kos">(</span><span class="pl-s1">xsrf</span><span class="pl-kos">)</span> <span class="pl-kos">}</span><span class="pl-kos">,</span>
+        <span class="pl-c1">credentials</span>: <span class="pl-s">'include'</span><span class="pl-kos">,</span>
+    <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// r.status === 200，删掉了</span></pre></div>
+<p><code class="notranslate">_xsrf</code> 是知乎防跨站请求伪造的令牌，服务器用它确认"这个请求确实来自用户自己的页面"，cookie 里就能读到。状态码 <strong>200</strong>，折腾了一整晚的重复草稿，应声而删。</p>
+<h2>七、分发适配三笔小账</h2>
+<p>除了编辑器本身，把博客稿改成知乎稿还有三笔适配账，都不大，但漏了就出洋相：</p>
+<ol>
+<li><strong>正文外链一律清走</strong>。博客正文里常带着 GitHub 的 issue/PR 链接（比如排查时引用上游报告），知乎版里这些链接全部转成纯文本（<code class="notranslate">charmbracelet/vhs#721</code> 直接当文字写），唯一的外链放在全文最后——「本文首发于个人独立博客」一句，指向原文；</li>
+<li><strong>相对路径会变成知乎站内死链</strong>。博客里写的 <code class="notranslate">/casts/vhs-demo.cast</code> 这类站内相对路径，知乎解析时会拼成 <code class="notranslate">zhuanlan.zhihu.com/casts/...</code>，点过去 404。凡是平台上无法兑现的链接，改成文字说明——"这个交互终端播放器只在博客原文页面里有"；</li>
+<li><strong>Mermaid 提前转成 PNG</strong>。知乎不渲染 Mermaid，流程图在发文之前就要用无头浏览器渲染成图片、以 <code class="notranslate">![]()</code> 的形式贴进去，由知乎转存图床。</li>
+</ol>
+<p>验收口径也因此固定：<strong>每篇 <code class="notranslate">fill</code> 完，不看源稿，直接列出知乎编辑器里实际存在的全部 <code class="notranslate">a[href]</code></strong>——源稿 grep 干净不代表编辑器里没多出东西（相对路径的变形就是贴进去才发生的）。</p>
+<h2>八、还没根治的毛刺：列表偶发返回空</h2>
+<p>工具并非全无毛刺。批量填稿时遇到过一次诡异现象：<code class="notranslate">fill</code> 流程里注入前快照显示"草稿数 0"，注入完"本次新增草稿 []"，仿佛整个列表 API 失效；但内容其实完好——换个正常标签重新一拉，新草稿安安静静躺在列表里。</p>
+<p>判断是新开标签页的上下文里，带凭证的 <code class="notranslate">fetch</code> 存在时序问题（页面身份状态还没就绪），请求没拿到正常数据。目前的应对是流程上兜底：<strong><code class="notranslate">fill</code> 结束后必须人工核对一次草稿箱份数与图片数</strong>，脚本输出只作参考。等后续批量分发跑得多了，再考虑加重试和校验把它彻底钉死——这种偶发问题，样本不够时不急着修，免得修错地方。</p>
+<h2>九、一个程序员类比：手动审批门，与用浮点数存主键</h2>
+<p>整条工作流的骨架，其实就是程序员熟悉的 <strong>CI/CD 审批门（manual approval gate）</strong>：</p>
+<p>脚本像 CI 流水线——拉代码、跑测试、打包构建产物、推到制品库，全自动，不知疲倦；但"部署到生产环境"这一步，流水线会<strong>停下来等人审批</strong>。点一下按钮，产物才上线。知乎这套流程一模一样：脚本负责到"构建产物（草稿）"为止，叶扬这个审批人过目之后，亲手点「发布」。</p>
+<p>为什么非要留这道门？因为生产事故和知乎发文有同一个性质：<strong>自动化省下的时间，抵不上一次不可逆错误的代价</strong>。CI 不会因为"多此一举"就失去价值——它把除最后一步外的所有重复劳动都吃掉了；这个脚本也一样，前六篇文章就省下两小时，留给人的工作只剩审稿和点按钮。</p>
+<p>而长 ID 那场血案，是另一个更古老的教训的浏览器版：<strong>永远不要用浮点数存标识符</strong>。数据库课上讲 DECIMAL 存金额、讲主键用整数或字符串，听着像陈旧常识；换个前端框架、换个 JSON 解析器，同一个坑照样有人掉进去——区别只在于这次掉进去的是知乎的页面，排查的人是叶扬。</p>
+<h2>十、吵架现场</h2>
+<p><strong>「知乎又没有公开的发文 API，折腾这套旁门左道值得吗？」</strong></p>
+<p>值得，原因恰恰是没有公开 API。官方不给正门，分发需求又是真实存在的，剩下的选择只有两个：纯手工，或者走"人操作浏览器"这条正路——CDP 注入的每一步都对应真人的真实操作（粘贴、点解析、自动保存），没有伪造任何协议字段、没有绕过任何安全校验（<code class="notranslate">_xsrf</code> 令牌照带）。这不是攻击接口，是把人的手指自动化。</p>
+<p><strong>「手工发三篇也就一小时，写脚本倒花了一晚上。」</strong></p>
+<p>算账要算总账。脚本是一次性投入、可复用的资产：第一批三篇跑通，后面五十多篇就是一条命令加一次审稿的事；中途发现的长 ID bug、浮条时序、链接变形，全沉淀进了代码和这份记录。手工发七十篇，是二十多个小时的纯消耗，而且格式问题每篇重来一遍。</p>
+<p><strong>「就不怕账号被封？」</strong></p>
+<p>风险控制正是整个设计的起点，不是事后的补丁：脚本永不点发布、不带频率轰炸、严格串行（一篇做完、核实完再开下一篇）、登录走浏览器原生通道。知乎服务器能观察到的，是"有人慢慢存了几篇草稿、之后逐篇手动发布"——这是正常用户的样子，不是脚本大军。</p>
+<h2>术语表</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>术语</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CDP（Chrome DevTools Protocol）</strong></td>
+<td>Chrome/Edge 的远程调试协议，HTTP 管标签页、WebSocket 发调试指令</td>
+</tr>
+<tr>
+<td><strong>Draft.js</strong></td>
+<td>Meta 开源的富文本编辑器框架，内容存于 JS 状态而非 DOM，知乎正文用它</td>
+</tr>
+<tr>
+<td><strong>contenteditable</strong></td>
+<td>HTML 属性，元素带它就能直接在页面上编辑，富文本编辑器的标准载体</td>
+</tr>
+<tr>
+<td><strong>DataTransfer</strong></td>
+<td>浏览器里承载拖拽/粘贴数据的对象，可放多种格式的内容</td>
+</tr>
+<tr>
+<td><strong>合成事件</strong></td>
+<td>用 JS 构造并派发的 DOM 事件；<code class="notranslate">isTrusted=false</code>，CDP 模拟的物理输入为 <code class="notranslate">true</code></td>
+</tr>
+<tr>
+<td><strong>2^53 / MAX_SAFE_INTEGER</strong></td>
+<td>JS 双精度浮点数能精确表示的整数上限（9007199254740991），超过即开始丢精度</td>
+</tr>
+<tr>
+<td><strong>_xsrf</strong></td>
+<td>防跨站请求伪造的令牌，知乎放在 cookie 里，写操作要回传给服务器</td>
+</tr>
+<tr>
+<td><strong>审批门</strong></td>
+<td>CI/CD 中流水线暂停、等人工批准才继续部署的环节</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h2>收尾</h2>
+<p>三篇文章存进知乎草稿箱、叶扬逐篇过目、亲手发布之后，这套"只到草稿为止"的自动化就算真正立住了。</p>
+<p>回头看，最费劲的没有一件是"写代码"本身：Draft.js 要靠粘贴喂、浮条只给八百毫秒、删除按钮的失灵一路追到 2^53——<strong>凡是页面行为和预期不符的时候，答案都在更下一层</strong>：先看 DOM，再看事件可信度，再看网络请求，最后看数据在传输中被什么规则改写过。这套排查顺序，比脚本本身更值钱。</p>
+<p>下一批分发的素材已经在排队。脚本还是那条铁规矩：<strong>它什么都干，除了最后那一下。</strong></p></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script><script src='/plugins/GmeekCast.js'></script>
+
+</html>
