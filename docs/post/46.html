@@ -159,6 +159,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>✅</td>
 </tr>
 <tr>
+<td>A05</td>
+<td><a href="/post/77.html">不碰发布按钮：用 CDP 把博客自动填进知乎草稿箱</a></td>
+<td>Draft.js 合成 paste、确认浮条竞态、2^53 长 ID 舍入血案、fetch DELETE 绕行、外链适配、只到草稿的安全边界</td>
+<td>✅</td>
+</tr>
+<tr>
 <td>候选</td>
 <td>本地 whisper.cpp 部署手记</td>
 <td>模型选型、显存、中文识别质量、批量转写</td>
@@ -174,6 +180,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li><strong>2026-09-19 · A00 系列总览</strong>：本文。</li>
 <li><strong>2026-09-21 · <a href="/post/66.html">A03 补档实战</a></strong>：飞书妙记补转 P02/P04/P27 三集；18,432 个零宽字符、无时间码 txt、跨 cue 切断；fix_subs.py 三轮扩五轮、规则约 200→约 500；一次性任务选型（不自建 ASR）；下游变现番外一/二＋C04 补十事。</li>
 <li><strong>2026-09-22 · <a href="/post/67.html">A04 记忆工程</a></strong>：旧 32 张卡全部停在 Bloom 第一层的诊断；五类深化卡（分界辨析/推理链填空/反方质询/类比破洞/题眼）；SQLite 三表真源＋genanki 渲染，全库 152 notes→246 cards；间隔重复从 SM-2 到 FSRS（S/D/R 三状态、FSRS-6 21 参数、个人复习史拟合参数）；复习失败回流。个人保留率数据待几个月真实复习后补。</li>
+<li><strong>2026-09-27 · <a href="/post/77.html">A05 知乎草稿自动化</a></strong>：CDP 9222 驱动独立 Edge profile；用 DataTransfer 合成 paste（只带 text/plain）把 Markdown 注入 Draft.js，抓「确认并解析」浮条约一秒上下的竞态窗口；★血案——十九位草稿 ID 越过 2^53−1，被前端 JSON.parse 舍入（该量级 ULP=256），删除与编辑链接全打向错误 ID 返回 404，绕行办法是取 API 响应原始文本、按 content_length 切块正则抠出真实 ID 再 fetch DELETE；外链转纯文本、相对路径死链改文字说明；铁律是脚本只到草稿、发布永远人来点。列表接口偶发返回空的毛刺未根治，靠人工核对兜底。</li>
 </ul>
 <h2>五、边界与读法</h2>
 <ul>
@@ -181,7 +188,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li>每篇独立可读，但按编号读体验最好——A03 的转写产物会直接接进 A01 的清洗规则，是同一条管线的上下游。</li>
 <li>叶扬是写前后端和数据库的程序员，类比默认面向同行；不写代码的读者记住每篇里那句大白话版即可，不影响主线。</li>
 </ul>
-<p>A04 已发布（<a href="/post/67.html">见此</a>）。下一篇待定：候选 <strong>本地 whisper.cpp 部署手记</strong>——等真有长期批量的转写需求再动手；以及几个月真实复习数据攒够之后，带个人保留率回来给 A04 补账。</p></div>
+<p>A05 已发布（<a href="/post/77.html">见此</a>）。下一篇待定：候选 <strong>本地 whisper.cpp 部署手记</strong>——等真有长期批量的转写需求再动手；几个月真实复习数据攒够之后，带个人保留率回来给 A04 补账。分发侧则按 A05 这套流程，把知乎其余文章逐系列填进草稿箱，仍由叶扬亲手发布。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
