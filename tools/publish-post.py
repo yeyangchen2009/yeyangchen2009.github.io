@@ -264,15 +264,20 @@ def main():
             title, portal_title, since, args.timeout, fh)
         log("双绿：文章 run {}，门户 run {}".format(article_id, portal_id), fh)
 
-        # 7) curl 验证
+        # 7) 验证：双绿后 CDN 传播有延迟、边缘可能对裸 URL 缓存 404——
+        #    带缓存绕过串并限时重试，不能一次 HEAD 失败即判失败。
         base = "https://{}.github.io".format(owner)
         post_url = "{}/post/{}.html".format(base, issue_no)
-        time.sleep(8)
-        if not http_ok(post_url):
-            raise RuntimeError("文章页未 200：" + post_url)
-        for url in imgs:
-            if not http_ok(base + url):
-                raise RuntimeError("图片未 200：" + url)
+        bust = "?t={}".format(int(time.time()))
+        targets = [post_url + bust] + [base + u + bust for u in imgs]
+        ok = False
+        for _ in range(8):
+            if all(http_ok(u) for u in targets):
+                ok = True
+                break
+            time.sleep(15)
+        if not ok:
+            raise RuntimeError("发布后验证未全部 200：" + ", ".join(targets))
         log("文章与图片全部 200：{}".format(post_url), fh)
         log("发布完成，用时 {:.0f} 秒".format(time.time() - t0), fh)
     finally:
