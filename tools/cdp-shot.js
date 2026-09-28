@@ -53,7 +53,7 @@ function parseArgs(argv) {
     }
     const withValue = new Set(['theme', 'theme-key', 'theme-value', 'scale', 'css',
         'css-match', 'browser', 'hash', 'eval', 'click', 'settle', 'wait', 'scheme',
-        'profile-dir', 'done-flag', 'proxy']);
+        'profile-dir', 'done-flag', 'proxy', 'shots', 'out-dir', 'prefix']);
     const o = { url, out, width: +w, height: +h, scale: 2, settle: 3500, wait: 1500,
         theme: 'light', 'theme-key': 'meek_theme', 'theme-value': 'dark' };
     for (let i = 4; i < argv.length; i++) {
@@ -64,6 +64,7 @@ function parseArgs(argv) {
         else if (key === 'full') o.full = true;
         else if (key === 'debug') o.debug = true;
         else if (key === 'headed') o.headed = true;
+        else if (key === 'preroll') o.preroll = true;
         else if (key === 'keep-open') o.keepOpen = true;
         else { console.error('未知选项: --' + key); process.exit(2); }
     }
@@ -144,6 +145,13 @@ function killBrowser(child) {
 
 async function main() {
     const opt = parseArgs(process.argv.slice(2));
+    if (opt.shots) {
+        // 值可以是 JSON 文件路径（推荐，避免命令行转义），也可以是内联 JSON
+        opt.shots = fs.existsSync(opt.shots)
+            ? JSON.parse(fs.readFileSync(opt.shots, 'utf8'))
+            : JSON.parse(opt.shots);
+        if (!Array.isArray(opt.shots)) throw new Error('--shots 必须是数组');
+    }
     const browser = resolveBrowser(opt.browser);
     const { child, port, profile, persistent } = await launchBrowser(browser, opt);
 
@@ -240,23 +248,71 @@ async function main() {
             console.log('body background:', await evalJs(`getComputedStyle(document.body).backgroundColor`));
         }
 
-        const params = { format: 'png', fromSurface: true };
-        if (clipRect) {
-            params.captureBeyondViewport = true;
-            params.clip = {
-                x: clipRect.x, y: clipRect.y,
-                width: Math.ceil(clipRect.width), height: Math.ceil(clipRect.height),
-                scale: 1,
-            };
-        } else if (opt.full) {
-            const m = await send('Page.getLayoutMetrics');
-            const c = m.cssContentSize || m.contentSize;
-            params.captureBeyondViewport = true;
-            params.clip = { x: 0, y: 0, width: Math.ceil(c.width), height: Math.ceil(c.height), scale: 1 };
+        const capture = async (rect, full) => {
+            const params = { format: 'png', fromSurface: true };
+            if (rect) {
+                params.captureBeyondViewport = true;
+                params.clip = {
+                    x: rect.x, y: rect.y,
+                    width: Math.ceil(rect.width), height: Math.ceil(rect.height),
+                    scale: 1,
+                };
+            } else if (full) {
+                const m = await send('Page.getLayoutMetrics');
+                const c = m.cssContentSize || m.contentSize;
+                params.captureBeyondViewport = true;
+                params.clip = { x: 0, y: 0, width: Math.ceil(c.width), height: Math.ceil(c.height), scale: 1 };
+            }
+            return await send('Page.captureScreenshot', params);
+        };
+        const writeShot = (data, file) => {
+            fs.writeFileSync(file, Buffer.from(data, 'base64'));
+            console.log('saved', file, fs.statSync(file).size, 'bytes');
+        };
+        const tsNow = () => {
+            const d = new Date();
+            return [d.getHours(), d.getMinutes(), d.getSeconds()]
+                .map(x => String(x).padStart(2, '0')).join(':');
+        };
+
+        if (opt.shots) {
+            // 多景模式：一次冷启动/导航/dark，逐 spec eval 取矩形连拍
+            if (opt.preroll) {
+                console.log('[' + tsNow() + '] preroll：全滚触发 lazy 后回顶');
+                await evalJs(`document.documentElement.style.scrollBehavior='auto'`);
+                await evalJs(`(async()=>{const H=document.body.scrollHeight;for(let y=0;y<=H;y+=380){window.scrollTo(0,y);await new Promise(r=>setTimeout(r,45));}window.scrollTo(0,0);})()`);
+                await sleep(300);
+            }
+            const outDir = opt['out-dir'] || path.dirname(opt.out);
+            const prefix = opt.prefix ? opt.prefix + '-' : '';
+            fs.mkdirSync(outDir, { recursive: true });
+            const failures = [];
+            for (const spec of opt.shots) {
+                console.log('[' + tsNow() + '] shot: ' + spec.name);
+                try {
+                    let rect = spec.rect || null;
+                    if (spec.eval) {
+                        const v = await evalJs(spec.eval);
+                        await sleep(spec.wait !== undefined ? +spec.wait : opt.wait);
+                        if (v && typeof v === 'object' && 'width' in v && 'height' in v) rect = v;
+                    } else {
+                        await sleep(spec.wait !== undefined ? +spec.wait : 0);
+                    }
+                    const res = await capture(rect, !!spec.full);
+                    writeShot(res.data, path.join(outDir, prefix + spec.name + '.png'));
+                } catch (e) {
+                    console.error('[' + tsNow() + '] shot ' + spec.name + ' 失败: ' + (e.message || e));
+                    failures.push(spec.name);
+                }
+            }
+            console.log('[' + tsNow() + '] 多景完成 ' +
+                (opt.shots.length - failures.length) + '/' + opt.shots.length +
+                (failures.length ? '，失败: ' + failures.join(', ') : ''));
+            if (failures.length) process.exitCode = 1;
+        } else {
+            const res = await capture(clipRect, opt.full);
+            writeShot(res.data, opt.out);
         }
-        const shot = await send('Page.captureScreenshot', params);
-        fs.writeFileSync(opt.out, Buffer.from(shot.data, 'base64'));
-        console.log('saved', opt.out, fs.statSync(opt.out).size, 'bytes');
 
         ws.close();
 
@@ -284,7 +340,7 @@ async function main() {
             if (!persistent) {
                 try { fs.rmSync(profile, { recursive: true, force: true }); } catch { /* ignore */ }
             }
-            process.exit(0);
+            process.exit(process.exitCode || 0);
         }, 300);
     }
 }

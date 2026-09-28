@@ -2,3 +2,5 @@ Temp/
 Temp-*.md
 drafts/
 tools/ui-hwnd-*.txt
+__pycache__/
+*.pyc
