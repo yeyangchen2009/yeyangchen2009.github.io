@@ -49,6 +49,10 @@ jobs:
       - name: Generate new html
         run: |
           cp -r ./* /opt/Gmeek/
+          # issue 增量构建（runOne）不执行 cleanFile、不会把 static 复制进 docs；
+          # docs 已由上面的 cp 从仓库带入（上次构建产物），在此把新 static 合并进去。
+          # 全量构建（workflow_dispatch/runAll）时 docs 尚不存在，跳过——由 cleanFile 复制。
+          if [ -d /opt/Gmeek/docs ]; then cp -r static/. /opt/Gmeek/docs/ && echo "merged static into existing docs"; fi
           cd /opt/Gmeek/
           python Gmeek.py ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }} --issue_number '${{ github.event.issue.number }}'
           cp -a /opt/Gmeek/docs ${{ github.workspace }} 
