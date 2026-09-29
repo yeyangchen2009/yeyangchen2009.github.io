@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>叶扬的博客</title><link>https://yeyangchen2009.github.io</link><description>我是叶扬，人生苦短，我用AI～</description><copyright>叶扬的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.com/yeyangchen2009.png</url><title>avatar</title><link>https://yeyangchen2009.github.io</link></image><lastBuildDate>Tue, 29 Sep 2026 13:13:08 +0000</lastBuildDate><managingEditor>叶扬的博客</managingEditor><ttl>60</ttl><webMaster>叶扬的博客</webMaster><item><title>中23｜韩愈辟佛、庶民佛教与会昌法难</title><link>https://yeyangchen2009.github.io/post/97.html</link><description>## 小白交底
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>叶扬的博客</title><link>https://yeyangchen2009.github.io</link><description>我是叶扬，人生苦短，我用AI～</description><copyright>叶扬的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.com/yeyangchen2009.png</url><title>avatar</title><link>https://yeyangchen2009.github.io</link></image><lastBuildDate>Tue, 29 Sep 2026 15:30:27 +0000</lastBuildDate><managingEditor>叶扬的博客</managingEditor><ttl>60</ttl><webMaster>叶扬的博客</webMaster><item><title>本地秒开，线上白屏半分钟：一个 docsify 草稿站的体检报告</title><link>https://yeyangchen2009.github.io/post/98.html</link><description>## 小白交底
+
+先把这一篇的来龙去脉摊开：
+
+1. 这是一起「**本地好好的，线上全白**」的性能事故——叶扬的 docsify 草稿审稿站，在自己电脑上秒开，部署到 GitHub Pages 之后，每个页面都要白屏 **36 到 46 秒**才露头。</description><guid isPermaLink="true">https://yeyangchen2009.github.io/post/98.html</guid><pubDate>Tue, 29 Sep 2026 15:29:48 +0000</pubDate></item><item><title>中23｜韩愈辟佛、庶民佛教与会昌法难</title><link>https://yeyangchen2009.github.io/post/97.html</link><description>## 小白交底
 
 先把这一篇要讲的摊开：
 

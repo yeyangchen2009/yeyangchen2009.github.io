@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script><script src='/plugins/GmeekPagefind.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="## 小白交底
+
+先把这一篇的来龙去脉摊开：
+
+1. 这是一起「**本地好好的，线上全白**」的性能事故——叶扬的 docsify 草稿审稿站，在自己电脑上秒开，部署到 GitHub Pages 之后，每个页面都要白屏 **36 到 46 秒**才露头。">
+<meta property="og:title" content="本地秒开，线上白屏半分钟：一个 docsify 草稿站的体检报告">
+<meta property="og:description" content="## 小白交底
+
+先把这一篇的来龙去脉摊开：
+
+1. 这是一起「**本地好好的，线上全白**」的性能事故——叶扬的 docsify 草稿审稿站，在自己电脑上秒开，部署到 GitHub Pages 之后，每个页面都要白屏 **36 到 46 秒**才露头。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/98.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>本地秒开，线上白屏半分钟：一个 docsify 草稿站的体检报告</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">本地秒开，线上白屏半分钟：一个 docsify 草稿站的体检报告</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/98" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h2>小白交底</h2>
+<p>先把这一篇的来龙去脉摊开：</p>
+<ol>
+<li>这是一起「<strong>本地好好的，线上全白</strong>」的性能事故——叶扬的 docsify 草稿审稿站，在自己电脑上秒开，部署到 GitHub Pages 之后，每个页面都要白屏 <strong>36 到 46 秒</strong>才露头。</li>
+<li>事情的导火索很小：叶扬发现自己要求过「把每篇文章的生产耗时记下来放到草稿站」，结果翻遍草稿站没找到——一查，之前承诺的「自动同步」压根没接上。</li>
+<li>补上同步之后顺手一审线上页面，这才发现站点在线上一直处于半瘫痪状态，而本地因为文件都在本机、秒开，这个问题藏了很久。</li>
+<li>最终的病根有点出人意料：不是网络断了，不是文件丢了，而是一个 <strong>3.3MB 的 JavaScript 文件被同步加载，像块大石头堵在站点启动的必经之路上</strong>。</li>
+<li>修复方案是前端的常规操作——按需动态加载。无图页面彻底不再碰这个大文件，当场秒开；含图页面先出文字，图表在后台慢慢就位。</li>
+</ol>
+<h2>一、起因：一篇「找不到」的日志</h2>
+<p>叶扬写博客有个习惯，每篇文章从开写到发布花了多少分钟，都记在仓库里的《文章计时日志.md》里：哪天几点开写、几点发布、串行流水线跑了多少秒，一条条都在。</p>
+<p>9 月 28 日，复盘一篇耗时偏久的文章时，叶扬提过一个要求：把这份计时日志也放到 docsify 草稿审稿站上去，方便横向对比。第二天叶扬真去翻了——侧边栏里什么都没有。</p>
+<p>一查，情况有点不好意思：当时只往草稿站放了那一篇复盘文章，侧边栏里确实写过一句「以后每篇自动归此」，可这个「自动」从来没有接上。同步脚本只管搬运草稿正文，根本不认识计时日志。中16 往后的耗时数据，全安安稳稳躺在仓库里，一份都没进站。</p>
+<p>欠了账就得还。叶扬给同步脚本加了个 <code class="notranslate">sync_process_docs()</code>：每次同步草稿时，把仓库里的计时日志一并复制到草稿站的 <code class="notranslate">process/</code> 目录，侧边栏自动挂上链接。以后再不用人惦记。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/review-white-screen.png"><img src="/screenshots/review-white-screen.png" alt="修复前的线上草稿站：页面一直白屏，只有右上角加载图标在转" style="max-width: 100%;"></a></p>
+<h2>二、案发现场：还以为是网络慢</h2>
+<p>补上同步，推送，等 GitHub Pages 部署完，叶扬打开线上地址验收——然后就看到了上面这张图。</p>
+<p>站点的外壳框架还在，右上角的加载小圆圈一直在转，正文区域全黑，什么都没有。一秒、五秒、十秒……一直等到快四十秒，页面才「唰」地一下整个冒出来。</p>
+<p>叶扬第一反应是：晚上网络高峰吧？GitHub Pages 在海外，慢一点正常。可是连着试了首页、计时日志、一篇旧草稿——<strong>每一个页面都是同样的四十秒白屏</strong>。如果只是网络延迟，不该这么整齐；整齐到每个页面都一样，说明堵点是每个页面都必须经过的同一段路。</p>
+<p>更有意思的是，同样这套文件，在自己电脑上起个本地服务打开，永远是秒开。本地与线上之间，一定有某个差异被漏掉了。</p>
+<h2>三、文件全都在，那页面在等什么</h2>
+<p>排查的第一步，是确认线上文件到底齐不齐。用 curl 把页面依赖的东西逐个点一遍：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>资源</th>
+<th>线上状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>index.html</td>
+<td>200</td>
+</tr>
+<tr>
+<td>lib/<a href="mailto:docsify@4.js">docsify@4.js</a>（站点框架）</td>
+<td>200</td>
+</tr>
+<tr>
+<td>lib/search.min.js（搜索插件）</td>
+<td>200</td>
+</tr>
+<tr>
+<td>lib/mermaid.min.js（图表库）</td>
+<td>200</td>
+</tr>
+<tr>
+<td>_sidebar.md（侧边栏数据）</td>
+<td>200</td>
+</tr>
+<tr>
+<td>README.md（首页内容）</td>
+<td>200</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>一个不少，全是 200。文件没丢，服务器也没装死。</p>
+<p>那就换个问法：浏览器拿到这些文件之后，<strong>到底执行到哪一步卡住了</strong>？叶扬用 CDP 连上浏览器，在页面里读 <code class="notranslate">performance</code> 的资源计时条目。结果很说明问题——</p>
+<ul>
+<li>docsify 框架和几个插件的文件<strong>确实都下载完了</strong>，耗时各一秒上下；</li>
+<li>但是，页面没有发出任何一个 docsify 本该发出的请求：<code class="notranslate">_sidebar.md</code> 没拉、<code class="notranslate">README.md</code> 也没拉。</li>
+</ul>
+<p>框架人已经到场，却站在门口一动不动，一声不吭。这说明它根本还没开始执行——<strong>有个东西排在它前面，把整条路占住了</strong>。</p>
+<p>这中间还排除过一个干扰项。草稿站挂在 GitHub Pages 的子路径 <code class="notranslate">/draft-review/</code> 下，叶扬在页面里手工 fetch 绝对路径 <code class="notranslate">/_sidebar.md</code>，拿到的是 404，一度以为是路由配置错了。可是换成 <code class="notranslate">/draft-review/_sidebar.md</code> 立刻是 200，再看资源条目里 docsify 框架自己一个请求都没发——文件路径的疑点就此洗清：不是找不到数据，是框架压根没上场。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/review-blocking-timeline.png"><img src="/screenshots/review-blocking-timeline.png" alt="浏览器加载时间线：3.3MB 图表库堵在 docsify 启动之前，白屏区间长达 36–46 秒" style="max-width: 100%;"></a></p>
+<h2>四、抓现行：一块 3.3MB 的大石头</h2>
+<p>占路的是谁，资源条目里只剩一个嫌疑人：<code class="notranslate">mermaid.min.js</code>——画流程图用的图表库，文件体积 <strong>3.3MB</strong>。</p>
+<p>先解释它为什么能把整个站点堵死。浏览器解析 HTML 是从上往下一行行走的，遇到普通的 <code class="notranslate">&lt;script src="..."&gt;</code> 标签，规矩是这样的：<strong>停下手头所有活，先把这个脚本文件下载回来、执行完，才允许继续往后解析</strong>。这是 JavaScript 诞生之初就定下的老规矩，因为脚本可能会改动页面，浏览器不敢自顾自往下解析，得先等这个脚本落地。</p>
+<p>草稿站当初的 HTML 里，图表库的标签恰好排在 docsify 前面：</p>
+<div class="highlight highlight-text-html-basic"><pre class="notranslate"><span class="pl-c">&lt;!-- mermaid 先于 docsify 加载，保证渲染时全局可用 --&gt;</span>
+<span class="pl-kos">&lt;</span><span class="pl-ent">script</span> <span class="pl-c1">src</span>="<span class="pl-s">lib/mermaid.min.js</span>"<span class="pl-kos">&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span>
+<span class="pl-kos">&lt;</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span>
+  <span class="pl-c">// ……docsify 的全部启动配置</span>
+<span class="pl-kos">&lt;/</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span>
+<span class="pl-kos">&lt;</span><span class="pl-ent">script</span> <span class="pl-c1">src</span>="<span class="pl-s">lib/docsify@4.js</span>"<span class="pl-kos">&gt;</span><span class="pl-kos">&lt;/</span><span class="pl-ent">script</span><span class="pl-kos">&gt;</span></pre></div>
+<p>在本地这不是事，读本机磁盘，3.3MB 转眼就到。可这个文件放在 GitHub Pages 上，实际下载速度是另一番光景。实测两次：</p>
+<pre lang="text" class="notranslate"><code class="notranslate">第一次：总耗时 36.25 秒，平均速度 92 KB/s
+第二次：总耗时 45.71 秒，平均速度 73 KB/s
+</code></pre>
+<p>看响应头，这是新加坡的 CDN 节点，大文件只跑到七八十 KB 每秒——像是节点压了速度，也可能是跨海链路拥塞，总之慢得很稳定。于是浏览器的执行路线就变成了：解析到图表库标签 → 停住，老老实实干等三四十秒 → 文件终于到齐 → docsify 这才获准启动 → 页面瞬间渲染。<strong>用户看到的白屏，就是这段干等的时间</strong>。而因为每个页面都要经过同一个 HTML 入口，所以每个页面都白得一样整齐。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/review-diagnosis-steps.png"><img src="/screenshots/review-diagnosis-steps.png" alt="诊断四步法：实拍抓现状、查资源条目、页内 fetch 对照、curl 测速定位" style="max-width: 100%;"></a></p>
+<h2>五、处方：让大文件「按需上班」</h2>
+<p>病根清楚了，处方也不复杂：<strong>既然不是每个页面都有图表，那就别让每个页面都背这块大石头</strong>。只有页面里真的嵌了 mermaid 代码块，才去把图表库请过来；而且请的方式改成动态加载，绝不再挡 docsify 的路。</p>
+<p>其实还有个更省事的修法：给那个 script 标签加一个 <code class="notranslate">defer</code> 属性，浏览器就会边解析边后台下载，等页面解析完再执行，白屏同样能消除。但叶扬选了更彻底的按需加载——<code class="notranslate">defer</code> 只是让下载不挡路，3.3MB 的流量却依旧每个页面在首次访问时都要照付，缓存一过期还得重来；而这个草稿站最常用的场景是<strong>手机审稿</strong>，五十多篇稿子里真正带图表的只有中系一部分。为一张根本不存在的图，让每台手机先扛三兆多，这账不划算。按需加载是把流量也一并省了。</p>
+<p>核心是一个十几行的 <code class="notranslate">ensureMermaid()</code>：</p>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">var</span> <span class="pl-s1">mermaidLoading</span> <span class="pl-c1">=</span> <span class="pl-c1">null</span><span class="pl-kos">;</span>
+<span class="pl-k">function</span> <span class="pl-en">ensureMermaid</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+  <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-smi">window</span><span class="pl-kos">.</span><span class="pl-c1">mermaid</span><span class="pl-kos">)</span> <span class="pl-k">return</span> <span class="pl-v">Promise</span><span class="pl-kos">.</span><span class="pl-en">resolve</span><span class="pl-kos">(</span><span class="pl-smi">window</span><span class="pl-kos">.</span><span class="pl-c1">mermaid</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+  <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s1">mermaidLoading</span><span class="pl-kos">)</span> <span class="pl-k">return</span> <span class="pl-s1">mermaidLoading</span><span class="pl-kos">;</span>      <span class="pl-c">// 已在加载中：复用同一份承诺</span>
+  <span class="pl-s1">mermaidLoading</span> <span class="pl-c1">=</span> <span class="pl-k">new</span> <span class="pl-v">Promise</span><span class="pl-kos">(</span><span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-s1">resolve</span><span class="pl-kos">,</span> <span class="pl-s1">reject</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-k">var</span> <span class="pl-s1">s</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">createElement</span><span class="pl-kos">(</span><span class="pl-s">'script'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-s1">s</span><span class="pl-kos">.</span><span class="pl-c1">src</span> <span class="pl-c1">=</span> <span class="pl-s">'lib/mermaid.min.js'</span><span class="pl-kos">;</span>
+    <span class="pl-s1">s</span><span class="pl-kos">.</span><span class="pl-en">onload</span> <span class="pl-c1">=</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+      <span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-smi">window</span><span class="pl-kos">.</span><span class="pl-c1">mermaid</span><span class="pl-kos">)</span> <span class="pl-s1">resolve</span><span class="pl-kos">(</span><span class="pl-smi">window</span><span class="pl-kos">.</span><span class="pl-c1">mermaid</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+      <span class="pl-k">else</span> <span class="pl-kos">{</span> <span class="pl-s1">mermaidLoading</span> <span class="pl-c1">=</span> <span class="pl-c1">null</span><span class="pl-kos">;</span> <span class="pl-s1">reject</span><span class="pl-kos">(</span><span class="pl-k">new</span> <span class="pl-v">Error</span><span class="pl-kos">(</span><span class="pl-s">'图表库加载异常'</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span> <span class="pl-kos">}</span>
+    <span class="pl-kos">}</span><span class="pl-kos">;</span>
+    <span class="pl-s1">s</span><span class="pl-kos">.</span><span class="pl-en">onerror</span> <span class="pl-c1">=</span> <span class="pl-k">function</span> <span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-s1">mermaidLoading</span> <span class="pl-c1">=</span> <span class="pl-c1">null</span><span class="pl-kos">;</span> <span class="pl-s1">reject</span><span class="pl-kos">(</span><span class="pl-k">new</span> <span class="pl-v">Error</span><span class="pl-kos">(</span><span class="pl-s">'网络请求失败'</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span> <span class="pl-kos">}</span><span class="pl-kos">;</span>
+    <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">head</span><span class="pl-kos">.</span><span class="pl-en">appendChild</span><span class="pl-kos">(</span><span class="pl-s1">s</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+  <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+  <span class="pl-k">return</span> <span class="pl-s1">mermaidLoading</span><span class="pl-kos">;</span>
+<span class="pl-kos">}</span></pre></div>
+<p>动态插进去的 <code class="notranslate">&lt;script&gt;</code> 标签不受老规矩约束：浏览器不会为它停下手头的解析，它下载完会自行执行——好在这个库只是把自己注册到全局、并不改动页面，与 docsify 并行互不干扰。docsify 该启动启动，页面该渲染渲染。</p>
+<p>含图表的页面，处理顺序也换了：先把图表代码块替换成一个占位提示——「图表库按需加载中，正文可先读」——然后在后台调用 <code class="notranslate">ensureMermaid()</code>，等大文件就位，再把每张图逐个渲染出来。加载失败也有交代，占位处会显示失败原因，而不是无限转圈。</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>打开任意页面<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span>页面里有&lt;<span class="pl-ent">br</span>/&gt;mermaid 代码块吗<span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">没有</span><span class="pl-k">|</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>永不下载图表库&lt;<span class="pl-ent">br</span>/&gt;docsify 直接启动：秒开<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">有</span><span class="pl-k">|</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>docsify 照常启动&lt;<span class="pl-ent">br</span>/&gt;文字与占位提示先出现<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>后台动态加载&lt;<span class="pl-ent">br</span>/&gt;mermaid.min.js 3.3MB<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span>加载结果<span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">成功</span><span class="pl-k">|</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>逐图渲染&lt;<span class="pl-ent">br</span>/&gt;正文阅读不受影响<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">失败</span><span class="pl-k">|</span> <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>占位处显示失败原因&lt;<span class="pl-ent">br</span>/&gt;可刷新重试<span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<h2>六、复查：该快的快，该等的明明白白</h2>
+<p>改完推送，等部署，再把线上页面逐个打开验收。</p>
+<p>首页和计时日志这类不含图表的页面，资源请求里<strong>根本不再出现 mermaid.min.js</strong>，打开即是完整页面，白屏彻底消失。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/review-fixed-home.png"><img src="/screenshots/review-fixed-home.png" alt="修复后的线上首页：页面即时完整呈现，不再有白屏等待" style="max-width: 100%;"></a></p>
+<p>含图表的中系稿子，表现是另一番合理景象：进来先读到完整文字，图表位置端端正正摆着占位提示，写明图表库正在加载；夜里节点宽松时二十秒上下图表就位，高峰时仍要三四十秒，安安静静渲染好。等待还在，但从「整页卡死、不知所谓」变成了「<strong>正文先读、图表稍后</strong>」，而且等待的原因对读者是透明的。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="/screenshots/review-placeholder.png"><img src="/screenshots/review-placeholder.png" alt="含图表的稿子：文字先完整呈现，图表处显示按需加载的占位提示" style="max-width: 100%;"></a></p>
+<h2>写在最后</h2>
+<p>这起事故最值得记取的一点，不是按需加载怎么写，而是它藏起来的方式：<strong>localhost 从来不等于生产环境。</strong></p>
+<p>本机读磁盘没有网络延迟，3.3MB 也是眨眼到，所有时序问题都被熨平了；一到线上，CDN 的速度限制把同步加载的代价原原本本放大出来。如果只凭本地预览就宣布「好了」，这个白屏可以一直藏下去。</p>
+<p>所以叶扬的博客流水线里一直挂着一条铁律：<strong>凡是没在线上真打开过、拍过首屏的页面，都不算完工</strong>。这次又是线上实拍立下的功——它先是抓到了计时日志的欠账，接着顺藤摸瓜，揪出了堵在路上四十秒的大石头。</p>
+<p>工具链越顺，人越容易把「本地通过」错当成「事情成了」。多走一步，到真实环境里亲手点开看一眼，常常就是这一步，把事故拦在读者之前。</p>
+<h2>术语表</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>词</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>docsify</td>
+<td>一个把 Markdown 文件直接渲染成文档网站的轻量框架，无需构建</td>
+</tr>
+<tr>
+<td>GitHub Pages</td>
+<td>GitHub 提供的静态网站托管，免费，背后用 CDN 分发</td>
+</tr>
+<tr>
+<td>CDN</td>
+<td>内容分发网络，把文件缓存到各地节点；不同节点对大文件可能有速度策略</td>
+</tr>
+<tr>
+<td>CDP</td>
+<td>Chrome DevTools Protocol，浏览器调试协议，可用来自动化操控页面、读取性能数据</td>
+</tr>
+<tr>
+<td>阻塞式脚本（同步加载）</td>
+<td>默认的 <code class="notranslate">&lt;script src&gt;</code> 会让浏览器暂停解析、下载并执行完该脚本才继续</td>
+</tr>
+<tr>
+<td>defer</td>
+<td>script 标签属性：文件后台下载、页面解析完再执行，不阻塞渲染，但首访流量照付</td>
+</tr>
+<tr>
+<td>动态加载</td>
+<td>用 JavaScript 临时创建 script 标签取文件，不阻塞页面解析与渲染</td>
+</tr>
+<tr>
+<td>mermaid</td>
+<td>用文本描述生成流程图、时序图的图表库，本站所用版本约 3.3MB</td>
+</tr>
+<tr>
+<td>performance 条目</td>
+<td>浏览器记录的每个资源下载耗时明细，可用 <code class="notranslate">performance.getEntriesByType('resource')</code> 读出</td>
+</tr>
+<tr>
+<td>按需加载</td>
+<td>资源只在真正用到时才下载，而非首屏一律拉取</td>
+</tr>
+<tr>
+<td>首屏</td>
+<td>页面打开后最先看到的区域；首屏性能直接决定读者的等待体感</td>
+</tr>
+<tr>
+<td>计时日志</td>
+<td>叶扬仓库里记录每篇文章开写、发布耗时的文档，现已自动同步到草稿站</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script><script src='/plugins/GmeekCast.js'></script>
+
+</html>
