@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://yeyangchen2009.github.io/post/38.html">
 <meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
 <title>B05｜读懂印刷厂值班日志：GitHub Actions 的三种点火、全量与增量、红叉怎么查</title>
-<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
 
 
 </head>
@@ -41,17 +41,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     body {padding: 8px;}
     .postTitle{font-size:24px;}
 }
-.copy-feedback {
-    display: none;
-    position: absolute;
-    top: 10px;
-    right: 50px;
-    color: var(--color-fg-on-emphasis);
-    background-color: var(--color-fg-muted);
-    border-radius: 3px;
-    padding: 5px 8px;
-    font-size: 12px;
-}
+
 </style>
 
 
@@ -105,37 +95,42 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>Actions 的剧本是仓库里的一个 YAML 文件，路径固定在 <code class="notranslate">.github/workflows/</code>。Gmeek 一键安装时会自动放好，名字就叫 <code class="notranslate">Gmeek.yml</code>，全文 95 行，不长：</p>
 <p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b05-workflow-yml.png"><img src="/screenshots/b05-workflow-yml.png" alt="GitHub 暗色页面打开 .github/workflows/Gmeek.yml，显示 on 下三个触发器、jobs.build 与 if 守卫条件" style="max-width: 100%;"></a></p>
 <p>叶扬挑关键行翻译成人话：</p>
-<div class="highlight highlight-source-yaml"><pre class="notranslate"><span class="pl-ent">on</span>:
-  <span class="pl-ent">workflow_dispatch</span>:          <span class="pl-c"><span class="pl-c">#</span> ① 允许手动点 Run workflow</span>
-  <span class="pl-ent">issues</span>:
-    <span class="pl-ent">types</span>: <span class="pl-s">[opened, edited]    </span><span class="pl-c"><span class="pl-c">#</span> ② issue 新建或被编辑时触发</span>
-  <span class="pl-ent">schedule</span>:
-    - <span class="pl-ent">cron</span>: <span class="pl-s"><span class="pl-pds">"</span>0 16 * * *<span class="pl-pds">"</span></span>      <span class="pl-c"><span class="pl-c">#</span> ③ 国际标准时间每天 16:00 = 北京零点</span></pre></div>
+<pre lang="yaml" class="notranslate"><code class="notranslate">on:
+  workflow_dispatch:          # ① 允许手动点 Run workflow
+  issues:
+    types: [opened, edited]    # ② issue 新建或被编辑时触发
+  schedule:
+    - cron: "0 16 * * *"      # ③ 国际标准时间每天 16:00 = 北京零点
+</code></pre>
 <p><code class="notranslate">on:</code> 就是点火条件清单。注意它<strong>只监听 opened 和 edited</strong>——加标签（labeled）、关闭（closed）、发评论（issue_comment）、push 代码，统统不在清单上。这一条请先存进脑子，第三章会反复用到。</p>
 <p>再看作业头上的守卫：</p>
-<div class="highlight highlight-source-yaml"><pre class="notranslate"><span class="pl-ent">if</span>: <span class="pl-s">${{ github.event.repository.owner.id == github.event.sender.id</span>
-       <span class="pl-s">|| github.event_name == 'schedule' }}</span></pre></div>
+<pre lang="yaml" class="notranslate"><code class="notranslate">if: ${{ github.event.repository.owner.id == github.event.sender.id
+       || github.event_name == 'schedule' }}
+</code></pre>
 <p>意思是：<strong>只有仓库主人自己触发的运行才放行</strong>，定时触发无条件放行。这条守卫防的是 fork 与陌生人——别人给你的仓库提 issue，不会白白燃起一台虚拟机。这也是为什么 Gmeek 要求用自己的账号建仓库，而不是在别人仓库里投稿。</p>
 <p>后面的 <code class="notranslate">permissions: write-all</code> 是作业的工牌：允许它往仓库推代码、部署 Pages。两个作业的关系是：</p>
-<div class="highlight highlight-source-yaml"><pre class="notranslate"><span class="pl-ent">jobs</span>:
-  <span class="pl-ent">build</span>:    <span class="pl-s">{ name: Generate blog, runs-on: ubuntu-24.04, ... }</span>
-  <span class="pl-ent">deploy</span>:   <span class="pl-s">{ needs: build, ... }   </span><span class="pl-c"><span class="pl-c">#</span> 必须等 build 成功才开工</span></pre></div>
+<pre lang="yaml" class="notranslate"><code class="notranslate">jobs:
+  build:    { name: Generate blog, runs-on: ubuntu-24.04, ... }
+  deploy:   { needs: build, ... }   # 必须等 build 成功才开工
+</code></pre>
 <p><code class="notranslate">needs: build</code> 决定了那个经典画面：<strong>build 红了，deploy 直接变灰（skipped）</strong>，第六章会亲眼见到。</p>
 <h2>三、三种点火，两种印法：runAll 与 runOne</h2>
 <p>这是全篇的核心。三种点火方式最终只汇入两条印刷路线，先看图（本博客的 mermaid 运行时实时渲染）：</p>
-<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
-<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
-    <span class="pl-ent">T</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>① issues：发布或编辑文章&lt;<span class="pl-ent">br</span>/&gt;② workflow_dispatch：手动 Run workflow&lt;<span class="pl-ent">br</span>/&gt;③ schedule：每天定时一次<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>issue_number&lt;<span class="pl-ent">br</span>/&gt;是空串吗？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
-    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"非空（①）"</span><span class="pl-k">|</span> <span class="pl-ent">ONE</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>runOne 增量&lt;<span class="pl-ent">br</span>/&gt;只重建这一篇 + 列表/feed<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"空（②③ 或首次建站）"</span><span class="pl-k">|</span> <span class="pl-ent">ALL</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>runAll 全量&lt;<span class="pl-ent">br</span>/&gt;清空目录，遍历全部文章<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">ONE</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>build 作业：装环境、生成 HTML&lt;<span class="pl-ent">br</span>/&gt;git 提交、打包 artifact<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">ALL</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span>
-    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">成功才放行</span><span class="pl-k">|</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>deploy 作业：发布到 GitHub Pages<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">W</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>网页上线<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">ONE</span> <span class="pl-k">-.</span> <span class="pl-s">沿用旧快照：改配置不生效、关闭只打印</span> <span class="pl-k">.-&gt;</span> <span class="pl-ent">TIP</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>这些变化要等全量：改 config · Pin/Close · 评论数<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">ALL</span> <span class="pl-k">-.</span> <span class="pl-s">定时是安全网：计划北京零点，实测排队到凌晨</span> <span class="pl-k">.-&gt;</span> <span class="pl-ent">TIP</span></pre></div>
+<pre lang="mermaid" class="notranslate"><code class="notranslate">%%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'15px'}}}%%
+flowchart TD
+    T["① issues：发布或编辑文章&lt;br/&gt;② workflow_dispatch：手动 Run workflow&lt;br/&gt;③ schedule：每天定时一次"] --&gt; G{"issue_number&lt;br/&gt;是空串吗？"}
+    G --&gt;|"非空（①）"| ONE["runOne 增量&lt;br/&gt;只重建这一篇 + 列表/feed"]
+    G --&gt;|"空（②③ 或首次建站）"| ALL["runAll 全量&lt;br/&gt;清空目录，遍历全部文章"]
+    ONE --&gt; B["build 作业：装环境、生成 HTML&lt;br/&gt;git 提交、打包 artifact"]
+    ALL --&gt; B
+    B --&gt;|成功才放行| D["deploy 作业：发布到 GitHub Pages"]
+    D --&gt; W["网页上线"]
+    ONE -. 沿用旧快照：改配置不生效、关闭只打印 .-&gt; TIP["这些变化要等全量：改 config · Pin/Close · 评论数"]
+    ALL -. 定时是安全网：计划北京零点，实测排队到凌晨 .-&gt; TIP
+</code></pre>
 <p>工作流把触发它的那个 issue 编号通过命令行参数传给 Gmeek 主程序：</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate">python Gmeek.py <span class="pl-smi">$TOKEN</span> <span class="pl-smi">$REPO</span> --issue_number <span class="pl-s"><span class="pl-pds">'</span>${{ github.event.issue.number }}<span class="pl-pds">'</span></span></pre></div>
+<pre lang="bash" class="notranslate"><code class="notranslate">python Gmeek.py $TOKEN $REPO --issue_number '${{ github.event.issue.number }}'
+</code></pre>
 <p>而主程序的岔路口写得明明白白（见 <a href="https://github.com/Meekdai/Gmeek/blob/main/Gmeek.py#L457-L476">Gmeek.py 第 457–476 行</a>）：</p>
 <ul>
 <li><strong>没有 blogBase.json</strong>（首次建站）：不管谁来，<code class="notranslate">runAll</code> 全量；</li>
@@ -297,7 +292,7 @@ if("09/13/2026"!=""){
 </script></div>
 </body>
 <script>
-var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
 var utterancesLoad=0;
 
 let themeSettings={
@@ -371,70 +366,7 @@ function iFrameLoading(){
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const createClipboardHTML = (codeContent, additionalClasses = '') => `
-        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
-        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
-            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
-                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
-                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
-            </clipboard-copy>
-            <div class="copy-feedback">Copied!</div>
-        </div>
-    `;
 
-    const handleCodeElements = (selector = '') => {
-        document.querySelectorAll(selector).forEach(codeElement => {
-            const codeContent = codeElement.innerHTML;
-            const newStructure = document.createElement('div');
-            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
-            newStructure.innerHTML = createClipboardHTML(codeContent);
-
-            const parentElement = codeElement.parentElement;
-            if (selector.includes('highlight')) {
-                parentElement.insertBefore(newStructure, codeElement.nextSibling);
-                parentElement.removeChild(codeElement);
-            } else {
-                parentElement.parentElement.replaceChild(newStructure, parentElement);
-            }
-        });
-    };
-
-    handleCodeElements('pre.notranslate > code.notranslate');
-    handleCodeElements('div.highlight > pre.notranslate');
-
-    let currentFeedback = null;
-    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
-        copyButton.addEventListener('click', () => {
-            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = codeContent;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempTextArea);
-
-            const copyIcon = copyButton.querySelector('.octicon-copy');
-            const checkIcon = copyButton.querySelector('.octicon-check');
-            const copyFeedback = copyButton.nextElementSibling;
-
-            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
-            currentFeedback = copyFeedback;
-
-            copyIcon.classList.add('d-none');
-            checkIcon.classList.remove('d-none');
-            copyFeedback.style.display = 'block';
-            copyButton.style.borderColor = 'var(--color-success-fg)';
-
-            setTimeout(() => {
-                copyIcon.classList.remove('d-none');
-                checkIcon.classList.add('d-none');
-                copyFeedback.style.display = 'none';
-                copyButton.style.borderColor = '';
-            }, 2000);
-        });
-    });
-});
 
 </script>
 <script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script><script src='/plugins/GmeekCast.js'></script>
