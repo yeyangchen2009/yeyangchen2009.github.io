@@ -123,41 +123,28 @@ def _parse_iso(s):
     return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
 
-def wait_runs(title, portal_run_title, since, timeout, fh):
-    """限时轮询文章 run 与门户 run，不用 gh run watch。
-    since：只认该时刻之后创建的 run（防误认历史同名 run）。"""
+def wait_run_single(run_title, since, timeout, fh, what):
+    """限时等单个 run 成功，不用 gh run watch。
+    门户与文章必须严格串行：两个 Pages deploy 并行会互相覆盖
+    （后完成的部署顶掉前一个），两个 git push 并行还会因冲突丢提交。"""
     deadline = time.time() + timeout
-    article_ok = portal_ok = False
-    article_id = portal_id = None
+    run_id = None
     while time.time() < deadline:
         r = run(["gh", "run", "list", "--workflow=build Gmeek", "--limit", "10",
                  "--json", "databaseId,status,conclusion,displayTitle,createdAt"])
         for it in json.loads(r.stdout or "[]"):
             if _parse_iso(it["createdAt"]) < since:
                 continue
-            if it["displayTitle"] == title:
-                article_id = it["databaseId"]
+            if it["displayTitle"] == run_title:
+                run_id = it["databaseId"]
                 if it["conclusion"] == "success":
-                    article_ok = True
-                elif it["conclusion"] == "failure":
-                    raise RuntimeError("文章构建失败，run {}（gh run view {}）".format(
-                        it["databaseId"], it["databaseId"]))
-            if portal_run_title and it["displayTitle"] == portal_run_title:
-                portal_id = it["databaseId"]
-                if it["conclusion"] == "success":
-                    portal_ok = True
-                elif it["conclusion"] == "failure":
-                    raise RuntimeError("门户构建失败，run {}".format(it["databaseId"]))
-        need_article = not article_ok
-        need_portal = bool(portal_run_title) and not portal_ok
-        if not need_article and not need_portal:
-            return article_id, portal_id
-        log("等待构建… 文章 {}/门户 {}（run {}/{}）".format(
-            "✓" if article_ok else "…", "✓" if portal_ok else "…",
-            article_id, portal_id), fh)
+                    return run_id
+                if it["conclusion"] == "failure":
+                    raise RuntimeError("{}构建失败，run {}（gh run view {}）".format(
+                        what, run_id, run_id))
+        log("等待{}构建…（run {}）".format(what, run_id), fh)
         time.sleep(20)
-    raise TimeoutError("等待构建超过 {}s，最后状态 文章 run={}、门户 run={}".format(
-        timeout, article_id, portal_id))
+    raise TimeoutError("等待{}构建超过 {}s，最后 run={}".format(what, timeout, run_id))
 
 
 def main():
@@ -235,9 +222,31 @@ def main():
         issue_no = int(m.group(1))
         log("已建 issue #{}：{}".format(issue_no, issue_url), fh)
 
-        # 5) 门户并行打勾（门户构建与文章构建并行）
-        portal_title = None
+        # 5) 先等文章构建成功。门户绝不能与之并行：两个 Pages deploy
+        #    并行会互相覆盖（后完成的顶掉前一个），两个 git push 并行
+        #    还会因冲突丢提交（2026-09-29 中18 事故的根因）。
+        article_id = wait_run_single(title, since, args.timeout, fh, "文章")
+        log("文章构建成功：run {}".format(article_id), fh)
+
+        # 6) 验证文章与图片 200。双绿后 CDN 传播有延迟、边缘可能对裸 URL
+        #    缓存 404——带缓存绕过串并限时重试，不能一次 HEAD 失败即判失败。
+        base = "https://{}.github.io".format(owner)
+        post_url = "{}/post/{}.html".format(base, issue_no)
+        bust = "?t={}".format(int(time.time()))
+        targets = [post_url + bust] + [base + u + bust for u in imgs]
+        ok = False
+        for _ in range(8):
+            if all(http_ok(u) for u in targets):
+                ok = True
+                break
+            time.sleep(15)
+        if not ok:
+            raise RuntimeError("发布后验证未全部 200：" + ", ".join(targets))
+        log("文章与图片全部 200：{}".format(post_url), fh)
+
+        # 7) 文章确认上线后，再串行触发门户打勾，并等门户构建成功。
         if not args.no_portal:
+            portal_since = datetime.now(timezone.utc) - timedelta(seconds=15)
             hook = importlib.import_module("portal_hooks." + args.series)
             portal_issue = hook.PORTAL_ISSUE
             pr = run(["gh", "issue", "view", str(portal_issue),
@@ -252,33 +261,14 @@ def main():
                       "--body-file", portal_file])
             if er.returncode != 0:
                 raise RuntimeError("门户编辑失败：" + er.stderr.strip())
-            portal_title = None  # 门户 run 的 displayTitle 需在下方识别
-            log("门户 #{} 已更新（{}），与文章构建并行".format(portal_issue, note), fh)
-            # 门户 issue 的 displayTitle 用其标题，取一次
+            log("门户 #{} 已更新（{}）".format(portal_issue, note), fh)
             vr = run(["gh", "issue", "view", str(portal_issue),
                       "--json", "title", "--jq", ".title"])
             portal_title = vr.stdout.strip()
+            portal_id = wait_run_single(
+                portal_title, portal_since, args.timeout, fh, "门户")
+            log("门户构建成功：run {}".format(portal_id), fh)
 
-        # 6) 限时轮询双绿
-        article_id, portal_id = wait_runs(
-            title, portal_title, since, args.timeout, fh)
-        log("双绿：文章 run {}，门户 run {}".format(article_id, portal_id), fh)
-
-        # 7) 验证：双绿后 CDN 传播有延迟、边缘可能对裸 URL 缓存 404——
-        #    带缓存绕过串并限时重试，不能一次 HEAD 失败即判失败。
-        base = "https://{}.github.io".format(owner)
-        post_url = "{}/post/{}.html".format(base, issue_no)
-        bust = "?t={}".format(int(time.time()))
-        targets = [post_url + bust] + [base + u + bust for u in imgs]
-        ok = False
-        for _ in range(8):
-            if all(http_ok(u) for u in targets):
-                ok = True
-                break
-            time.sleep(15)
-        if not ok:
-            raise RuntimeError("发布后验证未全部 200：" + ", ".join(targets))
-        log("文章与图片全部 200：{}".format(post_url), fh)
         log("发布完成，用时 {:.0f} 秒".format(time.time() - t0), fh)
     finally:
         if fh:
