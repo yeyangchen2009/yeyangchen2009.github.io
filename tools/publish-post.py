@@ -167,7 +167,7 @@ def main():
         meta, body = parse_frontmatter(text)
         title = args.title or meta.get("title") or os.path.basename(args.draft)
         labels = (args.labels.split(",") if args.labels else meta.get("tags", []))
-        series_index = int(meta.get("series_index", "0"))
+        series_index = int(meta.get("series_index") or "0")
         if not title or not labels or (not args.no_portal and not series_index):
             ap.error("缺 title/labels/series_index（frontmatter 是否齐全？）")
 
