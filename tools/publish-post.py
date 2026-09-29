@@ -34,6 +34,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ---- 裸他：逐字符枚举，豁免按「覆盖该位置」判定，防裸子串误判 ----
 TA_EXEMPT = ["其他", "自他", "依他起", "他力", "他日", "多罗那他", "别人"]
 
+# ---- 中文线名 → hook 模块名；Windows 命令行传中文可能乱码，首选直接传拼音 ----
+SERIES_HOOK = {"中": "zhong"}
+
 # ---- mermaid 暗色 init（若将来要校验）----
 IMG_RE = re.compile(r"!\[[^\]]*\]\((/screenshots/[^)\s]+)\)")
 
@@ -150,7 +153,8 @@ def wait_run_single(run_title, since, timeout, fh, what):
 def main():
     ap = argparse.ArgumentParser(description="一键发布博客文章")
     ap.add_argument("draft")
-    ap.add_argument("--series", required=True, help="门户 hook 名，如 zhong")
+    ap.add_argument("--series", required=True,
+                    help="门户 hook 名，如 zhong（也接受中文线名「中」）")
     ap.add_argument("--title")
     ap.add_argument("--labels", help="逗号分隔；默认 frontmatter tags")
     ap.add_argument("--no-portal", action="store_true")
@@ -247,7 +251,17 @@ def main():
         # 7) 文章确认上线后，再串行触发门户打勾，并等门户构建成功。
         if not args.no_portal:
             portal_since = datetime.now(timezone.utc) - timedelta(seconds=15)
-            hook = importlib.import_module("portal_hooks." + args.series)
+            hook_name = SERIES_HOOK.get(args.series, args.series)
+            try:
+                hook = importlib.import_module("portal_hooks." + hook_name)
+            except ModuleNotFoundError:
+                hooks_dir = os.path.join(os.path.dirname(__file__), "portal_hooks")
+                available = [f[:-3] for f in os.listdir(hooks_dir)
+                             if f.endswith(".py") and not f.startswith("__")]
+                raise RuntimeError(
+                    "找不到门户 hook「{}」（可用：{}）。--series 请传 hook 名"
+                    "（如 zhong）；Windows 命令行传中文易乱码".format(
+                        args.series, "、".join(available)))
             portal_issue = hook.PORTAL_ISSUE
             pr = run(["gh", "issue", "view", str(portal_issue),
                       "--json", "body", "--jq", ".body"])
