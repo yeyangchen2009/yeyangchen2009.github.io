@@ -150,9 +150,11 @@ def split_frontmatter(text):
 # --- 导入后文档块解析 ---
 
 # 按文档顺序匹配：导入产生的占位图块 / mermaid 生成的 pre 块
+# pre 带 lang：飞书不认识 mermaid 语言，```mermaid 围栏被映射成 lang="Plaintext"；
+# 而正文里讲解白板用的 HTML 示例围栏是 lang="HTML"，借此区分、避免误抓示例块。
 RE_DOC_BLOCK = re.compile(
     r'<img id="([^"]+)"[^>]*?name="default\.png"[^>]*?/>'
-    r'|<pre id="([^"]+)"[^>]*><code>(.*?)</code></pre>', re.S)
+    r'|<pre id="([^"]+)"[^>]*lang="([^"]*)"[^>]*><code>(.*?)</code></pre>', re.S)
 
 
 def parse_doc_blocks(content):
@@ -162,9 +164,10 @@ def parse_doc_blocks(content):
         if m.group(1):
             img_ids.append(m.group(1))
         else:
-            code = m.group(3)
-            # 只认 mermaid 生成的代码块（含 init 或 flowchart 等关键字）
-            if ('%%{init' in code) or re.search(r'flowchart\s+(TD|LR|TB)', code):
+            lang, code = m.group(3), m.group(4)
+            # 只认被飞书降级成 Plaintext 的 mermaid 块（含 init 或 flowchart 关键字）
+            if lang == 'Plaintext' and (
+                    '%%{init' in code or re.search(r'flowchart\s+(TD|LR|TB)', code)):
                 pre_ids.append(m.group(2))
     return img_ids, pre_ids
 
@@ -268,7 +271,10 @@ def main(argv):
         return 1
     status = lark('auth', 'status', expect_ok=False)
     user = status.get('identities', {}).get('user', {})
-    if user.get('tokenStatus') != 'valid':
+    # token 状态：valid/ready 正常；needs_refresh 仍 available，
+    # lark-cli 会在下一次用户 API 调用时自动刷新，同样放行。
+    utoken = user.get('tokenStatus') or user.get('status')
+    if not user.get('available') or utoken not in ('valid', 'ready', 'needs_refresh'):
         print('lark-cli 用户身份无效，请先运行 lark-cli auth login')
         return 2
     sid = ensure_space()
