@@ -4,3 +4,5 @@ drafts/
 tools/ui-hwnd-*.txt
 __pycache__/
 *.pyc
+tools/.feishu.env
+tools/.feishu-state.json
