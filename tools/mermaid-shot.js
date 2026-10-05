@@ -41,25 +41,56 @@ function buildUrl(code, width) {
   return `https://mermaid.ink/img/pako:${b64}?type=png&width=${width}&bgColor=0d1117`;
 }
 
+const REQ_TIMEOUT_MS = 30000; // 单次请求整体超时；mermaid.ink 偶发长时间不响应
+
 function download(url, redirects) {
   return new Promise((resolve, reject) => {
-    https.get(url, { headers: { 'User-Agent': 'mermaid-shot' } }, (res) => {
+    const req = https.get(url, { headers: { 'User-Agent': 'mermaid-shot' } }, (res) => {
       if ([301, 302, 303, 307, 308].includes(res.statusCode)) {
-        if (redirects <= 0) return reject(new Error('too many redirects'));
+        if (redirects <= 0) {
+          clearTimeout(timer);
+          return reject(new Error('too many redirects'));
+        }
         res.resume();
+        clearTimeout(timer);
         return resolve(download(new URL(res.headers.location, url).href, redirects - 1));
       }
       if (res.statusCode !== 200) {
         let body = '';
         res.on('data', (c) => (body += c));
-        res.on('end', () => reject(new Error(`HTTP ${res.statusCode}: ${body.slice(0, 200)}`)));
+        res.on('end', () => {
+          clearTimeout(timer);
+          reject(new Error(`HTTP ${res.statusCode}: ${body.slice(0, 200)}`));
+        });
         return;
       }
       const chunks = [];
       res.on('data', (c) => chunks.push(c));
-      res.on('end', () => resolve(Buffer.concat(chunks)));
-    }).on('error', reject);
+      res.on('end', () => {
+        clearTimeout(timer);
+        resolve(Buffer.concat(chunks));
+      });
+    });
+    // 连接挂起 / 服务不回数据：到点强制销毁、拒绝，避免无限等待
+    const timer = setTimeout(() => req.destroy(new Error('request timeout')), REQ_TIMEOUT_MS);
+    req.on('error', (e) => {
+      clearTimeout(timer);
+      reject(e);
+    });
   });
+}
+
+async function downloadWithRetry(url, tries = 3) {
+  let last;
+  for (let i = 0; i < tries; i++) {
+    try {
+      return await download(url, 3);
+    } catch (e) {
+      last = e;
+      console.log(`  第 ${i + 1} 次失败（${e.message}），${i + 1 < tries ? '重试' : '放弃'}`);
+    }
+  }
+  throw last;
 }
 
 async function main() {
@@ -72,7 +103,7 @@ async function main() {
   fs.mkdirSync(outdir, { recursive: true });
   for (const item of spec) {
     const url = buildUrl(item.code, item.width || 900);
-    const buf = await download(url, 3);
+    const buf = await downloadWithRetry(url);
     const dest = path.join(outdir, item.name + '.png');
     fs.writeFileSync(dest, buf);
     console.log(`saved ${dest} ${buf.length} bytes`);

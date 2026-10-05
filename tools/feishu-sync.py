@@ -15,9 +15,18 @@
 
 源稿图片约定：正文写  ![alt](/screenshots/x.png)，本地对应 static/screenshots/x.png。
 
+两种同步模式：
+  · 原地更新（默认）：同名文档已存在时，用 overwrite 整篇写入「同一个文档」，
+    链接（URL/token）永久不变——适合要把链接长期分享出去的教程。飞书 markdown
+    会把本地图片自动直传、把 mermaid 围栏自动渲染成白板，无需块级后处理。
+    首次发布则用 docs +create（可直接挂到 --parent 指定的 wiki 节点下）。
+  · --rebuild：旧的「删除同名节点 → drive import 重建 → 块级补图/补白板」，
+    会产生新链接，仅在需要飞书 import 排版引擎时使用。
+
 用法：
   python tools/feishu-sync.py <a.md> [b.md ...]
-  python tools/feishu-sync.py --space "知识库名" <a.md>
+  python tools/feishu-sync.py --space "知识库名" --parent <wiki节点token> <a.md>
+  python tools/feishu-sync.py --rebuild <a.md>
 """
 
 import io
@@ -52,6 +61,7 @@ def load_env():
 
 ENV = load_env()
 SPACE_NAME = ENV.get('FEISHU_SPACE_NAME', DEFAULT_SPACE)
+PARENT_NODE = ''  # 非空时新同步的节点挂到该 wiki 节点下
 
 
 def _find_node_runner():
@@ -206,14 +216,123 @@ def block_replace(doc, block_id, xml):
          '--block-id', block_id, '--content', xml)
 
 
-def sync_file(sid, path):
+# --- 原地更新模式（默认）：保持文档链接不变 ---
+
+DOCX_URL_BASE = 'https://ccn0rxnhnvug.feishu.cn/docx/'
+# 源稿用站点绝对路径引图（/screenshots/x.png）；飞书 markdown 用 @相对路径直传
+RE_LARK_IMG = re.compile(r'\]\(/screenshots/')
+
+
+def _strip_mmd_br(m):
+    """mermaid 围栏块内：<br/> 换成空格。飞书白板解析器不认 mermaid 标签里
+    的 <br/>（实测保留会 Whiteboard content parse failed、整块白板丢失）。"""
+    s = m.group(0)
+    return (s.replace('<br />', ' ').replace('<br/>', ' ')
+             .replace('<br>', ' '))
+
+
+def to_lark_markdown(body):
+    """源稿 → 飞书 markdown：
+      1. 图片路径 (/screenshots/x.png) 换成飞书可直传的相对路径
+         (@./static/screenshots/x.png)；
+      2. mermaid 围栏内 <br/> 换成空格（飞书白板解析要求）。
+    mermaid 的 init 主题指令保留——飞书会忽略它、强制白底，正好与飞书白底
+    页面协调（init 在 GitHub 等深色场景仍生效）。"""
+    body = RE_LARK_IMG.sub(r'](@./static/screenshots/', body)
+    body = RE_MMD_FENCE.sub(_strip_mmd_br, body)
+    return body
+
+
+def find_node(sid, title):
+    """在目标空间（限定父节点时只查其下）按标题找 wiki 节点，找不到返回 None。
+
+    先精确匹配；再用「前缀」兜底：飞书在 overwrite 后可能用正文第一个 H1
+    覆盖 wiki 节点标题、丢掉副标题（如「X：副标题」被截成「X」），导致与
+    frontmatter title 不完全相等。"""
+    list_args = ['wiki', '+node-list', '--space-id', sid, '--page-all']
+    if PARENT_NODE:
+        list_args += ['--parent-node-token', PARENT_NODE]
+    nodes = lark(*list_args).get('nodes', [])
+    for n in nodes:
+        if n.get('title') == title:
+            return n
+    for n in nodes:
+        t = n.get('title', '')
+        if t and len(t) >= 4 and (title.startswith(t) or t.startswith(title)):
+            print('  标题按前缀匹配：wiki「%s」≈ 源稿「%s」' % (t, title))
+            return n
+    return None
+
+
+def _write_temp_md(body):
+    tf = tempfile.NamedTemporaryFile('w', suffix='.md', delete=False,
+                                     dir=os.path.join(REPO, 'Temp'),
+                                     encoding='utf-8')
+    tf.write(body)
+    tf.close()
+    return tf.name
+
+
+def sync_inplace(sid, path):
+    """同名文档存在 → overwrite 原地更新（链接不变）；否则 create 首次发布。"""
     text = io.open(path, 'r', encoding='utf-8').read()
     meta, body = split_frontmatter(text)
     title = meta.get('title') or os.path.splitext(os.path.basename(path))[0]
     src_imgs, src_mmds = parse_source_assets(body)
     print('● 同步：%s（图 %d 张，mermaid %d 个）' % (title, len(src_imgs), len(src_mmds)))
 
-    for n in lark('wiki', '+node-list', '--space-id', sid, '--page-all').get('nodes', []):
+    node = find_node(sid, title)
+    rel = os.path.relpath(_write_temp_md(to_lark_markdown(body)), REPO).replace('\\', '/')
+    try:
+        if node:
+            doc = node.get('obj_token') or node.get('objToken')
+            lark('docs', '+update', '--doc', doc, '--command', 'overwrite',
+                 '--doc-format', 'markdown', '--content', '@./' + rel)
+            url = DOCX_URL_BASE + doc
+            print('  原地更新（链接不变）：%s' % url)
+        else:
+            create_args = ['docs', '+create', '--title', title,
+                           '--content', '@./' + rel, '--doc-format', 'markdown']
+            if PARENT_NODE:
+                create_args += ['--parent-token', PARENT_NODE]
+            d = lark(*create_args)['document']
+            doc = d['document_id']
+            url = d.get('url') or DOCX_URL_BASE + doc
+            if not PARENT_NODE:
+                # 未指定父节点时 create 落在个人空间，需移入 wiki 空间顶层
+                lark('wiki', '+move', '--obj-type', 'docx', '--obj-token', doc,
+                     '--target-space-id', sid)
+            print('  首次创建：%s' % url)
+    finally:
+        try:
+            os.remove(os.path.join(REPO, rel))
+        except OSError:
+            pass
+
+    # 回读验证：图片块 / 白板数量应与源稿一致（with-ids 才会返回 whiteboard 块）
+    c = lark('docs', '+fetch', '--doc', doc, '--detail', 'with-ids')['document']['content']
+    n_img = len(re.findall(r'<img\b', c))
+    n_wb = len(re.findall(r'<whiteboard\b', c))
+    if n_img != len(src_imgs):
+        print('  ! 图片块数(%d)与源稿(%d)不一致，请抽查' % (n_img, len(src_imgs)))
+    if n_wb != len(src_mmds):
+        print('  ! 白板数(%d)与源稿 mermaid(%d)不一致，请抽查' % (n_wb, len(src_mmds)))
+    if n_img == len(src_imgs) and n_wb == len(src_mmds):
+        print('  校验通过：图片 %d、白板 %d' % (n_img, n_wb))
+    return title, url
+
+
+def sync_rebuild(sid, path):
+    text = io.open(path, 'r', encoding='utf-8').read()
+    meta, body = split_frontmatter(text)
+    title = meta.get('title') or os.path.splitext(os.path.basename(path))[0]
+    src_imgs, src_mmds = parse_source_assets(body)
+    print('● 同步：%s（图 %d 张，mermaid %d 个）' % (title, len(src_imgs), len(src_mmds)))
+
+    list_args = ['wiki', '+node-list', '--space-id', sid, '--page-all']
+    if PARENT_NODE:
+        list_args += ['--parent-node-token', PARENT_NODE]
+    for n in lark(*list_args).get('nodes', []):
         if n.get('title') == title:
             lark('wiki', '+node-delete', '--node-token', n['node_token'],
                  '--obj-type', 'docx', '--space-id', sid, '--yes')
@@ -229,8 +348,11 @@ def sync_file(sid, path):
                     '--type', 'docx', '--name', title)
         doc = data['token']
         url = data.get('url', '')
-        lark('wiki', '+move', '--obj-type', 'docx', '--obj-token', doc,
-             '--target-space-id', sid)
+        move_args = ['wiki', '+move', '--obj-type', 'docx', '--obj-token', doc,
+                     '--target-space-id', sid]
+        if PARENT_NODE:
+            move_args += ['--target-parent-token', PARENT_NODE]
+        lark(*move_args)
     finally:
         try:
             os.remove(tmp)
@@ -261,11 +383,18 @@ def sync_file(sid, path):
 
 def main(argv):
     args = argv[1:]
-    global SPACE_NAME
+    global SPACE_NAME, PARENT_NODE
     if '--space' in args:
         i = args.index('--space')
         SPACE_NAME = args[i + 1]
         del args[i:i + 2]
+    if '--parent' in args:
+        i = args.index('--parent')
+        PARENT_NODE = args[i + 1]
+        del args[i:i + 2]
+    rebuild = '--rebuild' in args
+    if rebuild:
+        del args[args.index('--rebuild')]
     if not args:
         print(__doc__)
         return 1
@@ -278,9 +407,10 @@ def main(argv):
         print('lark-cli 用户身份无效，请先运行 lark-cli auth login')
         return 2
     sid = ensure_space()
+    sync = sync_rebuild if rebuild else sync_inplace
     done = []
     for p in args:
-        done.append(sync_file(sid, p))
+        done.append(sync(sid, p))
     print('\n完成 %d 篇 → 知识库「%s」，手机飞书「知识库」查看。' % (len(done), SPACE_NAME))
     return 0
 

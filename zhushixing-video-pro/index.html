@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="zh" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0d1117; --panel: #161b22; --line: #30363d;
+        --blue: #1f6feb; --blue2: #58a6ff; --blue3: #79c0ff;
+        --gold: #e3b341; --red: #f85149; --ink: #e6edf3; --mut: #8b949e;
+        --serif: "NotoSerifSC", "Source Han Serif SC", "KaiTi", serif;
+        --heavy: "HanSerifHeavy", "Source Han Serif SC", "NotoSerifSC", serif;
+        --mono: "Consolas", "Courier New", monospace;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px; height: 1080px; overflow: hidden;
+        background: var(--bg);
+        font-family: var(--serif);
+      }
+      @font-face { font-family: 'NotoSerifSC'; font-weight: 300 900;
+        src: local('Noto Serif SC'), local('Noto Serif SC Variable'), local('Noto Serif SC Light'); }
+      @font-face { font-family: 'HanSerifHeavy'; font-weight: 900;
+        src: local('Source Han Serif SC Heavy'), local('Source Han Serif SC'); }
+      @font-face { font-family: 'KaiTi'; src: local('KaiTi'), local('STKaiti'); }
+
+      .scene { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+      .scene-inner { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+
+      /* ===== 地图 ===== */
+      .map-title { position: absolute; left: 0; right: 0; top: 96px; text-align: center;
+        font-family: var(--serif); font-weight: 300;
+        font-size: 44px; color: var(--ink); letter-spacing: .22em; text-indent: .22em; }
+      .map-title .mt-dot { color: var(--gold); padding: 0 6px; }
+      #map { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+      .mtn { fill: #152128; stroke: #27414d; stroke-width: 1.5; opacity: .9; }
+      .river { fill: none; stroke: #21506e; stroke-width: 3; stroke-linecap: round; opacity: .7; }
+      .dune { fill: none; stroke: #2c2517; stroke-width: 2.4; opacity: .65; }
+      .dune2 { stroke: #241e13; opacity: .5; }
+      .oasis { fill: #2f6b3a; opacity: .4; }
+      .beacon rect { fill: #4a3a1c; } .beacon path { fill: #5a4722; }
+      .beacon { opacity: .8; }
+
+      .route-base { fill: none; stroke: #21262d; stroke-width: 6; stroke-linecap: round; }
+      .route-lit { fill: none; stroke: var(--gold); stroke-width: 6; stroke-linecap: round;
+        stroke-dasharray: 100 100; stroke-dashoffset: 100;
+        filter: drop-shadow(0 0 7px rgba(227,179,65,.5)); }
+      .node circle { fill: #2a2e36; stroke: var(--blue2); stroke-width: 2; }
+      .node .halo { fill: none; stroke: var(--gold); stroke-width: 2; opacity: 0; }
+      .node text { fill: var(--ink); font-family: var(--heavy); font-weight: 900;
+        font-size: 36px; text-anchor: middle; }
+      #n-yu circle { stroke: var(--gold); stroke-width: 2.5; }
+
+      .map-notes { position: absolute; left: 0; right: 0; bottom: 300px; text-align: center; }
+      .mn { display: inline-block; margin: 0 24px; font-family: var(--serif);
+        font-size: 38px; color: var(--mut); letter-spacing: .08em; }
+      .map-dist { position: absolute; left: 0; right: 0; bottom: 232px; text-align: center;
+        font-family: var(--heavy); font-weight: 900;
+        font-size: 42px; color: var(--gold); letter-spacing: .1em;
+        text-shadow: 0 0 40px rgba(227,179,65,.35); }
+      .map-dist .md-sep { color: var(--mut); padding: 0 8px; }
+
+      /* ===== WebGL fx 起幅 ===== */
+      #fx { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
+        z-index: 40; pointer-events: none; display: none; }
+      .fx-scene { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px;
+        background: var(--bg); display: flex; flex-direction: column;
+        align-items: center; justify-content: center; overflow: hidden; }
+      .fx-warm { position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+        background: radial-gradient(circle at 50% 56%, rgba(227,179,65,.14), transparent 60%); }
+      .fx-tag { font-family: var(--mono); font-size: 22px; letter-spacing: .5em;
+        text-indent: .5em; color: var(--gold); opacity: .8; margin-bottom: 34px; }
+      .fx-big { font-family: var(--heavy); font-weight: 900; font-size: 120px;
+        color: var(--gold); letter-spacing: .12em; text-indent: .12em;
+        text-shadow: 0 0 70px rgba(227,179,65,.4); }
+      .fx-big2 { font-size: 200px; }
+      .fx-rule { width: 220px; height: 2px; margin-top: 40px;
+        background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+      .fx-sub { margin-top: 30px; font-family: var(--serif); font-size: 34px;
+        color: var(--mut); letter-spacing: .2em; text-indent: .2em; }
+
+      /* ===== 氛围层 ===== */
+      #vignette { position: absolute; inset: 0; z-index: 30; pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 52%, rgba(0,0,0,.55) 100%); }
+      #grain { position: absolute; inset: 0; z-index: 31; pointer-events: none; opacity: .05;
+        background-image:
+          radial-gradient(rgba(255,255,255,.5) .5px, transparent .6px),
+          radial-gradient(rgba(255,255,255,.35) .5px, transparent .6px);
+        background-size: 3px 3px, 7px 7px;
+        background-position: 0 0, 1px 2px; }
+
+      /* ===== 底部字幕 ===== */
+      #subshade { position: absolute; left: 0; right: 0; bottom: 0; height: 240px; z-index: 20;
+        background: linear-gradient(transparent, rgba(13,17,23,.55) 40%, rgba(13,17,23,.92)); }
+      #subbar { position: absolute; left: 0; right: 0; bottom: 74px; text-align: center; z-index: 21; }
+      .sub { position: absolute; left: 50px; right: 50px; text-align: center;
+        font-family: var(--serif); font-size: 40px; letter-spacing: .06em; opacity: 0; }
+      .sub .ch { color: #dbe2ec; text-shadow: 0 2px 12px rgba(0,0,0,.85); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="22.1" data-width="1920" data-height="1080">
+
+      <audio id="a-roll-audio" src="map-demo.wav" data-start="0" data-duration="22.1"
+             data-track-index="2" data-volume="1"></audio>
+
+      <div id="sc-map" class="scene clip" data-start="0.00" data-duration="22.100" data-track-index="1">
+        <div class="scene-inner">
+        <div class="map-title">公元 260 年 <span class="mt-dot">·</span> 西行路线</div>
+        <svg id="map" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" data-layout-allow-overflow>
+          <defs>
+            <radialGradient id="lampgrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#e3b341" stop-opacity=".26"/>
+              <stop offset="55%" stop-color="#e3b341" stop-opacity=".08"/>
+              <stop offset="100%" stop-color="#e3b341" stop-opacity="0"/>
+            </radialGradient>
+            <pattern id="sand" width="30" height="30" patternUnits="userSpaceOnUse">
+              <circle cx="7" cy="9" r="1.1" fill="#3a3324"/>
+              <circle cx="21" cy="20" r=".9" fill="#322c1f"/>
+              <circle cx="14" cy="3" r=".7" fill="#40382a"/>
+            </pattern>
+        <clipPath id="clip-n-luo"><rect id="cr-n-luo" x="1483" y="448" width="0" height="48"/></clipPath>
+        <clipPath id="clip-n-guan"><rect id="cr-n-guan" x="1203" y="398" width="0" height="48"/></clipPath>
+        <clipPath id="clip-n-he"><rect id="cr-n-he" x="923" y="368" width="0" height="48"/></clipPath>
+        <clipPath id="clip-n-yang"><rect id="cr-n-yang" x="623" y="408" width="0" height="48"/></clipPath>
+        <clipPath id="clip-n-yu"><rect id="cr-n-yu" x="283" y="574" width="0" height="48"/></clipPath>
+          </defs>
+
+          <g id="camera">
+            <!-- 底色 + 大漠肌理 -->
+            <rect x="-400" y="-400" width="2800" height="2000" fill="#100e0a"/>
+            <rect x="-400" y="-400" width="2800" height="2000" fill="url(#sand)"/>
+
+            <!-- 祁连 → 天山 山脉（路线北侧） -->
+            <path class="mtn" d="M 220,400 L 300,300 L 360,372 L 440,268 L 520,360 L 600,256 L 690,356 L 770,276 L 860,352 L 950,264 L 1040,344 L 1120,300 L 1120,420 L 220,420 Z"/>
+            <!-- 黄河河谷（关中方向，右上） -->
+            <path class="river" d="M 1280,470 C 1340,400 1300,320 1380,250"/>
+            <!-- 于阗河（和田河，向北入大漠） -->
+            <path class="river" d="M 360,560 C 352,486 384,430 366,356"/>
+            <!-- 沙丘弧线（大漠南缘） -->
+            <path class="dune" d="M 120,760 C 420,700 700,800 1000,724 C 1240,672 1460,740 1780,690"/>
+            <path class="dune dune2" d="M 80,880 C 380,824 680,920 1000,846 C 1280,792 1520,862 1840,806"/>
+            <!-- 绿洲 -->
+            <circle class="oasis" cx="1280" cy="470" r="16"/>
+            <circle class="oasis" cx="360" cy="560" r="20"/>
+            <!-- 阳关 汉代烽燧 -->
+            <g class="beacon"><rect x="688" y="452" width="22" height="28"/><path d="M 686,452 L 712,452 L 706,438 L 692,438 Z"/></g>
+
+            <!-- 路：底（暗） -->
+            <path class="route-base" d="M1560,520 L1280,470"/>
+            <path class="route-base" d="M1280,470 L1000,440"/>
+            <path class="route-base" d="M1000,440 L700,480"/>
+            <path class="route-base" d="M700,480 C590,556 470,600 360,560"/>
+            <!-- 路：亮（分段点亮） -->
+            <path class="route-lit" id="seg1" pathLength="100" d="M1560,520 L1280,470"/>
+            <path class="route-lit" id="seg2" pathLength="100" d="M1280,470 L1000,440"/>
+            <path class="route-lit" id="seg3" pathLength="100" d="M1000,440 L700,480"/>
+            <path class="route-lit" id="seg4" pathLength="100" d="M700,480 C590,556 470,600 360,560"/>
+
+            <!-- 节点 -->
+          <g class="node" id="n-luo"><circle class="halo" cx="1560" cy="520" r="10"/><circle cx="1560" cy="520" r="9"/><text x="1560" y="486" clip-path="url(#clip-n-luo)">洛阳</text></g>
+          <g class="node" id="n-guan"><circle class="halo" cx="1280" cy="470" r="10"/><circle cx="1280" cy="470" r="9"/><text x="1280" y="436" clip-path="url(#clip-n-guan)">关中</text></g>
+          <g class="node" id="n-he"><circle class="halo" cx="1000" cy="440" r="10"/><circle cx="1000" cy="440" r="9"/><text x="1000" y="406" clip-path="url(#clip-n-he)">河西</text></g>
+          <g class="node" id="n-yang"><circle class="halo" cx="700" cy="480" r="10"/><circle cx="700" cy="480" r="9"/><text x="700" y="446" clip-path="url(#clip-n-yang)">阳关</text></g>
+          <g class="node" id="n-yu"><circle class="halo" cx="360" cy="560" r="10"/><circle cx="360" cy="560" r="9"/><text x="360" y="612" clip-path="url(#clip-n-yu)">于阗</text></g>
+
+            <!-- 行者：一盏移动的灯火 -->
+            <g id="walker">
+              <circle class="lamp" r="190" fill="url(#lampgrad)"/>
+              <circle r="8" fill="#e3b341"/>
+              <circle r="16" fill="none" stroke="#e3b341" stroke-opacity=".45" stroke-width="2"/>
+            </g>
+          </g>
+        </svg>
+        <div class="map-notes">
+          <span class="mn" id="mn1">没有徒弟四人</span>
+          <span class="mn" id="mn2">没有白龙马</span>
+          <span class="mn" id="mn3">更没有神仙护法</span>
+        </div>
+        <div class="map-dist" id="map-dist">一万多里 <span class="md-sep">·</span> 每一步都是拿命在赌</div>
+
+        </div>
+      </div>
+
+      <div id="subshade"></div>
+      <div id="subbar">
+      <span class="sub" id="sub36"><span class="ch" id="w0">朱</span><span class="ch" id="w1">士</span><span class="ch" id="w2">行</span><span class="ch" id="w3">做</span><span class="ch" id="w4">了</span><span class="ch" id="w5">个</span><span class="ch" id="w6">决</span><span class="ch" id="w7">定</span></span>
+      <span class="sub" id="sub37"><span class="ch" id="w8">自</span><span class="ch" id="w9">己</span><span class="ch" id="w10">去</span><span class="ch" id="w11">找</span></span>
+      <span class="sub" id="sub38"><span class="ch" id="w12">他</span><span class="ch" id="w13">从</span><span class="ch" id="w14">洛</span><span class="ch" id="w15">阳</span><span class="ch" id="w16">出</span><span class="ch" id="w17">发</span></span>
+      <span class="sub" id="sub39"><span class="ch" id="w18">过</span><span class="ch" id="w19">关</span><span class="ch" id="w20">中</span></span>
+      <span class="sub" id="sub40"><span class="ch" id="w21">走</span><span class="ch" id="w22">河</span><span class="ch" id="w23">西</span></span>
+      <span class="sub" id="sub41"><span class="ch" id="w24">出</span><span class="ch" id="w25">阳</span><span class="ch" id="w26">关</span></span>
+      <span class="sub" id="sub42"><span class="ch" id="w27">沿</span><span class="ch" id="w28">着</span><span class="ch" id="w29">大</span><span class="ch" id="w30">沙</span><span class="ch" id="w31">漠</span><span class="ch" id="w32">的</span><span class="ch" id="w33">边</span><span class="ch" id="w34">缘</span><span class="ch" id="w35">一</span><span class="ch" id="w36">路</span><span class="ch" id="w37">向</span><span class="ch" id="w38">西</span></span>
+      <span class="sub" id="sub43"><span class="ch" id="w39">没</span><span class="ch" id="w40">有</span><span class="ch" id="w41">徒</span><span class="ch" id="w42">弟</span><span class="ch" id="w43">四</span><span class="ch" id="w44">人</span></span>
+      <span class="sub" id="sub44"><span class="ch" id="w45">没</span><span class="ch" id="w46">有</span><span class="ch" id="w47">白</span><span class="ch" id="w48">龙</span><span class="ch" id="w49">马</span></span>
+      <span class="sub" id="sub45"><span class="ch" id="w50">更</span><span class="ch" id="w51">没</span><span class="ch" id="w52">有</span><span class="ch" id="w53">神</span><span class="ch" id="w54">仙</span><span class="ch" id="w55">护</span><span class="ch" id="w56">法</span></span>
+      <span class="sub" id="sub46"><span class="ch" id="w57">每</span><span class="ch" id="w58">一</span><span class="ch" id="w59">步</span><span class="ch" id="w60">都</span><span class="ch" id="w61">是</span><span class="ch" id="w62">拿</span><span class="ch" id="w63">命</span><span class="ch" id="w64">在</span><span class="ch" id="w65">赌</span></span>
+      <span class="sub" id="sub47"><span class="ch" id="w66">走</span><span class="ch" id="w67">了</span><span class="ch" id="w68">一</span><span class="ch" id="w69">万</span><span class="ch" id="w70">多</span><span class="ch" id="w71">里</span></span>
+      <span class="sub" id="sub48"><span class="ch" id="w72">他</span><span class="ch" id="w73">到</span><span class="ch" id="w74">了</span><span class="ch" id="w75">一</span><span class="ch" id="w76">个</span><span class="ch" id="w77">叫</span><span class="ch" id="w78">于</span><span class="ch" id="w79">阗</span><span class="ch" id="w80">的</span><span class="ch" id="w81">国</span><span class="ch" id="w82">家</span><span class="ch" id="w83">就</span><span class="ch" id="w84">是</span><span class="ch" id="w85">今</span><span class="ch" id="w86">天</span><span class="ch" id="w87">新</span><span class="ch" id="w88">疆</span><span class="ch" id="w89">的</span><span class="ch" id="w90">和</span><span class="ch" id="w91">田</span></span>
+      </div>
+
+
+      <canvas id="fx" width="1920" height="1080"></canvas>
+      <!-- 烘焙源（简单 div，仅供纹理，初始化后隐藏） -->
+      <div id="f1" class="fx-scene">
+        <div class="fx-tag">SILK ROAD · 丝 路</div>
+        <div class="fx-big">公元二六〇年</div>
+        <div class="fx-rule"></div>
+      </div>
+      <div id="f2" class="fx-scene">
+        <div class="fx-warm"></div>
+        <div class="fx-tag fx-tag2">起 点</div>
+        <div class="fx-big fx-big2">洛阳</div>
+        <div class="fx-sub">西行之路 · 由此启程</div>
+      </div>
+
+
+      <div id="vignette"></div>
+      <div id="grain"></div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo('#sub36', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 1.74);
+      tl.to('#sub36', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 2.76);
+      tl.fromTo('#sub37', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 3.36);
+      tl.to('#sub37', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 3.78);
+      tl.fromTo('#sub38', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 4.38);
+      tl.to('#sub38', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 5.14);
+      tl.fromTo('#sub39', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 5.68);
+      tl.to('#sub39', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 6.04);
+      tl.fromTo('#sub40', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 6.62);
+      tl.to('#sub40', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 6.97);
+      tl.fromTo('#sub41', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 7.54);
+      tl.to('#sub41', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 7.89);
+      tl.fromTo('#sub42', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 8.42);
+      tl.to('#sub42', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 10.36);
+      tl.fromTo('#sub43', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 10.66);
+      tl.to('#sub43', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 11.78);
+      tl.fromTo('#sub44', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 12.34);
+      tl.to('#sub44', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 12.82);
+      tl.fromTo('#sub45', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 13.38);
+      tl.to('#sub45', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 14.36);
+      tl.fromTo('#sub46', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 14.96);
+      tl.to('#sub46', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 16.32);
+      tl.fromTo('#sub47', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 16.92);
+      tl.to('#sub47', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 17.64);
+      tl.fromTo('#sub48', { autoAlpha: 0 }, { autoAlpha: 1, duration: .26, ease: 'power1.out' }, 18.20);
+      tl.to('#sub48', { autoAlpha: 0, duration: .26, ease: 'power1.in' }, 21.62);
+
+      // ===== camera tracking 运镜（pan + zoom；walker 保持黄金区） =====
+      // 世界 P 映射屏幕：P*k + (x,y)。关键帧为 camera 的绝对 x/y/scale。
+      tl.set('#camera', { x: -1338, y: -246, scale: 1.55, svgOrigin: '0 0' }, 0);
+      tl.to('#camera', { x: -1290, y: -220, scale: 1.50, duration: 4.38, ease: 'sine.inOut' }, 0);
+      tl.to('#camera', { x: -708,  y: -90,  scale: 1.35, duration: 1.42, ease: 'power1.inOut' }, 4.38);
+      tl.to('#camera', { x: -250,  y: -5,   scale: 1.25, duration: .90, ease: 'power1.inOut' }, 5.80);
+      tl.to('#camera', { x: 158,   y: -12,  scale: 1.16, duration: .90, ease: 'power1.inOut' }, 6.70);
+      // 阳关短暂停顿 7.6→8.4，随后长段近景匀速 pan（与 seg4/walker 严格同步）；
+      // 终点聚焦于阗，洛阳出发后留在身后，不再回画
+      tl.to('#camera', { x: 406,   y: -99,  scale: 1.15, duration: 9.80, ease: 'none' }, 8.40);
+
+      // ===== 地图元素初始态（显式 time 0；无 position 的 set 会被追加到时间轴末尾） =====
+      tl.set('#seg1,#seg2,#seg3,#seg4', { strokeDashoffset: 100 }, 0);
+      tl.set('#walker', { x: 1560, y: 520 }, 0);
+      tl.set('.node', { opacity: .32 }, 0);
+      tl.set('.map-notes, .map-dist, .map-title', { opacity: 0 }, 0);
+
+      // ===== 标题（极慢淡入） =====
+      tl.to('.map-title', { opacity: 1, y: -8, duration: .9, ease: 'power2.out' }, 1.3);
+
+      // ===== 节点：地名 clip 擦入 + 光环 + 点亮 =====
+      tl.to('#cr-n-luo', { attr: { width: 154 }, duration: .45, ease: 'power2.inOut' }, 4.38);
+      tl.fromTo('#n-luo .halo', { attr: { r: 9 }, opacity: .55 }, { attr: { r: 30 }, opacity: 0, duration: .9, ease: 'power2.out' }, 4.38);
+      tl.to('#n-luo', { opacity: 1, duration: .3 }, 4.38);
+      tl.to('#cr-n-guan', { attr: { width: 154 }, duration: .45, ease: 'power2.inOut' }, 5.80);
+      tl.fromTo('#n-guan .halo', { attr: { r: 9 }, opacity: .55 }, { attr: { r: 30 }, opacity: 0, duration: .9, ease: 'power2.out' }, 5.80);
+      tl.to('#n-guan', { opacity: 1, duration: .3 }, 5.80);
+      tl.to('#cr-n-he', { attr: { width: 154 }, duration: .45, ease: 'power2.inOut' }, 6.70);
+      tl.fromTo('#n-he .halo', { attr: { r: 9 }, opacity: .55 }, { attr: { r: 30 }, opacity: 0, duration: .9, ease: 'power2.out' }, 6.70);
+      tl.to('#n-he', { opacity: 1, duration: .3 }, 6.70);
+      tl.to('#cr-n-yang', { attr: { width: 154 }, duration: .45, ease: 'power2.inOut' }, 7.60);
+      tl.fromTo('#n-yang .halo', { attr: { r: 9 }, opacity: .55 }, { attr: { r: 30 }, opacity: 0, duration: .9, ease: 'power2.out' }, 7.60);
+      tl.to('#n-yang', { opacity: 1, duration: .3 }, 7.60);
+      tl.to('#cr-n-yu', { attr: { width: 154 }, duration: .45, ease: 'power2.inOut' }, 18.20);
+      tl.fromTo('#n-yu .halo', { attr: { r: 9 }, opacity: .55 }, { attr: { r: 30 }, opacity: 0, duration: .9, ease: 'power2.out' }, 18.20);
+      tl.to('#n-yu', { opacity: 1, duration: .3 }, 18.20);
+
+      // ===== 路线 + walker 同步西行 =====
+      tl.to('#seg1', { strokeDashoffset: 0, duration: 1.4, ease: 'power1.inOut' }, 4.38);
+      tl.to('#walker', { x: 1280, y: 470, duration: 1.4, ease: 'power1.inOut' }, 4.38);
+      tl.to('#seg2', { strokeDashoffset: 0, duration: .90, ease: 'power1.inOut' }, 5.80);
+      tl.to('#walker', { x: 1000, y: 440, duration: .90, ease: 'power1.inOut' }, 5.80);
+      tl.to('#seg3', { strokeDashoffset: 0, duration: .90, ease: 'power1.inOut' }, 6.70);
+      tl.to('#walker', { x: 700, y: 480, duration: .90, ease: 'power1.inOut' }, 6.70);
+      // 阳关→于阗 大漠长段：匀速 9.8s
+      tl.to('#seg4', { strokeDashoffset: 0, duration: 9.80, ease: 'none' }, 8.40);
+      tl.to('#walker', { x: 360, y: 560, duration: 9.80, ease: 'none' }, 8.40);
+      // 灯火呼吸（有界）
+      tl.fromTo('#walker .lamp', { scale: .92 }, { scale: 1.12, duration: 2.6, ease: 'sine.inOut', repeat: 7, yoyo: true }, 2.0);
+
+      // ===== 旁注（随口播） =====
+      tl.to('#mn1', { opacity: 1, y: -10, duration: .55, ease: 'power2.out' }, 10.7);
+      tl.to('#mn2', { opacity: 1, y: -10, duration: .55, ease: 'power2.out' }, 12.3);
+      tl.to('#mn3', { opacity: 1, y: -10, duration: .55, ease: 'power2.out' }, 13.4);
+      tl.to('#map-dist', { opacity: 1, duration: .8, ease: 'power2.out' }, 16.8);
+
+      tl.set('#w0', { color: '#e3b341' }, 1.740);
+      tl.set('#w1', { color: '#e3b341' }, 1.860);
+      tl.set('#w2', { color: '#e3b341' }, 2.040);
+      tl.set('#w3', { color: '#e3b341' }, 2.240);
+      tl.set('#w4', { color: '#e3b341' }, 2.460);
+      tl.set('#w5', { color: '#e3b341' }, 2.600);
+      tl.set('#w6', { color: '#e3b341' }, 2.720);
+      tl.set('#w7', { color: '#e3b341' }, 2.860);
+      tl.set('#w8', { color: '#e3b341' }, 3.360);
+      tl.set('#w9', { color: '#e3b341' }, 3.500);
+      tl.set('#w10', { color: '#e3b341' }, 3.640);
+      tl.set('#w11', { color: '#e3b341' }, 3.880);
+      tl.set('#w12', { color: '#e3b341' }, 4.380);
+      tl.set('#w13', { color: '#e3b341' }, 4.520);
+      tl.set('#w14', { color: '#e3b341' }, 4.740);
+      tl.set('#w15', { color: '#e3b341' }, 4.860);
+      tl.set('#w16', { color: '#e3b341' }, 5.000);
+      tl.set('#w17', { color: '#e3b341' }, 5.260);
+      tl.set('#w18', { color: '#e3b341' }, 5.680);
+      tl.set('#w19', { color: '#e3b341' }, 5.880);
+      tl.set('#w20', { color: '#e3b341' }, 6.120);
+      tl.set('#w21', { color: '#e3b341' }, 6.620);
+      tl.set('#w22', { color: '#e3b341' }, 6.740);
+      tl.set('#w23', { color: '#e3b341' }, 6.960);
+      tl.set('#w24', { color: '#e3b341' }, 7.540);
+      tl.set('#w25', { color: '#e3b341' }, 7.620);
+      tl.set('#w26', { color: '#e3b341' }, 7.780);
+      tl.set('#w27', { color: '#e3b341' }, 8.420);
+      tl.set('#w28', { color: '#e3b341' }, 8.540);
+      tl.set('#w29', { color: '#e3b341' }, 8.720);
+      tl.set('#w30', { color: '#e3b341' }, 8.880);
+      tl.set('#w31', { color: '#e3b341' }, 9.080);
+      tl.set('#w32', { color: '#e3b341' }, 9.220);
+      tl.set('#w33', { color: '#e3b341' }, 9.380);
+      tl.set('#w34', { color: '#e3b341' }, 9.520);
+      tl.set('#w35', { color: '#e3b341' }, 9.740);
+      tl.set('#w36', { color: '#e3b341' }, 10.020);
+      tl.set('#w37', { color: '#e3b341' }, 10.200);
+      tl.set('#w38', { color: '#e3b341' }, 10.400);
+      tl.set('#w39', { color: '#e3b341' }, 10.660);
+      tl.set('#w40', { color: '#e3b341' }, 10.960);
+      tl.set('#w41', { color: '#e3b341' }, 11.260);
+      tl.set('#w42', { color: '#e3b341' }, 11.500);
+      tl.set('#w43', { color: '#e3b341' }, 11.680);
+      tl.set('#w44', { color: '#e3b341' }, 11.900);
+      tl.set('#w45', { color: '#e3b341' }, 12.340);
+      tl.set('#w46', { color: '#e3b341' }, 12.440);
+      tl.set('#w47', { color: '#e3b341' }, 12.540);
+      tl.set('#w48', { color: '#e3b341' }, 12.780);
+      tl.set('#w49', { color: '#e3b341' }, 12.920);
+      tl.set('#w50', { color: '#e3b341' }, 13.380);
+      tl.set('#w51', { color: '#e3b341' }, 13.440);
+      tl.set('#w52', { color: '#e3b341' }, 13.620);
+      tl.set('#w53', { color: '#e3b341' }, 13.800);
+      tl.set('#w54', { color: '#e3b341' }, 14.040);
+      tl.set('#w55', { color: '#e3b341' }, 14.220);
+      tl.set('#w56', { color: '#e3b341' }, 14.460);
+      tl.set('#w57', { color: '#e3b341' }, 14.960);
+      tl.set('#w58', { color: '#e3b341' }, 15.120);
+      tl.set('#w59', { color: '#e3b341' }, 15.320);
+      tl.set('#w60', { color: '#e3b341' }, 15.420);
+      tl.set('#w61', { color: '#e3b341' }, 15.620);
+      tl.set('#w62', { color: '#e3b341' }, 15.820);
+      tl.set('#w63', { color: '#e3b341' }, 16.020);
+      tl.set('#w64', { color: '#e3b341' }, 16.180);
+      tl.set('#w65', { color: '#e3b341' }, 16.420);
+      tl.set('#w66', { color: '#e3b341' }, 16.920);
+      tl.set('#w67', { color: '#e3b341' }, 17.050);
+      tl.set('#w68', { color: '#e3b341' }, 17.180);
+      tl.set('#w69', { color: '#e3b341' }, 17.420);
+      tl.set('#w70', { color: '#e3b341' }, 17.540);
+      tl.set('#w71', { color: '#e3b341' }, 17.740);
+      tl.set('#w72', { color: '#e3b341' }, 18.200);
+      tl.set('#w73', { color: '#e3b341' }, 18.300);
+      tl.set('#w74', { color: '#e3b341' }, 18.430);
+      tl.set('#w75', { color: '#e3b341' }, 18.560);
+      tl.set('#w76', { color: '#e3b341' }, 18.690);
+      tl.set('#w77', { color: '#e3b341' }, 18.820);
+      tl.set('#w78', { color: '#e3b341' }, 19.040);
+      tl.set('#w79', { color: '#e3b341' }, 19.280);
+      tl.set('#w80', { color: '#e3b341' }, 19.480);
+      tl.set('#w81', { color: '#e3b341' }, 19.620);
+      tl.set('#w82', { color: '#e3b341' }, 19.800);
+      tl.set('#w83', { color: '#e3b341' }, 20.320);
+      tl.set('#w84', { color: '#e3b341' }, 20.410);
+      tl.set('#w85', { color: '#e3b341' }, 20.500);
+      tl.set('#w86', { color: '#e3b341' }, 20.710);
+      tl.set('#w87', { color: '#e3b341' }, 20.920);
+      tl.set('#w88', { color: '#e3b341' }, 21.220);
+      tl.set('#w89', { color: '#e3b341' }, 21.380);
+      tl.set('#w90', { color: '#e3b341' }, 21.560);
+      tl.set('#w91', { color: '#e3b341' }, 21.720);
+
+      // ===== 内联 WebGL cinematic-zoom 起幅 =====
+      var fxCanvas = document.getElementById('fx');
+      var gl = fxCanvas.getContext('webgl', { preserveDrawingBuffer: true });
+      if (gl) {
+        var FW = 1920, FH = 1080;
+        fxCanvas.style.display = 'block';
+        gl.viewport(0, 0, FW, FH);
+        var fxTextures = {};
+        function captureScene(sceneId) {
+          var scene = document.getElementById(sceneId);
+          var c = document.createElement('canvas');
+          c.width = FW; c.height = FH;
+          var ctx = c.getContext('2d');
+          ctx.fillStyle = window.getComputedStyle(scene).backgroundColor;
+          ctx.fillRect(0, 0, FW, FH);
+          var sr = scene.getBoundingClientRect();
+          var els = scene.querySelectorAll('*');
+          for (var i = 0; i < els.length; i++) {
+            var el = els[i], cs = window.getComputedStyle(el);
+            if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+            var r = el.getBoundingClientRect();
+            if (r.width < 1 || r.height < 1) continue;
+            var x = r.left - sr.left, y = r.top - sr.top, w = r.width, h = r.height;
+            ctx.save();
+            ctx.globalAlpha = parseFloat(cs.opacity) || 1;
+            var bg = cs.backgroundColor;
+            if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
+              ctx.fillStyle = bg; ctx.fillRect(x, y, w, h);
+            }
+            var hasChild = el.querySelector('div,span');
+            var text = '';
+            for (var j = 0; j < el.childNodes.length; j++)
+              if (el.childNodes[j].nodeType === 3) text += el.childNodes[j].textContent;
+            text = text.trim();
+            if (text && !hasChild) {
+              ctx.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+              ctx.fillStyle = cs.color;
+              ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+              ctx.fillText(text, x + w / 2, y + h / 2);
+            }
+            ctx.restore();
+          }
+          var tex = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, tex);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c);
+          fxTextures[sceneId] = tex;
+        }
+        var vertSrc =
+          'attribute vec2 a_pos; varying vec2 v_uv; void main(){' +
+          'v_uv=a_pos*0.5+0.5; v_uv.y=1.0-v_uv.y; gl_Position=vec4(a_pos,0,1);}';
+        var quadBuf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+        gl.bufferData(gl.ARRAY_BUFFER,
+          new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+        function compileShader(src, type) {
+          var s = gl.createShader(type);
+          gl.shaderSource(s, src); gl.compileShader(s);
+          if (!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+            console.error('Shader:', gl.getShaderInfoLog(s));
+          return s;
+        }
+        function mkProg(fragSrc) {
+          var p = gl.createProgram();
+          gl.attachShader(p, compileShader(vertSrc, gl.VERTEX_SHADER));
+          gl.attachShader(p, compileShader(fragSrc, gl.FRAGMENT_SHADER));
+          gl.linkProgram(p);
+          if (!gl.getProgramParameter(p, gl.LINK_STATUS))
+            console.error('Link:', gl.getProgramInfoLog(p));
+          return p;
+        }
+        var H = 'precision mediump float; varying vec2 v_uv;' +
+          'uniform sampler2D u_from,u_to; uniform float u_progress; uniform vec2 u_resolution;\n';
+        var progPass = mkProg(H + 'void main(){gl_FragColor=texture2D(u_from,v_uv);}');
+        var progTrans = mkProg(H +
+          'void main(){vec2 d=v_uv-vec2(.5);float fromS=u_progress*.08;float toS=(1.-u_progress)*.06;' +
+          'float fr=0.,fg=0.,fb=0.;for(int i=0;i<12;i++){float f=float(i)/12.;' +
+          'fr+=texture2D(u_from,v_uv-d*(fromS*1.06)*f).r;fg+=texture2D(u_from,v_uv-d*fromS*f).g;' +
+          'fb+=texture2D(u_from,v_uv-d*(fromS*.94)*f).b;}vec3 fromBl=vec3(fr,fg,fb)/12.;' +
+          'float tr=0.,tg=0.,tb=0.;for(int i=0;i<12;i++){float f=float(i)/12.;' +
+          'tr+=texture2D(u_to,v_uv+d*(toS*1.06)*f).r;tg+=texture2D(u_to,v_uv+d*toS*f).g;' +
+          'tb+=texture2D(u_to,v_uv+d*(toS*.94)*f).b;}vec3 toBl=vec3(tr,tg,tb)/12.;' +
+          'gl_FragColor=vec4(mix(fromBl,toBl,u_progress),1.);}');
+        function paint(prog, a, b, p) {
+          gl.useProgram(prog);
+          gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, a);
+          gl.uniform1i(gl.getUniformLocation(prog, 'u_from'), 0);
+          gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, b);
+          gl.uniform1i(gl.getUniformLocation(prog, 'u_to'), 1);
+          gl.uniform1f(gl.getUniformLocation(prog, 'u_progress'), p);
+          gl.uniform2f(gl.getUniformLocation(prog, 'u_resolution'), FW, FH);
+          var pos = gl.getAttribLocation(prog, 'a_pos');
+          gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+          gl.enableVertexAttribArray(pos);
+          gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        }
+        function easeInOut(p){ return p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2; }
+        captureScene('f1'); captureScene('f2');
+        document.getElementById('f1').style.display = 'none';
+        document.getElementById('f2').style.display = 'none';
+        paint(progPass, fxTextures['f1'], fxTextures['f1'], 0);
+        tl.eventCallback('onUpdate', function () {
+          var t = tl.time();
+          console.log('[fxup] t=' + t.toFixed(3) + ' disp=' + fxCanvas.style.display);
+          if (t < .45) {
+            fxCanvas.style.display = 'block';
+            paint(progPass, fxTextures['f1'], fxTextures['f1'], 0);
+          } else if (t < 1.05) {
+            paint(progTrans, fxTextures['f1'], fxTextures['f2'], easeInOut((t-.45)/.6));
+          } else if (t < 1.15) {
+            paint(progPass, fxTextures['f2'], fxTextures['f2'], 0);
+          } else {
+            fxCanvas.style.display = 'none';
+          }
+        });
+        window.__fx = { gl: gl, tex: fxTextures, FW: FW, FH: FH, canvas: fxCanvas,
+          progPass: progPass, progTrans: progTrans };
+      }
+
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines['main'] = tl;
+    </script>
+  </body>
+</html>
