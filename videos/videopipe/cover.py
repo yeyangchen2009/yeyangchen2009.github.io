@@ -61,7 +61,7 @@ BOX_RIGHT = """  <!-- 右下小方框标注 -->
   </g>"""
 
 
-_CSS = """  @font-face {
+_CSS_SPACED = """  @font-face {
     font-family: 'MaShanZheng';
     src: url('%(mashan_src)s') format('truetype');
     font-display: block;
@@ -149,6 +149,93 @@ _CSS = """  @font-face {
   }
   .tag .bar { width: 70px; height: 2px; background: #a97d2b; opacity: .8; }"""
 
+# zbj 老封面：从 .wash 起冒号后一律无空格，且无 .t2 .redcircle 行
+_CSS_COMPACT = """  @font-face {
+    font-family: 'MaShanZheng';
+    src: url('%(mashan_src)s') format('truetype');
+    font-display: block;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; }
+  body {
+    position: relative;
+    background: #f4ecda;
+    font-family: 'MaShanZheng', 'KaiTi', serif;
+  }
+  /* 纸面整体做旧晕染 */
+  .wash {
+    position: absolute; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse %(wash_rw)dpx 700px at %(wash_x)s %(wash_y)s, rgba(214,160,80,%(wash_alpha)s), transparent 65%%),
+      radial-gradient(ellipse 900px 600px at 12%% 88%%, rgba(120,90,50,.08), transparent 70%%),
+      radial-gradient(ellipse 1400px 800px at 50%% 50%%, transparent 60%%, rgba(110,80,40,.10));
+  }
+  .grain { position:absolute; inset:0; z-index:1; pointer-events:none; }
+  .layer { position:absolute; inset:0; }
+
+  /* ===== 金色工程制图层 ===== */
+  .blueprint { z-index:2; }
+  .bp { fill:none; stroke:#a97d2b; stroke-linecap:round; }
+  .bp-dim { stroke-width:1.6; stroke-opacity:.55; }
+  .bp-line { stroke-width:2; stroke-opacity:.8; }
+  .bp-thin { stroke-width:1.2; stroke-opacity:.4; }
+  .bp-dot { fill:#a97d2b; stroke:none; }
+
+  /* ===== 素描主视觉 ===== */
+  .scene { z-index:3; }
+  .pencil { fill:none; stroke:#423a2e; stroke-linecap:round; stroke-linejoin:round; }
+  .hatch { stroke-width:1.1; stroke-opacity:.5; }
+
+  /* ===== 标题 ===== */
+  .title-wrap {
+    position:absolute; z-index:5;
+    left:118px; top:%(title_top)dpx; width:%(title_width)dpx;
+  }
+  .t1 {
+    font-family:'LXGW WenKai','KaiTi',serif;
+    font-weight:700;
+    font-size:%(t1_size)dpx; color:#1b1710;
+    letter-spacing:6px; line-height:1.15;
+    white-space:nowrap;
+  }
+  .t2 {
+    font-family:'LXGW WenKai','KaiTi',serif;
+    font-weight:700;
+    font-size:%(t2_size)dpx; color:#141008;
+    line-height:1.08; letter-spacing:12px;
+    margin-top:%(t2_mtop)dpx;
+    white-space:nowrap;
+  }
+  .subnote {
+    position:absolute; z-index:5;
+    left:130px; %(subnote_decl)s;
+    display:flex; align-items:center; gap:26px;
+  }
+  .seal {
+    width:132px; height:132px;
+    background:#b03426;
+    border-radius:6px;
+    display:flex; align-items:center; justify-content:center;
+    color:#f7ead2; %(seal_font)s;
+    letter-spacing:2px;
+    font-family:'MaShanZheng','KaiTi',serif;
+    transform:rotate(-3deg);
+    box-shadow:0 0 0 3px #b03426, 0 0 0 6px rgba(176,52,38,.25);
+    filter:url(#sealrough);
+  }
+  .seal .col { display:flex; flex-direction:column; align-items:center; }
+  .dateline { color:#6d5a36; font-size:34px; letter-spacing:4px; font-family:'KaiTi',serif; }
+  .dateline .en { display:block; font-size:19px; letter-spacing:5px; color:#a97d2b;
+                  font-family:'Consolas',monospace; margin-top:6px; }
+
+  .tag {
+    position:absolute; z-index:5; left:118px; top:%(tag_top)dpx;
+    color:#a97d2b; font-family:'Consolas',monospace;
+    font-size:21px; letter-spacing:6px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .tag .bar { width:70px; height:2px; background:#a97d2b; opacity:.8; }"""
+
 _INKBLEED = """
   <!-- 墨迹微洇滤镜（给标题用） -->
   <filter id="inkbleed" x="-6%" y="-6%" width="112%" height="112%">
@@ -156,7 +243,7 @@ _INKBLEED = """
     <feDisplacementMap in="SourceGraphic" in2="n" scale="4.2"/>
   </filter>"""
 
-_GRAIN = """<!-- 纸纹纤维：SVG turbulence -->
+_GRAIN_SPACED = """<!-- 纸纹纤维：SVG turbulence -->
 <svg class="grain" width="1920" height="1080" viewBox="0 0 1920 1080">
   <filter id="paperNoise">
     <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7"/>
@@ -164,6 +251,26 @@ _GRAIN = """<!-- 纸纹纤维：SVG turbulence -->
   </filter>
   <rect width="1920" height="1080" filter="url(#paperNoise)" opacity=".07"/>
   <!-- 几条长纤维 -->
+  <g fill="none" stroke="#8a6f42" stroke-opacity=".09">
+    <path d="M-40 232 C 500 218, 1100 250, 1960 226" stroke-width="1.2"/>
+    <path d="M-40 612 C 600 628, 1200 596, 1960 618" stroke-width="1"/>
+    <path d="M-40 942 C 700 926, 1250 960, 1960 940" stroke-width="1.3"/>
+  </g>%(inkbleed)s
+  <!-- 印章斑驳 -->
+  <filter id="sealrough">
+    <feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="3" seed="5" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/>
+  </filter>
+</svg>"""
+
+# zbj：首注释无「：SVG turbulence」尾注，且无「几条长纤维」注释
+_GRAIN_COMPACT = """<!-- 纸纹纤维 -->
+<svg class="grain" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <filter id="paperNoise">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <rect width="1920" height="1080" filter="url(#paperNoise)" opacity=".07"/>
   <g fill="none" stroke="#8a6f42" stroke-opacity=".09">
     <path d="M-40 232 C 500 218, 1100 250, 1960 226" stroke-width="1.2"/>
     <path d="M-40 612 C 600 628, 1200 596, 1960 618" stroke-width="1"/>
@@ -193,15 +300,29 @@ def render_cover(*, layout: CoverLayout, tag_text, title1, title2,
                  seal_cols, dateline, dateline_en,
                  blueprint_svg, scene_svg,
                  title="封面", scene_comment="素描主视觉",
+                 css_style="spaced",
                  wenkai_href="wenkai/package/lxgwwenkai-bold.css",
                  mashan_src="fonts/MaShanZheng.ttf",
                  has_inkbleed=False) -> str:
-    """组装完整封面 HTML（字符串）。字体路径可按环境覆盖。"""
-    subnote_decl = ("%s: %dpx" % (layout.subnote_mode, layout.subnote_pos))
-    seal_font = "font-size: %dpx" % layout.seal_size
-    if layout.seal_lineheight:
-        seal_font += "; line-height: %s" % layout.seal_lineheight
-    css = _CSS % {
+    """组装完整封面 HTML（字符串）。字体路径可按环境覆盖。
+
+    css_style：'spaced'（wang，属性冒号后带空格）/ 'compact'（zbj 紧凑）。
+    """
+    if css_style == "compact":
+        subnote_decl = ("%s:%dpx" % (layout.subnote_mode, layout.subnote_pos))
+    else:
+        subnote_decl = ("%s: %dpx" % (layout.subnote_mode, layout.subnote_pos))
+    if css_style == "compact":
+        seal_font = "font-size:%dpx" % layout.seal_size
+        if layout.seal_lineheight:
+            seal_font += ";line-height:%s" % layout.seal_lineheight
+        css_tpl, grain_tpl = _CSS_COMPACT, _GRAIN_COMPACT
+    else:
+        seal_font = "font-size: %dpx" % layout.seal_size
+        if layout.seal_lineheight:
+            seal_font += "; line-height: %s" % layout.seal_lineheight
+        css_tpl, grain_tpl = _CSS_SPACED, _GRAIN_SPACED
+    css = css_tpl % {
         "mashan_src": mashan_src,
         "wash_rw": layout.wash_rw, "wash_x": layout.wash_x,
         "wash_y": layout.wash_y, "wash_alpha": layout.wash_alpha,
@@ -212,7 +333,7 @@ def render_cover(*, layout: CoverLayout, tag_text, title1, title2,
         "seal_font": seal_font,
         "tag_top": layout.tag_top,
     }
-    grain = _GRAIN % {"inkbleed": _INKBLEED if has_inkbleed else ""}
+    grain = grain_tpl % {"inkbleed": _INKBLEED if has_inkbleed else ""}
     seal = _seal_html(seal_cols, layout.seal_gap)
 
     return (

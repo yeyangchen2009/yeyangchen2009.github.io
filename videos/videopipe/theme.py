@@ -26,10 +26,25 @@ class Theme:
     subbar_bottom: int            # #subbar bottom
     sub_size: int                 # .sub font-size
     sub_comment: str = "底部字幕"  # 字幕块段注释（个别片带括注，零差异保留）
+    head_style: str = "spaced"    # head 代码风格：'spaced'（带空格）/ 'compact'（zbj 紧凑）
 
 
 def local_cjk_faces() -> str:
     """本地楷体/宋体/等宽四连 @font-face（zsx 暗版实测）。"""
+    return (
+        "      @font-face { font-family:'KaiTi'; src:local('KaiTi'),"
+        "local('STKaiti'),local('楷体'); }\n"
+        "      @font-face { font-family:'STKaiti'; src:local('STKaiti'),"
+        "local('KaiTi'); }\n"
+        "      @font-face { font-family:'SimSun'; src:local('SimSun'),"
+        "local('宋体'); }\n"
+        "      @font-face { font-family:'Mono'; src:local('Consolas'),"
+        "local('Courier New'),local('monospace'); }"
+    )
+
+
+def local_cjk_faces_compact() -> str:
+    """紧凑版：四个 @font-face 各占一行（zbj 老生成器风格）。"""
     return (
         "      @font-face { font-family:'KaiTi'; src:local('KaiTi'),"
         "local('STKaiti'),local('楷体'); }\n"
@@ -67,9 +82,9 @@ def _subtitle_block(t: Theme) -> str:
     )
 
 
-def assemble_css(t: Theme, project_css: str) -> str:
-    """通用骨架夹一段场景专属 CSS，返回 <style> 内的完整文本。"""
-    head = (
+def _head_spaced(t: Theme) -> str:
+    """带空格 head（zsx / wang 默认）。"""
+    return (
         "      * { margin: 0; padding: 0; box-sizing: border-box; }\n"
         "      html, body {\n"
         "        width: 1920px; height: 1080px; overflow: hidden;\n"
@@ -79,6 +94,25 @@ def assemble_css(t: Theme, project_css: str) -> str:
         "%s"
         % (t.bg, t.font_family, t.faces_css)
     )
+
+
+def _head_compact(t: Theme) -> str:
+    """紧凑 head（zbj：属性冒号后无空格；faces 单行已在 faces_css 内）。"""
+    return (
+        "      * { margin:0; padding:0; box-sizing:border-box; }\n"
+        "      html, body {\n"
+        "        width:1920px; height:1080px; overflow:hidden;\n"
+        "        background:%s;\n"
+        "        font-family:%s;\n"
+        "      }\n"
+        "%s"
+        % (t.bg, t.font_family, t.faces_css)
+    )
+
+
+def assemble_css(t: Theme, project_css: str) -> str:
+    """通用骨架夹一段场景专属 CSS，返回 <style> 内的完整文本。"""
+    head = _head_compact(t) if t.head_style == "compact" else _head_spaced(t)
     return head + _scene_block() + project_css + _subtitle_block(t)
 
 
@@ -115,4 +149,21 @@ DUNHUANG_WARM = Theme(
     sub_comment="底部字幕（亮底渐变）",
 )
 
-THEMES = {t.name: t for t in (DARK_GOLD_GH, DUNHUANG_WARM)}
+XUANZHI = Theme(
+    name="xuanzhi",
+    bg="#f7f1e3",
+    font_family='"KaiTi","STKaiti","SimSun",serif',
+    faces_css=local_cjk_faces_compact(),
+    head_style="compact",
+    accent="#b03120",
+    ch_color="#3d362c",
+    ch_shadow="0 2px 10px rgba(255,250,240,.95)",
+    subshade=("linear-gradient(transparent, rgba(247,241,227,.6) 38%, "
+              "rgba(247,241,227,.95))"),
+    subshade_height=240,
+    subbar_bottom=72,
+    sub_size=42,
+    sub_comment="底部字幕",
+)
+
+THEMES = {t.name: t for t in (DARK_GOLD_GH, DUNHUANG_WARM, XUANZHI)}
