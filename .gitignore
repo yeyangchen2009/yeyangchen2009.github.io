@@ -17,3 +17,15 @@ snapshots/
 
 # 本地调研素材（他站封面截图；本仓库公开，不入库）
 /media/
+
+# videos 工作区：生成产物与本地输出不入库（生成器/配置/cues/源稿入库）
+videos/projects/**/index.html
+videos/projects/**/media/
+videos/projects/**/build/
+videos/assets/local-fonts/
+videos/**/.venv/
+
+# 敏感凭证（任何深度）
+**/cookies.json
+**/.chanjing.env
+**/.feishu.env

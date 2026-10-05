@@ -1,0 +1,4 @@
+# videopipe 后端依赖（前端 GSAP / HyperFrames 走 CDN/npx，无需 Python）
+numpy>=1.26
+pypinyin>=0.51
+faster-whisper>=1.0
