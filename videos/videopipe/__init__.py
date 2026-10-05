@@ -14,7 +14,7 @@
 from . import config
 from .config import ProjectPaths
 from .page import render_page, audio_tag
-from .theme import Theme, assemble_css, DARK_GOLD_GH, THEMES
+from .theme import Theme, assemble_css, DARK_GOLD_GH, DUNHUANG_WARM, THEMES
 from .scene import Scene, render_scenes, scene_fade_js
 from .subtitle import Fragments, char_track
 from .audioio import to_16k_mono, read_pcm16, probe_duration
@@ -25,11 +25,12 @@ from .cues import (group_cues, enforce_monotonic, build_cues_json,
                    save_cues, load_cues, to_srt, write_srt)
 from .concat import make_cover_head, concat_copy
 from .verify import structure, compare
+from .cover import (CoverLayout, render_cover, RULER_LEFT, BOX_RIGHT)
 
 __all__ = [
     "config", "ProjectPaths",
     "render_page", "audio_tag",
-    "Theme", "assemble_css", "DARK_GOLD_GH", "THEMES",
+    "Theme", "assemble_css", "DARK_GOLD_GH", "DUNHUANG_WARM", "THEMES",
     "Scene", "render_scenes", "scene_fade_js",
     "Fragments", "char_track",
     "to_16k_mono", "read_pcm16", "probe_duration",
@@ -39,4 +40,5 @@ __all__ = [
     "save_cues", "load_cues", "to_srt", "write_srt",
     "make_cover_head", "concat_copy",
     "structure", "compare",
+    "CoverLayout", "render_cover", "RULER_LEFT", "BOX_RIGHT",
 ]

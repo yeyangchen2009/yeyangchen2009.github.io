@@ -25,6 +25,7 @@ class Theme:
     subshade_height: int          # #subshade height
     subbar_bottom: int            # #subbar bottom
     sub_size: int                 # .sub font-size
+    sub_comment: str = "底部字幕"  # 字幕块段注释（个别片带括注，零差异保留）
 
 
 def local_cjk_faces() -> str:
@@ -52,7 +53,7 @@ def _scene_block() -> str:
 
 def _subtitle_block(t: Theme) -> str:
     return (
-        "\n\n      /* ===== 底部字幕 ===== */\n"
+        "\n\n      /* ===== %s ===== */\n"
         "      #subshade { position:absolute; left:0; right:0; bottom:0; "
         "height:%dpx;\n"
         "        background:%s; }\n"
@@ -61,7 +62,7 @@ def _subtitle_block(t: Theme) -> str:
         "      .sub { position:absolute; left:50px; right:50px; text-align:center;\n"
         "        font-size:%dpx; letter-spacing:.06em; opacity:0; }\n"
         "      .sub .ch { color:%s; text-shadow:%s; }"
-        % (t.subshade_height, t.subshade, t.subbar_bottom,
+        % (t.sub_comment, t.subshade_height, t.subshade, t.subbar_bottom,
            t.sub_size, t.ch_color, t.ch_shadow)
     )
 
@@ -98,4 +99,20 @@ DARK_GOLD_GH = Theme(
     sub_size=40,
 )
 
-THEMES = {DARK_GOLD_GH.name: DARK_GOLD_GH}
+DUNHUANG_WARM = Theme(
+    name="dunhuang-warm",
+    bg="#f5ecd4",
+    font_family='"KaiTi","STKaiti","SimSun", serif',
+    faces_css=local_cjk_faces(),
+    accent="#c0392b",
+    ch_color="#5a4632",
+    ch_shadow="0 2px 10px rgba(255,250,240,.95)",
+    subshade=("linear-gradient(transparent, rgba(245,236,212,.6) 38%, "
+              "rgba(245,236,212,.95))"),
+    subshade_height=240,
+    subbar_bottom=72,
+    sub_size=40,
+    sub_comment="底部字幕（亮底渐变）",
+)
+
+THEMES = {t.name: t for t in (DARK_GOLD_GH, DUNHUANG_WARM)}
