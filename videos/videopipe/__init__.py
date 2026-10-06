@@ -15,7 +15,7 @@ from . import config
 from .config import ProjectPaths
 from .page import render_page, audio_tag
 from .theme import (Theme, assemble_css, DARK_GOLD_GH, DUNHUANG_WARM,
-                    XUANZHI, THEMES)
+                    XUANZHI, SILK_PRO, THEMES)
 from .scene import Scene, render_scenes, scene_fade_js
 from .subtitle import Fragments, char_track
 from .audioio import to_16k_mono, read_pcm16, probe_duration
@@ -32,7 +32,7 @@ __all__ = [
     "config", "ProjectPaths",
     "render_page", "audio_tag",
     "Theme", "assemble_css", "DARK_GOLD_GH", "DUNHUANG_WARM", "XUANZHI",
-    "THEMES",
+    "SILK_PRO", "THEMES",
     "Scene", "render_scenes", "scene_fade_js",
     "Fragments", "char_track",
     "to_16k_mono", "read_pcm16", "probe_duration",

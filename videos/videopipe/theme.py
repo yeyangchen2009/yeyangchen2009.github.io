@@ -27,6 +27,8 @@ class Theme:
     sub_size: int                 # .sub font-size
     sub_comment: str = "底部字幕"  # 字幕块段注释（个别片带括注，零差异保留）
     head_style: str = "spaced"    # head 代码风格：'spaced'（带空格）/ 'compact'（zbj 紧凑）
+    sub_zindex: int = 0           # >0 时输出 #subshade z-index（#subbar 自动 +1，pro=20/21）
+    sub_font: str = ""            # 非空时 .sub 输出 font-family（pro: var(--serif)）
 
 
 def local_cjk_faces() -> str:
@@ -57,28 +59,76 @@ def local_cjk_faces_compact() -> str:
     )
 
 
-def _scene_block() -> str:
+def noto_faces() -> str:
+    """思源宋体三连 @font-face（pro 丝路电影版实测：逗号带空格）。"""
     return (
-        "\n\n      .scene { position:absolute; inset:0; width:1920px; "
-        "height:1080px; }\n"
-        "      .scene-inner { position:absolute; inset:0; width:1920px; "
-        "height:1080px; }"
+        "      @font-face { font-family: 'NotoSerifSC'; font-weight: 300 900;\n"
+        "        src: local('Noto Serif SC'), local('Noto Serif SC Variable'), "
+        "local('Noto Serif SC Light'); }\n"
+        "      @font-face { font-family: 'HanSerifHeavy'; font-weight: 900;\n"
+        "        src: local('Source Han Serif SC Heavy'), "
+        "local('Source Han Serif SC'); }\n"
+        "      @font-face { font-family: 'KaiTi'; src: local('KaiTi'), "
+        "local('STKaiti'); }"
+    )
+
+
+def _scene_block(t: Theme) -> str:
+    if t.head_style == "compact":
+        return (
+            "\n\n      .scene { position:absolute; inset:0; width:1920px; "
+            "height:1080px; }\n"
+            "      .scene-inner { position:absolute; inset:0; width:1920px; "
+            "height:1080px; }"
+        )
+    return (
+        "\n\n      .scene { position: absolute; inset: 0; width: 1920px; "
+        "height: 1080px; }\n"
+        "      .scene-inner { position: absolute; inset: 0; width: 1920px; "
+        "height: 1080px; }"
     )
 
 
 def _subtitle_block(t: Theme) -> str:
+    """通用底部字幕块；空格风格随 head_style，z-index/font-family 按主题可选。"""
+    if t.head_style == "compact":
+        zi = " z-index:%d;" % t.sub_zindex if t.sub_zindex else ""
+        zi_bar = " z-index:%d;" % (t.sub_zindex + 1) if t.sub_zindex else ""
+        sf = (" font-family:%s;" % t.sub_font) if t.sub_font else ""
+    else:
+        zi = " z-index: %d;" % t.sub_zindex if t.sub_zindex else ""
+        zi_bar = " z-index: %d;" % (t.sub_zindex + 1) if t.sub_zindex else ""
+        sf = ("        font-family: %s;" % t.sub_font) if t.sub_font else ""
+    if t.head_style == "compact":
+        return (
+            "\n\n      /* ===== %s ===== */\n"
+            "      #subshade { position:absolute; left:0; right:0; bottom:0; "
+            "height:%dpx;%s\n"
+            "        background:%s; }\n"
+            "      #subbar { position:absolute; left:0; right:0; bottom:%dpx; "
+            "text-align:center;%s }\n"
+            "      .sub { position:absolute; left:50px; right:50px; "
+            "text-align:center;\n"
+            "%s font-size:%dpx; letter-spacing:.06em; opacity:0; }\n"
+            "      .sub .ch { color:%s; text-shadow:%s; }"
+            % (t.sub_comment, t.subshade_height, zi, t.subshade,
+               t.subbar_bottom, zi_bar, sf, t.sub_size,
+               t.ch_color, t.ch_shadow)
+        )
     return (
         "\n\n      /* ===== %s ===== */\n"
-        "      #subshade { position:absolute; left:0; right:0; bottom:0; "
-        "height:%dpx;\n"
-        "        background:%s; }\n"
-        "      #subbar { position:absolute; left:0; right:0; bottom:%dpx; "
-        "text-align:center; }\n"
-        "      .sub { position:absolute; left:50px; right:50px; text-align:center;\n"
-        "        font-size:%dpx; letter-spacing:.06em; opacity:0; }\n"
-        "      .sub .ch { color:%s; text-shadow:%s; }"
-        % (t.sub_comment, t.subshade_height, t.subshade, t.subbar_bottom,
-           t.sub_size, t.ch_color, t.ch_shadow)
+        "      #subshade { position: absolute; left: 0; right: 0; bottom: 0; "
+        "height: %dpx;%s\n"
+        "        background: %s; }\n"
+        "      #subbar { position: absolute; left: 0; right: 0; bottom: %dpx; "
+        "text-align: center;%s }\n"
+        "      .sub { position: absolute; left: 50px; right: 50px; "
+        "text-align: center;\n"
+        "%s font-size: %dpx; letter-spacing: .06em; opacity: 0; }\n"
+        "      .sub .ch { color: %s; text-shadow: %s; }"
+        % (t.sub_comment, t.subshade_height, zi, t.subshade,
+           t.subbar_bottom, zi_bar, sf, t.sub_size,
+           t.ch_color, t.ch_shadow)
     )
 
 
@@ -110,10 +160,14 @@ def _head_compact(t: Theme) -> str:
     )
 
 
-def assemble_css(t: Theme, project_css: str) -> str:
-    """通用骨架夹一段场景专属 CSS，返回 <style> 内的完整文本。"""
+def assemble_css(t: Theme, project_css: str, *, root_vars: str = "") -> str:
+    """通用骨架夹一段场景专属 CSS，返回 <style> 内的完整文本。
+
+    root_vars: 个别片（pro）老生成器把 :root 变量块放在 <style> 最前，
+    零差异保留；CSS 自定义属性物理位置不影响其对全文档生效。
+    """
     head = _head_compact(t) if t.head_style == "compact" else _head_spaced(t)
-    return head + _scene_block() + project_css + _subtitle_block(t)
+    return root_vars + head + _scene_block(t) + project_css + _subtitle_block(t)
 
 
 # ---- 预置主题 ----
@@ -166,4 +220,22 @@ XUANZHI = Theme(
     sub_comment="底部字幕",
 )
 
-THEMES = {t.name: t for t in (DARK_GOLD_GH, DUNHUANG_WARM, XUANZHI)}
+SILK_PRO = Theme(
+    name="silk-pro",
+    bg="var(--bg)",
+    font_family="var(--serif)",
+    faces_css=noto_faces(),
+    accent="#e3b341",
+    ch_color="#dbe2ec",
+    ch_shadow="0 2px 12px rgba(0,0,0,.85)",
+    subshade=("linear-gradient(transparent, rgba(13,17,23,.55) 40%, "
+              "rgba(13,17,23,.92))"),
+    subshade_height=240,
+    subbar_bottom=74,
+    sub_size=40,
+    sub_zindex=20,
+    sub_font="var(--serif)",
+)
+
+THEMES = {t.name: t for t in (DARK_GOLD_GH, DUNHUANG_WARM, XUANZHI,
+                              SILK_PRO)}
