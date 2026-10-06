@@ -4,6 +4,16 @@
 Python（faster-whisper / pypinyin / numpy）。五部成片已迁入
 `projects/`，公共逻辑收敛在 `videopipe/`。
 
+## 五部成片（projects/）
+
+| 目录 | 片 | 特性 |
+|---|---|---|
+| `xinjing` | 心经敬诵（71.5s） | 动态云雾 mp4 背景、中央 76px 逐字 cue、底部整句轨、双时长 |
+| `zhushixing` | 朱士行素版 | 暗色金、11 场景丝路图、刻意保留 blur |
+| `zhushixing-pro` | 朱士行 Pro demo | noto faces、跨项目 cues 切片、camera/FX |
+| `zhushixing-wang` | 朱士行王版（287s） | 敦煌暖、17 幕、宏观阿尔法封面 |
+| `zbj` | 猪八戒（225s） | 宣纸「考古工作台」、15 幕 git merge 母题、同款封面 |
+
 ## 标准流程（封面先行）
 
 ```
@@ -68,7 +78,8 @@ npx --yes hyperframes@0.8.107 render         # 渲染 MP4
 | `page` | HTML 外壳、audio 标签 |
 | `theme` | 主题参数、CSS 装配（通用骨架夹场景专属 CSS） |
 | `scene` | Scene、clip/scene-inner 渲染、淡变 |
-| `subtitle` | 底部整句 + 逐字高亮轨道 |
+| `subtitle` | 底部逐字高亮/整句轨 + 中央逐字 cue clip（心经） |
+| `cover` | 封面骨架（宣纸/铅笔/construction 层，主视觉 SVG 片内手写） |
 | `audioio` / `whisper_asr` | 转码、PCM、word 级转录 |
 | `align` | Needleman-Wunsch 字形+拼音对齐 |
 | `cues` | 组句、单调修正、cues.json/SRT |

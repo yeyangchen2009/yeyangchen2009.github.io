@@ -30,3 +30,6 @@ videos/**/.venv/
 **/cookies.json
 **/.chanjing.env
 **/.feishu.env
+
+# bili-pub 投稿日志
+/upload.log
