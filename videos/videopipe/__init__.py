@@ -15,9 +15,10 @@ from . import config
 from .config import ProjectPaths
 from .page import render_page, audio_tag
 from .theme import (Theme, assemble_css, DARK_GOLD_GH, DUNHUANG_WARM,
-                    XUANZHI, SILK_PRO, THEMES)
+                    XUANZHI, SILK_PRO, DARK_GOLD_XJ, THEMES)
 from .scene import Scene, render_scenes, scene_fade_js
-from .subtitle import Fragments, char_track
+from .subtitle import (Fragments, char_track, CenterTrack, SentenceTrack,
+                       center_char_clips, sentence_track)
 from .audioio import to_16k_mono, read_pcm16, probe_duration
 from .whisper_asr import (Word, Segment, Transcript, transcribe,
                           save_raw, load_raw)
@@ -32,9 +33,10 @@ __all__ = [
     "config", "ProjectPaths",
     "render_page", "audio_tag",
     "Theme", "assemble_css", "DARK_GOLD_GH", "DUNHUANG_WARM", "XUANZHI",
-    "SILK_PRO", "THEMES",
+    "SILK_PRO", "DARK_GOLD_XJ", "THEMES",
     "Scene", "render_scenes", "scene_fade_js",
-    "Fragments", "char_track",
+    "Fragments", "char_track", "CenterTrack", "SentenceTrack",
+    "center_char_clips", "sentence_track",
     "to_16k_mono", "read_pcm16", "probe_duration",
     "Word", "Segment", "Transcript", "transcribe", "save_raw", "load_raw",
     "Scores", "Alignment", "align", "check_report", "HAN_RE",

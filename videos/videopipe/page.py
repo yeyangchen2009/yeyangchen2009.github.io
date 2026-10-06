@@ -27,8 +27,14 @@ def audio_tag(src: str, duration, *, track=config.TRACK_AUDIO, volume=1.0) -> st
         % (src, jsnum(duration), track, attr_num(volume)))
 
 
-def render_page(*, total, css: str, body: str, js: str) -> str:
-    """组装完整 index.html 文本（不写盘，便于测试与对比）。"""
+def render_page(*, total, css: str, body: str, js: str,
+                body_lead_blank: bool = True) -> str:
+    """组装完整 index.html 文本（不写盘，便于测试与对比）。
+
+    body_lead_blank: 标准片 root 开标签后有一空行；心经老版 root 后
+    直接接 <video>，传 False 保持零差异。
+    """
+    lead = "\n" if body_lead_blank else ""
     return (
         '<!doctype html>\n'
         '<html lang="zh" data-resolution="landscape">\n'
@@ -41,7 +47,7 @@ def render_page(*, total, css: str, body: str, js: str) -> str:
         '  <body>\n'
         '    <div id="root" data-composition-id="main" data-start="0" '
         'data-duration="%s" data-width="1920" data-height="1080">\n'
-        '\n%s\n'
+        '%s%s\n'
         '    </div>\n'
         '\n'
         '    <script>\n'
@@ -53,4 +59,4 @@ def render_page(*, total, css: str, body: str, js: str) -> str:
         '    </script>\n'
         '  </body>\n'
         '</html>\n'
-    ) % (config.GSAP_URL, css, jsnum(total), body, js)
+    ) % (config.GSAP_URL, css, jsnum(total), lead, body, js)

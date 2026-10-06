@@ -19,6 +19,9 @@ TRACK_SCENE, TRACK_AUDIO, TRACK_BG = 1, 2, 3
 SUB_FADE = 0.26          # 标准片整句淡入淡出
 SUB_LEAD, SUB_TAIL = 0.35, 0.30     # fade_out = max(s+.35, e-.30)
 
+# ---- 心经整片专用：底部整句 .28s 淡变，fade_out = max(s+.35, e-.28) ----
+XJ_TAIL = 0.28
+
 # ---- 编码规格（concat / render 对齐正片） ----
 X264 = dict(profile="high", pix_fmt="yuv420p", crf=18)
 AAC = dict(ar=48000, ac=2)

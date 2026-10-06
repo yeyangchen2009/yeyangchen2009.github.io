@@ -160,14 +160,25 @@ def _head_compact(t: Theme) -> str:
     )
 
 
-def assemble_css(t: Theme, project_css: str, *, root_vars: str = "") -> str:
+def assemble_css(t: Theme, project_css: str, *, root_vars: str = "",
+                 with_scene: bool = True,
+                 with_subtitle: bool = True) -> str:
     """通用骨架夹一段场景专属 CSS，返回 <style> 内的完整文本。
 
     root_vars: 个别片（pro）老生成器把 :root 变量块放在 <style> 最前，
     零差异保留；CSS 自定义属性物理位置不影响其对全文档生效。
+    with_scene / with_subtitle: 心经 CSS 顺序与标准片不同（@font-face
+    夹在项目块中间，无 .scene 块，底部 .sub 结构也不同），两块都由
+    project_css 自行给出，故关闭公共块。
     """
     head = _head_compact(t) if t.head_style == "compact" else _head_spaced(t)
-    return root_vars + head + _scene_block(t) + project_css + _subtitle_block(t)
+    css = root_vars + head
+    if with_scene:
+        css += _scene_block(t)
+    css += project_css
+    if with_subtitle:
+        css += _subtitle_block(t)
+    return css
 
 
 # ---- 预置主题 ----
@@ -237,5 +248,20 @@ SILK_PRO = Theme(
     sub_font="var(--serif)",
 )
 
+DARK_GOLD_XJ = Theme(
+    name="dark-gold-xj",
+    bg="#05070c",
+    font_family='"KaiTi", "STKaiti", "SimSun", serif',
+    faces_css="",
+    accent="#e8b84b",
+    ch_color="#dfe3ea",
+    ch_shadow="0 2px 12px rgba(0,0,0,.7)",
+    subshade=("linear-gradient(transparent, rgba(5,8,15,.5) 42%, "
+              "rgba(5,8,15,.88))"),
+    subshade_height=230,
+    subbar_bottom=96,
+    sub_size=40,
+)
+
 THEMES = {t.name: t for t in (DARK_GOLD_GH, DUNHUANG_WARM, XUANZHI,
-                              SILK_PRO)}
+                              SILK_PRO, DARK_GOLD_XJ)}
