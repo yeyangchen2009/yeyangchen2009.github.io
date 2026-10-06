@@ -215,6 +215,8 @@ html = render_cover(
     title="猪八戒封面",
     scene_comment="素描主视觉：猪八戒",
     css_style="compact",
+    mashan_src="../../assets/fonts/MaShanZheng.ttf",
+    wenkai_href="../../assets/wenkai/lxgwwenkai-bold.css",
 )
 
 out = Path(sys.argv[1]) if len(sys.argv) > 1 else (HERE / "cover.html")

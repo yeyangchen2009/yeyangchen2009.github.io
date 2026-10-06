@@ -292,6 +292,8 @@ html = render_cover(
     scene_svg=SCENE_SVG,
     title="朱士行封面",
     has_inkbleed=True,
+    mashan_src="../../assets/fonts/MaShanZheng.ttf",
+    wenkai_href="../../assets/wenkai/lxgwwenkai-bold.css",
 )
 
 out = Path(sys.argv[1]) if len(sys.argv) > 1 else (HERE / "cover.html")
