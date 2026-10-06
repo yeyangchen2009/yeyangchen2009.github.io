@@ -25,9 +25,14 @@ biliup 格式 cookies.json 中自带 token_info.access_token，无需另行登�
     # 确认无误后真正提交
     python tools/bili-edit.py --index 2 --name "升级版：……" --commit
 
+    # 更换稿件整体封面（B 站稿件只有一个封面，非每分 P 各一个）
+    python tools/bili-edit.py --cover cover.png          # 先预览
+    python tools/bili-edit.py --cover cover.png --commit # 上传并提交
+
 凭证路径优先级：--cookie > 环境变量 BILIUP_COOKIE > 内置默认路径。
 """
 import argparse
+import base64
 import hashlib
 import json
 import os
@@ -42,6 +47,42 @@ APP_KEY = "4409e2ce8ffd12b8"     # AppKeyStore::BiliTV
 APP_SEC = "59b43e04ad6965f34319062b478f83dd"
 UA = ("Mozilla/5.0 BiliDroid/7.80.0 (bbcallen@gmail.com) os/android model/MI 6 "
       "mobi_app/android build/7800300 channel/bili innerVer/7800310 osVer/13 network/2")
+WEB_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+          "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36")
+
+
+def load_web_cookies(cookie_file):
+    """读 biliup cookie_info.cookies，返回 (Cookie 头, bili_jct)。"""
+    doc = json.load(open(cookie_file, encoding="utf-8"))
+    jar = {c["name"]: str(c["value"])
+           for c in doc["cookie_info"]["cookies"]}
+    for must in ("SESSDATA", "bili_jct"):
+        if must not in jar:
+            sys.exit(f"cookie 缺少必需字段 {must}，请先 python -m biliup login")
+    header = "; ".join(f"{k}={v}" for k, v in jar.items())
+    return header, jar["bili_jct"]
+
+
+def cover_up(cookie_file, image_path):
+    """上传封面（web 接口 x/vu/web/cover/up），返回封面 url。"""
+    cookie_header, csrf = load_web_cookies(cookie_file)
+    with open(image_path, "rb") as f:
+        raw = f.read()
+    mime = "image/png" if raw.startswith(b"\x89PNG") else "image/jpeg"
+    body = urllib.parse.urlencode({
+        "cover": f"data:{mime};base64,{base64.b64encode(raw).decode()}",
+        "csrf": csrf,
+    }).encode()
+    req = urllib.request.Request(
+        "https://member.bilibili.com/x/vu/web/cover/up", data=body,
+        headers={"User-Agent": WEB_UA, "Cookie": cookie_header,
+                 "Content-Type": "application/x-www-form-urlencoded",
+                 "Referer": "https://member.bilibili.com/"}, method="POST")
+    with urllib.request.urlopen(req, timeout=60) as r:
+        res = json.loads(r.read().decode("utf-8"))
+    if res.get("code") != 0:
+        sys.exit(f"封面上传失败: {res.get('code')} {res.get('message')}")
+    return res["data"]["url"]
 
 
 def http_json(url, data=None):
@@ -126,6 +167,7 @@ def main():
     parser.add_argument("--index", type=int,
                         help="要改名的分 P 序号（从 1 开始）")
     parser.add_argument("--name", help="新分 P 名；不提供时只查看不修改")
+    parser.add_argument("--cover", help="新封面图片路径（jpg/png）；更换稿件整体封面")
     parser.add_argument("--commit", action="store_true",
                         help="真正提交修改；默认 dry-run 只预览")
     args = parser.parse_args()
@@ -142,36 +184,56 @@ def main():
     archive, videos = fetch_studio(access_key, aid)
     print("稿件 aid:", aid)
     print("稿件标题:", archive.get("title"))
+    print("当前封面:", archive.get("cover"))
     print("分 P 数量:", len(videos))
     for i, v in enumerate(videos, 1):
         print(f"  P{i} {v['title']!r}")
 
-    if not args.name:
+    if not args.name and not args.cover:
         return  # 纯查看模式
 
-    # 改名模式：确定目标分 P
-    if args.index is None:
-        if len(videos) == 1:
-            args.index = 1
-        else:
-            sys.exit("多 P 稿件必须用 --index 指定要改名的分 P（从 1 开始）")
-    if not 1 <= args.index <= len(videos):
-        sys.exit(f"--index 超出范围：稿件共 {len(videos)} 个分 P")
+    changes = []
 
-    old_title = videos[args.index - 1]["title"]
-    videos[args.index - 1]["title"] = args.name
+    # 改名：确定目标分 P
+    if args.name:
+        if args.index is None:
+            if len(videos) == 1:
+                args.index = 1
+            else:
+                sys.exit("多 P 稿件必须用 --index 指定要改名的分 P（从 1 开始）")
+        if not 1 <= args.index <= len(videos):
+            sys.exit(f"--index 超出范围：稿件共 {len(videos)} 个分 P")
+        old_title = videos[args.index - 1]["title"]
+        videos[args.index - 1]["title"] = args.name
+        changes.append(f"P{args.index} {old_title!r} -> {args.name!r}")
+
     body = dict(archive)
     body["videos"] = videos
 
+    # 封面：dry-run 只列意图，真正上传留到 --commit（避免无谓占用图床）
+    if args.cover:
+        if not os.path.isfile(args.cover):
+            sys.exit(f"封面文件不存在: {args.cover}")
+        if args.commit:
+            cover_url = cover_up(cookie_file, args.cover)
+            body["cover"] = cover_url
+            changes.append(f"封面 -> {cover_url}")
+        else:
+            changes.append(f"封面将更换为本地文件 {args.cover}")
+
     if not args.commit:
-        print(f"\n[dry-run] P{args.index}: {old_title!r} -> {args.name!r}")
+        print("\n[dry-run] 本次将：")
+        for c in changes:
+            print("  -", c)
         print("确认无误后加 --commit 提交。凭证不会被打印。")
         return
 
     res = submit_edit(access_key, body)
     if res.get("code") != 0:
         sys.exit(f"提交失败: {res.get('code')} {res.get('message')}")
-    print(f"提交成功：P{args.index} {old_title!r} -> {args.name!r}")
+    print("提交成功：")
+    for c in changes:
+        print("  -", c)
     print("提示：公开 API 有几秒到十几秒缓存延迟，稍后复查即可。")
 
 
