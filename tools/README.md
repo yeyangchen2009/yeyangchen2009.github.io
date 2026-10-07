@@ -21,6 +21,7 @@
 
 ```bash
 # 投稿（--desc 可换 --desc-file；默认公开、自制、人文历史分区）
+# --cover 超 B 站约 5MB 上限时自动等比缩到宽 1920（需 ffmpeg）
 python tools/bili-pub.py upload --video xx-cover.mp4 \
     --title "标题" --desc-file desc.txt --cover cover.png
 

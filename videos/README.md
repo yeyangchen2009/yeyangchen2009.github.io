@@ -16,15 +16,19 @@ Python（faster-whisper / pypinyin / numpy）。五部成片已迁入
 
 ## 标准流程（封面先行）
 
+下列 ③④⑧ 已收成 videopipe CLI（在 `videos/` 目录下运行），无需再手抄 oneoff：
+
 ```
 ① 封面 make_cover.py   先定「一句话主张 + 主视觉」，锁立意/配色/母题
 ② TTS 音频             蝉镜试听取音（0 豆），放 media/
-③ audioio + whisper    转 16k → word 级转录 raw（build/）
-④ align + cues         NW 对齐正字稿，人工评审后 cues/cues.json
+③ transcribe           python -m videopipe transcribe projects/<片>
+④ cues                 python -m videopipe cues projects/<片>；评审 align-check/srt
+                        无误后加 --install 落地 cues/cues.json
 ⑤ make_video.py        写分镜（本片独有），通用部分调 videopipe
 ⑥ check + snapshot     0 error；SwiftShader 抽帧，与老版零差异
 ⑦ render               npx hyperframes render → renders/
-⑧ concat               封面 2s 静帧头 concat_copy 进首帧
+⑧ finalize             python -m videopipe finalize projects/<片>
+                        （封面 2s 静帧头 concat_copy 进首帧，时长自动断言）
 ⑨ 验收 + 计时日志/记忆
 ```
 
@@ -61,6 +65,17 @@ python new_project.py my-video      # 生成标准骨架
 随后按①–⑨填内容。`make_video.py` 里只需写本片独有的 `Scene` body、
 场景专属 CSS、场景动画 JS，其余全部 `from videopipe import ...`。
 
+## videopipe CLI（在 videos/ 下）
+
+```bash
+python -m videopipe transcribe projects/<片>          # ③ wav→16k→whisper 词级转录
+python -m videopipe cues projects/<片>                # ④ NW 对齐组句（只写 build/）
+python -m videopipe cues projects/<片> --install      # 评审后落地 cues/cues.json
+python -m videopipe finalize projects/<片>            # ⑧ 封面头+正片→media/<片>-yeyang-cover.mp4
+```
+
+路径默认按项目目录名约定推导，可用 `--wav/--src/--body/--cover/--out` 覆盖。
+
 ## 常用命令（在 projects/<片>/ 下）
 
 ```bash
@@ -96,3 +111,7 @@ npx --yes hyperframes@0.8.107 render         # 渲染 MP4
   screenshot。wang/zbj 零 blur；**素版 zsx 刻意保留 blur，不得顺手统一**。
 - **确定性**：生成脚本禁 `Math.random`/`Date.now`；抽帧固定切点、
   `--no-browser-gpu`（SwiftShader），同输入逐字节一致。
+- **沙箱内存上限**：Claude Code 沙箱给子进程设了提交内存上限，4K 的
+  libx264 编码（`finalize` 的封面头）会报 `x264 malloc ... failed`；
+  `transcribe/cues`（whisper）不受影响。跑 4K 的 `finalize` 与 `render`
+  时需在非沙箱（用户授权）下执行。
