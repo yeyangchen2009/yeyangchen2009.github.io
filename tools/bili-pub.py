@@ -45,11 +45,15 @@ import http.cookiejar
 import io
 import json
 import os
+import shutil
+import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from pathlib import Path
 
 DEFAULT_COOKIE = r"D:\Code\poju-zyz\zyz\cookies.json"
 MEMBER = "https://member.bilibili.com"
@@ -60,6 +64,10 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 # 投稿默认参数
 DEFAULT_TID = 228       # 人文历史
 DEFAULT_LINE = "bda2"   # 百度云上传线，实测 4MB/s 以上
+
+# 封面约束（实测：3840×2160 PNG 7.5MB 被拒，缩到宽 1920 后 1.48MB 通过）
+COVER_MAX_BYTES = 5_000_000   # B 站封面约 5MB 上限
+COVER_WIDTH = 1920            # 超限时等比缩到此宽（-2：高度自适应且为偶数）
 
 
 class PubError(RuntimeError):
@@ -180,6 +188,34 @@ def _latest_archive_ctime(opener):
     return latest
 
 
+def prepare_cover(cover):
+    """封面超 B 站约 5MB 上限时用 ffmpeg 等比缩放。
+
+    返回 (实际投稿用路径, 是否临时文件)。空封面原样透传。
+    """
+    if not cover:
+        return "", False
+    src = Path(cover)
+    if not src.exists():
+        sys.exit("封面文件不存在：%s" % cover)
+    size = src.stat().st_size
+    if size <= COVER_MAX_BYTES:
+        return str(src), False
+    if not shutil.which("ffmpeg"):
+        sys.exit("封面 %.2fMB 超过 B 站约 5MB 上限，且未找到 ffmpeg 自动缩放；"
+                 "请手动缩到宽 %d 后用 --cover 重投。"
+                 % (size / 1e6, COVER_WIDTH))
+    fd, tmp = tempfile.mkstemp(prefix="bili-cover-", suffix=".png")
+    os.close(fd)
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error", "-i", str(src),
+         "-vf", "scale=%d:-2" % COVER_WIDTH, tmp],
+        check=True)
+    print("封面 %.2fMB 超上限，已等比缩到宽 %d（%.2fMB）"
+          % (size / 1e6, COVER_WIDTH, os.path.getsize(tmp) / 1e6))
+    return tmp, True
+
+
 def upload_video(*, cookie_file, video, title, desc, cover="",
                  tid=DEFAULT_TID, tags="", line=DEFAULT_LINE,
                  copyright=1, dynamic=""):
@@ -196,18 +232,26 @@ def upload_video(*, cookie_file, video, title, desc, cover="",
     opener, _ = new_session(cookie_file)
     before, _ = _latest_archive_ctime(opener)
 
-    upload(
-        video_path=[video],
-        cookie_file=cookie_file,
-        title=title,
-        tid=tid,
-        tag=tags,
-        copyright=copyright,
-        desc=desc,
-        dynamic=dynamic,
-        cover=cover,
-        line=upload_line,
-    )
+    cover_path, cover_tmp = prepare_cover(cover)
+    try:
+        upload(
+            video_path=[video],
+            cookie_file=cookie_file,
+            title=title,
+            tid=tid,
+            tag=tags,
+            copyright=copyright,
+            desc=desc,
+            dynamic=dynamic,
+            cover=cover_path,
+            line=upload_line,
+        )
+    finally:
+        if cover_tmp:
+            try:
+                os.remove(cover_path)
+            except OSError:
+                pass
 
     # 列表有缓存；轮询直到出现比上传前更新的稿件（最长约 2 分钟）
     for _ in range(20):
