@@ -18,6 +18,9 @@ TRACK_SCENE, TRACK_AUDIO, TRACK_BG = 1, 2, 3
 # ---- 字幕时间常数（四片实测） ----
 SUB_FADE = 0.26          # 标准片整句淡入淡出
 SUB_LEAD, SUB_TAIL = 0.35, 0.30     # fade_out = max(s+.35, e-.30)
+# 逐字高亮补偿：faster-whisper 对克隆 TTS 的词时间戳系统偏晚（实测约
+# 80ms：声音已念到、高亮还没跳），把逐字变色整体提前。0＝不补偿。
+WHISPER_WORD_LEAD = 0.08
 
 # ---- 心经整片专用：底部整句 .28s 淡变，fade_out = max(s+.35, e-.28) ----
 XJ_TAIL = 0.28
