@@ -26,7 +26,7 @@ from .whisper_asr import transcribe, save_raw, load_raw
 from .align import align, check_report
 from .cues import (group_cues, enforce_monotonic, build_cues_json,
                    save_cues, to_srt)
-from .concat import make_cover_head, concat_copy
+from .concat import make_cover_head, concat_copy, finalize_concat
 
 
 def _paths(project: str) -> ProjectPaths:
@@ -131,7 +131,7 @@ def cmd_finalize(P: ProjectPaths, a) -> None:
     print("正片   %.3fs" % body_dur)
 
     out.parent.mkdir(parents=True, exist_ok=True)
-    concat_copy([head, body], out, workdir=P.build_dir)
+    finalize_concat(head, body, out, seconds=a.hold, workdir=P.build_dir)
     total = probe_duration(out)
     expect = a.hold + body_dur
     print("终片   %.3fs → %s" % (total, out))

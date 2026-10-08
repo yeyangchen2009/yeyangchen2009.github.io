@@ -25,7 +25,7 @@ from .whisper_asr import (Word, Segment, Transcript, transcribe,
 from .align import Scores, Alignment, align, check_report, HAN_RE
 from .cues import (group_cues, enforce_monotonic, build_cues_json,
                    save_cues, load_cues, to_srt, write_srt)
-from .concat import make_cover_head, concat_copy
+from .concat import make_cover_head, concat_copy, finalize_concat
 from .verify import structure, compare
 from .cover import (CoverLayout, render_cover, RULER_LEFT, BOX_RIGHT)
 
@@ -42,7 +42,7 @@ __all__ = [
     "Scores", "Alignment", "align", "check_report", "HAN_RE",
     "group_cues", "enforce_monotonic", "build_cues_json",
     "save_cues", "load_cues", "to_srt", "write_srt",
-    "make_cover_head", "concat_copy",
+    "make_cover_head", "concat_copy", "finalize_concat",
     "structure", "compare",
     "CoverLayout", "render_cover", "RULER_LEFT", "BOX_RIGHT",
 ]

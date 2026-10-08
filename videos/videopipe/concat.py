@@ -47,3 +47,57 @@ def concat_copy(parts, out_mp4, *, faststart=True, workdir=None) -> None:
         cmd += ["-movflags", "+faststart"]
     cmd.append(str(out_mp4))
     subprocess.run(cmd, check=True)
+
+
+def finalize_concat(head, body, out_mp4, *, seconds, workdir) -> None:
+    """封面头 + 正片 → 终片（音画严格对齐版）。
+
+    视频走 concat `-c copy`（帧精确，正片不重编码）；音频**不**做段拼接——
+    而是取正片 PCM，与封面静音在一条 concat filter 里整段重编码 AAC。
+
+    为什么：两段独立 AAC 用 `-c copy` 拼接时，正片段头部的 encoder priming
+    （约 21–92ms 静音采样）被原样保留在拼接点，从该处起画面领先声音、偏移
+    贯穿全片（实测达摩片图快声 92ms）。整段重编码后拼接点是连续采样、无
+    段边界 priming，AAC priming 只出现整条最开头一次（落在封面静音区，无感）。
+    """
+    workdir = Path(workdir)
+    workdir.mkdir(parents=True, exist_ok=True)
+    head, body, out_mp4 = str(head), str(body), str(out_mp4)
+    ar, ac = config.AAC["ar"], config.AAC["ac"]
+
+    vlist = workdir / "_vlist.txt"
+    vlist.write_text(
+        "file '%s'\nfile '%s'\n"
+        % (Path(head).resolve().as_posix(), Path(body).resolve().as_posix()),
+        encoding="utf-8")
+    full_v = workdir / "full-video.mp4"
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error",
+         "-f", "concat", "-safe", "0", "-i", str(vlist),
+         "-map", "0:v", "-c", "copy", "-an", str(full_v)],
+        check=True)
+
+    body_wav = workdir / "body-audio.wav"
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error", "-i", body,
+         "-vn", "-acodec", "pcm_s16le", "-ar", str(ar), "-ac", str(ac),
+         str(body_wav)],
+        check=True)
+
+    full_a = workdir / "full-audio.m4a"
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error",
+         "-f", "lavfi", "-t", str(seconds),
+         "-i", "anullsrc=r=%d:cl=stereo" % ar,
+         "-i", str(body_wav),
+         "-filter_complex", "[0:a][1:a]concat=n=2:v=0:a=1[a]",
+         "-map", "[a]", "-c:a", "aac", "-b:a", "192k",
+         "-ar", str(ar), "-ac", str(ac), str(full_a)],
+        check=True)
+
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error",
+         "-i", str(full_v), "-i", str(full_a),
+         "-map", "0:v", "-map", "1:a",
+         "-c", "copy", "-movflags", "+faststart", out_mp4],
+        check=True)

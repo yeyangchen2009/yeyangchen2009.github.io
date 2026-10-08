@@ -19,16 +19,20 @@ class Fragments:
 
 
 def char_track(cues, chars, accent, *, time_offset=0.0,
-               sub_ids=None) -> Fragments:
+               word_lead=0.0, sub_ids=None) -> Fragments:
     """底部「整句 + 逐字高亮」轨道。
 
     cues: [{"t","s","e"}]；chars: [{"c","s",...}]，两者逐字对齐。
-    time_offset: pro 切片复用同一份 cues 时整体平移。
+    time_offset: pro 切片复用同一份 cues 时整体平移（整句与逐字一起）。
+    word_lead: 只把**逐字变色**提前的秒数，整句淡入淡出不动。用于补偿
+        faster-whisper 对克隆 TTS 的词时间戳系统偏晚（实测约 80ms：声音
+        已念到该字，高亮还没跳）。默认 0，历史片与其它片不受影响。
     sub_ids: 自定义每句编号序列；默认 0,1,2…。
     """
     if sub_ids is None:
         sub_ids = range(len(cues))
     off = float(time_offset)
+    lead = float(word_lead)
 
     char_idx = 0
     sub_html, sub_js, word_js = [], [], []
@@ -41,7 +45,7 @@ def char_track(cues, chars, accent, *, time_offset=0.0,
                          % (char_idx, ch))
             word_js.append(
                 "      tl.set('#w%d', { color: '%s' }, %.3f);"
-                % (char_idx, accent, c["s"] + off))
+                % (char_idx, accent, max(0.0, c["s"] + off - lead)))
             char_idx += 1
         sub_html.append(
             '      <span class="sub" id="sub%02d">%s</span>'

@@ -20,20 +20,50 @@ Python（faster-whisper / pypinyin / numpy）。五部成片已迁入
 
 ```
 ① 封面 make_cover.py   先定「一句话主张 + 主视觉」，锁立意/配色/母题
-② TTS 音频             蝉镜试听取音（0 豆），放 media/
+② 备双稿 + TTS         先写 src/<片>-src.txt 正字稿（字幕/对参照用）；
+                        再派生 src/<片>-tts.txt 借音稿（易错多音字换成
+                        读音确定的同音字）；★只拿 tts.txt 跑蝉镜试听
+                        （0 豆），wav 放 media/。详见下「多音字借音」
 ③ transcribe           python -m videopipe transcribe projects/<片>
 ④ cues                 python -m videopipe cues projects/<片>；评审 align-check/srt
                         无误后加 --install 落地 cues/cues.json
 ⑤ make_video.py        写分镜（本片独有），通用部分调 videopipe
 ⑥ check + snapshot     0 error；SwiftShader 抽帧，与老版零差异
+                        ★snapshot 会清空整个 snapshots/（连封面一起删）
 ⑦ render               npx hyperframes render → renders/
-⑧ finalize             python -m videopipe finalize projects/<片>
-                        （封面 2s 静帧头 concat_copy 进首帧，时长自动断言）
+⑧ 重截封面→finalize    make_cover＋cdp-shot 重截封面，再
+                        python -m videopipe finalize projects/<片>
+                        （封面 2s 静帧头进首帧，时长自动断言；视频 copy、
+                        音频整段重编码——见下「音画对齐」）
 ⑨ 验收 + 计时日志/记忆
 ```
 
 封面先行的意义：它是全片最早、最便宜的验收锚点；在约 12 分钟的昂贵
 渲染前就把立意和视觉锁死，避免渲染完才发现方向错。
+
+## 多音字借音（② 的硬规矩，先借音再 TTS）
+
+TTS 引擎碰到多音字和非常用字（如「伽／偈／降／差」）经常读错，而一旦
+合成完再发现读错，只能整条重跑。所以 **TTS 前必须先备双稿**：
+
+1. **正字稿** `src/<片>-src.txt`：正确字形，**字幕**和 ③transcribe 的
+   对参照都用它（观众看到的永远是正字）。
+2. **借音稿** `src/<片>-tts.txt`：把易错字**只换字形**为读音唯一确定的
+   常用同音字，语义与断句不变；**只拿它去跑 TTS**。
+
+铁律顺序：`src 正字稿 → tts 借音稿 → TTS 出 wav → 用 src 做字幕`。
+绝不能拿正字稿直接合成。借音稿建议用脚本从 src 派生（`.replace(...)`）
+而非手敲，保证两稿逐字一致、只差借字；同时在
+`oneoffs/<片>-pronunciation.md` 记正音表（高风险字＋借音预案）。
+
+| 正字（src，上字幕） | 借音（tts，喂 TTS） | 锁定读音 |
+|---|---|---|
+| 楞伽经 | 楞茄经 | 伽 **qié** |
+| 那首偈 | 那首记 | 偈 **jì** |
+| 当差 | 当拆 | 差 **chāi** |
+| 降将 | 祥将 | 降 **xiáng** |
+
+合成后务必抽听这几处确认读音，再进 ③。
 
 ## 目录
 
@@ -115,3 +145,21 @@ npx --yes hyperframes@0.8.107 render         # 渲染 MP4
   libx264 编码（`finalize` 的封面头）会报 `x264 malloc ... failed`；
   `transcribe/cues`（whisper）不受影响。跑 4K 的 `finalize` 与 `render`
   时需在非沙箱（用户授权）下执行。
+
+## 音画对齐（⑧ 的硬规矩，别让封面头顶出偏移）
+
+封面头与正片是两段独立 AAC，若用 ffmpeg concat demuxer `-c copy` 直接拼，
+正片段头部的 **encoder priming**（一段几十毫秒的静音采样）会被原样保留在
+拼接点：画面在精确 2.0s 已切进正片，真正的声音却晚到，形成「图比声快」、
+偏移固定且贯穿全片（达摩片实测 92ms）。
+
+所以 `finalize` 走 `videopipe.finalize_concat`：
+
+- **视频**：封面头 + 正片 concat `-c copy`，帧精确、正片不重编码；
+- **音频**：取正片 PCM，与封面静音在一条 `concat` filter 里**整段重编码**
+  AAC——拼接点是连续采样、无段边界 priming（priming 只剩整条最开头一次，
+  落在封面静音区，无感）。
+
+验收：`ffprobe` 音视频两条流 `start_time` 都应是 `0.000000`；也可对拼接点
+做能量检测，正片首个成声帧应精确落在 2.000s。旧片（梁武帝等）已用
+`concat_copy` 发布，不回改。
