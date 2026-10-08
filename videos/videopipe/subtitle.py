@@ -8,6 +8,7 @@
 from dataclasses import dataclass
 
 from . import config
+from .align import HAN_RE, LAT_RE
 from .page import jsnum
 
 
@@ -38,15 +39,33 @@ def char_track(cues, chars, accent, *, time_offset=0.0,
     sub_html, sub_js, word_js = [], [], []
     for ci, cue in zip(sub_ids, cues):
         spans = []
-        for ch in cue["t"]:
-            c = chars[char_idx]
-            assert c["c"] == ch, (c["c"], ch)
-            spans.append('<span class="ch" id="w%d">%s</span>'
-                         % (char_idx, ch))
-            word_js.append(
-                "      tl.set('#w%d', { color: '%s' }, %.3f);"
-                % (char_idx, accent, max(0.0, c["s"] + off - lead)))
-            char_idx += 1
+        t = cue["t"]
+        ii = 0
+        while ii < len(t):
+            ch = t[ii]
+            if HAN_RE.match(ch):
+                c = chars[char_idx]
+                assert c["c"] == ch, (c["c"], ch)
+                spans.append('<span class="ch" id="w%d">%s</span>'
+                             % (char_idx, ch))
+                word_js.append(
+                    "      tl.set('#w%d', { color: '%s' }, %.3f);"
+                    % (char_idx, accent,
+                       max(0.0, c["s"] + off - lead)))
+                char_idx += 1
+                ii += 1
+            else:
+                # 拉丁/数字片段：整词用强调色常亮，不逐字变色（随整句淡变）
+                m = LAT_RE.match(t, ii)
+                if m:
+                    spans.append('<span style="color:%s">%s</span>'
+                                 % (accent, m.group(0)))
+                    ii = m.end()
+                elif ch == " ":
+                    # cues 组句补的排版空格：用不换行空格保住英文词间距
+                    spans.append(" "); ii += 1
+                else:
+                    spans.append(ch); ii += 1
         sub_html.append(
             '      <span class="sub" id="sub%02d">%s</span>'
             % (ci, "".join(spans)))
