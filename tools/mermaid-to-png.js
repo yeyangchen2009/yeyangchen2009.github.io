@@ -48,7 +48,7 @@ async function launchBrowser() {
     const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'mermaid-render-'));
     const args = [
         '--headless=new', '--disable-gpu', '--hide-scrollbars', '--no-first-run',
-        '--no-proxy-server', '--ignore-certificate-errors',
+        '--no-proxy-server',
         '--remote-debugging-port=0', '--remote-allow-origins=*',
         '--user-data-dir=' + profile, 'about:blank',
     ];

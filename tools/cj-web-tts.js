@@ -36,7 +36,27 @@ const path = require('path');
 const http = require('http');
 const https = require('https');
 
+const CJ_USAGE = `cj-web-tts.js —— 蝉镜网页「试听」自动化（0 蝉豆，绝不点「立即生成」）
+
+用法:
+  node cj-web-tts.js <tts文本.txt> <out.wav> <audio_man> [选项]
+
+参数:
+  <tts文本.txt>  建议用「多音字借音替换稿」(*-tts.txt)；正字稿(*-src.txt)只用于字幕
+  <out.wav>      输出 wav
+  <audio_man>    音色码；叶扬克隆音色 C-df5d6f1a95904a91a8e086b6f2fd8a53
+
+选项:
+  --profile <dir>    持久化浏览器 profile（默认 Temp/cj-profile）
+  --wait-login <秒>  未登录时等待登录秒数（默认 300）
+  --api              走页面 XHR 复刻，而非 UI 点击「试听」
+  -h, --help         显示本帮助`;
+
 function parseArgs(argv) {
+    if (argv.some(a => a === '-h' || a === '--help')) {
+        console.log(CJ_USAGE);
+        process.exit(0);
+    }
     const [textFile, outWav, audioMan] = argv;
     if (!textFile || !outWav || !audioMan) {
         console.error('用法: node cj-web-tts.js <tts文本.txt> <out.wav> <audio_man> [--profile <dir>] [--wait-login <秒>] [--api]');
@@ -78,7 +98,7 @@ async function launch(browser, profileDir, audioMan) {
     fs.mkdirSync(profileDir, { recursive: true });
     const startUrl = 'https://www.chanjing.cc/creation-audio?id=' + encodeURIComponent(audioMan) + '&type=custom';
     const args = [
-        '--no-first-run', '--ignore-certificate-errors',
+        '--no-first-run',
         '--remote-debugging-port=0', '--remote-allow-origins=*',
         '--user-data-dir=' + path.resolve(profileDir),
         startUrl,
