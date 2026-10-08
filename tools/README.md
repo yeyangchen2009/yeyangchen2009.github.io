@@ -63,11 +63,12 @@ python tools/bili-pub.py season-sort 10349359 --order BV1xx,BV1yy
 | `feishu-sync.py` | Markdown 同步飞书知识库（手机审稿）：占位图换本地图、mermaid 换飞书画板，支持 `--parent` |
 | `zhihu-draft.js` | 文章入知乎草稿箱（**只存草稿，绝不发布**） |
 
-### 截图与 Mermaid
+### 截图、录屏与 Mermaid
 
 | 工具 | 用途 |
 |---|---|
 | `cdp-shot.js` | 零依赖无头截图器（CDP），`--scale 1` 出 1x，默认 2x |
+| `screen-rec.js` | 零依赖屏幕录制器（FFmpeg gdigrab）：录终端/编辑器操作演示，支持区域裁剪、定时、Ctrl+C 收尾、dshow 麦克风 |
 | `ui-shot.ps1` / `shot-window.ps1` | Windows 窗口/UI 截图 |
 | `mermaid-shot.js` | Mermaid 代码块渲染截图 |
 | `mermaid-to-png.js` | Mermaid 转 `mermaid.ink` PNG（飞书白板兜底用） |
