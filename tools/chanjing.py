@@ -241,3 +241,90 @@ def wait_video(task_id):
                 % (qs, data.get('msg'), data.get('queue_desc'), trace_id))
         n += 1
         delay = min(VIDEO_MAX_DELAY, VIDEO_FIRST_DELAY * (2 ** n))
+
+
+# --- 命令行入口（只读子命令安全；TTS 试听 0 豆走 cj-web-tts.js） ---
+
+def _rows(data):
+    """从分页响应里宽松取 (行列表, total)，兼容 list/records/items/data。"""
+    if isinstance(data, list):
+        return data, len(data)
+    if isinstance(data, dict):
+        total = data.get('total')
+        for k in ('list', 'records', 'items', 'rows', 'data'):
+            if isinstance(data.get(k), list):
+                return data[k], total if total is not None else len(data[k])
+    return [], 0
+
+
+def _cli_token(args):
+    tok = get_access_token()  # 失败会抛错
+    st = _load_token_state()
+    age = int(time.time()) - int(st.get('fetched_at') or 0)
+    remain = int(st.get('expire_in') or 0) - age
+    print('access_token 有效（剩余约 %d 秒）；token 内容已隐藏' % max(0, remain))
+
+
+def _cli_list_audio(args):
+    data, _ = list_common_audio(page=args.page, size=args.size)
+    rows, total = _rows(data)
+    print('公共音色 第%d页 返回%d条（total=%s）' % (args.page, len(rows), total))
+    for r in rows:
+        if not isinstance(r, dict):
+            print(' ', r); continue
+        rid = r.get('audio_man') or r.get('id') or r.get('code')
+        name = r.get('name') or r.get('audio_name') or r.get('title')
+        print('  %s\t%s' % (rid, name))
+
+
+def _cli_list_dp(args):
+    data, _ = list_common_dp(page=args.page, size=args.size)
+    rows, total = _rows(data)
+    print('公共数字人 第%d页 返回%d条（total=%s）' % (args.page, len(rows), total))
+    for r in rows:
+        if not isinstance(r, dict):
+            print(' ', r); continue
+        print('  %s\t%s' % (r.get('id') or r.get('dp_id'),
+                            r.get('name') or r.get('dp_name')))
+
+
+def _cli():
+    import argparse
+    p = argparse.ArgumentParser(
+        prog='python tools/chanjing.py',
+        description='蝉镜 AI 开放平台客户端（标准库，无第三方依赖）。'
+                    '此处只提供只读子命令。',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='TTS 取音（0 蝉豆，推荐走网页「试听」）:\n'
+               '  node tools/cj-web-tts.js <文本.txt> <out.wav> <audio_man> '
+               '--profile <dir>\n\n'
+               '叶扬克隆音色 audio_man: C-df5d6f1a95904a91a8e086b6f2fd8a53\n'
+               '注意: open-api 的 create_audio_task 可能计费，批量取音请用 '
+               'cj-web-tts 试听通道。')
+    sub = p.add_subparsers(dest='cmd')
+
+    t = sub.add_parser('token', help='检查 access_token 是否有效（不打印 token）')
+    t.set_defaults(func=_cli_token)
+
+    a = sub.add_parser('list-audio', help='列出公共音色（只读）')
+    a.add_argument('--page', type=int, default=1)
+    a.add_argument('--size', type=int, default=20)
+    a.set_defaults(func=_cli_list_audio)
+
+    d = sub.add_parser('list-dp', help='列出公共数字人（只读）')
+    d.add_argument('--page', type=int, default=1)
+    d.add_argument('--size', type=int, default=20)
+    d.set_defaults(func=_cli_list_dp)
+
+    args = p.parse_args()
+    if not args.cmd:
+        p.print_help()
+        return
+    try:
+        args.func(args)
+    except (ChanjingError, RuntimeError) as e:
+        raise SystemExit('错误：%s' % e)
+
+
+if __name__ == '__main__':
+    _cli()
