@@ -1,0 +1,60 @@
+name: 视频生产任务
+description: 派给 worker agent 的单个视频/图文工作单元（配合 videos/parallel-playbook.md）
+title: "[hf-] "
+labels: ["parallel-ready", "hf"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        一个 issue ＝ 一个可独立验收的工作单元。派单前请确认**依赖已合入 origin/main**。
+        worker agent 的行为边界见 `videos/parallel-playbook.md`。
+  - type: textarea
+    id: goal
+    attributes:
+      label: 目标
+      description: 要完成什么（一句话）＋为什么。对应视频的哪一集/哪一篇。
+      placeholder: 完成 hf-03《xxx》的 make_video 分镜编排，能直接 check→render。
+    validations:
+      required: true
+  - type: input
+    id: scope
+    attributes:
+      label: 文件边界（允许改动的路径白名单）
+      description: 默认只允许改动本项目目录；公共文件（videopipe/**、.github/**、ideas/**）默认禁改。
+      placeholder: videos/projects/hf-03/**
+    validations:
+      required: true
+  - type: textarea
+    id: deps
+    attributes:
+      label: 依赖
+      description: 必须先合入的 PR / issue 链接，或已具备的素材（TTS、cues、封面）。
+      placeholder: "- 依赖 #xxx 已合并\n- media/audio.wav、cues/cues.json 已就位"
+    validations:
+      required: false
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 工作类型（决定能否并行）
+      options:
+        - 轻活：写口播/分镜/图文（可并行）
+        - 中活：check/snapshot/TTS/transcribe（限量并行）
+        - 重活：render/finalize（排队串行，编排者执行）
+    validations:
+      required: true
+  - type: textarea
+    id: dod
+    attributes:
+      label: DoD（完成定义，可勾验）
+      description: 逐条列出验收标准。
+      placeholder: "- [ ] hyperframes check 0 error\n- [ ] 抽帧目检：无文字溢出/叠压\n- [ ] PR 正文写明改动与验收结果"
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: 本任务特殊限制
+      description: 默认禁止条款（不 merge、不发布、不改公共文件、不碰凭证）之外的补充。
+      placeholder: 例如：字幕 time_offset 待 onset 实测后定值；画面不得出现真实用户名路径。
+    validations:
+      required: false
