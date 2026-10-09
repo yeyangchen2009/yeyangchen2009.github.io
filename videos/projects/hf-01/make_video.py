@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 """HyperFrames 教程第 1 集《认识 HyperFrames》成片生成器。
 
-暗色 GitHub 主题（DARK_GOLD_GH），234.98s，17 幕。本片独有：17 幕 body、
-专属 CSS、场景时间轴。两处嵌入真实终端录屏——doctor 体检（S12）与
---help 命令列表（S13）：录屏作**顶层 clip**（StaticGuard：video 不可嵌套
-在另一个 data-start 元素内），播真实时长后由 GSAP 概念卡接续讲解。
-页面骨架／主题／字幕／clip 外壳全部复用 videopipe。
+靛蓝深＋金网格主题（自 DARK_GOLD_GH 派生：底 #0d1b2a、金质细网格、
+蓝金光斑、分层面板），234.98s，17 幕。本片独有：17 幕 body、专属 CSS、
+场景时间轴。两处嵌入真实终端录屏——doctor 体检（S12）与 --help 命令
+列表（S13）：录屏作**顶层 clip**（StaticGuard：video 不可嵌套在另一个
+data-start 元素内），先按真实时长播放，随后定格帧全屏停留数秒，再
+GSAP 缩到屏幕左侧，右侧概念卡同屏讲解。页面骨架／主题／字幕／clip
+外壳全部复用 videopipe。
 """
 import io
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 # projects/<name>/make_video.py -> videos/ 在 parents[2]
@@ -17,14 +20,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from videopipe import (ProjectPaths, load_cues, Scene, render_scenes,
                        char_track, assemble_css, render_page, audio_tag,
                        DARK_GOLD_GH)
-from videopipe.config import WHISPER_WORD_LEAD
 
 P = ProjectPaths.at(Path(__file__).resolve().parent)
 P.ensure()
 
 data = load_cues(P.cues_json)
 cues, chars, total = data["cues"], data["chars"], data["duration"]
-THEME = DARK_GOLD_GH
+
+# 靛蓝深＋金：只改底色与底部渐隐，字体/金色 accent/字幕尺寸沿用 GitHub 主题
+THEME = replace(
+    DARK_GOLD_GH,
+    name="indigo-gold-hf",
+    bg="#0d1b2a",
+    subshade=("linear-gradient(transparent, rgba(13,27,42,.55) 40%, "
+              "rgba(13,27,42,.94))"),
+)
 
 # ---- GitHub Dark 辅助色（主题只给 accent/bg，其余在此固定） ----
 PANEL, LINE = "#161b22", "#30363d"
@@ -175,7 +185,7 @@ Scene("sc-doctor-rec", 123.34, 139.52, """
               <span class="dg">FFmpeg ✓</span>
               <span class="dg">Chrome ✓</span>
             </div>
-            <div class="doc-note" id="doc-n">叉 = whisper / docker 可选配件 · 新版本提示 —— 都不挡路</div>
+            <div class="doc-note" id="doc-n">叉 = 可选配件 · 新版本提示，都不挡路</div>
           </div>"""),
 
 # S13 录屏 --help 139.52–164.06（cue81–96）
@@ -214,11 +224,12 @@ Scene("sc-remotion", 164.06, 190.08, """
             </div>
             <div class="cmp-box hot" id="rm-box2">
               <div class="cmp-h blue">HyperFrames</div>
-              <div class="cmp-l"><strong>不绑框架</strong> · 标准 HTML</div>
-              <div class="cmp-l">浏览器直接能打开 · 为「跳到任意一帧」而生</div>
+              <div class="cmp-l">纯 HTML，<strong>不绑框架</strong></div>
+              <div class="cmp-l">浏览器直接打开</div>
+              <div class="cmp-l">为「跳帧」而生</div>
             </div>
           </div>
-          <div class="rm-soul" id="rm-soul">跳到任意一帧 —— 它的灵魂，第四集专门讲</div>"""),
+          <div class="rm-soul" id="rm-soul">跳帧是它的灵魂 · 第四集专门讲</div>"""),
 
 # S15 卡中间空白 190.08–208.62（cue110–118）
 Scene("sc-gap", 190.08, 208.62, """
@@ -260,19 +271,37 @@ Scene("sc-next", 222.02, total, """
           <div class="nx-bye" id="nx-bye">我是叶扬，我们下期见</div>"""),
 ]
 
-# ---------- 顶层录屏 clip（不可嵌套；放 scenes 之前＝下层） ----------
+# ---------- 顶层录屏＋定格 clip（不可嵌套；放 scenes 之前＝下层） ----------
+# video 按真实时长播放；紧接的 <img> 是干净定格帧，全屏停留后由 GSAP
+# 缩小移到左侧（见 SCENE_JS）。125.27＝123.34+1.93；142.32＝139.52+2.80。
 VIDEOS = """      <video id="rec-doctor" class="clip" data-start="123.34"
              data-duration="1.93" data-track-index="2"
              src="media/rec-doctor.mp4" muted playsinline preload="auto"></video>
+      <img id="freeze-doctor" class="clip" data-start="125.27"
+             data-duration="14.25" src="media/freeze-doctor.png" alt="">
       <video id="rec-help" class="clip" data-start="139.52"
              data-duration="2.80" data-track-index="2"
-             src="media/rec-help.mp4" muted playsinline preload="auto"></video>"""
+             src="media/rec-help.mp4" muted playsinline preload="auto"></video>
+      <img id="freeze-help" class="clip" data-start="142.32"
+             data-duration="21.74" src="media/freeze-help.png" alt="">"""
 
 # ---------- 场景专属 CSS ----------
 PROJECT_CSS = """
-      /* 录屏窗口卡片：1280x672，上移到字幕区上方 */
-      #rec-doctor, #rec-help { position:absolute; left:320px; top:128px;
-        width:1280px; height:672px; object-fit:fill; }
+      /* 背景：金色细网格＋蓝金光斑（铺满，置于终端/卡片之下＝下层） */
+      #bg-grid { position:absolute; left:0; top:0; width:1920px; height:1080px;
+        background-image:
+          linear-gradient(rgba(227,179,65,.055) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(227,179,65,.055) 1px, transparent 1px);
+        background-size:80px 80px; }
+      #bg-glow { position:absolute; left:0; top:0; width:1920px; height:1080px;
+        background:
+          radial-gradient(720px 500px at 16% 12%, rgba(31,111,235,.17), transparent 70%),
+          radial-gradient(840px 580px at 86% 84%, rgba(227,179,65,.12), transparent 70%); }
+
+      /* 录屏窗口与定格帧：1280x672，上移到字幕区上方；定格从左上角缩放 */
+      #rec-doctor, #rec-help, #freeze-doctor, #freeze-help { position:absolute;
+        left:320px; top:128px; width:1280px; height:672px; object-fit:fill; }
+      #freeze-doctor, #freeze-help { transform-origin:0 0; }
 
       /* 通用 kicker / 强调（GitHub Dark 字面量） */
       .kicker { position:absolute; left:0; right:0; top:118px; text-align:center;
@@ -282,7 +311,7 @@ PROJECT_CSS = """
       /* S1 时间轴 */
       #tl-svg { position:absolute; left:50%; top:250px; margin-left:-550px;
         width:1100px; height:360px; }
-      #tl-track, #tl-track2 { fill:#161b22; stroke:#30363d; stroke-width:2; }
+      #tl-track, #tl-track2 { fill:#161b22; stroke:#2b3c57; stroke-width:2; }
       .keyframe { fill:#e3b341; }
       .clip-line { stroke:#8b949e; stroke-width:4; stroke-dasharray:14 12; }
       .ask-tail { position:absolute; left:0; right:0; bottom:278px; text-align:center;
@@ -291,7 +320,7 @@ PROJECT_CSS = """
       /* S2 流程 */
       .flow { position:absolute; left:0; right:0; top:330px; text-align:center; }
       .flow-box { display:inline-block; width:440px; padding:48px 30px;
-        background:#161b22; border:2px solid #30363d; border-radius:20px; vertical-align:middle; }
+        background:#161b22; border:2px solid #2b3c57; box-shadow:inset 0 1px 0 rgba(121,192,255,.14),0 10px 30px rgba(0,0,0,.38); border-radius:20px; vertical-align:middle; }
       .flow-box.hot { border-color:#1f6feb; }
       .fb-h { font-size:46px; color:#8b949e; margin-bottom:18px; }
       .fb-c { font-size:74px; color:#e6edf3; }
@@ -317,14 +346,14 @@ PROJECT_CSS = """
       /* S5 / S14 对比 */
       .cmp { position:absolute; left:0; right:0; top:280px; text-align:center; }
       .cmp-box { display:inline-block; width:520px; padding:40px 44px; margin:0 24px;
-        background:#161b22; border:2px solid #30363d; border-radius:20px; vertical-align:top; }
+        background:#161b22; border:2px solid #2b3c57; box-shadow:inset 0 1px 0 rgba(121,192,255,.14),0 10px 30px rgba(0,0,0,.38); border-radius:20px; vertical-align:top; }
       .cmp-box.hot { border-color:#1f6feb; }
       .cmp-h { font-size:60px; margin-bottom:22px; }
       .cmp-h.red { color:#f85149; } .cmp-h.green { color:#3fb950; }
       .cmp-h.blue { color:#58a6ff; } .cmp-h.mute { color:#8b949e; }
       .cmp-l { font-size:48px; color:#e6edf3; line-height:1.7; }
-      .rm-soul { position:absolute; left:0; right:0; bottom:262px; text-align:center;
-        font-size:52px; color:#e3b341; }
+      .rm-soul { position:absolute; left:0; right:0; top:202px; text-align:center;
+        font-size:48px; color:#e3b341; letter-spacing:.04em; }
 
       /* S6/S7 大字 */
       .big-word { position:absolute; left:0; right:0; top:360px; text-align:center;
@@ -336,7 +365,7 @@ PROJECT_CSS = """
       /* S8 逐字节 */
       .bytes { position:absolute; left:0; right:0; top:330px; text-align:center; }
       .byte-file { display:inline-block; width:200px; padding:40px 0; background:#161b22;
-        border:2px solid #30363d; border-radius:16px; font-size:50px; color:#e6edf3; }
+        border:2px solid #2b3c57; box-shadow:inset 0 1px 0 rgba(121,192,255,.14),0 10px 30px rgba(0,0,0,.38); border-radius:16px; font-size:50px; color:#e6edf3; }
       .byte-sub { font-size:36px; color:#8b949e; margin-top:14px; }
       .byte-eq { display:inline-block; font-size:72px; color:#8b949e; margin:0 20px; }
       .byte-out { position:absolute; left:0; right:0; bottom:280px; text-align:center;
@@ -345,7 +374,7 @@ PROJECT_CSS = """
       /* S9 循环 */
       #loop-svg { position:absolute; left:50%; top:300px; margin-left:-450px;
         width:900px; height:300px; }
-      .lp-node { fill:#161b22; stroke:#30363d; stroke-width:2; }
+      .lp-node { fill:#161b22; stroke:#2b3c57; stroke-width:2; }
       .lp-t { fill:#e6edf3; font-size:44px; text-anchor:middle; }
       .lp-arrow { fill:none; stroke:#8b949e; stroke-width:4; }
       .life-sub { position:absolute; left:140px; right:140px; bottom:262px; text-align:center;
@@ -354,43 +383,45 @@ PROJECT_CSS = """
       /* S10 三件套 */
       .stack { position:absolute; left:0; right:0; top:310px; text-align:center; }
       .stack-card { display:inline-block; width:360px; margin:0 26px; padding:50px 0;
-        background:#161b22; border:2px solid #30363d; border-radius:20px; }
+        background:#161b22; border:2px solid #2b3c57; box-shadow:inset 0 1px 0 rgba(121,192,255,.14),0 10px 30px rgba(0,0,0,.38); border-radius:20px; }
       .stack-name { font-size:88px; color:#58a6ff; }
       .stack-role { font-size:48px; color:#8b949e; margin-top:18px; }
 
       /* S11 doctor 命令 */
       .cmd-card { position:absolute; left:50%; top:340px; margin-left:-480px;
-        width:960px; padding:56px 60px; background:#161b22; border:2px solid #30363d;
+        width:960px; padding:56px 60px; background:#161b22; border:2px solid #2b3c57; box-shadow:inset 0 1px 0 rgba(121,192,255,.14),0 10px 30px rgba(0,0,0,.38);
         border-radius:18px; }
       .cmd-line { font-size:72px; color:#e6edf3; font-family:'Consolas','Courier New',monospace; }
       .cmd-desc { position:absolute; left:0; right:0; bottom:300px; text-align:center;
         font-size:54px; color:#8b949e; }
 
-      /* S12 doctor 概念卡（录屏结束后） */
-      .doc-cards { position:absolute; left:0; right:0; top:330px; text-align:center; }
-      .doc-verdict { font-size:60px; color:#e6edf3; }
-      .doc-green { margin:44px 0; }
-      .dg { display:inline-block; margin:0 30px; padding:24px 50px;
+      /* S12 doctor 概念卡（终端缩小后居右，left 884＝小窗右侧 857 之外） */
+      .doc-cards { position:absolute; left:884px; top:250px; width:976px;
+        text-align:center; }
+      .doc-verdict { font-size:56px; color:#e6edf3; }
+      .doc-green { margin:40px 0; }
+      .dg { display:inline-block; margin:0 16px; padding:22px 40px;
         background:#161b22; border:2px solid #3fb950; border-radius:16px;
-        font-size:76px; color:#3fb950; }
-      .doc-note { font-size:48px; color:#8b949e; line-height:1.6; }
+        font-size:64px; color:#3fb950; }
+      .doc-note { font-size:42px; color:#8b949e; line-height:1.6; }
 
-      /* S13 help 概念卡 */
-      .help-cards { position:absolute; left:0; right:0; top:250px; text-align:center; }
-      .help-verdict { font-size:56px; color:#e6edf3; }
-      .help-four { margin:34px 0; }
-      .hf-cmd { display:inline-block; font-size:84px; color:#e3b341; }
-      .hf-dot { display:inline-block; font-size:72px; color:#8b949e; margin:0 22px; }
-      .pipe-flow { margin:40px 0; }
-      .pf-step { display:inline-block; font-size:48px; color:#8b949e; }
+      /* S13 help 概念卡（终端缩小后居右） */
+      .help-cards { position:absolute; left:884px; top:232px; width:976px;
+        text-align:center; }
+      .help-verdict { font-size:50px; color:#e6edf3; }
+      .help-four { margin:28px 0; white-space:nowrap; }
+      .hf-cmd { display:inline-block; font-size:58px; color:#e3b341; }
+      .hf-dot { display:inline-block; font-size:50px; color:#8b949e; margin:0 6px; }
+      .pipe-flow { margin:28px 0; white-space:nowrap; }
+      .pf-step { display:inline-block; font-size:36px; color:#8b949e; }
       .pf-step.final { color:#e3b341; }
-      .pf-arrow { display:inline-block; font-size:44px; color:#8b949e; margin:0 14px; }
-      .help-tail { font-size:46px; color:#8b949e; margin-top:8px; }
+      .pf-arrow { display:inline-block; font-size:34px; color:#8b949e; margin:0 7px; }
+      .help-tail { font-size:40px; color:#8b949e; margin-top:6px; line-height:1.5; }
 
       /* S15 三象限 */
       .three { position:absolute; left:0; right:0; top:280px; text-align:center; }
       .three-card { display:inline-block; width:430px; margin:0 22px; padding:40px 36px;
-        background:#161b22; border:2px solid #30363d; border-radius:20px; vertical-align:top; }
+        background:#161b22; border:2px solid #2b3c57; box-shadow:inset 0 1px 0 rgba(121,192,255,.14),0 10px 30px rgba(0,0,0,.38); border-radius:20px; vertical-align:top; }
       .three-card.win { border-color:#3fb950; }
       .three-h { font-size:54px; color:#8b949e; margin-bottom:20px; }
       .three-l { font-size:46px; color:#e6edf3; line-height:1.6; }
@@ -411,7 +442,7 @@ PROJECT_CSS = """
       .nx-lead { position:absolute; left:0; right:0; top:250px; text-align:center;
         font-size:60px; color:#8b949e; }
       .nx-card { position:absolute; left:50%; top:380px; margin-left:-520px;
-        width:1040px; padding:48px 60px; background:#161b22; border:2px solid #30363d;
+        width:1040px; padding:48px 60px; background:#161b22; border:2px solid #2b3c57; box-shadow:inset 0 1px 0 rgba(121,192,255,.14),0 10px 30px rgba(0,0,0,.38);
         border-radius:20px; text-align:center; }
       .nx-cmd { font-size:76px; color:#58a6ff; }
       .nx-sub { font-size:48px; color:#8b949e; margin-top:20px; }
@@ -500,18 +531,24 @@ SCENE_JS = """
       tl.from('#dc-desc',{y:22,opacity:0,duration:.6},119.4);
       tl.to('#sc-doctor-cmd > .scene-inner',{opacity:0,duration:.4},122.94);
 
-      /* S12 123.34–139.52（录屏 123.34–125.27 顶层播放；概念卡 125.4 淡入） */
-      tl.fromTo('#sc-doctor-rec > .scene-inner',{opacity:0},{opacity:1,duration:.4},125.4);
-      tl.from('#doc-v',{y:24,opacity:0,duration:.6},125.7);
-      tl.from('#doc-g',{y:30,opacity:0,duration:.7},127.6);
-      tl.from('#doc-n',{y:22,opacity:0,duration:.6},133.6);
+      /* S12 123.34–139.52：video 123.34–125.27；定格全屏 4.1s（到129.4），
+         随后缩到左侧，右侧概念卡同时淡入（叉号 132.1 贴合语音） */
+      tl.to('#freeze-doctor',{x:-256,y:122,scale:.62,duration:.9,
+        ease:'power2.inOut'},129.4);
+      tl.fromTo('#sc-doctor-rec > .scene-inner',{opacity:0},{opacity:1,duration:.4},129.4);
+      tl.from('#doc-v',{y:24,opacity:0,duration:.6},129.7);
+      tl.from('#doc-g',{y:30,opacity:0,duration:.7},130.8);
+      tl.from('#doc-n',{y:22,opacity:0,duration:.6},132.0);
       tl.to('#sc-doctor-rec > .scene-inner',{opacity:0,duration:.4},139.12);
 
-      /* S13 139.52–164.06（录屏 139.52–142.32；概念卡 142.5 淡入） */
-      tl.fromTo('#sc-help-rec > .scene-inner',{opacity:0},{opacity:1,duration:.4},142.5);
-      tl.from('#help-v',{y:22,opacity:0,duration:.6},142.7);
-      tl.from('#help-f',{y:26,opacity:0,duration:.7},144.6);
-      tl.from('#pipe-flow',{y:26,opacity:0,duration:.7},149.0);
+      /* S13 139.52–164.06：video 139.52–142.32；定格全屏 6.7s（到149.0），
+         随后缩到左侧，右侧大字命令卡同时淡入 */
+      tl.to('#freeze-help',{x:-256,y:122,scale:.62,duration:.9,
+        ease:'power2.inOut'},149.0);
+      tl.fromTo('#sc-help-rec > .scene-inner',{opacity:0},{opacity:1,duration:.4},149.0);
+      tl.from('#help-v',{y:22,opacity:0,duration:.6},149.2);
+      tl.from('#help-f',{y:26,opacity:0,duration:.7},150.4);
+      tl.from('#pipe-flow',{y:26,opacity:0,duration:.7},154.6);
       tl.from('#help-tail',{y:20,opacity:0,duration:.6},160.8);
       tl.to('#sc-help-rec > .scene-inner',{opacity:0,duration:.4},163.66);
 
@@ -544,12 +581,15 @@ SCENE_JS = """
       tl.from('#nx-bye',{y:22,opacity:0,duration:.6},231.0);
 """
 
-# ---------- 底部字幕轨道（词时间提前，补偿 whisper 偏晚） ----------
-frag = char_track(cues, chars, THEME.accent, word_lead=WHISPER_WORD_LEAD)
+# ---------- 底部字幕轨道（逐字延后 0.1s：实测字先于声，取消提前再延后） ----------
+frag = char_track(cues, chars, THEME.accent, word_lead=-0.1)
 
 # ---------- 组装 ----------
 body = "\n".join([
     audio_tag("media/audio.wav", total),
+    "",
+    '      <div id="bg-grid"></div>',
+    '      <div id="bg-glow"></div>',
     "",
     VIDEOS,
     "",
