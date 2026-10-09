@@ -581,8 +581,11 @@ SCENE_JS = """
       tl.from('#nx-bye',{y:22,opacity:0,duration:.6},231.0);
 """
 
-# ---------- 底部字幕轨道（逐字延后 0.1s：实测字先于声，取消提前再延后） ----------
-frag = char_track(cues, chars, THEME.accent, word_lead=-0.1)
+# ---------- 底部字幕轨道（整体延后 0.28s）----------
+# faster-whisper 把句间停顿「吞」进后段开头（段起点贴上段终点），实测 23 个
+# 停顿点字幕全部早于真实发声，中位数 0.285s。time_offset 把整句淡入与逐字
+# 变色一起平移到真实发声点（word_lead 归零）。
+frag = char_track(cues, chars, THEME.accent, time_offset=0.28)
 
 # ---------- 组装 ----------
 body = "\n".join([
