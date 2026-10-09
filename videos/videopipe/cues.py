@@ -89,10 +89,15 @@ def group_cues(src_text, al, split):
 
 
 def enforce_monotonic(cues, gap=0.02):
-    """后句早于前句结束时，把后句起点顶到前句末 + gap（原地）。"""
+    """后句早于前句结束时，把后句起点顶到前句末 + gap（原地）。
+
+    前句尾若来自拉丁片段、晚于本句真实尾（跨类型对齐残余），顶上去会
+    s>e：clamp 到本句 e，守住 s≤e 这个硬不变量。"""
     for i in range(1, len(cues)):
         if cues[i]["s"] < cues[i - 1]["e"]:
             cues[i]["s"] = round(cues[i - 1]["e"] + gap, 2)
+        if cues[i]["s"] > cues[i]["e"]:
+            cues[i]["s"] = cues[i]["e"]
     return cues
 
 
