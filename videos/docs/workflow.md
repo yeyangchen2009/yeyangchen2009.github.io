@@ -22,7 +22,7 @@
 | 组件 | 版本 / 说明 |
 |---|---|
 | HyperFrames | **`0.8.107`**（`npx hyperframes@0.8.107`，版本写死，防像素微差） |
-| GSAP | `3.14.2`（CDN，渲染时内联） |
+| GSAP | `3.14.2`（唯一源 `assets/gsap/gsap.min.js`，`stage_gsap()` 复制进项目根后以本地 `src` 引用） |
 | faster-whisper | `>=1.0`，CPU/int8，`base` 模型（约 145MB） |
 | Python | 3.10+，依赖见 `videos/requirements.txt` |
 | Node | 22+（脚本用到内置 WebSocket / 原生 fetch） |

@@ -9,7 +9,12 @@ from pathlib import Path
 
 # ---- 画布与依赖（五片实测统一） ----
 WIDTH, HEIGHT, FPS = 1920, 1080, 30
-GSAP_URL = "https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"
+# GSAP 本地副本（videos/assets/gsap/gsap.min.js）：CDN 实测需约 11s、卡在
+# check 浏览器 10s 导航超时上；用 <script src="../.."> 又被静态检查判为穿越
+# 项目根；内联则库源码含 Math.random/Date.now 字样被非确定性检查命中。故由
+# stage_gsap() 把这份唯一源复制进项目根、以 <script src="gsap.min.js"> 引用
+# （项目根副本是 gitignored 构建产物，仓库里只保留 assets 下一份）。
+GSAP_LOCAL = Path(__file__).resolve().parent.parent / "assets" / "gsap" / "gsap.min.js"
 HYPERFRAMES_PIN = "0.8.107"
 
 # ---- 轨道编号 ----

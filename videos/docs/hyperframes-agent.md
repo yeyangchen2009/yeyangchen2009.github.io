@@ -5,7 +5,7 @@
 
 ## 版本钉死
 
-CLI 统一 `npx --yes hyperframes@0.8.107`，GSAP `3.14.2` CDN。钉版本是
+CLI 统一 `npx --yes hyperframes@0.8.107`，GSAP `3.14.2` 本地副本。钉版本是
 为了数周后仍逐像素一致渲染。升级另开，用 `@latest upgrade --project .`。
 
 ## 基本规则

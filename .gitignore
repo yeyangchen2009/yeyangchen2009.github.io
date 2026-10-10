@@ -20,6 +20,7 @@ snapshots/
 
 # videos 工作区：生成产物与本地输出不入库（生成器/配置/cues/源稿入库）
 videos/projects/**/index.html
+videos/projects/**/gsap.min.js
 videos/projects/**/cover.html
 videos/projects/**/media/
 videos/projects/**/build/
