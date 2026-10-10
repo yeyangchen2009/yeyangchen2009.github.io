@@ -1,11 +1,28 @@
 # -*- coding: utf-8 -*-
 """HyperFrames HTML 文件外壳。
 
-封装每个成片逐字相同的部分：doctype / head / meta / GSAP CDN /
+封装每个成片逐字相同的部分：doctype / head / meta / GSAP（项目内本地副本）/
 `#root[data-composition-id="main"]` / GSAP paused timeline 与注册。
 内容（css / body / js）由 scene、subtitle 等轨道模块产出后注入。
 """
+import shutil
+from pathlib import Path
+
 from . import config
+
+
+def stage_gsap(P) -> Path:
+    """把唯一源 assets/gsap/gsap.min.js 复制进项目根（内容不变才写盘）。
+
+    index.html 用 <script src="gsap.min.js"> 引用：不能用 CDN（实测约 11s，
+    卡 check 浏览器 10s 导航超时），不能用 ../../ 穿越项目根（静态检查拒绝），
+    也不能内联（库源码含 Math.random/Date.now 字样，被非确定性检查命中）。
+    项目根的副本是构建产物（gitignored），仓库里只保留 assets 下一份源。
+    """
+    dst = P.root / "gsap.min.js"
+    if not dst.exists() or dst.read_bytes() != config.GSAP_LOCAL.read_bytes():
+        shutil.copyfile(config.GSAP_LOCAL, dst)
+    return dst
 
 
 def jsnum(x) -> str:
@@ -28,6 +45,7 @@ def audio_tag(src: str, duration, *, track=config.TRACK_AUDIO, volume=1.0) -> st
 
 
 def render_page(*, total, css: str, body: str, js: str,
+                gsap_src: str = "gsap.min.js",
                 body_lead_blank: bool = True) -> str:
     """组装完整 index.html 文本（不写盘，便于测试与对比）。
 
@@ -59,4 +77,4 @@ def render_page(*, total, css: str, body: str, js: str,
         '    </script>\n'
         '  </body>\n'
         '</html>\n'
-    ) % (config.GSAP_URL, css, jsnum(total), lead, body, js)
+    ) % (gsap_src, css, jsnum(total), lead, body, js)

@@ -13,7 +13,7 @@
 """
 from . import config
 from .config import ProjectPaths
-from .page import render_page, audio_tag
+from .page import render_page, audio_tag, stage_gsap
 from .theme import (Theme, assemble_css, DARK_GOLD_GH, DUNHUANG_WARM,
                     XUANZHI, SILK_PRO, DARK_GOLD_XJ, THEMES)
 from .scene import Scene, render_scenes, scene_fade_js
@@ -31,7 +31,7 @@ from .cover import (CoverLayout, render_cover, RULER_LEFT, BOX_RIGHT)
 
 __all__ = [
     "config", "ProjectPaths",
-    "render_page", "audio_tag",
+    "render_page", "audio_tag", "stage_gsap",
     "Theme", "assemble_css", "DARK_GOLD_GH", "DUNHUANG_WARM", "XUANZHI",
     "SILK_PRO", "DARK_GOLD_XJ", "THEMES",
     "Scene", "render_scenes", "scene_fade_js",
