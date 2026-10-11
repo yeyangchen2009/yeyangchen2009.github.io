@@ -24,6 +24,7 @@ videos/projects/**/gsap.min.js
 videos/projects/**/cover.html
 videos/projects/**/media/
 videos/projects/**/build/
+videos/projects/**/oneoffs/backup/
 videos/assets/local-fonts/
 videos/**/.venv/
 

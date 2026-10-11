@@ -49,6 +49,54 @@ def concat_copy(parts, out_mp4, *, faststart=True, workdir=None) -> None:
     subprocess.run(cmd, check=True)
 
 
+def finalize_intro(head, body, out_mp4, *, seconds, workdir) -> None:
+    """封面段直接吃正片开头 N 秒声音，正片画面 -ss N 裁起（终片与正片等长）。
+
+    适用：开场白（如「哈喽大家好我是叶扬」）录在正片 0–N 秒、却不想配正片
+    首屏画面——让它响在封面静帧上。与 finalize_concat 的区别：
+
+    - 视频：封面头 N 秒 ＋ 正片画面**从 N 秒处**帧精确重编码裁起；
+    - 音频：**整段原样 copy 正片音轨**（不补静音、不重编码）——封面段听到的
+      就是正片 0–N 秒，切点处声音正好走到正片 N 秒、画面也正好是正片 N 秒，
+      音画相对关系全程不变；AAC priming 只在整条最开头一次（落在封面段）。
+
+    结果终片时长 == 正片时长（而非 +N 秒）。
+    """
+    workdir = Path(workdir)
+    workdir.mkdir(parents=True, exist_ok=True)
+    head, body, out_mp4 = str(head), str(body), str(out_mp4)
+
+    tail = workdir / "body-tail.mp4"
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error",
+         "-ss", str(seconds), "-i", body,
+         "-map", "0:v", "-an",
+         "-c:v", "libx264", "-profile:v", config.X264["profile"],
+         "-pix_fmt", config.X264["pix_fmt"], "-r", str(config.FPS),
+         "-crf", str(config.X264["crf"]), str(tail)],
+        check=True)
+
+    vlist = workdir / "_vlist-intro.txt"
+    vlist.write_text(
+        "file '%s'\nfile '%s'\n"
+        % (Path(head).resolve().as_posix(), Path(tail).resolve().as_posix()),
+        encoding="utf-8")
+    full_v = workdir / "full-video-intro.mp4"
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error",
+         "-f", "concat", "-safe", "0", "-i", str(vlist),
+         "-map", "0:v", "-c", "copy", "-an", str(full_v)],
+        check=True)
+
+    # 音频直接取正片整条原始音轨（不 seek、不重编码）
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error",
+         "-i", str(full_v), "-i", body,
+         "-map", "0:v", "-map", "1:a",
+         "-c", "copy", "-movflags", "+faststart", out_mp4],
+        check=True)
+
+
 def finalize_concat(head, body, out_mp4, *, seconds, workdir) -> None:
     """封面头 + 正片 → 终片（音画严格对齐版）。
 
