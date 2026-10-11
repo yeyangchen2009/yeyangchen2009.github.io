@@ -26,7 +26,8 @@ from .whisper_asr import transcribe, save_raw, load_raw
 from .align import align, check_report
 from .cues import (group_cues, enforce_monotonic, build_cues_json,
                    save_cues, to_srt)
-from .concat import make_cover_head, concat_copy, finalize_concat
+from .concat import (make_cover_head, concat_copy,
+                     finalize_concat, finalize_intro)
 
 
 def _paths(project: str) -> ProjectPaths:
@@ -131,9 +132,17 @@ def cmd_finalize(P: ProjectPaths, a) -> None:
     print("正片   %.3fs" % body_dur)
 
     out.parent.mkdir(parents=True, exist_ok=True)
-    finalize_concat(head, body, out, seconds=a.hold, workdir=P.build_dir)
+    if a.intro:
+        # 封面段吃正片开头 N 秒声音（报名响在封面），画面 -ss N 裁起；
+        # 音频整段不动，终片与正片等长。
+        finalize_intro(head, body, out, seconds=a.hold, workdir=P.build_dir)
+        expect = body_dur
+        print("模式   intro（封面带正片头 %s 秒声音，画面 -ss %s 裁起）"
+              % (a.hold, a.hold))
+    else:
+        finalize_concat(head, body, out, seconds=a.hold, workdir=P.build_dir)
+        expect = a.hold + body_dur
     total = probe_duration(out)
-    expect = a.hold + body_dur
     print("终片   %.3fs → %s" % (total, out))
     assert abs(total - expect) < 0.1, "终片 %f != 预期 %f" % (total, expect)
     print("RESULT PASS")
@@ -179,6 +188,9 @@ def main() -> None:
     f.add_argument("--out", help="终片（默认 media/<项目名>-yeyang-cover.mp4）")
     f.add_argument("--hold", type=float, default=config.COVER_HOLD,
                    help="封面静帧秒数，默认 2.0")
+    f.add_argument("--intro", action="store_true",
+                   help="封面段吃正片头 N 秒声音（报名响在封面），正片画面 "
+                        "-ss N 裁起，音频整段不动，终片与正片等长")
 
     args = p.parse_args()
     P = _paths(args.project)
