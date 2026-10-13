@@ -41,9 +41,16 @@ def pages():
     return [t for t in _http("/json") if t["type"] == "page"]
 
 
-def find_page(needle):
+def find_page(needle, exclude=None):
+    """按 URL 子串找 tab；exclude（子串或元组）命中则跳过。
+
+    STUDIO_NEEDLE="localhost:3002/" 是 player URL 的子串，
+    故找 Studio 必须 exclude PLAYER_NEEDLE，否则两者返回同一 tab。
+    """
+    if isinstance(exclude, str):
+        exclude = (exclude,)
     for t in pages():
-        if needle in t["url"]:
+        if needle in t["url"] and not (exclude and any(x in t["url"] for x in exclude)):
             return t
     return None
 
@@ -69,6 +76,9 @@ def start_edge(wait=25):
         "--no-first-run",
         "--no-default-browser-check",
         "--disable-features=msEdgeWelcomeFLX",
+        # 残留实例被强杀后重启不弹「还原页面」气泡（会挡 activate/前置）
+        "--disable-session-crashed-bubble",
+        "--hide-crash-restore-bubble",
         STUDIO_URL,
     ])
     t0 = time.time()
@@ -151,12 +161,12 @@ def devtools_open():
 
 def ensure_tabs():
     """返回 (studio_tab, player_tab)，必要时建 tab。不切前台。"""
-    studio = find_page(STUDIO_NEEDLE)
+    studio = find_page(STUDIO_NEEDLE, exclude=PLAYER_NEEDLE)
     player = find_page(PLAYER_NEEDLE)
     if not studio:
         browser_new_tab(STUDIO_URL)
         time.sleep(1.5)
-        studio = find_page(STUDIO_NEEDLE)
+        studio = find_page(STUDIO_NEEDLE, exclude=PLAYER_NEEDLE)
     if not player:
         browser_new_tab(PLAYER_URL)
         time.sleep(2.0)

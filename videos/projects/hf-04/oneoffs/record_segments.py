@@ -95,12 +95,18 @@ SCREEN_REC = r"F:\Data\gmeek-site\tools\screen-rec.js"
 RACE_SRC = os.path.join(HERE, "race_snapshot.py")
 RACE_DST = os.path.join(PROJ, "race-snapshot.py")
 
-WND_X, WND_Y, WND_W, WND_H = 0, 0, 1600, 920
-TERM_W, TERM_H = 1620, 1000
+# 录区是屏幕物理 (0,0,1600,920)（gdigrab，屏幕 1920×1080@150%）。Win11 DWM：
+# 窗口右边 12px 是圆角/阴影透明带（实测实体到 rect-12），左边 11px 不透明边框。
+# 故窗口外框摆 (-12, 0, 1624, 928)：实体右缘到 1600、左客户区仅切 1px，
+# 底部实体到 ~936，录区四周零穿帮（hf-03 右缘 27px 穿帮的根治）。
+WND_X, WND_Y, WND_W, WND_H = -12, 0, 1624, 928
+TERM_X, TERM_Y = -12, 0
+TERM_W, TERM_H = 1632, 1000  # 高向下超出录区无妨（穿帮只在窗口盖不住录区的方向）
 REC_TERM_TITLE = "hf04-rec"
 
-# TODO(彩排核对)：Studio Play 按钮在 1600×920 窗内的坐标，先沿 hf-03 同版实测值
-PLAY_X, PLAY_Y = 775, 487
+# Studio Preview Play 三角中心：2026-10-13 实拍标定（新摆位 gdigrab 录区内，
+# bbox 770..782×422..436，质心 775.4,428.8）
+PLAY_X, PLAY_Y = 775, 428
 
 NPX = "npx --yes hyperframes@0.8.107"
 
@@ -140,7 +146,7 @@ def _enum_hf04_npp():
     """所有可见、标题含 _hftest\\hf04 的 Notepad++ 顶层窗 [(hwnd, title)]。"""
     found = []
 
-    @r.ctypes.WINFUNCTYPE(r.wintypes.HWND, r.wintypes.LPARAM)
+    @r.ctypes.WINFUNCTYPE(r.ctypes.c_bool, r.wintypes.HWND, r.wintypes.LPARAM)
     def cb(wnd, _):
         c = r.ctypes.create_unicode_buffer(64)
         r.u.GetClassNameW(wnd, c, 64)
@@ -184,7 +190,7 @@ def _dismiss_modal(owner):
     GetWindow.argtypes = [r.wintypes.HWND, r.wintypes.UINT]
     dialogs = []
 
-    @r.ctypes.WINFUNCTYPE(r.wintypes.HWND, r.wintypes.LPARAM)
+    @r.ctypes.WINFUNCTYPE(r.ctypes.c_bool, r.wintypes.HWND, r.wintypes.LPARAM)
     def cb(wnd, _):
         c = r.ctypes.create_unicode_buffer(32)
         r.u.GetClassNameW(wnd, c, 32)
@@ -325,15 +331,15 @@ def ensure_edge():
 
 
 def edge_foreground_hwnd(tab_id):
-    """激活 tab→前置窗→过闸，返回 Edge 主窗 hwnd。"""
+    """激活 tab→按 pid 强前置窗（顺带关扩展广告小窗）→摆位过闸，返回主窗 hwnd。"""
     cdp_ctrl.browser_activate(tab_id)
-    time.sleep(.8)
-    hwnd = guard.assert_fg_isolated()
+    time.sleep(.5)
+    hwnd = guard.force_isolated_edge_foreground()
     r.u.ShowWindow(hwnd, r.SW_RESTORE)
     r.move(hwnd, WND_X, WND_Y, WND_W, WND_H)
-    time.sleep(.4)
+    time.sleep(.3)
     r.activate(hwnd)
-    time.sleep(.4)
+    time.sleep(.3)
     guard.assert_fg_isolated()
     guard.assert_point_isolated(PLAY_X, PLAY_Y)
     return hwnd
@@ -464,13 +470,13 @@ _term_hwnd = None
 
 
 def open_rec_term():
-    """独立 WT 窗（cmd，cwd/三变量就位），1620×1000。绝不动用户 WT。"""
+    """独立 WT 窗（cmd，cwd/三变量就位），1632×1000 外框盖住录区。绝不动用户 WT。"""
     global _term_hwnd
     existing = r.find_window(REC_TERM_TITLE)
     if existing:
         _term_hwnd = existing
         r.u.ShowWindow(_term_hwnd, r.SW_RESTORE)
-        r.move(_term_hwnd, WND_X, WND_Y, TERM_W, TERM_H)
+        r.move(_term_hwnd, TERM_X, TERM_Y, TERM_W, TERM_H)
         time.sleep(.4)
         r.activate(_term_hwnd)
         guard.assert_fg_safe()
@@ -497,7 +503,7 @@ def open_rec_term():
         raise RuntimeError("等不到 hf04-rec 终端窗口")
     time.sleep(1.2)
     r.u.ShowWindow(_term_hwnd, r.SW_RESTORE)
-    r.move(_term_hwnd, WND_X, WND_Y, TERM_W, TERM_H)
+    r.move(_term_hwnd, TERM_X, TERM_Y, TERM_W, TERM_H)
     time.sleep(.5)
     r.activate(_term_hwnd)
     guard.assert_fg_safe()
@@ -728,13 +734,7 @@ def take_seg8():
     time.sleep(.6)
     cdp_ctrl.player_seek(player, 0)
     time.sleep(.4)
-    cdp_ctrl.browser_activate(player)
-    time.sleep(1.0)
-    hwnd = guard.assert_fg_isolated()
-    r.u.ShowWindow(hwnd, r.SW_RESTORE)
-    r.move(hwnd, WND_X, WND_Y, WND_W, WND_H)
-    r.activate(hwnd)
-    guard.assert_fg_isolated()
+    hwnd = edge_foreground_hwnd(player)
     # DevTools 若上次残留开着，Ctrl+Shift+J 会把它关掉而非打开：按 target 检测
     if cdp_ctrl.devtools_open():
         guard.assert_point_safe(760, 200)
