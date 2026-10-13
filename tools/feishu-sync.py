@@ -42,7 +42,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 ENV_FILE = os.path.join(HERE, '.feishu.env')
 STATE_FILE = os.path.join(HERE, '.feishu-state.json')
-DEFAULT_SPACE = '中国佛教史·审稿'
+DEFAULT_SPACE = '中印佛教史'
 IMG_WIDTH = '620'
 
 
