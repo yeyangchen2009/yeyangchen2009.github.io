@@ -16,9 +16,11 @@ mouse_click/拖拽落到用户 WT 上。此后所有自动化脚本在每次键�
 """
 import ctypes
 import subprocess
+import time
 from ctypes import wintypes
 
 u = ctypes.windll.user32
+k32 = ctypes.windll.kernel32
 
 CDP_PORT = 9222
 NPP_TITLE_NEEDLE = r"_hftest\hf04-seek"
@@ -156,6 +158,70 @@ def assert_point_safe(x, y):
 
 
 # ---------- Edge 专闸（段⑤） ----------
+
+WM_CLOSE = 0x0010
+SW_RESTORE = 9
+
+
+def isolated_edge_windows():
+    """cdp pid 名下可见 Chrome_WidgetWin_1 顶层窗，按面积降序。
+
+    Edge 可能有扩展广告小窗（实测 IDM Integration Module「已添加」472x342）
+    与浏览器主窗并存，标题同样写页面名，故只按 pid＋面积，不靠标题定位。
+    """
+    pid = cdp_pid()
+    rows = []
+    for hwnd, cn, title, wpid in _enum_windows():
+        if wpid == pid and cn == "Chrome_WidgetWin_1":
+            rc = wintypes.RECT()
+            u.GetWindowRect(hwnd, ctypes.byref(rc))
+            w, h = rc.right - rc.left, rc.bottom - rc.top
+            if w > 0 and h > 0:
+                rows.append((hwnd, title, w, h, w * h))
+    rows.sort(key=lambda x: -x[4])
+    return rows
+
+
+def force_isolated_edge_foreground(close_aux=True):
+    """按 cdp pid 定位隔离 Edge 主窗（面积最大者），关扩展广告小窗，
+    AttachThreadInput 破 Windows 前台锁强前置，成功返回主窗 hwnd。
+
+    2026-10-13 实测：用户主 Edge 恰好也开着 Studio 页且挡在前台时，
+    CDP Target.activateTarget 受前台锁限制抢不过来，assert_fg_isolated
+    只看 GetForegroundWindow 会误拦。窗口归属按 pid 定位，不靠前台北指针。
+    """
+    want = cdp_pid()
+    wins = isolated_edge_windows()
+    if not wins:
+        raise UnsafeForeground("cdp pid=%s 名下没有可见浏览器窗" % want)
+    main_hwnd = wins[0][0]
+    # 辅助小窗：同 pid 下面积不到主窗 1/3 的（IDM「已添加」等）。
+    # DevTools 底停靠是同窗内 target 不产生顶层窗；文件对话框 #32770 不命中。
+    if close_aux:
+        for hwnd, title, w, h, area in wins[1:]:
+            if area < wins[0][4] / 3:
+                u.PostMessageW(hwnd, WM_CLOSE, 0, 0)
+                time.sleep(0.3)
+    if u.IsIconic(main_hwnd):
+        u.ShowWindow(main_hwnd, SW_RESTORE)
+    fg = u.GetForegroundWindow()
+    fg_tid = u.GetWindowThreadProcessId(fg, None)
+    cur_tid = k32.GetCurrentThreadId()
+    attached = u.AttachThreadInput(cur_tid, fg_tid, True) if fg_tid != cur_tid else False
+    try:
+        u.SetForegroundWindow(main_hwnd)
+        u.BringWindowToTop(main_hwnd)
+    finally:
+        if attached:
+            u.AttachThreadInput(cur_tid, fg_tid, False)
+    time.sleep(0.4)
+    _, fpid = fg_hwnd_pid()
+    if fpid != want:
+        raise UnsafeForeground(
+            "强前置后前台 %s 仍不是隔离 Edge pid=%s——用户可能正在用机，中止"
+            % (identify(fpid), want))
+    return main_hwnd
+
 
 def assert_fg_isolated():
     """前台必须是隔离 Edge（CDP 9222 实例）。Edge 未开直接报错。"""
