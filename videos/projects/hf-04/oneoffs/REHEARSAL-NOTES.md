@@ -129,44 +129,107 @@ insert 之间未 save」，实拍必抛 AssertionError（锚在磁盘还是旧 s
 
 ### A. 开录前必做的九项实拍标定（结果回填本文件）
 
-1. **PLAY_X/Y 坐标**：`record_segments.py` 现沿用 hf-03 的 (775,487)。Studio tab 摆到
-   (0,0,1600,920) 后截图实测 Preview Play 按钮中心，不符就改常量再录 seg1。
+1. ~~PLAY_X/Y 坐标~~ **已标定（2026-10-13）**：新摆位录区内 Preview Play
+   bbox 770..782×422..436，质心 **(775, 429)**，常量已改 PLAY_X,PLAY_Y=775,428
+   （hf-03 旧值 775,487 作废）。
 2. ~~snapshot -o 自建目录~~ **已静态坐实（2026-10-12）**：0.8.107
    `snapshot-MSGC7HTA.js:315` `mkdirSync(snapshotDir,{recursive:true})`，
    -o 不存在自建，无需脚本兜底。
-3. **snapshot 实拍耗时**：三帧 `--at 2.1,2.5,2.9 --no-end` 在 TTY 空跑计时一次，
-   回填 snap_wait（预算 13–14s/次，seg3 两轮）。帧命名已静态坐实
+3. ~~snapshot 实拍耗时~~ **已回填（2026-10-13）**：三帧
+   `--at 2.1,2.5,2.9 --no-end` 单轮 headless 真机约 **14–17s**，take_seg3
+   snap_wait **14→20**（record 6+2*20+12=58s）。帧命名静态坐实仍有效
    （snapshot-MSGC7HTA.js：`frame-${i pad2}-at-${Number(t.toFixed(3))}s.png`，
    i 从 0 每时间点一帧）→ seg3 fc 路径 `frame-00-at-2.1s.png` 正确；
    race 单点 --at 2 → `frame-00-at-2s.png` 与脚本校验一致。**seg5a 已不用单帧轮**，
-   改跑 `python race-snapshot.py`（见下「段⑤a 实证工艺」），TTY 计时整段
-   回填 race_wait（闲机实测 94s，默认预算 150s）。
-4. **check 实拍耗时**：s2 页 TTY 下计时，回填 check_wait（预算 42s）。
-5. **render 实拍耗时**（seg9 定量）：`npm run render -- -o rec-render/hf04-seek.mp4`
-   非录屏空跑计时（预算 80s），决定 seg9 是否进 ALL_TAKES 及 render_wait。
-   命令合法性已静态坐实：package.json 有 check/render 脚本（npx 透传 `--`），
+   改跑 `python race-snapshot.py`（见下「段⑤a 实证工艺」），race_wait 维持
+   150（闲机实测整段 94s；正式 take 若忙机超 150 再上调）。
+4. ~~check 实拍耗时~~ **已回填（2026-10-13）**：s2 页真机 `npm run check`
+   全绿约 **22–24s**，take_seg5b check_wait **42→26**（record 31s）。
+   ⚠️ 待正式 take 复核：hf-03 记载 TTY＋录屏 gdigrab 并发下 check 曾达
+   **33–36s**，若实拍尾帧被截，立即回 42 重录 seg5b（第 65 行旧记载保留对照）。
+5. ~~render 实拍耗时（seg9 定量）~~ **已实测（2026-10-14 凌晨）**：沙盒 s4 页
+   非录屏空跑 `npm run render -- -o rec-render/hf04-seek.mp4`，墙钟 **47.5s**
+   （HF 自报 35.4s＝compile 2.6＋setup 10.1＋capture 22.0＋assemble 0.2，
+   drawelement/hardware gpu/workerCount 1，300 帧 10s，exit 0）。render_wait=80
+   **不动**（TTY＋gdigrab 并发按 hf-03 check 教训预留 +30~50%，尾帧长剪辑掐尾）。
+   **seg9 纳入 ALL_TAKES（第三批压轴）**：capture 期枚举可见顶层窗口无新 Chrome
+   弹窗（worker 为 headless，不盖 hf04-rec 终端），终端镜头安全。命令合法性
+   静态坐实：package.json 有 check/render 脚本（npx 透传 `--`），
    render-EXSRG666.js 官方示例 `render -c ... -o intro.mp4` 同形。
-6. **DevTools 分隔条/控制台坐标**：seg5 open→split→zoom 分步跑，目验 30/31/32 截图：
-   分隔条 SPLIT_Y=700、控制台行 CONSOLE_Y=830、Ctrl+=×4 字号；坐标不符就地改常量。
-7. ~~裸 player 窗标题匹配~~ **已改 CDP 直连（2026-10-12）**：prep_window 按
-   `find_page(PLAYER_NEEDLE)` 的 URL 认 tab（preview 页 `<title>` 不含 URL，
-   旧标题匹配＋前台 fallback 会在同进程 Studio tab 误开 DevTools），激活后
-   以前台 pid==cdp_pid 过闸。tab 缺失自动 ensure_tabs 建齐，不 reload/seek。
-   彩排首跑目验：open 后 DevTools 确实开在裸 player tab 而非 Studio。
-8. **npp_ops 跨集复用**：锚点行号已静态全量核对（check_anchors.py 21 项 PASS：
-   KEYFRAMES 插在 `#card {` 前＝s1 第 30 行；animation 行锚 letter-spacing（第 56 行后）；
-   GSAP 注释行 L39→TT_TITLE；三条 fromTo 单行尾锚 `}, 2/3/6);`＝L39–41；注册行 L42）。
-   首次 reset()/build_s1 真机仍盯 launch/set_zoom/close 与 scroll_anchor 垂直取景效果
-   （SETSEL 跨进程通道 hf-03 实测有效，本集新增的 scroll_anchor 拍法需目验块体同框）；保存后读盘校验。
-9. **seg8 时长已静态上调 48→58s（2026-10-12）**：逐段精算 act 内部——
-   5 次 prep_window（CDP activate＋sleep 1.2＋move/activate）≈1.7×5＝8.5s、
-   open 2.5、split 4.1、zoom 2.9、seek 十条×≈3.2（打字 25 字符×.05≈1.25＋
-   等 1.2＋证据截图 .4）≈32、close 1.5，合计 ≈52.6s，旧值 48 必截 close。
-   彩排实测一轮后回收（截图耗时是唯一未定量项），尾帧 DevTools 关闭画面，
-   长了剪辑掐尾即可。十条 seek 画面逐帧看 33-a..j
-   （命令已带 `window.` 全称，与口播一致）：
-   2.4 半透明半路／3 标题就位／6.3 副标题半路／9 全在／0 空舞台／**2.4×5 五张全同**
-   （粗稿「连着五回 seek 同一个二点四，五回画面一模一样」）。
+6. ~~DevTools 分隔条/控制台坐标~~ **已整段重标定（2026-10-13 深夜，seg5_rehearse.py 固化）**。
+   旧值 SPLIT_Y=700／CONSOLE_Y=830／Ctrl+=×4 全部作废，新工艺：
+   - **open**：Ctrl+Shift+J 开底停靠。控制台输入框是自定义元素
+     `DEVTOOLS-TEXT-EDITOR`，tab 一打开 activeElement 默认就是它——
+     **真实键盘直敲、严禁鼠标点输入行**（z2 下两次点偏、一次把 DevTools 点关）。
+   - **split（像素闭环，不信 CDP 几何）**：innerWidth/Height 是 DevTools 内部
+     逻辑视口，与屏幕几何脱节。seek(0) 黑舞台前提下，PIL 行亮度阶跃（阈值 25，
+     x=200..1500 步长 8）检出标签图标亮行 row；**面板真实顶缘 edge＝row−ROW_OFFSET(30)**，
+     拖拽热区＝row+2，鼠标位移与顶缘 **1:1 跟手**；目标 **PANEL_TOP=555**
+     （实测 row=585 一轮收敛），最多 3 轮、|edge−555|≤5 收口。split/zoom 后必须
+     重注 `cdp_fit.inject_once()`。
+   - **zoom 必须 CDP 合成键**：`Input.dispatchKeyEvent` 发 Ctrl+Digit0 复位＋
+     两次 Ctrl+Equal（vkc 0xBB）＝**z2，devicePixelRatio=1.875**（断言 ±0.05）。
+     严禁真实键盘 Ctrl+=（曾误触到 400%、dpr=6、console-view 高度挤 0）。
+   - **脱敏**：Edge 工具栏「其他搜索框」热搜轮播会穿帮（实拍「英方单方面停考
+     雅思」入镜），edge://settings 外观页关之（开关物理位约 (1245,771)，
+     鼠标点 tab 标题切换，Ctrl+2 直发不切）；edge-cdp profile 已持久关闭。
+   - **OS 前台**：CDP `Page.bringToFront` 只切活动 tab、**不抬 OS 窗口**；
+     终端启动脚本时热键会全落空并被 guard 拦。必须先
+     `guard.force_isolated_edge_foreground()`（EnumWindows 按 pid 找最大
+     Chrome_WidgetWin_1、关 <1/3 面积辅助窗、AttachThreadInput 破前台锁、置后验 pid）。
+   - **CDP 端点**：必须 `127.0.0.1:9222`——localhost 先解析 IPv6 ::1（Edge
+     只听 IPv4）每次 /json 白等 ~2s 超时回退；十条 seek 用 player tab **ws 长连**
+     （eval_tab 短连单次 4.1s，长连后 seek 段 93→43s）。devtools:// target 的
+     ws 要 `suppress_origin=True`。
+   - 分步命令：`python seg5_rehearse.py open|split|zoom|seek|close|all`，
+     证据图 seg5-shots/30-open、31-split-fit、32-zoom、33-seek-a..j、34-closed。
+7. ~~裸 player 窗标题匹配~~ **已改 CDP 直连（2026-10-12，10-13 真机全验）**：
+   prep_window 按 `find_page(PLAYER_NEEDLE)` 的 URL 认 tab（preview 页
+   `<title>` 不含 URL，旧标题匹配＋前台 fallback 会在同进程 Studio tab 误开
+   DevTools）。tab 缺失由布景 ensure_tabs 建齐；**prep_window 自身不调
+   ensure_tabs**（edge:// 设置页不在 /json，会被误判 player 丢失而新开）。
+   真机已目验：open 后 DevTools 确实开在裸 player tab 而非 Studio。
+   激活两道：`guard.force_isolated_edge_foreground()` 物理抬窗＋
+   `browser_activate` 切 tab；前台 pid==cdp_pid 过闸。seek 段另开 player tab
+   ws 长连直 eval（回零/读时间不走控制台、不留历史），细节见第 6 条。
+8. ~~npp_ops 首次真机 reset/build_s1＋scroll_anchor 目验~~ **已真机全验（2026-10-14 凌晨）**。
+   一次性探针（已删）镜像 seg2a/seg6 全序列实拍，13 张证据图留 npp-shots/（不入 git；
+   右缘 1600 外含用户 WT 边缘，同 seg5-shots 口径禁提交），结论：
+   - **窗口几何零穿帮坐实**：外框 `(-12,0,1624,928)` 下像素量测实体右缘恰在 **x=1600**、
+     窗口底缘 **y≈918**，水平滚动条 y≈880–882、状态栏 y≈884–917 **完整在录区 920 内**；
+     行高 pitch≈22.5px（zoom 0）、编辑区一屏约 31 行。
+   - **scroll_anchor 机理（文件尾块）**：SETSEL 只做「caret 刚好可见」最小滚动，
+     锚点行停在客户区底缘内侧（行底 y≈855–868，距录区底 ≥52px），锚点以下的收尾
+     标签行（s2 的 L60–62、s4 的 L44–46）被滚出客户区、文档外留白刷白色——叙事无妨。
+     **早先「L59 落 y≈985 被切」的怀疑是目测误判**（放大裁剪＋像素量测推翻）：
+     seg4a setInterval 块 L56–59 完整同框（npp-05：选区 L56、块底 L59 底缘 y≈868）。
+   - seg2a 三拍：#title 选区 y=745–767（npp-02）；@keyframes 十行块 L30–38 完整
+     （npp-03）；animation 行无锚点最小滚动贴底，选区 y=837–859，余量 61px（npp-04）。
+   - seg4a 三拍：setInterval 六行块（npp-05）；id="subtitle" h2 选区 y≈668（npp-06）；
+     回 let tick 行复用同锚点同视图。
+   - seg6 七拍（s3 仅 45 行）：**开场 reveal 补了 scroll_anchor＝tl.seek(0)**
+     （record_segments 已改，npp_ops 共享模块零改动）——无锚点时 L38 会被压到屏底、
+     注释样例行出屏、第二拍还多一次滚屏；加锚后 npp-seg6-39 骨架四行（timeline/
+     注释/注册/seek）一次同框、选区 y≈800。注释行（40）、title（41，长行横滚到
+     `}, 2);` 完整）、card（42）、subtitle（43）均完整；注册行＋seek 收口（44）
+     选区 y≈862–883 完整。card→subtitle 两拍视图零滚动（下一行已在屏内）。
+   - 机检：每步 save 后读盘谓词全过；s0→s1、s3→s4 终态 live index.html 与 backup
+     金标准**逐字相等**；check_anchors.py 复跑 31 项全 PASS、退出码 0；五脚本 py_compile 通过。
+   - 锚点行号静态核对（check_anchors 覆盖）：KEYFRAMES 插 `#card {` 前＝L30；
+     animation 锚 letter-spacing＝L56 后→L57；GSAP 注释 L39→title，card L40、
+     subtitle L41、注册行 L42、seek L43。
+9. ~~seg8 时长 48→58 静态精算~~ **已真机定量（2026-10-13 深夜）**：五步链
+   `seg5_rehearse.py all` 实测 **open 4.8／split 4.5／zoom 3.6／seek 43.3／
+   close 3.5＝59.8s**（优化前 IPv6＋短连曾达 157.5s；127.0.0.1＋player 长连
+   后落 59.8s；其中截图 ra.screenshot 1920×1080 ≈1.04s/张、inject_once≈4.1s）。
+   record 预算 **58→70s**（act 开头静场 1.2＋拖拽余量＋五步 59.8），尾帧停在
+   j 的 seek(2.4) 半透明标题（设计如此，片尾静场剪辑掐尾；close 不回零）。
+   十条 seek 已逐帧目验 33-a..j（命令带 `window.` 全称，与口播一致；时间点按
+   新时长 1.4/0.5/1.2 反推）：**a=2.4 灰标题半透明浮半路／b=3 纯白标题就位／
+   c=6.3 暗弱副标题半路／d=9 副标题清晰全就位／e=0 空黑台／f..j=2.4 五张与 a
+   完全一致**（max-cell-delta=0；4×4 网格均值签名对小笔画不灵敏，c/d delta=0
+   但肉眼明暗明确有差，以目验为准）。十条 getTime 断言 |got−expect|<.01 全 OK、
+   focus 全程 DEVTOOLS-TEXT-EDITOR。
 
 ### A2. 段⑤a 实证工艺（2026-10-12 定稿，原「同秒三连拍」已证伪废弃）
 
@@ -192,20 +255,35 @@ insert 之间未 save」，实拍必抛 AssertionError（锚在磁盘还是旧 s
 
 ### B. 正式录序（全部在 guard 下，单 take 可独立重跑）
 
-`python record_segments.py seg1 seg2a seg2b seg3 seg4a seg4b seg5a seg5b seg6 seg7 seg8`
-（先分段：seg1→seg2b→seg3 一批，seg4*→seg5* 一批，seg6→seg8 一批，每批抽帧目验再往下。）
+`python record_segments.py seg1 seg2a seg2b seg3 seg4a seg4b seg5a seg5b seg6 seg7 seg8 seg9`
+（分三批：① seg1 seg2a seg2b seg3；② seg4a seg4b seg5a seg5b seg6；③ seg7 seg8 seg9——
+每批抽帧目验再往下。）
 每个 take 后看 takes/<name>.mp4 抽帧（fps=1/4, scale=800），穿帮/误窗立即停跑排查。
+seg5b 尾帧重点盯 npm run check 是否滚完（并发若超 26s 回 42 重录）；seg5a race 种数
+按终端实际分组记录；seg9 尾帧确认出现输出路径行。
 完成后：素材归位 media/、更新文章计时日志、报告总耗时。**不发布 B 站。**
 
 ### C. 当前现场（冻结时状态，开录前只读核验）
 
-- dev server 3002 在跑；隔离 Edge CDP 9222（IPv6 only），tab：Studio／裸 player（带 fit 注入）／
-  DevTools 底停靠残留（seg8 脚本会先 Ctrl+Shift+J 关掉再开）。
-- index.html 保持 s4 正解态；backup/ 五权威态不动；index.start.html 若出现先删（lint multiple_root_compositions）。
-- seg5-shots/ 17–34 证据图勿删（28 为误拍用户 WT 的事故留档）。
-- 布景期临时产物（彩排后清）：沙盒根 `race-probe-*`（忙工况验证残留）、
+- dev server 3002 在跑；隔离 Edge CDP 9222 **只听 IPv4（必须用 127.0.0.1，
+  localhost 走 ::1 白等 2s/次）**，tab 仅 2 个：Studio／裸 player；DevTools
+  当前关态（seg8 脚本自行开/关）。工具栏「其他搜索框」热搜已关（edge-cdp
+  profile 持久，重开 Edge 不复活；若换 profile 必须重关，见 A⑥）。
+- index.html＝s4 正解态（**新时长 title 1.4／card 0.5／subtitle 1.2**，与
+  backup/s4-final.html 逐字一致，五权威态 2026-10-13 已随编排更新）；
+  index.start.html 若出现先删（lint multiple_root_compositions）。player
+  停在 time=2.4（j 状态，seg8 布景 reload＋seek(0) 兜底）。
+- seg5-shots/ 证据图：**28 为误拍用户 WT 的事故留档，含用户桌面，禁入 git**；
+  30-open/31-split-fit/32-zoom/33-seek-a..j/34-closed 为 10-13 正式标定图；
+  tab2-*/settings-* 为热搜开关处置留档（同目录，均不入库）。
+- npp-shots/ 证据图（10-14 A⑧）：npp-01..06（seg2a/seg4a 六拍）、
+  npp-seg6-38..44（seg6 七拍）；全屏截图 x>1600 含用户 WT 边缘内容，**整目录禁入 git**。
+- 布景期临时产物（代录后清）：沙盒根 `race-probe-*`（忙工况验证残留）、
   `probe-s2-three`（独立实验项目，含 out-a/b/c、out-p1..6、rec-shots 证据，
-  全流程结束后整个删）；`race-snapshot.py` 是 seg5a 布景复制物，保留无害。
+  全流程结束后整个删）、`rec-render/`（A⑤ 定量产物 hf04-seek.mp4＋probe.mp4）、
+  calib-timings.py 与 rec-shots/calib-timing*；`race-snapshot.py` 是 seg5a
+  布景复制物，保留无害。oneoffs 下 probe_*.py／seek_api_probe.py 等一次性
+  探针用完即删（以主控候删清单为准）。
 - **2026-10-12 第二轮静态加固（用户在机、零桌面动作完成）**：① 终端启动加
   `--suppressApplicationTitle`（修 npm 改标题撞闸）；② seg8 48→58s（精算
   52.6s 旧值必截）；③ 帧命名/render `-o`/package.json 脚本静态坐实；
@@ -216,3 +294,14 @@ insert 之间未 save」，实拍必抛 AssertionError（锚在磁盘还是旧 s
   save＋磁盘谓词；check_anchors 增 NppDiskModel 双态步进模拟器（三序列＋
   终态对备份），变异测试两连拦（删 save 即 FAIL）；seg6 46s 静态精算
   ≈32.4s/预算 43.8s，时长不动。开录前只剩 A 节实拍标定（用户离机后）。
+- **2026-10-13→14 深夜真机标定（用户离机，A 节收口）**：① PLAY(775,428)；
+  ③ snap_wait=20（真机三帧 14–17s）；④ check_wait=26（真机全绿 22–24s，
+  ⚠️ 与 hf-03 并发 33–36s 记载有张力，正式 take 盯尾帧）；⑤ render 墙钟
+  47.5s、worker headless 不弹窗，seg9 纳入 ALL_TAKES，render_wait=80 不动；
+  ⑥ DevTools 新工艺整段重标定（见 A⑥，旧 SPLIT_Y/CONSOLE_Y/×4 全废）；
+  ⑦ CDP 直连补物理置前/127.0.0.1/长连；⑨ 五步链真机 59.8s、record 70；
+  编排入场时长定稿 1.4/0.5/1.2（seek 六演示点目验全符合），s4 金标准备份
+  已同构重建（check_anchors 重跑全 PASS）。另：Edge 热搜开关脱敏已处置；
+  A0 check_anchors 曾因 s4 备份仍旧时长拦 2 项，重建后全绿。
+  **A 节九项真机标定全部收口（含 A⑧ NPP 13 图目验），A0 闸门 31 项 PASS，可以开拍。**
+  ⑧ 补记：seg6 开场 reveal 加 scroll_anchor＝seek 行（唯一编排改动，npp_ops 零改动）。

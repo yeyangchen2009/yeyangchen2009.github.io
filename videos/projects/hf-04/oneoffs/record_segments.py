@@ -126,12 +126,15 @@ ANIM_LINE = "        animation: flyin 0.8s ease-out;"
 # ---- 段⑥ 三条 fromTo（s3 注释行→正解；单行写法给 NPP 替换工艺兜底）----
 SKEL_COMMENT = ('      // tl.fromTo("#title", { opacity: 0, y: 24 }, '
                 '{ opacity: 1, y: 0, duration: 0.6 }, 0);')
+# 入场时长按 seg5 seek 演示点反推：title 1.4s → seek(2.4) 落 power2.out
+# 约 49% 进度（半透明浮半路）、seek(3) 约 92%（标题就位）；subtitle 1.2s
+# → seek(6.3) 落约 44%（副标题半路）、seek(9) 全就位。尾锚 2/3/6 不变。
 TT_TITLE = ('      tl.fromTo("#title", { opacity: 0, y: 60 }, '
-            '{ opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 2);')
+            '{ opacity: 1, y: 0, duration: 1.4, ease: "power2.out" }, 2);')
 TT_CARD = ('      tl.fromTo("#card", { opacity: 0, scale: 0.8 }, '
            '{ opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 3);')
 TT_SUB = ('      tl.fromTo("#subtitle", { opacity: 0, y: 30 }, '
-          '{ opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 6);')
+          '{ opacity: 1, y: 0, duration: 1.2, ease: "power2.out" }, 6);')
 
 os.makedirs(REC_DIR, exist_ok=True)
 os.makedirs(FRAME_DIR, exist_ok=True)
@@ -529,7 +532,9 @@ def term_cls():
     time.sleep(.7)
 
 
-def take_seg3(snap_wait=14.0):
+def take_seg3(snap_wait=20.0):
+    # snap_wait 真机标定 2026-10-13（A③）：单轮 headless 三帧在本机闲机
+    # 约 14–17s，取 20 保住「命令回显停稳再拍下一条」；两轮逐字节复验不变
     # 两轮三帧 snapshot（每轮一个 headless 会话）＋for/fc 逐字节复验
     build_s1()
     open_rec_term()
@@ -635,7 +640,9 @@ def take_seg5a(race_wait=150.0):
 
 # ---------- 段⑤b check 全绿 ----------
 
-def take_seg5b(check_wait=42):
+def take_seg5b(check_wait=26):
+    # check_wait 真机标定 2026-10-13（A④）：npm run check 全绿在本机闲机
+    # 约 22–24s，取 26 保住 Check passed 尾帧；原估 42 回收 16s
     reset("s2")  # 幂等：保证 index 是 s2、无 start 快照
     open_rec_term()
     term_cls()
@@ -656,7 +663,12 @@ def take_seg5b(check_wait=42):
 
 def take_seg6():
     reset("s3", open_npp=True)
-    n.reveal_in_line(n.line_of("gsap.timeline"), "gsap.timeline", "paused: true")
+    # 开场一次拍下骨架四行（timeline／注释样例／注册／seek 0）：锚点送
+    # tl.seek(0) 贴客户区底缘（s3 仅 45 行，无锚点时 L38 会被最小滚动压到
+    # 屏底、注释行出屏，第二拍 reveal 还要再滚一行）。2026-10-14 真机探针
+    # 截图 npp-seg6-39 验证四行同框、选区 y≈800 余量充足。
+    n.reveal_in_line(n.line_of("gsap.timeline"), "gsap.timeline", "paused: true",
+                     scroll_anchor=(n.line_of("tl.seek(0);"), "tl.seek(0);"))
     park_mouse()
 
     def act():
@@ -755,20 +767,21 @@ def take_seg8():
         seg5_rehearse.step_close()
         park_mouse()
 
-    # 五步静态精算（2026-10-12）：每步都重跑 prep_window（CDP activate＋
-    # sleep 1.2＋move/activate）≈1.7s×5＝8.5；open 2.5＋split 4.1＋zoom 2.9
-    # ＋seek 10 条×约 3.2（打字 25 字符×.05≈1.25＋等 1.2＋证据截图 .4）≈32
-    # ＋close 1.5 ≈ 52.6；取 58 留余量（截图耗时未真机定量，彩排后回收）。
-    # 尾帧是 DevTools 关闭画面，长一点剪辑直接掐尾，拍不全 close 才是事故
-    return record("rec-console-seek", 58, act)
+    # 真机实测（2026-10-13，分步计时）：open 4.8＋split 4.5（edge 已在 555
+    # 一轮收敛；若需拖拽每轮 +2–3s）＋zoom 3.6＋seek 43.3（10 条×约 4.2：
+    # 打字 25 字符×0.07≈1.8＋等 1.2＋证据截图 1.05）＋close 3.5 ≈ 59.8；
+    # 加 act 开头静场 1.2 与拖拽余量，record 取 70（原精算 58 漏算 /json
+    # localhost IPv6 每次 2s 与截图 1s/张，已随 127.0.0.1＋长连回收）。
+    # 尾帧是 DevTools 关闭画面，片尾静场剪辑直接掐尾，拍不全 close 才是事故
+    return record("rec-console-seek", 70, act)
 
 
 # ---------- 段⑨（可选）终端 render：一帧帧 seek 截图烤成 MP4 ----------
 
 def take_seg9(render_wait=80):
-    """粗稿行 53-55「捅破窗户纸」配的终端镜头。不进默认 all 序列：
-    render 实际耗时待彩排量（workers=auto 多 Chrome），定量后再调 render_wait
-    并决定是否采用；剪辑也可用代码卡替代。"""
+    """粗稿行 53-55「捅破窗户纸」配的终端镜头。2026-10-14 真机定量：
+    墙钟 47.5s（HF 自报 35.4s），worker headless 不弹可见窗，render_wait=80
+    预留并发余量；尾帧停输出路径，长了剪辑掐尾，剪不剪用户定。"""
     build_s4()
     close_any_npp()
     open_rec_term()
@@ -798,11 +811,13 @@ TAKES = {
     "seg6": take_seg6,
     "seg7": take_seg7,
     "seg8": take_seg8,
-    "seg9": take_seg9,  # 可选，不进 ALL_TAKES（时长彩排后定）
+    "seg9": take_seg9,  # 2026-10-14 实测墙钟 47.5s、worker headless 不弹窗，纳入录序
 }
 
+# seg9 第三批压轴：2026-10-14 真机定量（墙钟 47.5s，render_wait 80 够），
+# capture 期枚举可见窗口确认无 Chrome 弹窗盖终端；剪不剪由用户定，素材先录备着
 ALL_TAKES = ["seg1", "seg2a", "seg2b", "seg3", "seg4a", "seg4b",
-             "seg5a", "seg5b", "seg6", "seg7", "seg8"]
+             "seg5a", "seg5b", "seg6", "seg7", "seg8", "seg9"]
 
 
 def main():
