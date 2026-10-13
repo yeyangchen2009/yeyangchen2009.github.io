@@ -13,7 +13,9 @@ import urllib.request
 
 import websocket
 
-CDP = "http://localhost:9222"
+# 必须 127.0.0.1：localhost 在本机 urllib 先走 IPv6 ::1（Edge 只听 IPv4），
+# /json 每次稳定等 ~2s 超时才回退；ws 建连同理。2026-10-13 实测 2.0s→0.002s。
+CDP = "http://127.0.0.1:9222"
 EDGE_EXE = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 PROFILE_DIR = r"F:\_hftest\edge-cdp"
 STUDIO_URL = "http://localhost:3002/"

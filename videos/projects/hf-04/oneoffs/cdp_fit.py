@@ -17,7 +17,7 @@ import urllib.request
 
 import websocket
 
-CDP = "http://localhost:9222"
+CDP = "http://127.0.0.1:9222"  # localhost 走 IPv6 每次 /json 白等 2s（见 cdp_ctrl）
 
 FIT_JS = r"""
 (function () {
