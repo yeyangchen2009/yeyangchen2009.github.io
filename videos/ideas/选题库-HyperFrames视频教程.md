@@ -56,3 +56,23 @@
 - HyperFrames 全季钉死 **0.8.107**，不因 doctor 提示升级（像素/行为需逐集可比）。
 - 生成脚本禁 `Math.random` / `Date.now`（录屏器内仅作挂钟统计、不进帧）；固定切点、`--no-browser-gpu`，同输入逐字节一致。
 - 录屏画面里出现的命令一律真实执行，输出以本机实测为准（本机基线：Node v24.6.0 / FFmpeg 7.1.1 / Chrome headless-shell 152）。
+
+## 管线工程 backlog（course-video-manager 借鉴排期）
+
+> 教程选题管「讲什么」，本表管「自家管线怎么改」。来源：调研笔记 `../docs/course-video-manager-notes.md`
+> （2026-10-13 深读 mattpocock/course-video-manager，805★；架构层 Postgres/全栈/Turborepo 明确不学，只取工艺层）。
+> 按 ROI 排序，时机绑定集数；⭐⭐⭐ 三项是 hf-05 开拍前要清的债。
+
+| 优先级 | 事项 | 痛点 | 时机 | 状态 |
+|---|---|---|---|---|
+| ⭐⭐⭐ | **音画偏移标定片**：3–5 个「窄脉冲 BEEP＋全屏白闪」事件，能量 onset vs 帧亮度突变取中位数，配对比 ≥3/5、spread ≤1 帧（33.4ms）门限，绑「音色＋TTS 版本＋渲染参数」复用；finalize 前后两版标定拆分 TTS 前置延迟与拼接延迟 | time_offset 靠逐集 onset 试错（四片 0.28/0.37/0.29/0.30） | hf-05 开拍前（hf-04 就地窗口已过，0.30 仍为经验值） | 待排 |
+| ⭐⭐⭐ | **两层内容寻址增量渲染**：分镜序列＋cues 文本/时间＋每镜音频 hash＋time_offset＋三级版本号（模板/ffmpeg/对齐算法）→ 成片 hash，命中跳过；`.partial` 原子 rename；有效 hash 集合 GC 旧文件；分段 encode＋stream-copy concat，改一句旁白只重渲一镜 | hf-04 实测改一处重烤 52 分钟（capture 独占 46m56s/90.2%，18195 帧），F2 补丁整片重来 | hf-05 开拍前 | 待排 |
+| ⭐⭐⭐ | **投稿幂等**（bili-pub.py 改造）：BV/分 P 号落盘即 commit marker，重发先 list 查证；投稿零自动重试，事后 posted/not-posted/unknown 三态查证；中断报「可能已发出，勿重发」 | 双发恐惧靠人肉记；现有三状态轮询只解决「定位新稿」，无幂等台账 | hf-05 发布前 | 半成品（上传后轮询取新 BV 已有） |
+| ⭐⭐ | **animatic 预审**（`videopipe animatic`）：句音频＋静帧按句长拼草稿片，渲染前审节奏；未取音句用词数回归估时长（先攒中文样本自拟合，CVM 英文系数 1.65＋0.337s/词不可直接用） | 粗稿时长只凭字数估，节奏成片才知道 | hf-05 阶段 | 待排 |
+| ⭐⭐ | **门禁三层显式化**：硬阻断（StaticGuard／结构非法／缺封面标题简介）／机器的活不阻断只列 findings（未取音未渲染未转录，命令自己补）／规划建议退出 0（多音字覆盖、正音风险字数） | check/StaticGuard 有雏形但层级不显 | 随增量渲染一起 | 待排 |
+| ⭐⭐ | **转录缓存改源文件内容 SHA-256 sidecar**（非路径/mtime）；长音频静音点切块＋chunk 断点续转 | CPU whisper 不短，换 TTS 文件靠手清缓存 | hf-05 阶段 | 待排 |
+| ⭐⭐ | **ffmpeg 并发与管道治理**：重编码槽 1–2（无独显沙箱 4K 内存）、`-progress pipe:1` 单调百分比、stderr 有界 tail、父子退出钩子杀孤儿进程、编码器失败回退 | VFR 33 路无上限并发崩 16 路是同款 OOM；夜间任务日志/孤儿靠手工 | hf-05 阶段 | **hf-04 已还两笔**：精切 `-vf fps=30` 强制 CFR＋`-g 30` 每秒 IDR；并发槽/进度/孤儿清理仍欠 |
+| ⭐ | 录屏容器换 **MKV**，崩溃件 `ffmpeg -c copy` remux 修复（原件留 `.raw.mkv`） | mp4 崩溃即废 | 下次录屏基建改动时 | 待排 |
+| ⭐ | **选帧固化 SOP**：模型/脚本只给 clipIndex＋alt，人在真实素材上帧步进 capture（F2 沿时间轴定位韵腹、hf-04 ROI 取证都是例证），条文写入 `../docs/workflow.md` | 教训已有两处，未成条文 | 立刻（下次改 workflow.md 时落入） | 待排 |
+| ⭐ | **agent 侧效原语**：副作用步骤「干活/提取」两会话分离（失败只重提取不重提交）；agent 永不 merge；失败挂 blocked；确定性动作（建 issue/加标）归脚本 | 串行 PR 流程已有，缺两会话分离 | 远期 | 待排 |
+| ⭐ | **Write Ledger 思路＋实测证据入 PR**：对隔离环境的所有写操作留台账；「测试绿不替代真机/浏览器实测」，PR body 必须写清点了什么、看到什么 | 已有窗口身份闸，但无写操作台账 | 远期 | 待排 |
