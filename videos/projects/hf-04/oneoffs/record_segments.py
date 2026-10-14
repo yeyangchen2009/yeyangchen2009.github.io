@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-r"""hf-04《seek》正式录屏编排：11 个 take，1600×920@30 gdigrab。
+r"""hf-04《seek》正式录屏编排：12 个 take，1600×920@30 gdigrab。
 
 素材先行（源文件只入 git，成片不入）。布景状态机＝沙盒 backup 五权威态，
 每个 take 冷推、可单独重录：
@@ -358,6 +358,160 @@ def park_mouse():
     r.mouse_move(12, 884)
 
 
+# 裸 player 无自动 fit：body 固定 1920×1080，__player.setStageZoom 是空函数。
+# 唯一可靠通道是浏览器页面 zoom（真实键盘，CDP 合成键对浏览器快捷键无效，
+# seg5 已验证）。系统 DPI 150% × 页面 50% ⇒ devicePixelRatio 0.75。
+# zoom 按 origin 持久、reload 保持；Edge 档位 100→90→80→75→67→50 共五击。
+VK_CTRL = 0x11
+VK_0 = 0x30
+VK_OEM_MINUS = 0xBD
+
+
+def _real_ctrl_combo(vk, hold=.03, gap=.18):
+    """真实键盘 Ctrl+组合键（hotkey 走 VK 表无标点/数字档）。调用方须已过前台闸。"""
+    r.u.keybd_event(VK_CTRL, 0, 0, 0)
+    time.sleep(hold)
+    r.u.keybd_event(vk, 0, 0, 0)
+    time.sleep(hold)
+    r.u.keybd_event(vk, 0, r.KEYEVENTF_KEYUP, 0)
+    r.u.keybd_event(VK_CTRL, 0, r.KEYEVENTF_KEYUP, 0)
+    time.sleep(gap)
+
+
+def ensure_page_zoom_half(tid):
+    """player 页 zoom 幂等收敛到 50%（dpr≈0.75）：先 Ctrl+0 复位再五击缩小。
+
+    2026-10-14 实测：profile 已记住 localhost:3002 的 50%，reload/重摆窗都
+    保持；但 Edge 冷重启或被手误改动后必须能自动收回，故不跳复位。
+    """
+    dpr = float(cdp_ctrl.eval_tab(tid, "window.devicePixelRatio"))
+    if abs(dpr - 0.75) < .03:
+        print("page zoom 已是 50%% (dpr=%.3f)" % dpr, flush=True)
+        return
+    guard.assert_fg_isolated()
+    print("page zoom dpr=%.3f，复位后重缩 ..." % dpr, flush=True)
+    _real_ctrl_combo(VK_0, gap=.35)       # 复位 100%
+    for _ in range(5):
+        _real_ctrl_combo(VK_OEM_MINUS)
+    time.sleep(.4)
+    dpr = float(cdp_ctrl.eval_tab(tid, "window.devicePixelRatio"))
+    if abs(dpr - 0.75) >= .03:
+        raise RuntimeError("页面 zoom 未收敛到 50%%（dpr=%s）" % dpr)
+    print("page zoom 收敛 50%% (dpr=%.3f)" % dpr, flush=True)
+
+
+def _cdp_preview_alive(tid):
+    """CDP 侧判定 Studio Preview 是否已经渲染（绕过屏幕合成链路）。
+
+    2026-10-14 seg1 重录前实测：Edge 窗口上屏合成挂起时屏幕整块均匀灰，
+    但 DOM 完整、Page.captureScreenshot 截出的页面完全正常。故屏幕像素
+    缺失时，以 CDP 截图区分「页面没加载完」与「页面好了、上屏挂了」。
+    Play 三角在 CDP 视口里水平约 0.44–0.55、垂直约 0.36–0.46（Preview
+    画布为近黑底，白三角是该区唯一亮物）。
+    """
+    import base64
+    import io
+    import json
+    import websocket
+    try:
+        t = next(x for x in cdp_ctrl.pages() if x["id"] == tid)
+        ws = websocket.create_connection(
+            t["webSocketDebuggerUrl"], suppress_origin=True)
+        ws.settimeout(10)
+        try:
+            ws.send(json.dumps({"id": 1, "method": "Page.captureScreenshot",
+                                "params": {"format": "png"}}))
+            end = time.time() + 10
+            while time.time() < end:
+                msg = json.loads(ws.recv())
+                if msg.get("id") == 1:
+                    raw = base64.b64decode(msg["result"]["data"])
+                    break
+            else:
+                return False
+        finally:
+            ws.close()
+        from PIL import Image
+        im = Image.open(io.BytesIO(raw)).convert("L")
+        w, h = im.size
+        x0, x1 = int(w * .44), int(w * .55)
+        y0, y1 = int(h * .36), int(h * .46)
+        white = sum(1 for y in range(y0, y1) for x in range(x0, x1)
+                    if im.getpixel((x, y)) > 190)
+        return white >= 12
+    except Exception as e:
+        print("cdp preview probe failed: %r" % e, flush=True)
+        return False
+
+
+def heal_edge_compositing(hwnd):
+    """最小化→还原强制重建窗口 swapchain，治上屏合成挂起（屏幕灰、页面活）。
+
+    2026-10-14 实测一次 minimize/restore 即恢复。只许对前台隔离 Edge 窗
+    使用；还原后重摆标定矩形并重新过前台闸。
+    """
+    guard.assert_fg_isolated()
+    print("heal: 最小化→还原重建上屏链路 ...", flush=True)
+    r.u.ShowWindow(hwnd, r.SW_MINIMIZE)
+    time.sleep(1.2)
+    r.u.ShowWindow(hwnd, r.SW_RESTORE)
+    time.sleep(1.0)
+    r.move(hwnd, WND_X, WND_Y, WND_W, WND_H)
+    r.activate(hwnd)
+    time.sleep(1.5)
+    guard.assert_fg_isolated()
+    guard.assert_point_isolated(PLAY_X, PLAY_Y)
+
+
+def wait_studio_ready(hwnd, studio_tid, timeout=40.0):
+    """reload 后轮询 Preview Play 三角出现再开拍；屏幕灰而页面活时自愈合成。
+
+    判据＝Play 按钮 bbox（770..782×422..436，2026-10-13 标定）内屏幕截图
+    白色像素 ≥10。2026-10-14 两起灰屏事故：①seg1 首录疑似冷加载慢；
+    ②seg1 重录查明实为 Edge 上屏合成挂起（CDP 截图完好、屏幕全灰，
+    minimize/restore 恢复）。故屏幕像素持续缺失时，每几秒用 CDP 截图
+    复核页面侧：页面已活＝合成挂起，自动 heal（最多 2 次）；页面也没活
+    ＝仍在加载，继续等。调用时 Studio 窗须已在前台；探测截全屏到仓库外
+    FRAME_DIR，用后即删。
+    """
+    from PIL import Image
+    probe = os.path.join(FRAME_DIR, "_ready-probe.png")
+    t0 = time.time()
+    last_cdp = 0.0
+    last_heal = -99.0
+    heal_count = 0
+    page_ever_alive = False
+    while True:
+        r.screenshot(probe, 1920, 1080)
+        with Image.open(probe) as im:
+            gray = im.convert("L")
+            white = sum(1 for y in range(420, 440) for x in range(768, 786)
+                        if gray.getpixel((x, y)) > 190)
+        if white >= 10:
+            try:
+                os.remove(probe)
+            except OSError:
+                pass
+            print("studio ready %.1fs (white=%d, heal=%d)"
+                  % (time.time() - t0, white, heal_count), flush=True)
+            return
+        now = time.time()
+        if now - t0 > 6.0 and now - last_cdp > 2.5:
+            last_cdp = now
+            if _cdp_preview_alive(studio_tid):
+                page_ever_alive = True
+                if heal_count < 2 and now - last_heal > 8.0:
+                    heal_count += 1
+                    last_heal = now
+                    heal_edge_compositing(hwnd)
+        if now - t0 > timeout:
+            why = ("页面侧已渲染但屏幕持续灰，heal %d 次未恢复"
+                   % heal_count) if page_ever_alive else "页面侧也未见 Preview"
+            raise RuntimeError("Studio Play 三角 %.0fs 内未出现（%s），放弃 take"
+                               % (timeout, why))
+        time.sleep(.8)
+
+
 # ---------- 录制基元 ----------
 
 def record(name, duration, action):
@@ -397,6 +551,7 @@ def take_seg1():
     cdp_ctrl.reload_tab(studio)
     time.sleep(6.0)
     hwnd = edge_foreground_hwnd(studio)
+    wait_studio_ready(hwnd, studio)
     park_mouse()
 
     def act():
@@ -451,6 +606,7 @@ def take_seg2b():
     cdp_ctrl.reload_tab(studio)
     time.sleep(6.0)
     hwnd = edge_foreground_hwnd(studio)
+    wait_studio_ready(hwnd, studio)
     park_mouse()
 
     def act():
@@ -532,34 +688,51 @@ def term_cls():
     time.sleep(.7)
 
 
-def take_seg3(snap_wait=20.0):
-    # snap_wait 真机标定 2026-10-13（A③）：单轮 headless 三帧在本机闲机
-    # 约 14–17s，取 20 保住「命令回显停稳再拍下一条」；两轮逐字节复验不变
-    # 两轮三帧 snapshot（每轮一个 headless 会话）＋for/fc 逐字节复验
+SEG3_SNAP = ("%s snapshot --at 2.1,2.5,2.9 --no-end -o rec-shots/s1-" % NPX)
+
+
+def seg3_warmup():
+    """录制外吞掉 npx/headless 冷启（2026-10-14 实测全新 cmd 首轮 68s、
+    热态 16.6s——冷启不预热，任何固定时长预算都会被它打穿）。"""
+    term_cmd("%s snapshot --at 2.1,2.5,2.9 --no-end -o rec-shots/_warm" % NPX,
+             post=90.0)
+    term_cmd('rmdir /s /q rec-shots\\_warm')
+    term_cls()
+
+
+def take_seg3():
+    # 三次报废的教训（2026-10-14）：
+    # ① 固定 sleep 等 snapshot 完成＝赌墙钟：录制态单轮 23–27s 且漂移，
+    #   58s/74s 两版都把 fc 挤出尾缘；
+    # ② 中途敲长命令的打字耗时在 gdigrab 负载下也漂移（t=73 命令还没敲完）；
+    # ③ for %f 循环是错的：文件名序号 frame-00/01/02 不随 --at 值变，
+    #   第二、三轮 fc 找 frame-00-at-2.5s.png 必然「找不到文件」
+    #   （此前 fc 从未入镜，bug 一直没暴露，bat 实测才现形）。
+    # 正解：开拍前 seg3_warmup() 吞掉冷启；录制中只敲一条 && 串联长命令
+    # （打字挪到开头当镜头），两轮热态 snapshot 自衔接，fc 三行写死路径，
+    # 跑完自动停在三行「FC: 找不到差异」。
+    # 时序预算（录制态热态单轮 ≤27s）：打字 ~14s ＋ 两轮 ~54s ＋ fc ~2s
+    # ≈ 70s，duration 86s 留 16s 余量；单轮漂到 34s 仍入镜。
     build_s1()
     open_rec_term()
-    term_cls()
+    seg3_warmup()
     park_mouse()
+
+    fc_lines = " && ".join(
+        'fc /b "rec-shots\\s1-a\\frame-0{i}-at-{t}s.png" '
+        '"rec-shots\\s1-b\\frame-0{i}-at-{t}s.png"'.format(i=i, t=t)
+        for i, t in enumerate((2.1, 2.5, 2.9)))
+    long_cmd = SEG3_SNAP + "a && " + SEG3_SNAP + "b && " + fc_lines
 
     def act():
         _mat.behind(_term_hwnd)
         guard.assert_fg_safe()
         time.sleep(1.2)
-        term_cmd("%s snapshot --at 2.1,2.5,2.9 --no-end -o rec-shots/s1-a" % NPX)
-        time.sleep(snap_wait)
-        term_cmd("%s snapshot --at 2.1,2.5,2.9 --no-end -o rec-shots/s1-b" % NPX)
-        time.sleep(snap_wait)
-        # 敲进交互式 cmd（非批处理文件），for 变量必须单 %f；
-        # 本串不做 Python % 格式化，% 在普通字符串里就是普通字符
-        # （最初版本错在尾部挂了 % (...) 元组，%f 才被当浮点转换符崩掉）。
-        term_cmd('for %f in (2.1 2.5 2.9) do @fc /b '
-                 '"rec-shots\\s1-a\\frame-00-at-%fs.png" '
-                 '"rec-shots\\s1-b\\frame-00-at-%fs.png"')
-        time.sleep(4.0)            # 三行「FC: 找不到差异」
+        term_cmd(long_cmd)
+        time.sleep(70.0)           # 热态两轮 ≤54s＋fc；余量全留尾帧
         park_mouse()
 
-    # 两条 snapshot 命令各约 80 字符（打字 ~3.3s）＋fc 行 ~95 字符（~3.8s）
-    return record("rec-snap-css", 6 + 2 * snap_wait + 12, act)
+    return record("rec-snap-css", 86, act)
 
 
 # ---------- 段④a NPP 展示 s2 计数器 ----------
@@ -595,6 +768,7 @@ def take_seg4b():
     cdp_ctrl.reload_tab(studio)
     time.sleep(6.0)
     hwnd = edge_foreground_hwnd(studio)
+    wait_studio_ready(hwnd, studio)
     park_mouse()
 
     def act():
@@ -713,25 +887,33 @@ def take_seg6():
 # ---------- 段⑦ 播放 s4 正解 ----------
 
 def take_seg7():
+    # 2026-10-14 Studio Preview 实时画布四轮四种坏画面（时间码/轨道/缩略图
+    # 全对、裸 player 引擎双路径全对）后定论：seg7 改录裸 player 的实时播放。
+    # player 页无任何可见控件、不响应键盘（探针实测），播放走 __player.play()
+    # ——与点击 Studio 三角同一条实时引擎路径；「点播放」动作 seg1/seg2b
+    # 已两次入镜，本镜重点是粗稿 L43 三件套各就各位，不重复点击叙事。
     build_s4()
     close_any_npp()  # seg6 结束时 NPP 可能仍开着（build_s4 幂等不 reset）
     n.close()
-    studio, _ = ensure_edge()
-    cdp_ctrl.reload_tab(studio)
-    time.sleep(6.0)
-    hwnd = edge_foreground_hwnd(studio)
+    _, player = ensure_edge()
+    cdp_ctrl.reload_tab(player, cdp_ctrl.PLAYER_READY, ready_timeout=18)
+    time.sleep(.6)
+    cdp_ctrl.hide_page_extensions(player)
+    cdp_ctrl.player_seek(player, 0)
+    time.sleep(.4)
+    hwnd = edge_foreground_hwnd(player)
+    ensure_page_zoom_half(player)
+    r.move(hwnd, WND_X, WND_Y, WND_W, WND_H)
+    time.sleep(.3)
+    guard.assert_fg_isolated()
     park_mouse()
 
     def act():
         _mat.behind(hwnd)
         guard.assert_fg_isolated()
-        time.sleep(1.4)
-        r.mouse_move(PLAY_X, PLAY_Y)
-        time.sleep(.5)
-        safe_click(PLAY_X, PLAY_Y)
-        time.sleep(.15)
-        park_mouse()
-        time.sleep(9.8)
+        time.sleep(1.4)            # t=0 空台
+        cdp_ctrl.player_play(player)
+        time.sleep(10.4)           # 2 浮、3 弹、6 进场，10s 后留 0.4s 静场
 
     return record("rec-play-final", 13, act)
 
@@ -741,12 +923,16 @@ def take_seg7():
 def take_seg8():
     build_s4()
     _, player = ensure_edge()
-    # 布景：裸 tab reload→就绪→seek(0)，激活前置；DevTools 须为关态
+    # 布景：裸 tab reload→就绪→藏扩展浮动钮→seek(0)，激活前置；DevTools 须为关态
     cdp_ctrl.reload_tab(player, cdp_ctrl.PLAYER_READY, ready_timeout=18)
     time.sleep(.6)
+    cdp_ctrl.hide_page_extensions(player)
     cdp_ctrl.player_seek(player, 0)
     time.sleep(.4)
     hwnd = edge_foreground_hwnd(player)
+    # 页面 50% zoom 必须在开 DevTools 前置定（真实键焦点在 page；step_zoom
+    # 的 Ctrl+0/Ctrl+= 发给 DevTools target，只动 DevTools zoom，不碰页面）
+    ensure_page_zoom_half(player)
     # DevTools 若上次残留开着，Ctrl+Shift+J 会把它关掉而非打开：按 target 检测
     if cdp_ctrl.devtools_open():
         guard.assert_point_safe(760, 200)
@@ -826,12 +1012,26 @@ def main():
     if args == ["all"]:
         args = ALL_TAKES
     _mat = BlackMat()
+    failed = False
     try:
         for name in args:
             print("\n===== take %s =====" % name, flush=True)
             TAKES[name]()
+    except BaseException:
+        failed = True
+        raise
     finally:
         _mat.close()
+        if failed:
+            # 异常路径走正常退出，保留 traceback（顺带 Tcl_AsyncDelete 噪音）
+            pass
+        else:
+            # 成功路径直退：daemon Tcl 线程在进程终结阶段的 Tcl_AsyncDelete
+            # 是 tkinter/Windows 已知顽疾（2026-10-14 实测，与素材无关）；
+            # 子进程在 record() 内均已 wait，os._exit 无泄漏，退出码归 0
+            sys.stdout.flush()
+            sys.stderr.flush()
+            os._exit(0)
 
 
 if __name__ == "__main__":
