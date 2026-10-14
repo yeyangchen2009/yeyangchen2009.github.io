@@ -10,6 +10,8 @@
     python -m videopipe cues projects/liangwudi --install
     # ⑧ 封面静帧头 + 正片无损 concat → 终片（时长自动 probe、自动断言）
     python -m videopipe finalize projects/liangwudi
+    # 录屏素材帧率门禁（gdigrab VFR 体检，精切前必跑；退出码 2＝检出 VFR）
+    python -m videopipe probe-fps projects/hf-05/media
 
 所有路径默认按 ProjectPaths 与「<项目目录名>」约定推导，可用对应
 --wav/--src/--body/--cover/--out 覆盖；不再需要每片手抄 oneoff。
@@ -148,6 +150,29 @@ def cmd_finalize(P: ProjectPaths, a) -> None:
     print("RESULT PASS")
 
 
+# --- 录屏素材帧率门禁（gdigrab VFR 体检，不按项目布局，路径任意）---
+
+def cmd_probe_fps(a) -> int:
+    from .mediaprobe import scan
+    healthy, vfr, unreadable = scan(a.paths, threshold=a.threshold)
+    print("CFR %d 段" % len(healthy))
+    for info in vfr:
+        r = "%.3f" % info["r_fps"] if info["r_fps"] else "?"
+        avg = "%.3f" % info["avg_fps"] if info["avg_fps"] else "?"
+        print("VFR  %s  r=%s avg=%s 偏差 %.1f%%"
+              % (info["path"], r, avg, info["ratio"] * 100))
+    for info in unreadable:
+        print("???? %s  帧率字段缺失或不可读" % info["path"])
+    if unreadable:
+        return 1
+    if vfr:
+        print("%d 段 VFR：精切必须加 -vf fps=30 重建 PTS" % len(vfr),
+              file=sys.stderr)
+        return 2
+    print("帧率门禁通过（阈值 %.0f%%）" % (a.threshold * 100))
+    return 0
+
+
 def main() -> None:
     try:
         sys.stdout.reconfigure(encoding="utf-8")
@@ -156,7 +181,8 @@ def main() -> None:
 
     p = argparse.ArgumentParser(
         prog="python -m videopipe",
-        description="视频管线命令行：transcribe（转录）/ cues（对齐组句）/ finalize（终片拼接）",
+        description="视频管线命令行：transcribe（转录）/ cues（对齐组句）/ "
+                    "finalize（终片拼接）/ probe-fps（录屏帧率门禁）",
         formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
 
@@ -192,7 +218,15 @@ def main() -> None:
                    help="封面段吃正片头 N 秒声音（报名响在封面），正片画面 "
                         "-ss N 裁起，音频整段不动，终片与正片等长")
 
+    pf = sub.add_parser("probe-fps",
+                        help="录屏素材 VFR 帧率门禁（文件或目录，退出码 2＝检出 VFR）")
+    pf.add_argument("paths", nargs="+", help="视频文件或含视频的目录")
+    pf.add_argument("--threshold", type=float, default=0.1,
+                    help="|rFps-avgFps|/max 判 VFR 阈值，默认 0.1（10%%）")
+
     args = p.parse_args()
+    if args.cmd == "probe-fps":
+        raise SystemExit(cmd_probe_fps(args))
     P = _paths(args.project)
     {"transcribe": cmd_transcribe,
      "cues": cmd_cues,
