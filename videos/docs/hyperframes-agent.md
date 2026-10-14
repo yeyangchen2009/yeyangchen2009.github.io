@@ -3,6 +3,11 @@
 合并自各项目原 CLAUDE.md / AGENTS.md，只保留本管线真正用到的规则与
 五片实测铁坑。写/改任何 composition 前先读这里。
 
+> 真人录屏（gdigrab 代录编辑器/终端/浏览器操作、精切、终片抽帧取证）
+> 走另一套闸，动录屏前先读 [`screen-rec.md`](screen-rec.md)：布景视觉
+> 定稿闸、双轨灰屏自检、录后 `python -m videopipe probe-fps` VFR 门禁都在
+> 那里——composition 经验不覆盖这些坑。
+
 ## 版本钉死
 
 CLI 统一 `npx --yes hyperframes@0.8.107`，GSAP `3.14.2` 本地副本。钉版本是

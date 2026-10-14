@@ -219,6 +219,13 @@ python -m videopipe cues projects/damo --install
 
 ### ⑤ make_video.py：写本片分镜
 
+> **素材先行片（编程教程类）前置支线**：分镜引用真人录屏 b-roll（编辑器/终端/
+> 浏览器操作）时，录屏与精切在写分镜前完成，全套闸见
+> [`docs/screen-rec.md`](screen-rec.md)——布景视觉定稿、双轨灰屏自检、
+> 扩展清场、裸 player 机位；录完必跑帧率门禁
+> `python -m videopipe probe-fps projects/<片>/media/rec-*.mp4`（退出码 2＝VFR，
+> 精切 `-vf fps=30` 后复跑到 0 才允许进 render）。
+
 这是每片工作量最大、也最需要手写的一步。`make_video.py` 只写"这片独有"的东西：一列 `Scene(id, start, end, body)`、场景专属 CSS、场景动画 JS；页面骨架/主题/字幕/clip 外壳全部复用 `videopipe`。
 
 固定套路：
@@ -318,7 +325,7 @@ ffprobe -v error -show_entries stream=codec_type,start_time \
 
 ## 5. 脚本与模块清单（每个是干什么的）
 
-### 5.1 公共包 `videopipe/`（13 个模块，深模块）
+### 5.1 公共包 `videopipe/`（14 个模块，深模块）
 
 | 模块 | 职责 | 关键 API |
 |---|---|---|
@@ -334,7 +341,8 @@ ffprobe -v error -show_entries stream=codec_type,start_time \
 | `cues.py` | 组句 cue、单调修正、cues.json / SRT 读写 | `group_cues()`、`enforce_monotonic()`、`save_cues()/load_cues()`、`to_srt()` |
 | `concat.py` | 封面静帧头 + 拼接：含**音画对齐版** finalize | `make_cover_head()`、`concat_copy()`、`finalize_concat()` |
 | `verify.py` | 结构提取 + 新旧 index.html 零差异对比 | `compare()`、`structure()` |
-| `__main__.py` | **命令行入口**：`transcribe` / `cues` / `finalize` 三子命令 | `python -m videopipe …` |
+| `mediaprobe.py` | 录屏素材帧率门禁：ffprobe 取 r/avg 帧率，判 VFR 不默默放行 | `probe_video()`、`scan()`、`vfr_ratio()` |
+| `__main__.py` | **命令行入口**：`transcribe` / `cues` / `finalize` / `probe-fps` 四子命令 | `python -m videopipe …` |
 
 ### 5.2 项目内脚本（每片一份，入库）
 
@@ -360,6 +368,7 @@ ffprobe -v error -show_entries stream=codec_type,start_time \
 |---|---|---|
 | `cj-web-tts.js` | 蝉镜「网页试听」自动化，0 蝉豆取回 wav（UI 模式默认；`--api` 带 JWT 复刻调用链） | ② 取 TTS 音频 |
 | `cdp-shot.js` | 零依赖无头浏览器截图器（CDP，Node22 内置 WebSocket） | ① 截封面 PNG（也用于博客配图） |
+| `screen-rec.js` | 零依赖 gdigrab 屏幕录制器（区域/时长/可选麦克风） | 素材先行片录真人操作 b-roll，规矩见 `videos/docs/screen-rec.md` |
 | `chanjing.py` | 蝉镜开放平台客户端（标准库）；**仅只读子命令** `token / list-audio / list-dp` | 0 验凭证、查音色 |
 | `mermaid-to-png.js` | 把 Markdown 里 mermaid 块批量渲染成暗色 PNG | 与视频成片无直接关系（博客/知乎配图用） |
 
@@ -371,6 +380,7 @@ python -m videopipe transcribe projects/<片>            # ③
 python -m videopipe cues projects/<片>                  # ④（只写 build/）
 python -m videopipe cues projects/<片> --install        # ④ 落地 cues/cues.json
 python -m videopipe finalize projects/<片> --body <正片> # ⑧
+python -m videopipe probe-fps projects/<片>/media/rec-*.mp4  # 录屏 VFR 门禁，详见 docs/screen-rec.md
 # 任一命令加 -h 查看全部可覆盖参数（--wav/--src/--cover/--body/--out/--hold…）
 
 # —— HyperFrames（在项目目录下）——

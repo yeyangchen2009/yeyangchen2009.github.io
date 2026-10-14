@@ -28,6 +28,7 @@ from .cues import (group_cues, enforce_monotonic, build_cues_json,
 from .concat import make_cover_head, concat_copy, finalize_concat
 from .verify import structure, compare
 from .cover import (CoverLayout, render_cover, RULER_LEFT, BOX_RIGHT)
+from .mediaprobe import probe_video, scan, vfr_ratio
 
 __all__ = [
     "config", "ProjectPaths",
@@ -45,4 +46,5 @@ __all__ = [
     "make_cover_head", "concat_copy", "finalize_concat",
     "structure", "compare",
     "CoverLayout", "render_cover", "RULER_LEFT", "BOX_RIGHT",
+    "probe_video", "scan", "vfr_ratio",
 ]
