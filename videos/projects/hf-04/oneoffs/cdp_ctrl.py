@@ -256,8 +256,43 @@ def player_seek(tid, t):
     eval_tab(tid, "window.__player.seek(%s)" % t)
 
 
+def player_play(tid):
+    eval_tab(tid, "window.__player.play()")
+
+
 def player_current(tid):
     return eval_tab(tid, "window.__player && window.__player.getTime()")
+
+
+# 沉浸式翻译扩展在每个网页右缘注入 #immersive-translate-popup（Shadow DOM
+# 红圆浮动钮），2026-10-14 探针实拍会贴 player 视口右缘入镜。宿主 0×0、
+# 圆钮在 shadow 内，elementsFromPoint 只能摸到宿主；display:none 宿主即
+# 连 shadow 一起不渲染。reload 后注入失效，须每次 reload 后重注。
+HIDE_EXT_JS = r"""
+(function(){
+  function inject(){
+    if(!document.getElementById('__rec-hide-ext')){
+      var s=document.createElement('style');
+      s.id='__rec-hide-ext';
+      s.textContent='#immersive-translate-popup{display:none!important;visibility:hidden!important}';
+      (document.head||document.documentElement).appendChild(s);
+    }
+    var el=document.getElementById('immersive-translate-popup');
+    if(el){el.style.setProperty('display','none','important');}
+  }
+  inject();
+  if(!window.__recHideObs){
+    window.__recHideObs=new MutationObserver(function(){inject();});
+    window.__recHideObs.observe(document.documentElement,{childList:true,subtree:true});
+  }
+  return 'ok';
+})()
+"""
+
+
+def hide_page_extensions(tid):
+    """隐藏浏览器扩展往页面注入的浮动钮（沉浸式翻译等），含延迟注入兜底。"""
+    eval_tab(tid, HIDE_EXT_JS)
 
 
 def prep_player_tab():

@@ -11,6 +11,11 @@ Tk 窗必须在创建它的线程里泵消息，故 daemon 线程跑 mainloop；
 只是一次 Win32 SetWindowPos，可从主线程直接调。进程的 PerMonitor DPI
 感知由 rec_automate 在主线程 import 时声明（同进程线程继承），geometry
 用物理坐标，不被 1.5x 虚拟化。
+
+关闭同样只能在 Tk 线程碰 Tcl：主线程 set 一个 Event，Tk 线程内 after
+轮询自行 quit/destroy。主线程任何直接/间接 Tcl 调用（root.after、
+PostMessage WM_CLOSE 触发的默认删除协议）实测都会在进程退出时炸
+Tcl_AsyncDelete（2026-10-14 hf-04 seg3 后首录实测）。
 """
 import threading
 
@@ -24,6 +29,7 @@ class BlackMat:
         self._root = None
         self._u = None
         self.ready = threading.Event()
+        self._want_close = threading.Event()
         self._closed = threading.Event()
         self._t = threading.Thread(target=self._run, daemon=True)
         self._t.start()
@@ -45,11 +51,22 @@ class BlackMat:
         # 解除 tkinter 模块级默认根引用（它在主线程持有 Tk 对象，
         # 进程退出时会在错误线程删解释器，报 Tcl_AsyncDelete）
         tk._default_root = None
+
+        def _poll():
+            if self._want_close.is_set():
+                root.quit()
+            else:
+                root.after(200, _poll)
+
+        root.after(200, _poll)
         self.ready.set()
         root.mainloop()
         # Tcl 解释器必须在创建它的线程内销毁，否则进程退出时
         # Tcl_AsyncDelete: async handler deleted by the wrong thread
-        root.destroy()
+        try:
+            root.destroy()
+        except tk.TclError:
+            pass  # 已被窗口协议销毁时应用不存在
         self._closed.set()
 
     def behind(self, anchor_hwnd):
@@ -62,9 +79,8 @@ class BlackMat:
             0x0010 | 0x0002 | 0x0001)  # NOACTIVATE | NOMOVE | NOSIZE
 
     def close(self):
-        if self._root is not None:
-            root = self._root
-            self._root = None
-            root.after(0, root.quit)  # 让 mainloop 在 Tk 线程返回
-            self._closed.wait(2)
-            self._t.join(2)
+        # 主线程只发信号：after 轮询在 Tk 线程内 quit，随后同线程 destroy。
+        # 幂等，可重复调用。
+        self._want_close.set()
+        self._closed.wait(3)
+        self._t.join(3)

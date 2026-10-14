@@ -26,6 +26,7 @@ k = ctypes.windll.kernel32
 # ---------- 窗口 ----------
 
 SW_RESTORE = 9
+SW_MINIMIZE = 6
 
 
 def find_window(title_substring):
