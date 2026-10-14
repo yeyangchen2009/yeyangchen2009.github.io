@@ -978,3 +978,13 @@
 - **入库**：PR#139 squash 已并主干（421511f），14 文件 15884 行（make_video 1070／cues.json 13772／make_cover 151／成片链 6 oneoffs：make_tts 借音稿硬闸、check_pron、measure_offset、cut_shorts、make_review_clips 25 点、f2_contact_sheet 57 点／双稿／3 json）。25 点多音字人耳验收此前已全过，F2 不重复。
 - **状态**：终片 `media/hf-04-yeyang-cover.mp4` 本地留存（gitignored），本阶段不发 B 站，发布节奏用户掌握。
 - **耗时**：13:49–22:54 墙钟约 **9 小时 05 分**（含 52m render 等待、CFR 两轮重切、封面返工一轮、F2 浮层排查约 1h、PR 收尾）。
+
+## hf-04 收尾：B 站发布＋审稿站三篇＋matt 借鉴排期（2026-10-14 深夜–10-15 凌晨，#541–#545）
+
+- **B 站发布**：**BV1nkpm6bEAZ**（aid 117439891251133，51.5MB，606.5s，23:11 过审 state=0），tid 122 野生技术协会，封面 snapshots/cover-final.png（2.07MB），8 标签；bda2 线 6.63MB/s 7.77s 传完，约 3 分钟公开。标题/简介存项目 build/bili-title.txt、build/bili-desc.txt（片尾链 1/2/3 集 BV1Miph6bEBu／BV1XFWw6WEhv／BV1oQWc6fEy9）。HyperFrames 合集仍待用户在创作者中心官网创建。
+- **审稿站三篇**（draft-review 4dcf898，全库 90 篇）：① 口播稿 vault `口播稿-HF教程/hf04-灵魂在seek.md`（src 定稿 67 行逐字）；② 图文《灵魂在 seek：视频里的动画，必须能倒着播》八节约 2800 字＋10 张帧精确配图（assets/hf04/，全部目验无穿帮）；③ 成片复盘一篇（用户明确只要一篇，hf-03 当时六篇）《33 路抽帧崩了一半，和一块不存在的浮层》约 2800 字＋4 张数据图（assets/hf04-review/：VFR/CFR 双轨判据、52m 耗时账、300 点 ROI 曲线、296.10/296.50 现场对照）。
+- **抽帧工艺新坑（终片 sparse-keyframe）**：input seeking（-ss 在 -i 前）退回关键帧 seek，296.10s 抽到 22.5s 内容；必须 **output seeking**（-i 后 -ss，从头解码，深位置单帧 30–50s）；循环/heredoc 必加 **-nostdin**（否则交互解析器吞 stdin）。signalstats 取证：`-vf "crop=…,signalstats,metadata=print" -f null -`，metadata=print 是 info 级，-loglevel error 会压光须用默认级/-hide_banner。
+- **ROI 终片取证（比成片条目旧口径更进一步）**：旧证伪扫的是 short 与源段（184 帧 minY 197.7）；复盘改对终片扫 290.20–301.0 共 300 点（ROI 1000×130@280,185＝NPP 第 2–4 行浅绿代码区）：#g1-card 覆盖期 YAVG≈47 平台（min 46.9986）→296.00–296.35 爬升，宽 0.35s 精确等于 `tl.to('#g1-card',{opacity:0,duration:.35},296.0)`→296.20 切同源 freeze，接缝两侧同 192（max 192.614）零跳变。每级台阶对上一条 GSAP 指令，设计行为非缺陷。
+- **同步防误删**：10-13 静态加固复盘源稿在 vault 另一草稿根 `vault\草稿\HyperFrames\`（同步器只扫 `07.发布文案\2026年\草稿`，且清理 drafts/ 下非清单文件），复制一份进纳管目录，避免 sync 时线上旧稿被删。
+- **matt 借鉴排期**：PR#141 squash 已并主干（1fe1439），选题库文末新增「管线工程 backlog」节 11 项（⭐⭐⭐ 音画标定片/内容寻址增量渲染/投稿幂等定 hf-05 开拍或发布前；⭐⭐ animatic/门禁三层/转录 SHA-256 缓存/ffmpeg 槽治理排 hf-05 阶段；⭐ MKV remux/选帧 SOP/agent 两会话/Write Ledger 远期或立刻）；按 hf-04 已完结更新状态（标定片顺延、ffmpeg 标注 CFR/-g 30 两债已还、投稿幂等标半成品）。调研原稿 videos/docs/course-video-manager-notes.md。
+- **耗时**：23:00–00:10 墙钟约 **70 分**（发布约 10 分＋图文与 10 配图此前已成稿、复盘出图修图/正文/同步约 40 分＋排期 PR 约 15 分）。
