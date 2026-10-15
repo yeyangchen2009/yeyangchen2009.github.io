@@ -22,14 +22,12 @@ import sys
 from pathlib import Path
 
 from . import config
-from .config import ProjectPaths
-from .audioio import to_16k_mono, read_pcm16, probe_duration
-from .whisper_asr import transcribe, save_raw, load_raw
 from .align import align, check_report
-from .cues import (group_cues, enforce_monotonic, build_cues_json,
-                   save_cues, to_srt)
-from .concat import (make_cover_head, concat_copy,
-                     finalize_concat, finalize_intro)
+from .audioio import probe_duration, read_pcm16, to_16k_mono
+from .concat import finalize_concat, finalize_intro, make_cover_head
+from .config import ProjectPaths
+from .cues import build_cues_json, enforce_monotonic, group_cues, save_cues, to_srt
+from .whisper_asr import load_raw, save_raw, transcribe
 
 
 def _paths(project: str) -> ProjectPaths:

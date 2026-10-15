@@ -11,9 +11,18 @@ from pathlib import Path
 # projects/<name>/make_video.py -> videos/ 在 parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from videopipe import (ProjectPaths, load_cues, Scene, render_scenes,
-                       scene_fade_js, char_track, assemble_css,
-                       render_page, audio_tag, DARK_GOLD_GH)
+from videopipe import (
+                       DARK_GOLD_GH,
+                       ProjectPaths,
+                       Scene,
+                       assemble_css,
+                       audio_tag,
+                       char_track,
+                       load_cues,
+                       render_page,
+                       render_scenes,
+                       scene_fade_js,
+)
 
 P = ProjectPaths.at(Path(__file__).resolve().parent)
 P.ensure()
@@ -25,7 +34,7 @@ THEME = DARK_GOLD_GH
 # ---- 本片分镜：Scene(id, start, end, body)；body 逐片手写 ----
 SCENES = [
     Scene("sc-hello", 0.0, total, """
-          <div style="position:absolute;left:0;right:0;top:42%;text-align:center;
+          <div style="position:absolute;left:0;right:0;top:42%%;text-align:center;
                font-size:120px;color:%s;letter-spacing:.2em;">新片开场</div>
 """ % THEME.accent),
 ]

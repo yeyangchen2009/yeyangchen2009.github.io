@@ -9,9 +9,7 @@ pytest.importorskip("matplotlib")
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 import matplotlib.pyplot as plt  # noqa: E402
-
-from review_fig import (BG, CJK_FONT, MONO_FONT, TXT, font_cjk, font_mono,  # noqa: E402
-                        save_fig, setup_dark)
+from review_fig import BG, CJK_FONT, MONO_FONT, TXT, font_cjk, font_mono, save_fig, setup_dark  # noqa: E402
 
 pytestmark = pytest.mark.skipif(
     not (CJK_FONT.exists() and MONO_FONT.exists()),
