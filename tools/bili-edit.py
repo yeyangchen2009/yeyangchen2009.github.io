@@ -29,6 +29,10 @@ biliup 格式 cookies.json 中自带 token_info.access_token，无需另行登�
     python tools/bili-edit.py --cover cover.png          # 先预览
     python tools/bili-edit.py --cover cover.png --commit # 上传并提交
 
+    # 改稿件整体标题（合集/搜索/空间列表显示名；区别于 --name 改分 P 名）
+    python tools/bili-edit.py --bvid BV1.. --title "hf01-……"          # 先预览
+    python tools/bili-edit.py --bvid BV1.. --title "hf01-……" --commit # 提交
+
 凭证路径优先级：--cookie > 环境变量 BILIUP_COOKIE > 内置默认路径。
 """
 import argparse
@@ -167,6 +171,7 @@ def main():
     parser.add_argument("--index", type=int,
                         help="要改名的分 P 序号（从 1 开始）")
     parser.add_argument("--name", help="新分 P 名；不提供时只查看不修改")
+    parser.add_argument("--title", help="新稿件整体标题（合集/搜索/空间显示名）")
     parser.add_argument("--cover", help="新封面图片路径（jpg/png）；更换稿件整体封面")
     parser.add_argument("--commit", action="store_true",
                         help="真正提交修改；默认 dry-run 只预览")
@@ -189,10 +194,16 @@ def main():
     for i, v in enumerate(videos, 1):
         print(f"  P{i} {v['title']!r}")
 
-    if not args.name and not args.cover:
+    if not args.name and not args.title and not args.cover:
         return  # 纯查看模式
 
     changes = []
+
+    # 改稿件整体标题（合集/搜索/空间显示名）
+    if args.title:
+        old_archive_title = archive.get("title")
+        archive["title"] = args.title
+        changes.append(f"稿件标题 {old_archive_title!r} -> {args.title!r}")
 
     # 改名：确定目标分 P
     if args.name:
