@@ -89,8 +89,13 @@ videos/
 ├── templates/project/         脚手架模板（new_project 复制它）
 ├── docs/
 │   ├── hyperframes-agent.md   HyperFrames agent 约定
+│   ├── screen-rec.md          真人录屏代录 SOP（素材先行片，含 VFR 门禁）
 │   └── workflow.md            ← 本文
-├── videopipe/                 ★公共包（13 个模块，全部入库）
+├── tools/                     跨片本机工具（不进 videopipe 包，免重依赖）
+│   └── review_fig.py          复盘配图公共件：暗色常量/字体单例/save_fig 缺字即失败
+├── tests/                     pytest（单测 monkeypatch 掉 ffprobe/不依赖真机）
+├── pytest.ini                 pythonpath=.  testpaths=tests
+├── videopipe/                 ★公共包（14 个模块，全部入库）
 └── projects/<片>/             每支视频一个项目目录
     ├── make_cover.py          入库  封面生成器（从已有片复制改写）
     ├── make_video.py          入库  ★分镜生成器（本片主体）
@@ -362,7 +367,15 @@ ffprobe -v error -show_entries stream=codec_type,start_time \
 |---|---|
 | `videos/new_project.py` | `python new_project.py <name>`：复制 `templates/project/`，建标准目录。模板含 `make_video.py` 骨架与三份配置；**不含** `make_cover.py`，需从相邻成片复制 |
 
-### 5.4 外部工具（仓库根 `tools/`，跨工作流共用）
+### 5.4 跨片本机工具（`videos/tools/`，不进 videopipe 包）
+
+| 文件 | 作用 |
+|---|---|
+| `review_fig.py` | 复盘/审稿配图公共件：GitHub Dark 色板常量、雅黑/Consolas 字体单例、`setup_dark()` 暗色 rcParams、`save_fig()`（自动建目录，**Glyph 缺字告警升级为异常**，防止方框流入稿件）。复盘出图脚本统一 `sys.path.insert` 后 import，不再各自手抄字体/色板开头；出图踩坑（`wrap=True` 不生效等）见模块 docstring |
+
+与 5.1 的边界：依赖 matplotlib/系统字体的本机出图件放这里，保持 `videopipe` 包可在无图形依赖环境导入。
+
+### 5.5 外部工具（仓库根 `tools/`，跨工作流共用）
 
 | 脚本 | 作用 | 在本流水线用于 |
 |---|---|---|
@@ -372,7 +385,7 @@ ffprobe -v error -show_entries stream=codec_type,start_time \
 | `chanjing.py` | 蝉镜开放平台客户端（标准库）；**仅只读子命令** `token / list-audio / list-dp` | 0 验凭证、查音色 |
 | `mermaid-to-png.js` | 把 Markdown 里 mermaid 块批量渲染成暗色 PNG | 与视频成片无直接关系（博客/知乎配图用） |
 
-### 5.5 CLI 速查
+### 5.6 CLI 速查
 
 ```bash
 # —— videopipe（在 videos/ 下，project 传项目目录）——
