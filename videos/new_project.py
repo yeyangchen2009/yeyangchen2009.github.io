@@ -27,6 +27,10 @@ def main(name: str) -> None:
         if src.is_dir():
             continue
         rel = src.relative_to(TEMPLATE)
+        # 模板目录可能混入 __pycache__（本地 AST/编译验证产生，已被 git
+        # 忽略但 rglob 照样扫到）；二进制文件按 UTF-8 读会直接崩，统一跳过。
+        if "__pycache__" in rel.parts or src.suffix in (".pyc", ".pyo"):
+            continue
         out = dst / rel
         out.parent.mkdir(parents=True, exist_ok=True)
         if src.suffix in (".gitkeep",):
