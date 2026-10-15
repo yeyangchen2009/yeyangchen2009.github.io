@@ -9,7 +9,6 @@ from dataclasses import dataclass
 
 from . import config
 from .align import HAN_RE, LAT_RE
-from .page import jsnum
 
 
 @dataclass
@@ -63,9 +62,11 @@ def char_track(cues, chars, accent, *, time_offset=0.0,
                     ii = m.end()
                 elif ch == " ":
                     # cues 组句补的排版空格：用不换行空格保住英文词间距
-                    spans.append(" "); ii += 1
+                    spans.append(" ")
+                    ii += 1
                 else:
-                    spans.append(ch); ii += 1
+                    spans.append(ch)
+                    ii += 1
         sub_html.append(
             '      <span class="sub" id="sub%02d">%s</span>'
             % (ci, "".join(spans)))

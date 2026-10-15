@@ -151,9 +151,11 @@ def align(src_text: str, tr, *, sc: Scores = Scores()) -> Alignment:
     for m in _TOKEN_RE.finditer(src_text):
         t = m.group(0)
         if HAN_RE.match(t):
-            ST.append(['h', t, hk]); hk += 1
+            ST.append(['h', t, hk])
+            hk += 1
         else:
-            ST.append(['l', t, lk]); lk += 1
+            ST.append(['l', t, lk])
+            lk += 1
 
     # asr 混合 token：['h',t,s,e,汉字bidx] / ['l',t,s,e,-1]
     AT, bidx = [], 0
@@ -165,7 +167,8 @@ def align(src_text: str, tr, *, sc: Scores = Scores()) -> Alignment:
                 s = wd.s + (wd.e - wd.s) * m.start() / n
                 e = wd.s + (wd.e - wd.s) * m.end() / n
                 if HAN_RE.match(t):
-                    AT.append(['h', t, s, e, bidx]); bidx += 1
+                    AT.append(['h', t, s, e, bidx])
+                    bidx += 1
                 else:
                     AT.append(['l', t, s, e, -1])
 
@@ -195,7 +198,8 @@ def align(src_text: str, tr, *, sc: Scores = Scores()) -> Alignment:
                 amap[a[2]] = b[4]
             elif a[0] == 'l' and _trust_lat(a, b):
                 latin[a[2]] = (b[2], b[3])
-            i -= 1; j -= 1
+            i -= 1
+            j -= 1
         elif i > 0 and M[i, j] == M[i - 1, j] + sc.gap:
             i -= 1
         else:

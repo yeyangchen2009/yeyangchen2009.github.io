@@ -1,0 +1,26 @@
+[tool.ruff]
+line-length = 100
+# videos/ 支持的最低 Python（faster-whisper 1.x 要求 >=3.9，本地 3.11 实测）
+target-version = "py310"
+# projects/ 下是各片 oneoffs 与 make_* 历史脚本（620 条存量告警），
+# 护栏先管公共代码；各片逐片收编后再从此处移出。
+extend-exclude = ["projects"]
+
+[tool.ruff.lint]
+# F＝pyflakes（未用导入/未定义名/重复定义，真问题）
+# E＝pycodestyle 基本风格（含 E501 行长，随 line-length=100）
+# I＝isort 导入排序
+# 刻意不选：UP（全库统一 % 格式化、# -*- coding 头，不追 f-string 新潮）、
+# SIM/BLE/B/PLR（一次性脚本有 open().write()、blind except 等务实写法）。
+select = ["E", "F", "I"]
+
+[tool.ruff.lint.isort]
+# 同一模块的多个 from 语句合并；超长名单按 ruff 默认垂直悬挂
+combine-as-imports = true
+
+[tool.ruff.lint.per-file-ignores]
+# 测试与本机工具常需先 sys.path.insert 再 import
+"tests/*" = ["E402"]
+"tools/*" = ["E402"]
+# CSS 模板在 Python 三引号串内，gradient 长行不可加 # noqa、不可断行
+"videopipe/cover.py" = ["E501"]

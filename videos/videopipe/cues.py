@@ -55,8 +55,10 @@ def group_cues(src_text, al, split):
     while i < n:
         ch = src_text[i]
         if HAN_RE.match(ch):
-            cur.append((al.ts[hk], al.te[hk])); hk += 1
-            parts.append(ch); i += 1
+            cur.append((al.ts[hk], al.te[hk]))
+            hk += 1
+            parts.append(ch)
+            i += 1
         elif ch == "-":
             # CLI 参数前导连字符（空白后的 --help / -h）：跳过连续 "-"
             # 看后面是否紧跟拉丁词，是则整段前导符随该词一起显示，不进
@@ -67,21 +69,26 @@ def group_cues(src_text, al, split):
             if (j < n and LAT_RE.match(src_text, j)
                     and (i == 0 or not (HAN_RE.match(src_text[i - 1])
                                         or LAT_RE.match(src_text[i - 1])))):
-                parts.append(src_text[i:j]); i = j
+                parts.append(src_text[i:j])
+                i = j
             else:
                 i += 1
         elif LAT_RE.match(ch):
             m = LAT_RE.match(src_text, i)
-            s, e = al.latin[lk]; lk += 1
+            s, e = al.latin[lk]
+            lk += 1
             # 英文词前补排版空格（不进 cur/时间轴）：避免 Write HTML
             # 被无分隔符扫描粘连成 WriteHTML，也让中英之间留出可读间距。
             # parts 以 "-" 结尾（刚收的 CLI 前导符）时不补，保持 --help。
             if parts and not parts[-1].endswith((" ", "-")):
                 parts.append(" ")
-            cur.append((s, e)); parts.append(m.group(0))
+            cur.append((s, e))
+            parts.append(m.group(0))
             i = m.end()
         elif ch in split:
-            flush(); cur, parts = [], []; i += 1
+            flush()
+            cur, parts = [], []
+            i += 1
         else:
             i += 1
     flush()

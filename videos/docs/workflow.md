@@ -385,7 +385,20 @@ ffprobe -v error -show_entries stream=codec_type,start_time \
 | `chanjing.py` | 蝉镜开放平台客户端（标准库）；**仅只读子命令** `token / list-audio / list-dp` | 0 验凭证、查音色 |
 | `mermaid-to-png.js` | 把 Markdown 里 mermaid 块批量渲染成暗色 PNG | 与视频成片无直接关系（博客/知乎配图用） |
 
-### 5.6 CLI 速查
+### 5.6 CI 与本地护栏（`.github/workflows/videos-ci.yml`）
+
+改动 `videos/` 即触发：`ruff check .`（配置在 `videos/pyproject.toml`，规则 E/F/I，
+行长 100；`projects/` 历史 oneoffs 存量告警已排除，逐片收编后再移入）＋
+`pytest tests/`（mediaprobe 单测 monkeypatch ffprobe 不依赖真机；review_fig
+缺 Windows 字体会自动 skip）。本地提交前同样两条：
+
+```bash
+cd videos
+ruff check . --fix     # 能自动修的（未用导入/import 排序）直接修
+python -m pytest tests/ -q
+```
+
+### 5.7 CLI 速查
 
 ```bash
 # —— videopipe（在 videos/ 下，project 传项目目录）——

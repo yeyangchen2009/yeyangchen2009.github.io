@@ -1,0 +1,40 @@
+name: videos-ci
+
+# videos/ 公共代码护栏：ruff 静态检查 + pytest（mediaprobe 单测 monkeypatch
+# ffprobe、review_fig 在无 Windows 字体环境自动 skip，不跑模型/不碰 ffmpeg）。
+# projects/ 下各片 oneoffs 是存量历史脚本，ruff 配置里已排除。
+on:
+  push:
+    paths:
+      - "videos/**"
+      - ".github/workflows/videos-ci.yml"
+  pull_request:
+    paths:
+      - "videos/**"
+      - ".github/workflows/videos-ci.yml"
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r videos/requirements.txt
+          pip install ruff pytest matplotlib
+
+      - name: ruff check（videos/，projects 存量脚本已在 pyproject 排除）
+        working-directory: videos
+        run: ruff check .
+
+      - name: pytest（tests/）
+        working-directory: videos
+        run: python -m pytest tests/ -q
