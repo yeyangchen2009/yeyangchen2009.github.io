@@ -18,7 +18,7 @@ takes（对 STORYBOARD-FRAMEWORK.md 第 4 节 t1–t7）：
   t4c-color-fix-npp    #1a1f26→rgb(93,97,102)（建议色，真机实测）
   t4d-color-fix-run    check 复绿 10/10；分两行 echo %ERRORLEVEL% 定格 0
   t5a-same-track-run   restore s4：同 track-index 重叠，全绿合法
-  t5b-dom-swap         NPP 两块 DOM 顺序对调（整行剪切粘贴）、存盘
+  t5b-dom-swap         NPP 两块 DOM 顺序对调（Scintilla 消息整块上移，无剪贴板）
   t5c-dom-swap-run     check 仍全绿
   t5d0-occlude-code    restore s6：NPP 静场给预置蓝块代码（整块新增跳切）
   t5d-occlude-run      check 红：text_occluded #title inside #block 9/9
@@ -39,6 +39,7 @@ UnsafeForeground 中止。不按进程名批量杀窗，不碰用户 WT/日常 N
   python record_segments.py t2a-dur-del t2b-dur-run
   python record_segments.py all
 """
+import io
 import os
 import shutil
 import subprocess
@@ -94,11 +95,15 @@ BEATS = NPX + " beats ."
 # check 六态全部 20.0–21.2s（冷启另算，warmup 吞）；keyframes 7.9s；
 # keyframes --shot 14.1s；inspect 15.8s；beats 8.3s。录制态 gdigrab 负载
 # 下留余量（hf-04 经验 +20%）：check 取 28，其余各 +4~5。
+# 2026-10-16 正式代录实测：gdigrab 同机负载比 hf-04 经验更重——keyframes
+# 列表 ~9.5s 才刷出（KF_WAIT=12 只留 ~2.5s 稳定窗）；--shot 20s 仍停在
+# GPU probe、洋葱皮路径未出（同机非录态实测 16.4s）；beats 10s+ 未出
+# （非录态 8.6s）。故 KF 16／SHOT 28／BEATS 18，t7a 片长 52s、t7c 22s。
 CHECK_WAIT = 28
-KF_WAIT = 12
-SHOT_WAIT = 19
+KF_WAIT = 16
+SHOT_WAIT = 28
 INSP_WAIT = 21
-BEATS_WAIT = 13
+BEATS_WAIT = 18
 
 os.makedirs(REC_DIR, exist_ok=True)
 os.makedirs(FRAME_DIR, exist_ok=True)
@@ -234,16 +239,41 @@ def reset(state, open_npp=False):
 
 
 def npp_open():
-    """便携 NPP 开 HTML 摆入镜位（close_any_npp 之后调用，保新进程）。"""
+    """便携 NPP 开 HTML 摆入镜位（close_any_npp 之后调用，保新进程）。
+
+    行号槽暗色（真机排查 2026-10-16，NPP 7.8.8 便携）两道关：
+    1. config.xml 的 stylerTheme 必须指便携自身 stylers.xml；被绝对路径钉到
+       %%APPDATA%% 的浅色 stylers.xml 时整个编辑区都是白底（换机重建便携 NPP
+       必查，仓库外配置不入 git）。
+    2. 即便暗色 stylers.xml 生效，STYLE_LINENUMBER(33) 的前景/背景在这版启动
+       流程里没被应用（真机 raw：fg=0、margin 留系统色 F0F0F0），控件可见、
+       词法样式落定后手工补发一次。
+    消息号以 Scintilla.h 实数为准，别凭记忆：SETBACK=2052、SETFORE=2051；
+    2050 是 SCI_STYLECLEARALL——误当 SETFORE 发出会清空全部样式（行号槽回白、
+    fg 读回归零），本次排查在这条上耗了最久。COLORREF 为 BGR 序：
+    #161b22→0x221B16、#8b949e→0x9E948B。同实例不切语言不会被重刷。
+    """
     n.launch(HTML, x=WND_X, y=WND_Y, w=WND_W, h=WND_H)
     n.set_zoom(0)
     time.sleep(.3)
     s = n.active_scintilla()
     n._senda(s, n.SCI_SETSEL, 0, 0)
+    # 等词法样式应用完再补发（开窗即发会被随后的样式刷新覆盖）
+    time.sleep(2.0)
+    s = n.active_scintilla()
+    n._senda(s, 2052, 33, 0x221B16)  # SCI_STYLESETBACK 行号槽 #161b22
+    n._senda(s, 2051, 33, 0x9E948B)  # SCI_STYLESETFORE 行号字 #8b949e
 
 
 def _title_line(text):
     return next(line for line in text.splitlines() if 'id="title"' in line)
+
+
+def _backup_line(state, needle):
+    """权威备份中含 needle 的物理行（无行尾），save 谓词收紧到行逐字比对。"""
+    with io.open(os.path.join(BACKUP, STATES[state], "index.html"),
+                 encoding="utf-8") as f:
+        return next(line.rstrip("\n") for line in f if needle in line)
 
 
 # ---------- NPP 入镜编辑原语 ----------
@@ -270,22 +300,27 @@ def type_replacing_selection(text, delay=.05):
 
 
 def dom_swap_edits():
-    """s4 专用入镜序列：把 #sub 两行（L20-21）整段移到 #title（L18-19）前。
+    """s4 专用入镜序列：把 #sub 两行（L20-21）整块移到 #title（L18-19）前。
 
-    goto L20 行首→SHIFT+DOWN×2（选区含两行各自换行，到 L22 行首）
-    →Ctrl+X→goto L18 行首（剪切后 title 上移）→Ctrl+V。
-    选区含尾换行是关键，否则粘贴后 </div> 会挤到 sub 尾行同一行。
+    纯 Scintilla 消息、不碰系统剪贴板：t5b 首录走 Ctrl+X/V，录制期间剪贴板
+    被后台程序抢占、title 行被注入无关本地路径，整片作废（2026-10-16）。
+    正解＝按 UTF-8 字节位置发 SETSELECTIONSTART/END 选 L20 行首..L22 行首
+    （含两行各自尾换行，移动后 </div> 不会挤行），再连发两次
+    SCI_MOVESELECTEDLINESUP 整块上移两格。键盘 SHIFT+DOWN 在 Ctrl+G 之后
+    建选区锚点不稳（彩排实测选区错位、块反向下移），消息建选区才确定
+    （彩排 swapped=True、行集合逐字不变、长度 1204）。
+    消息号以 Scintilla-788.h 实数为准：SETSELECTIONSTART=2142、
+    SETSELECTIONEND=2144、MOVESELECTEDLINESUP=2620（别凭记忆）。
     """
-    goto_line_start(20)
-    r.hotkey("SHIFT", "DOWN")
-    time.sleep(.35)
-    r.hotkey("SHIFT", "DOWN")
-    time.sleep(.8)                # 拍 sub 两行整选
-    r.hotkey("CTRL", "X")
-    time.sleep(.7)
-    goto_line_start(18)
-    r.hotkey("CTRL", "V")
-    time.sleep(.7)
+    s = n.active_scintilla()
+    n._senda(s, 2142, n._byte_position(20), 0)
+    time.sleep(.5)
+    n._senda(s, 2144, n._byte_position(22), 0)   # L22 行首＝含 L20/L21 尾换行
+    time.sleep(1.0)                               # 拍 sub 两行整选
+    n._senda(s, 2620, 0, 0)
+    time.sleep(.6)
+    n._senda(s, 2620, 0, 0)
+    time.sleep(.6)
 
 
 def _dom_swapped(text):
@@ -440,7 +475,9 @@ def take_t2a_dur_del():
         time.sleep(2.5)                # 开场：要删的属性高亮
         r.tap("DELETE")                # 删选区（含前导空格，行尾收在 data-start）
         time.sleep(.5)
-        n.save(lambda t: "data-duration" not in _title_line(t))
+        # 谓词收紧到整行逐字等于 s1 备份（旧谓词只查 data-duration 缺席，
+        # 多删/少删空格也会过）：删选区含前导空格，行尾收在 data-start。
+        n.save(lambda t: _title_line(t) == _backup_line("s1", 'id="title"'))
         time.sleep(.4)
         n.reveal_in_line(n.line_of('id="title"'), 'data-start="0"', 'data-start="0"')
         time.sleep(3.0)                # 删完的行尾
@@ -580,7 +617,15 @@ def take_t4c_color_fix_npp():
 
 
 def take_t4d_color_fix_run():
-    """复绿＋分两行敲 echo %ERRORLEVEL%（同行 & 会读旧值录假结果）。"""
+    """复绿＋分两行敲 echo %ERRORLEVEL%（同行 & 会读旧值录假结果）。
+
+    时长坑（2026-10-16 首版实证）：term_cmd 逐字实测约 0.07s/字（delay=.035
+    外加 keyup 开销），CHECK 回车约在片内 5.8s；check 录制态 ~27s 回提示符。
+    首版 sleep(CHECK_WAIT+5)=33s 才敲 echo，18 字打完约 35.5s——但片长只有
+    40s，echo 整句被片长切掉（抽帧彻查 33.5–39.3s 全是无提示符的静态终态，
+    零字符入镜）。改 sleep 28s（echo 开打 ~34s，落在提示符回来 7s 后），
+    片长 44s，尾帧 0 定格留 8s 稳定窗。
+    """
     open_rec_term()
     term_cls()
     park_mouse()
@@ -590,12 +635,12 @@ def take_t4d_color_fix_run():
         guard.assert_fg_safe()
         time.sleep(1.2)
         term_cmd(CHECK)
-        time.sleep(CHECK_WAIT + 5)     # 等提示符回来再敲，别让字落进滚动区
+        time.sleep(CHECK_WAIT)         # ~34s 敲 echo，提示符 27s 已回，不进 npx stdin
         term_cmd("echo %ERRORLEVEL%")
-        time.sleep(2.8)                # 尾帧 0
+        time.sleep(6.0)                # 尾帧 0 定格
         park_mouse()
 
-    return record("t4d-color-fix-run", 12 + CHECK_WAIT, act)
+    return record("t4d-color-fix-run", 12 + CHECK_WAIT + 4, act)
 
 
 # ---------- t5：同轨合法＋DOM 对调仍绿＋遮挡红 ----------
@@ -619,8 +664,10 @@ def take_t5a_same_track_run():
 
 def take_t5b_dom_swap():
     npp_open()
-    # s4：title L18-19、sub L20-21；开场选区给 title 轨道属性
-    n.reveal_in_line(18, 'id="title"', 'data-start="0"')
+    # s4：title L18-19、sub L20-21；开场选区给 title 轨道属性，scroll_anchor
+    # 压到 L21 让四块同框（否则 L20-21 在屏外，观众看不到被选中的 sub）
+    n.reveal_in_line(18, 'id="title"', 'data-start="0"',
+                     scroll_anchor=(21, "color:#7ee787;"))
     park_mouse()
 
     def act():
@@ -631,8 +678,9 @@ def take_t5b_dom_swap():
         time.sleep(.4)
         n.save(_dom_swapped)
         time.sleep(.4)
-        # 对调后两块同框：sub 已在 title 之上
-        n.reveal_in_line(n.line_of('id="sub"'), 'id="sub"', 'data-start="3"')
+        # 对调后两块同框：sub 已在 title 之上（L21 此刻是 title 续行）
+        n.reveal_in_line(n.line_of('id="sub"'), 'id="sub"', 'data-start="3"',
+                         scroll_anchor=(21, "data-track-index"))
         time.sleep(2.6)
         park_mouse()
 
