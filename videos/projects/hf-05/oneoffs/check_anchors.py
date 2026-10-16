@@ -88,6 +88,15 @@ S4 = read_state("s4")
 S5 = read_state("s5")
 S6 = read_state("s6")
 
+# ---------- 硬闸：权威备份必须纯 LF（Scintilla 存盘 LF，字节位置锚点按 LF 标） ----------
+# setup_scenes 在 Windows 上 write_text 不写 newline="\n" 会产出 CRLF，
+# 行号看似不变、UTF-8 字节位置全部偏移，2142/2144 选区立即错位。
+print("== 七态备份行结束符（bytes 闸） ==")
+for st, txt in (("s0", S0), ("s1", S1), ("s2", S2), ("s3", S3),
+                ("s4", S4), ("s5", S5), ("s6", S6)):
+    raw = io.open(os.path.join(BK, rs.STATES[st], "index.html"), "rb").read()
+    must(b"\r\n" not in raw, "%s/index.html 纯 LF、无 CRLF（%d 字节）" % (st, len(raw)))
+
 # ---------- t2a：s0 删 title data-duration，终态须逐字等于 s1 ----------
 
 print("== t2a 删 data-duration（s0 → s1） ==")
@@ -142,8 +151,11 @@ print("== t5b DOM 对调（s4） ==")
 must(line_no(S4, 'id="title"') == 18 and line_no(S4, 'id="sub"') == 20,
      "s4 title L18 / sub L20")
 ls = S4.splitlines(keepends=True)
-# 实拍：goto L20 行首 → SHIFT+DOWN×2（选区 = L20+L21 含各自换行）→ Ctrl+X
-# → goto L18 行首 → Ctrl+V
+# 实拍定稿工艺（2026-10-16）：纯 Scintilla 消息，不碰系统剪贴板——按 UTF-8
+# 字节位置发 SETSELECTIONSTART(2142)=L20行首、SETSELECTIONEND(2144)=L22行首
+# （选区含 L20/L21 各自尾换行），再 SCI_MOVESELECTEDLINESUP(2620)×2 整块上移。
+# 键盘 SHIFT+DOWN 在 Ctrl+G 后锚点不稳、Ctrl+X/V 曾被后台抢占剪贴板废片。
+# 文本终态与剪切粘贴等价，这里镜像同一终态。
 cut = ls[19] + ls[20]
 rest = ls[:19] + ls[21:]
 swapped = "".join(rest[:17]) + cut + "".join(rest[17:])

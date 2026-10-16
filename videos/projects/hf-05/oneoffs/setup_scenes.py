@@ -146,15 +146,21 @@ def init(root: Path) -> None:
     backup = root / "backup"
     proj.mkdir(parents=True, exist_ok=True)
     shutil.copy(GSAP, proj / "gsap.min.js")
-    (proj / "hyperframes.json").write_text(HYPERFRAMES_JSON, encoding="utf-8")
-    (proj / "package.json").write_text(PACKAGE_JSON, encoding="utf-8")
+    # newline="\n" 必须显式：Windows 上 write_text 默认把 \n 翻译成 CRLF，
+    # 权威备份一旦带 \r，check_anchors 的字节闸会拦（Scintilla 存盘是 LF，
+    # 行号/字节位置锚点全部按 LF 标定）。
+    (proj / "hyperframes.json").write_text(
+        HYPERFRAMES_JSON, encoding="utf-8", newline="\n")
+    (proj / "package.json").write_text(
+        PACKAGE_JSON, encoding="utf-8", newline="\n")
     for name, (desc, html) in STATES.items():
         d = backup / name
         d.mkdir(parents=True, exist_ok=True)
-        (d / "index.html").write_text(html, encoding="utf-8")
+        (d / "index.html").write_text(html, encoding="utf-8", newline="\n")
         shutil.copy(GSAP, d / "gsap.min.js")
-        (d / "hyperframes.json").write_text(HYPERFRAMES_JSON, encoding="utf-8")
-        (d / "desc.txt").write_text(desc, encoding="utf-8")
+        (d / "hyperframes.json").write_text(
+            HYPERFRAMES_JSON, encoding="utf-8", newline="\n")
+        (d / "desc.txt").write_text(desc, encoding="utf-8", newline="\n")
     restore(root, "s0-good")
     print("布景完成：%s" % root)
     print("录屏工程 %s；权威态 %d 个在 backup/" % (proj, len(STATES)))
