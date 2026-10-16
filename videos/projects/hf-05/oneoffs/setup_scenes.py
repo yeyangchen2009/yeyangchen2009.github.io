@@ -106,6 +106,13 @@ CLIP_SAME_TRACK = """      <div id="title" class="card clip" data-start="0" data
 TIMELINE_STUB = """      window.__timelines = window.__timelines || {};
       window.__timelines['main'] = { seek: function (t) {} };"""
 
+# s6 跨结果遮挡：不透明蓝块压在标题上（同 DOM 在后），Layout 抓 text_occluded
+CLIP_OCCLUDER = CLIP_TITLE_GOOD + """
+      <div id="block" class="clip" data-start="0" data-duration="10"
+           data-track-index="3"
+           style="position:absolute;left:340px;top:370px;width:760px;height:120px;
+                  background:#1f6feb;"></div>"""
+
 
 def page(clips, timeline, root_dur=10, title_color="#e6edf3"):
     return (HEAD.replace("%CLIPS%", clips)
@@ -127,8 +134,10 @@ STATES = {
                     page(CLIP_TITLE_GOOD, TIMELINE_GOOD, title_color="#1a1f26")),
     "s4-same-track": ("同 track-index 重叠：全绿合法（层叠只看 DOM 顺序）",
                       page(CLIP_SAME_TRACK, TIMELINE_GOOD)),
-    "s5-null-target": ("GSAP 选择器拼错 #titel：console_warning 不阻断",
+    "s5-null-target": ("GSAP 选择器拼错 #sub→#sut：console_warning 不阻断",
                        page(CLIP_TITLE_GOOD, TIMELINE_NULL)),
+    "s6-occluded": ("不透明色块压标题：Layout text_occluded error",
+                    page(CLIP_OCCLUDER, TIMELINE_GOOD)),
 }
 
 

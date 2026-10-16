@@ -71,9 +71,9 @@
 取舍待定：e6a JS 硬错（page_error＋sweep_static 连坐很有戏剧性）可能替换或并入 F；
 e5 缺资源留给 hf-06 加媒体正合适，本片只在概念卡里点名。
 
-## 6. setup_scenes 六权威态真机复验（2026-10-16 凌晨，0.8.107）
+## 6. setup_scenes 七权威态真机复验（2026-10-16 凌晨，0.8.107）
 
-布景生成器重跑 init 后，对 `backup/` 六态逐一 `npx hyperframes@0.8.107 check .`：
+布景生成器重跑 init 后，对 `backup/` 七态逐一 `npx hyperframes@0.8.107 check .`：
 
 | 状态 | 实测输出 | exit | 录屏 take 锚点 |
 |---|---|---|---|
@@ -83,10 +83,16 @@ e5 缺资源留给 hf-06 加媒体正合适，本片只在概念卡里点名。
 | s3-contrast | Contrast 5✗ 全采样点 `1.14:1 (need 3:1)`，Try **rgb(93,97,102)** | **1** | seg D：按建议色改 #title 复绿（建议色已实测） |
 | s4-same-track | 六段全绿 | 0 | seg E：track-index 相同且重叠，零报错 |
 | s5-null-target | Runtime 3⚠（`#sut not found` 一条＋空 target 两条），Layout 0 issues，Check passed | 0 | seg F：#sub 拼成 #sut，副标题动画静默失踪 |
+| s6-occluded | Layout 1✗ `text_occluded #title inside #block`（**9/9 采样点**），Contrast 不连坐 10/10 | 1 | seg E 收尾：蓝块压标题；Fix 文案含三种修法 |
 
 s5 踩坑修正：唯一 tween 指向拼错目标时真实元素不动画，会连坐 Layout `sweep_static` 变 ✗ exit 1
 （假时间轴同罚）。布景定型为 title 合法 tween 在前、`#sut` 拼错 tween 追加在后——
 时间轴仍前进，只剩 warning，才是 e6b「warning 但 passed」的真机形态。
+
+s6 几何坑：遮挡块首版 350–610 越界连坐盖到 540 的 #sub，多背一条 text_occluded 还把
+Contrast 染红蓝底灰字（#sub 1.51:1）；收成 340/370/760×120 只盖标题区后干净 1✗。
+**放行属性实测：`data-layout-allow-occlusion` 必须贴在被盖的文字元素（#title）上才 passed；
+贴遮挡块（#block）无效。**（临时变体目录测完即删，不进权威态。）
 
 > 退出码测量注意：`check . | tail` 后 `$?` 取到的是 tail 的码；复核退出码必须不接管道
 > （`check . > log 2>&1; echo $?`）。正式录屏演示 `echo %ERRORLEVEL%`（cmd）不受此影响。
