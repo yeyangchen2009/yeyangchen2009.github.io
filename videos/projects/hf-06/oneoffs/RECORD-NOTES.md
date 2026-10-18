@@ -165,3 +165,19 @@ check×2/beats/norm/treatment，约 3 min）。
 9. **beats 拍数随 calibrate 漂移**：onset 对增益敏感，calibrate 重切三件
    wav 后拍数可变（23→24 实测）；check_anchors 不校验拍数，分镜/口播数字
    以当次实拍为准。
+10. **ERR_UNSAFE_PORT flake**（t5 三录复盘）：check Runtime 段 headless
+    Chrome 偶发拒连 127.0.0.1 dev 端口——端口抽签撞上 Chrome unsafe port
+    黑名单（5061 在列）→ `check_runtime_failure net::ERR_UNSAFE_PORT` →
+    Runtime ✗ → Layout 0 samples → Check failed，教学点整段垮。与项目文件
+    无关，非录制复跑即恢复。处置：先 reset 该态非录制复跑一次（顺带吞冷启）
+    确认 flake，再单录该 take；不要为此改等待常量。
+
+## 八、录后执行记录（2026-10-18）
+
+- 16 母带归位 `media/`；`cut_shorts.py frames` 16 张 sheet 全目验合格
+  （尾帧/回滚帧逐字对 MEDIA-FACTS，t6 实出 24 拍 bpm 255.3）。
+- CUTS 已回填（check 系 freeze 统一 35.5s 滚轮 freeze 窗中帧）；`cut`
+  全绿：16 short（净 484s）＋16 freeze。抽查 noid-run（FROZEN 原文＋Fix）
+  与 badid（#bgn/#dem 双 JSON 同屏）两张 freeze 逐字无误。
+- probe-fps 双闸过：原始 `t*.mp4` 16 段 VFR exit 2（avg 21.8–26.7 偏差
+  11–27%）；`media/shorts` 16 段 CFR exit 0（帧率门禁 10% 阈值）。
