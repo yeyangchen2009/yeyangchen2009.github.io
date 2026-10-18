@@ -63,12 +63,29 @@ PROBE = {
     "t12-placeholder":    [0.3, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33],
 }
 
-# ---- 第二轮：定稿切点（代录后看 build/frames/sheet-* 目验回填）----
+# ---- 第二轮：定稿切点（2026-10-18 目验 build/frames/sheet-* 回填）----
 # 粗切宁长勿短，make_video 阶段按幕二次裁；edit/run 拆两名给跳切自由度。
 # id: (take, 源内起, 源内止, freeze_at)
+# check 系（t1b/t2b/t3b/t4/t5/t12，录像 38s）：freeze 统一取 35.5——
+# _run_check 滚轮 freeze 窗（约 33–36.5s）中帧，重录目验 35.5s 帧六条
+# 报错原文（FROZEN/muted/voise/missing/⚠/will 404）全部入镜。
 CUTS = {
-    # 代录目验后回填，例：
-    # "good-run": ("t0-good", 0.2, 33.70, 32.50),
+    "good-run":       ("t0-good",          0.2, 33.7, 32.5),  # Check passed 同屏
+    "del-id-edit":    ("t1a-del-id",       0.2, 11.7, 11.3),  # 尾帧 id 已删
+    "noid-run":       ("t1b-noid-run",     0.2, 37.7, 35.5),  # FROZEN 回滚帧
+    "del-muted-edit": ("t2a-del-muted",    0.2,  9.8,  9.2),  # 尾帧 muted 已删
+    "nomuted-run":    ("t2b-nomuted-run",  0.2, 37.7, 35.5),  # missing_muted 回滚帧
+    "bad-src-edit":   ("t3a-bad-src",      0.2, 11.7, 11.3),  # 尾帧 voise.wav
+    "badaudio-run":   ("t3b-badaudio-run", 0.2, 37.7, 35.5),  # src_not_found 回滚帧
+    "missing-run":    ("t4-missing",       0.2, 37.7, 35.5),  # missing×2 回滚帧
+    "sametrack-run":  ("t5-sametrack",     0.2, 37.7, 35.5),  # ⚠ 全文＋passed
+    "beats-run":      ("t6-beats",         0.2, 23.8, 20.0),  # Wrote 24 beats 255.3
+    "norm-dry":       ("t7-norm-dry",      0.2, 23.8, 21.5),  # dry JSON 全量
+    "norm-write":     ("t8-norm-write",    0.2, 42.7, 41.0),  # 幂等 withinTolerance
+    "ceiling":        ("t9-ceiling",       0.2, 23.8, 21.5),  # needs 16.0 dB 长句
+    "badid":          ("t10-badid",        0.2, 48.7, 46.0),  # bgn/dem 双 JSON 同屏
+    "treatment":      ("t11-treatment",    0.2, 23.8, 22.5),  # suggestedPatch JSON
+    "placeholder-run": ("t12-placeholder", 0.2, 37.7, 35.5),  # will 404 回滚帧
 }
 
 
