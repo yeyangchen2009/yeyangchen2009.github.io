@@ -181,3 +181,23 @@ check×2/beats/norm/treatment，约 3 min）。
   与 badid（#bgn/#dem 双 JSON 同屏）两张 freeze 逐字无误。
 - probe-fps 双闸过：原始 `t*.mp4` 16 段 VFR exit 2（avg 21.8–26.7 偏差
   11–27%）；`media/shorts` 16 段 CFR exit 0（帧率门禁 10% 阈值）。
+- **二切**：`cut_final.py frames` 18 张密帧 sheet 全目验（check 系六条
+  同构——打字 4–5.5s 完整、21s 起停底报文；sametrack 因 GPU probe 行
+  长驻到 32.3s，打字段不受影响；norm-write/badid 双命令窗实测与第四
+  节预估吻合）→ CUTS2 回填 18 视频段＋6 img freeze → `cut` 全绿。
+  产物：打字段 18 条（good-type 4.20s／de-id-act 3.00s／*‑type 4.50s
+  ×6／dm-act、bs-act、beats-cmd 4.00s／dry-cmd、ceil-cmd、treat-cmd
+  7.50s／write-cmd 6.80s／idem-cmd 3.80s／bgn-cmd 8.30s／dem-cmd
+  4.30s）＋过程 freeze 6 张（dry-json 21.0／write-json 24.0／idem-json
+  41.0／bgn-err 21.0／dem-err 46.0／treat-result 22.5）。
+  抽查 idem-json（withinTolerance:true＋previousVolume 2.371374＋
+  changeDb −0.0000010781）与 dem-err（#bgn/#dem 双 JSON 同屏）逐字
+  无误；probe-fps 复闸 shorts 34 段全 CFR exit 0。
+- **make_video 对齐**：去 --cards-only 占位，VIDEOS 36 引用（18 短
+  打字段＋18 freeze）一一对应 CUTS2 产物，duration＝媒体实测时长
+  （S2/S11/S12/S14/S15 短打字段＋长 freeze 多段式）；S9 beats 卡与
+  SCENE_JS 拍点 23→24、bpm 243.9→255.3（真机首录值）。check 0 error
+  过门（19 warning＝nested_structure 等历集接受项）；snapshot 14 点
+  同屏目验合格（45s 五段绿＋Check passed、60s FROZEN、209s 24 拍
+  绿字＋圆点卡、281.5s write JSON＋2.371374 卡、285s 幂等接力、
+  365s/380s #bgn/#dem 双 JSON、434s suggestedPatch 方子）。

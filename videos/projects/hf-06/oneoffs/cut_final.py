@@ -68,15 +68,58 @@ PROBE2 = {
     "placeholder-run": [0.5, 2, 4, 5.5, 7, 15, 21, 24, 26, 28, 30, 32.3],
 }
 
-# ---- 二次精切点（代录后看 build/final-frames/sheet-* 目验回填）----
+# ---- 二次精切点（2026-10-18 目验 build/final-frames/sheet-* 18 张全量回填）----
 # 视频段时长一一等于成片窗口（hf-04/hf-05 体例：clip duration＝媒体时长）。
 # run 系报文在分析结束后瞬刷、尾帧滚屏，一律只取片首打字段，结果交 freeze；
 # 尾帧若已滚出关键行（如 hf-05 color-bad 30s 帧），改用过程 img 帧。
 # id: (源 short, 片内起, 片内止)；("img", src, t) 抽单帧到 freezes/
+#
+# 目验依据（sheet 帧位）：
+#   check 系 run 六条同构——0.5–2 提示符、3–5.5 打字（5.5 帧命令完整）、
+#     15 Checking proj、21s 起停底报文 → 打字段统一 (1.5, 6.0)。
+#   sametrack 特例：GPU probe 行 15–32.3s 仍在屏（t5 三录后热态亦带 probe），
+#     打字段不受影响，⚠ 全文帧在 cut_shorts 35.5s 回滚 freeze 已验。
+#   placeholder：35.5s 回滚 freeze 已含 StaticGuard＋will 404 同屏（坑 12）。
+#   norm-write 双命令：一令打字 4–9、首 JSON 21–27；二令打字 27–30、
+#     幂等 JSON 39–42（withinTolerance/previousVolume 2.371374 同屏 41s 帧）。
+#   badid 双命令：bgn 打字 3–9、exit1 18–28；dem 打字 24–28、exit1 38–47.5，
+#     46s 帧双 JSON 同屏（dem-err 取此帧，dem JSON 在下半屏完整可读）。
 CUTS2 = {
-    # 代录目验后回填，例：
-    # "good-type":  ("good-run", 0.40, 5.40),
-    # "bgn-err":    ("img", "badid", 26.0),
+    # S2 首跑全绿：打字 3–5（5s 帧完整）→ 段 (1.5, 5.7)
+    "good-type":      ("good-run", 1.5, 5.7),
+    # S3 删 id：0.5–2.5 id="demo" 高亮、3.5 已删 → (1.0, 4.0)
+    "de-id-act":      ("del-id-edit", 1.0, 4.0),
+    "noid-type":      ("noid-run", 1.5, 6.0),
+    # S4 删 muted：0.5–3.5 muted 高亮、4.5 已删 → (1.0, 5.0)
+    "dm-act":         ("del-muted-edit", 1.0, 5.0),
+    "nomuted-type":   ("nomuted-run", 1.5, 6.0),
+    # S5 voice→voise：3.5 打字中、4.5 完整（补全框已 Esc）→ (1.0, 5.0)
+    "bs-act":         ("bad-src-edit", 1.0, 5.0),
+    "badaudio-type":  ("badaudio-run", 1.5, 6.0),
+    # S6/S8
+    "miss-type":      ("missing-run", 1.5, 6.0),
+    "sametrack-type": ("sametrack-run", 1.5, 6.0),
+    # S9 beats：2.5–4.5 打字 → (1.0, 5.0)
+    "beats-cmd":      ("beats-run", 1.0, 5.0),
+    # S11 dry：4–10 打字（5.5 折行、10 完整）→ (3.0, 10.5)
+    "dry-cmd":        ("norm-dry", 3.0, 10.5),
+    "dry-json":       ("img", "norm-dry", 21.0),
+    # S12 write＋幂等
+    "write-cmd":      ("norm-write", 3.0, 9.8),
+    "write-json":     ("img", "norm-write", 24.0),
+    "idem-cmd":       ("norm-write", 27.2, 31.0),
+    "idem-json":      ("img", "norm-write", 41.0),
+    # S13 天花板：打字 4–10 → (3.0, 10.5)
+    "ceil-cmd":       ("ceiling", 3.0, 10.5),
+    # S14 双 exit1（均出自 t10-badid）
+    "bgn-cmd":        ("badid", 1.5, 9.8),
+    "bgn-err":        ("img", "badid", 21.0),
+    "dem-cmd":        ("badid", 24.5, 28.8),
+    "dem-err":        ("img", "badid", 46.0),
+    # S15 占位 URL＋treatment 方子
+    "url-type":       ("placeholder-run", 1.5, 6.0),
+    "treat-cmd":      ("treatment", 3.0, 10.5),
+    "treat-result":   ("img", "treatment", 22.5),
 }
 
 

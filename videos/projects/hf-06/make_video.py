@@ -23,8 +23,9 @@ oneoffs/cut_final.py 二次精切，片长一一等于成片窗口）＋尾帧 f
   python make_video.py              正式版（须 media/shorts＋freezes 齐备）
   python make_video.py --cards-only 仅概念卡（录屏未到位时 check/snapshot 自验）
 
-VIDEOS 段 data-start 锚 cues 词戳、duration 为预排，代录＋cut_final 后
-按实测切点二次对齐（同 hf-05 工艺）。
+VIDEOS 段已按 cut_final 实测切点二次对齐（2026-10-18：视频段 duration
+一一等于媒体时长，打字段＋过程/尾帧 freeze 接力；beats 按真机 24 拍
+bpm 255.3）。
 """
 import io
 import sys
@@ -286,7 +287,7 @@ Scene("sc-beats", 189.02, 211.82, """
               <div class="rule-head"><span class="rule-mark pass">✓</span><b>beats 立刻有活干</b></div>
               <div class="rule-cn">把整段音乐的拍子一个个标出来，写进 beats 文件夹</div>
               <div class="beatdots" id="beat-dots"></div>
-              <div class="rule-foot gold-t">Wrote 23 beats（bpm 243.9）—— 想做卡点，这就是地图</div>
+              <div class="rule-foot gold-t">Wrote 24 beats（bpm 255.3）—— 想做卡点，这就是地图</div>
             </div>
           </div>"""),
 
@@ -485,112 +486,119 @@ Scene("sc-action", 457.44, total, """
 if CARDS_ONLY:
     VIDEOS = "      <!-- --cards-only：录屏 clip 待代录后填入 -->"
 else:
-    VIDEOS = """      <!-- S2 25.30–48.74：好工程 check 全绿（老契约成立） -->
+    VIDEOS = """      <!-- S2 25.30–48.74：好工程 check 全绿（打字段＋passed 尾帧） -->
       <video id="rec2-good" class="clip term" data-start="30.80"
-             data-duration="17.90" data-track-index="2"
-             src="media/shorts/good-run.mp4" muted playsinline preload="auto"></video>
+             data-duration="4.20" data-track-index="2"
+             src="media/shorts/good-type.mp4" muted playsinline preload="auto"></video>
+      <img id="img2-good" class="clip term" data-start="35.00"
+           data-duration="13.70" src="media/freezes/good-run.png" alt="">
 
       <!-- S3 48.74–88.06：删 id → FROZEN 长停（SILENT/img 差别由右卡讲） -->
       <video id="rec3-edit" class="clip term" data-start="50.10"
-             data-duration="3.20" data-track-index="2"
-             src="media/shorts/del-id-edit.mp4" muted playsinline preload="auto"></video>
-      <img id="img3-edit" class="clip term" data-start="53.30"
-           data-duration="0.70" src="media/freezes/del-id-edit.png" alt="">
-      <video id="rec3-run" class="clip term" data-start="54.00"
              data-duration="3.00" data-track-index="2"
-             src="media/shorts/noid-run.mp4" muted playsinline preload="auto"></video>
-      <img id="img3-run" class="clip term" data-start="57.00"
-           data-duration="31.06" src="media/freezes/noid-run.png" alt="">
+             src="media/shorts/de-id-act.mp4" muted playsinline preload="auto"></video>
+      <img id="img3-edit" class="clip term" data-start="53.10"
+           data-duration="0.90" src="media/freezes/del-id-edit.png" alt="">
+      <video id="rec3-run" class="clip term" data-start="54.00"
+             data-duration="4.50" data-track-index="2"
+             src="media/shorts/noid-type.mp4" muted playsinline preload="auto"></video>
+      <img id="img3-run" class="clip term" data-start="58.50"
+           data-duration="29.50" src="media/freezes/noid-run.png" alt="">
 
       <!-- S4 88.06–113.40：删 muted → 不表态 error -->
       <video id="rec4-edit" class="clip term" data-start="88.60"
-             data-duration="3.00" data-track-index="2"
-             src="media/shorts/del-muted-edit.mp4" muted playsinline preload="auto"></video>
-      <img id="img4-edit" class="clip term" data-start="91.60"
+             data-duration="4.00" data-track-index="2"
+             src="media/shorts/dm-act.mp4" muted playsinline preload="auto"></video>
+      <img id="img4-edit" class="clip term" data-start="92.60"
            data-duration="0.80" src="media/freezes/del-muted-edit.png" alt="">
       <video id="rec4-run" class="clip term" data-start="101.40"
-             data-duration="3.00" data-track-index="2"
-             src="media/shorts/nomuted-run.mp4" muted playsinline preload="auto"></video>
-      <img id="img4-run" class="clip term" data-start="104.40"
-           data-duration="9.00" src="media/freezes/nomuted-run.png" alt="">
+             data-duration="4.50" data-track-index="2"
+             src="media/shorts/nomuted-type.mp4" muted playsinline preload="auto"></video>
+      <img id="img4-run" class="clip term" data-start="105.90"
+           data-duration="7.50" src="media/freezes/nomuted-run.png" alt="">
 
       <!-- S5 113.40–133.48：voice→voise → will be silent -->
-      <video id="rec5-edit" class="clip term" data-start="120.10"
-             data-duration="3.40" data-track-index="2"
-             src="media/shorts/bad-src-edit.mp4" muted playsinline preload="auto"></video>
-      <img id="img5-edit" class="clip term" data-start="123.50"
+      <video id="rec5-edit" class="clip term" data-start="119.80"
+             data-duration="4.00" data-track-index="2"
+             src="media/shorts/bs-act.mp4" muted playsinline preload="auto"></video>
+      <img id="img5-edit" class="clip term" data-start="123.80"
            data-duration="0.60" src="media/freezes/bad-src-edit.png" alt="">
-      <video id="rec5-run" class="clip term" data-start="124.10"
-             data-duration="3.00" data-track-index="2"
-             src="media/shorts/badaudio-run.mp4" muted playsinline preload="auto"></video>
-      <img id="img5-run" class="clip term" data-start="127.10"
-           data-duration="6.38" src="media/freezes/badaudio-run.png" alt="">
+      <video id="rec5-run" class="clip term" data-start="124.40"
+             data-duration="4.50" data-track-index="2"
+             src="media/shorts/badaudio-type.mp4" muted playsinline preload="auto"></video>
+      <img id="img5-run" class="clip term" data-start="128.90"
+           data-duration="4.58" src="media/freezes/badaudio-run.png" alt="">
 
       <!-- S6 133.48–156.46：missing_local_asset silently skip -->
       <video id="rec6-run" class="clip term" data-start="135.90"
-             data-duration="4.20" data-track-index="2"
-             src="media/shorts/missing-run.mp4" muted playsinline preload="auto"></video>
-      <img id="img6-run" class="clip term" data-start="140.10"
-           data-duration="16.36" src="media/freezes/missing-run.png" alt="">
+             data-duration="4.50" data-track-index="2"
+             src="media/shorts/miss-type.mp4" muted playsinline preload="auto"></video>
+      <img id="img6-run" class="clip term" data-start="140.40"
+           data-duration="16.06" src="media/freezes/missing-run.png" alt="">
 
       <!-- S8 171.42–189.02：同轨层叠 warning 但 passed -->
       <video id="rec8-run" class="clip term" data-start="176.90"
-             data-duration="4.20" data-track-index="2"
-             src="media/shorts/sametrack-run.mp4" muted playsinline preload="auto"></video>
-      <img id="img8-run" class="clip term" data-start="181.10"
-           data-duration="7.92" src="media/freezes/sametrack-run.png" alt="">
+             data-duration="4.50" data-track-index="2"
+             src="media/shorts/sametrack-type.mp4" muted playsinline preload="auto"></video>
+      <img id="img8-run" class="clip term" data-start="181.40"
+           data-duration="7.62" src="media/freezes/sametrack-run.png" alt="">
 
-      <!-- S9 189.02–211.82：beats 23 拍 -->
+      <!-- S9 189.02–211.82：beats 24 拍（bpm 255.3） -->
       <video id="rec9-run" class="clip term" data-start="203.00"
-             data-duration="6.40" data-track-index="2"
-             src="media/shorts/beats-run.mp4" muted playsinline preload="auto"></video>
-      <img id="img9-run" class="clip term" data-start="209.40"
-           data-duration="2.42" src="media/freezes/beats-run.png" alt="">
+             data-duration="4.00" data-track-index="2"
+             src="media/shorts/beats-cmd.mp4" muted playsinline preload="auto"></video>
+      <img id="img9-run" class="clip term" data-start="207.00"
+           data-duration="4.82" src="media/freezes/beats-run.png" alt="">
 
       <!-- S11 239.46–273.24：normalize dry JSON -21.8/-37.3/7.5 -->
-      <video id="rec11-run" class="clip term" data-start="263.90"
-             data-duration="5.50" data-track-index="2"
-             src="media/shorts/norm-dry.mp4" muted playsinline preload="auto"></video>
-      <img id="img11-run" class="clip term" data-start="269.40"
-           data-duration="3.84" src="media/freezes/norm-dry.png" alt="">
+      <video id="rec11-run" class="clip term" data-start="262.00"
+             data-duration="7.50" data-track-index="2"
+             src="media/shorts/dry-cmd.mp4" muted playsinline preload="auto"></video>
+      <img id="img11-run" class="clip term" data-start="269.50"
+           data-duration="3.74" src="media/freezes/dry-json.png" alt="">
 
-      <!-- S12 273.24–287.26：--write 2.371374 → withinTolerance -->
-      <video id="rec12-run" class="clip term" data-start="274.80"
-             data-duration="12.46" data-track-index="2"
-             src="media/shorts/norm-write.mp4" muted playsinline preload="auto"></video>
+      <!-- S12 273.24–287.26：--write 2.371374 → 幂等 withinTolerance -->
+      <video id="rec12-run" class="clip term" data-start="274.00"
+             data-duration="6.80" data-track-index="2"
+             src="media/shorts/write-cmd.mp4" muted playsinline preload="auto"></video>
+      <img id="img12-write" class="clip term" data-start="280.80"
+           data-duration="1.60" src="media/freezes/write-json.png" alt="">
+      <video id="rec12-idem" class="clip term" data-start="282.40"
+             data-duration="3.80" data-track-index="2"
+             src="media/shorts/idem-cmd.mp4" muted playsinline preload="auto"></video>
+      <img id="img12-idem" class="clip term" data-start="286.20"
+           data-duration="1.06" src="media/freezes/idem-json.png" alt="">
 
       <!-- S13 287.26–328.90：needs 16.0 dB 拒绝长停 -->
       <video id="rec13-run" class="clip term" data-start="291.20"
-             data-duration="7.80" data-track-index="2"
-             src="media/shorts/ceiling.mp4" muted playsinline preload="auto"></video>
-      <img id="img13-run" class="clip term" data-start="299.00"
-           data-duration="29.90" src="media/freezes/ceiling.png" alt="">
+             data-duration="7.50" data-track-index="2"
+             src="media/shorts/ceil-cmd.mp4" muted playsinline preload="auto"></video>
+      <img id="img13-run" class="clip term" data-start="298.70"
+           data-duration="30.20" src="media/freezes/ceiling.png" alt="">
 
-      <!-- S14 328.90–401.26：#bgn not found → #dem did not match -->
+      <!-- S14 328.90–401.26：#bgn not found → #dem did not match（均出自 t10） -->
       <video id="rec14-run" class="clip term" data-start="348.80"
-             data-duration="9.60" data-track-index="2"
-             src="media/shorts/badid.mp4" muted playsinline preload="auto"></video>
-      <img id="img14-run" class="clip term" data-start="358.40"
-           data-duration="13.80" src="media/freezes/badid-bgn.png" alt="">
-      <img id="img14-trt" class="clip term" data-start="372.20"
-           data-duration="3.20" src="media/freezes/badid-trt.png" alt="">
-      <video id="rec14-trt" class="clip term" data-start="375.40"
-             data-duration="3.60" data-track-index="2"
-             src="media/shorts/treatment-run.mp4" muted playsinline preload="auto"></video>
-      <img id="img14-done" class="clip term" data-start="379.00"
-           data-duration="22.26" src="media/freezes/badid-trt.png" alt="">
+             data-duration="8.30" data-track-index="2"
+             src="media/shorts/bgn-cmd.mp4" muted playsinline preload="auto"></video>
+      <img id="img14-run" class="clip term" data-start="357.10"
+           data-duration="14.70" src="media/freezes/bgn-err.png" alt="">
+      <video id="rec14-dem" class="clip term" data-start="371.80"
+             data-duration="4.30" data-track-index="2"
+             src="media/shorts/dem-cmd.mp4" muted playsinline preload="auto"></video>
+      <img id="img14-dem" class="clip term" data-start="376.10"
+           data-duration="25.16" src="media/freezes/dem-err.png" alt="">
 
       <!-- S15 401.26–437.86：example.com 404 → media-treatment analyze -->
       <video id="rec15-url" class="clip term" data-start="408.80"
-             data-duration="4.20" data-track-index="2"
-             src="media/shorts/placeholder-run.mp4" muted playsinline preload="auto"></video>
-      <img id="img15-url" class="clip term" data-start="413.00"
-           data-duration="8.80" src="media/freezes/placeholder-run.png" alt="">
+             data-duration="4.50" data-track-index="2"
+             src="media/shorts/url-type.mp4" muted playsinline preload="auto"></video>
+      <img id="img15-url" class="clip term" data-start="413.30"
+           data-duration="10.60" src="media/freezes/placeholder-run.png" alt="">
       <video id="rec15-treat" class="clip term" data-start="423.90"
-             data-duration="11.60" data-track-index="2"
-             src="media/shorts/treatment.mp4" muted playsinline preload="auto"></video>
-      <img id="img15-treat" class="clip term" data-start="435.50"
-           data-duration="2.36" src="media/freezes/treatment.png" alt="">"""
+             data-duration="7.50" data-track-index="2"
+             src="media/shorts/treat-cmd.mp4" muted playsinline preload="auto"></video>
+      <img id="img15-treat" class="clip term" data-start="431.40"
+           data-duration="6.46" src="media/freezes/treat-result.png" alt="">"""
 
 # ---------- 场景专属 CSS ----------
 PROJECT_CSS = """
@@ -606,16 +614,17 @@ PROJECT_CSS = """
           radial-gradient(840px 580px at 86% 84%, rgba(227,179,65,.12), transparent 70%); }
 
       /* 终端录屏/定格：1600x920 缩左 1120x644，右 620px 让给概念卡 */
-      #rec2-good,
+      #rec2-good, #img2-good,
       #rec3-edit, #img3-edit, #rec3-run, #img3-run,
       #rec4-edit, #img4-edit, #rec4-run, #img4-run,
       #rec5-edit, #img5-edit, #rec5-run, #img5-run,
       #rec6-run, #img6-run,
       #rec8-run, #img8-run,
       #rec9-run, #img9-run,
-      #rec11-run, #img11-run, #rec12-run,
+      #rec11-run, #img11-run,
+      #rec12-run, #img12-write, #rec12-idem, #img12-idem,
       #rec13-run, #img13-run,
-      #rec14-run, #img14-run, #img14-trt, #rec14-trt, #img14-done,
+      #rec14-run, #img14-run, #rec14-dem, #img14-dem,
       #rec15-url, #img15-url, #rec15-treat, #img15-treat
         { position:absolute;
         left:54px; top:226px; width:1120px; height:644px; object-fit:fill;
@@ -882,10 +891,10 @@ SCENE_JS = """
       /* 拍点通用：右卡同位置轮替（x:60 滑入），全屏卡 scale/淡入。
          gsap className 替换非追加，所有高亮一律属性补间（hf-05 教训）。 */
 
-      /* S9 拍点：beats 真机输出 23 拍，这里补 23 个圆点，入场后逐拍点亮 */
+      /* S9 拍点：beats 真机输出 24 拍，这里补 24 个圆点，入场后逐拍点亮 */
       (function(){
         const bd = document.getElementById('beat-dots');
-        for (let i = 0; i < 23; i++) bd.appendChild(document.createElement('i'));
+        for (let i = 0; i < 24; i++) bd.appendChild(document.createElement('i'));
       })();
 
       /* S1 0–25.30：片名 → 默片 → 四件家当 → muted 章 → 今日主题 */
@@ -1001,7 +1010,7 @@ SCENE_JS = """
       tl.from('#g8-good',{x:60,opacity:0,duration:.6,ease:'back.out(1.2)'},186.9);
       tl.to('#sc-layer > .scene-inner',{opacity:0,duration:.4},188.62);
 
-      /* S9 189.02–211.82：role 191.64 → 眼熟/甩脸子 → beats 203.22/23 拍 → 地图 210.60 */
+      /* S9 189.02–211.82：role 191.64 → 眼熟/甩脸子 → beats 203.22/24 拍 → 地图 210.60 */
       tl.fromTo('#sc-beats > .scene-inner',{opacity:0},{opacity:1,duration:.5},189.02);
       tl.from('#g9-k',{y:18,opacity:0,duration:.6},189.3);
       tl.from('#g9-role',{x:60,opacity:0,duration:.6,ease:'back.out(1.2)'},189.6);
