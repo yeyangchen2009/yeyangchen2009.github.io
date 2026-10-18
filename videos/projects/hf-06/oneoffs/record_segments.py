@@ -357,15 +357,33 @@ def term_cls():
 
 
 def _run_check(duration):
-    """check 系通用 act：垫幕→敲 check→等报文→尾帧。"""
+    """check 系通用 act：垫幕→敲 check→等报文→滚轮回滚→回底→尾帧。
+
+    首录实测（t1b 等 6 take 目验）：check 输出 ~30 行整屏瞬时刷出（无逐行
+    滚动中间态），可视区 ~20 行装不下，Lint 段 ✗/⚠ 报错原文永不入镜。
+    报错原文恰是本集核心教学画面，故报文稳定后鼠标滚轮上滚 3 格（≈9 行，
+    真人查报错的标准动作），freeze 取回滚后静态帧；下滚过量自动停底，
+    尾帧收 Check passed/failed。duration 相应 34→38。
+    注：Shift+PgUp 在这台机器的 wt 上不进 scrollback（默认键绑定已不含
+    scrollUpPage），PgUp 会被 cmd doskey 吃成命令行历史上溯——勿用。"""
     def act():
         _mat.behind(_term_hwnd)
         guard.assert_fg_safe()
         time.sleep(1.2)
         term_cmd(CHECK)
-        time.sleep(CHECK_WAIT + 4)
+        time.sleep(CHECK_WAIT + 2)      # 报文整屏刷出且稳定
+        r.mouse_move(700, 500)          # 滚轮作用于指针下的终端
+        time.sleep(.2)
+        for _ in range(3):              # 上滚 3 格：Lint ✗/⚠ 原文入镜
+            r.u.mouse_event(0x0800, 0, 0, 120, 0)  # MOUSEEVENTF_WHEEL
+            time.sleep(.2)
+        time.sleep(3.0)                 # freeze 窗口：报错原文静态帧
+        for _ in range(8):              # 下滚过量自动停底，无副作用
+            r.u.mouse_event(0x0800, 0, 0, -120, 0)
+            time.sleep(.15)
+        time.sleep(1.0)
         park_mouse()
-    return record(duration, 6 + CHECK_WAIT, act)
+    return record(duration, 10 + CHECK_WAIT, act)
 
 
 def take_warmup():
@@ -466,6 +484,8 @@ def take_t3a_bad_src():
         # Scintilla 有选区时打字＝覆盖选区：首字符替换选中串
         r.type_text("voise.wav", delay=.05)
         time.sleep(.4)
+        r.tap("ESC")  # 关打字带出的自动补全框（首录尾帧弹窗遮挡定格）
+        time.sleep(.3)
         n.save(lambda t: "media/voise.wav" in t and "media/voice.wav" not in t)
         time.sleep(.4)
         n.reveal_in_line(n.line_of("voise.wav"), "voise.wav")

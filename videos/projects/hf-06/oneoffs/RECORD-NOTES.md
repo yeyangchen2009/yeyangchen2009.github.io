@@ -28,7 +28,7 @@
 | `check .` 错误态（Lint 短路） | 10–12s | 同上，尾帧充裕 |
 | `check .` s5 仅 warning 全段 | 26s，exit 0 | 同上 |
 | `lint .` | 9.1s | （仅 warmup） |
-| `beats .`（真出 23 拍 bpm 243.9） | 10.6–16s | **BEATS_WAIT=20**，片 24 |
+| `beats .`（首录真出 **24 拍 bpm 255.3**；沙盒彩排曾 23/243.9） | 10.6–16s | **BEATS_WAIT=20**，片 24 |
 | `normalize-audio … --json`（dry/write/幂等） | 8.1–8.5s | **NORM_WAIT=14**，片 24 |
 | normalize target 写错（exit1） | 8.5s（冷轮曾 22s） | t10 给 14s |
 | `media-treatment --analyze --json` | 11.5s | **TREAT_WAIT=16**，片 24 |
@@ -67,7 +67,11 @@ check×2/beats/norm/treatment，约 3 min）。
 - **id 写错**：`{"ok": false, "error": "Target audio #bgn was not found"}`
   rc=1；**selector 写错**：`{"ok":false,"error":"Selector did not match:
   #dem",…}` rc=1。两条都只喊疼不干活（文件不变、渲染没开始）。
-- **beats**：`✓ Wrote 23 beats → beats/media/music.wav.json (bpm 243.9, low)`。
+- **beats**：`✓ Wrote 24 beats → beats/media/music.wav.json (bpm 255.3, low)`。
+  ⚠ 拍数随 calibrate 变：calibrate 每轮从母带**重切**三件 wav（k_dB 整体
+  平移），onset 检测对增益敏感——沙盒彩排标定时是 23 拍/243.9，录前
+  init→calibrate 重切后首录实测 24 拍/255.3。分镜拍点数与口播数字一律
+  以当次实拍为准（本集口播未念拍数，SCENE_JS 拍点按 24 对齐）。
 
 ## 四、take 表（16 母带，录制顺序＝ALL_TAKES）
 
@@ -75,22 +79,22 @@ check×2/beats/norm/treatment，约 3 min）。
 |---|---|---|---|---|
 | t0-good | reset s0 | 首跑 check 五段全绿（别敲第二遍） | 34 | good-run |
 | t1a-del-id | reset s0＋NPP | L24 删 ` id="demo"`、存盘 | 12 | del-id-edit |
-| t1b-noid-run | 接态 | check 红 FROZEN（同屏 studio⚠） | 34 | noid-run |
+| t1b-noid-run | 接态 | check 红 FROZEN（回滚一页取 Lint 原文帧） | 38 | noid-run |
 | t2a-del-muted | reset s0＋NPP | L25 删 ` muted`、存盘 | 10 | del-muted-edit |
-| t2b-nomuted-run | 接态 | check 红 video_missing_muted | 34 | nomuted-run |
-| t3a-bad-src | reset s0＋NPP | L29 选区 voice.wav 打字覆盖 voise.wav、存盘 | 12 | bad-src-edit |
-| t3b-badaudio-run | 接态 | check 红 audio_src_not_found silent | 34 | badaudio-run |
-| t4-missing | reset s4 | missing_local_asset×2 silently skip | 34 | missing-run |
-| t5-sametrack | reset s5 | duplicate_audio_track⚠ 但 passed（rc=0） | 34 | sametrack-run |
-| t6-beats | reset s0 | beats 出 23 拍写 beats/ | 24 | beats-run |
+| t2b-nomuted-run | 接态 | check 红 video_missing_muted（回滚） | 38 | nomuted-run |
+| t3a-bad-src | reset s0＋NPP | L29 选区 voice.wav 打字覆盖 voise.wav、Esc 关补全框、存盘 | 12 | bad-src-edit |
+| t3b-badaudio-run | 接态 | check 红 audio_src_not_found silent（回滚） | 38 | badaudio-run |
+| t4-missing | reset s4 | missing_local_asset×2 silently skip（回滚） | 38 | missing-run |
+| t5-sametrack | reset s5 | duplicate_audio_track⚠ 但 passed（rc=0，回滚取 ⚠ 原文） | 38 | sametrack-run |
+| t6-beats | reset s0 | beats 出 24 拍写 beats/ | 24 | beats-run |
 | t7-norm-dry | reset s0 | normalize --json：-21.8/-37.26/7.5，wrote:false | 24 | norm-dry |
 | t8-norm-write | **接 t7 态** | --write 写盘 2.371374；再 dry：withinTolerance | 43 | norm-write |
 | t9-ceiling | reset s9 | exit1 needs 16.0 dB＋+12 ceiling 长句 | 24 | ceiling |
 | t10-badid | reset s0 | --target bgn exit1；treatment --selector #dem exit1 | 49 | badid |
 | t11-treatment | reset s0 | treatment --selector "#demo" --analyze --json | 24 | treatment |
-| t12-placeholder | reset s8 | StaticGuard＋placeholder_media_url will 404 | 34 | placeholder-run |
+| t12-placeholder | reset s8 | StaticGuard＋placeholder_media_url will 404（回滚后两者同屏） | 38 | placeholder-run |
 
-净素材 460s ≈ 7.7 min；加三次 NPP 冷启与 take 间布景，单次全推约 20–30 min；
+净素材 484s ≈ 8.1 min；加三次 NPP 冷启与 take 间布景，单次全推约 20–30 min；
 留 NG 缓冲按 **2–3h 占机**（真人离机，开始前必须与用户确认时段）。
 注意 **t8 依赖 t7 刚跑完的 s0 态**（dry 不写文件）；单独重录 t8 前先
 `python oneoffs/setup_scenes.py restore s0-good`（或先重录 t7）。
@@ -147,3 +151,17 @@ check×2/beats/norm/treatment，约 3 min）。
 5. **NPP「重新加载」框**：reset 覆盖文件前必须先关实例（reset 已保）；
    close_any_npp 三轮关不掉且 exe 非 npp-local 会拒绝强杀。
 6. 管道坑：量退出码别接管道（`check | tail` 后 `$?` 是 tail 的码）。
+7. **check 报错原文必须回滚入镜**（首录 6 take NG 复盘）：check 输出 ~30 行
+   整屏瞬时刷出、无逐行滚动中间态，可视区 ~20 行装不下，Lint 段 ✗/⚠ 原文
+   永不入镜——尾帧只剩「1 error(s)…＋Check failed」。`_run_check` 已在
+   报文稳定后注入鼠标滚轮上滚 3 格（freeze 取此静态帧）、下滚过量停底收尾。
+   **勿用 Shift+PgUp**：本机 wt 默认键绑定不含 scrollUpPage（1.17+ 移除），
+   PgUp 会被 cmd doskey 吃成命令行历史上溯（实测把 `cls` 填进输入行）。
+   t12 的 StaticGuard 行是启动早期独立输出、自带在屏窗口，回滚后
+   placeholder_media_url 入镜即可，StaticGuard 帧由 cut_final 从中间帧补。
+8. **NPP 打字带出自动补全框**（首录 t3a NG 复盘）：选区覆盖打字触发 word
+   completion，弹窗遮挡定格帧；打字后先 Esc 关框再 save/定格（Esc 不改文本，
+   save 谓词不受影响）。
+9. **beats 拍数随 calibrate 漂移**：onset 对增益敏感，calibrate 重切三件
+   wav 后拍数可变（23→24 实测）；check_anchors 不校验拍数，分镜/口播数字
+   以当次实拍为准。
