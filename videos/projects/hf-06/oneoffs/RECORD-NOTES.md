@@ -117,13 +117,21 @@ check×2/beats/norm/treatment，约 3 min）。
    最小：编辑废只重 a，跑废只重 b）。
 2. 母带归位（gitignored）：
    `copy F:\_hftest\hf06-rec\takes\*.mp4 videos\projects\hf-06\media\`
-3. `python oneoffs/cut_shorts.py frames`→目验 sheet→回填 CUTS→`cut`。
+3. **粗切**：`python oneoffs/cut_shorts.py frames`→目验 sheet→回填 CUTS→`cut`
+   （16 short 宁长勿短＋同名尾帧 freeze）。
 4. CFR 双闸（在 `videos/` 下，glob 是 `t*.mp4`）：
    `python -m videopipe probe-fps projects/hf-06/media/t*.mp4` 必须 exit 2（原始 VFR）；
    `python -m videopipe probe-fps projects/hf-06/media/shorts` 必须 exit 0。
    精切四参数 `-vf fps=30 -g 30 -keyint_min 30 -movflags +faststart` 已在 cut 模板。
-5. 后续：make_video（17 幕，shorts＋暗色概念卡 C0–C11＋逐字字幕 time_offset
-   0.31）→check 0 error→render（非沙箱）→finalize 拼封面 2s→轻量 F2→PR。
+5. **二切**：`python oneoffs/cut_final.py frames`→目验 build/final-frames/sheet-*
+   →回填 CUTS2→`cut`，产出片首打字段（*-type/-cmd/-act）＋过程 freeze
+   （dry-json/write-json/idem-json/bgn-err/dem-err/treat-result 等，命名见
+   cut_final.py 头部长表；bgn/dem 两段都出自 t10-badid，勿混 t11-treatment）。
+6. **对齐 make_video**：去掉 `--cards-only`，按 CUTS2 实际产物改 VIDEOS 段
+   src 名与 data-start/duration（当前为粗切同名＋预估时长占位；S2/S11/S12/
+   S14/S15 要换成「短打字段＋长 freeze」多段式）。
+7. `python make_video.py`→check 0 error→snapshot 录屏与右卡同屏目验→
+   render（非沙箱）→finalize 拼封面 2s→轻量 F2→PR。
 
 ## 七、录前已知风险点（坑段待代录回填）
 
