@@ -235,10 +235,14 @@ def npp_open():
     """便携 NPP 开 HTML 摆入镜位（close_any_npp 之后调用，保新进程）。
 
     行号槽暗色两道关（hf-05 实测，NPP 7.8.8 便携）：①config.xml 的
-    stylerTheme 必须指便携自身 stylers.xml；②词法样式落定后手工补发一次
+    stylerTheme 必须指便携自身 stylers.xml；②词法样式落定后手工补发
     SETBACK/SETFORE。消息号以 Scintilla.h 实数为准：SETBACK=2052、
     SETFORE=2051；2050 是 STYLECLEARALL，误发会清空全部样式。
     COLORREF 为 BGR 序：#161b22→0x221B16、#8b949e→0x9E948B。
+    补发后读回校验（本机 SciLexer 实测 GETBACK=2482：发 2052 纯红后
+    2482 读回红；最小化/恢复/前后台切换均不回退）。hf-06 录前目验抓到
+    一次开窗早期 flake（补发后仍白槽），故不盲信一次补发，读不回暗底
+    就重发，三轮不中直接报错——白槽穿帮只能 NG 重录，必须开拍前拦住。
     """
     n.launch(HTML, x=WND_X, y=WND_Y, w=WND_W, h=WND_H)
     n.set_zoom(0)
@@ -246,9 +250,15 @@ def npp_open():
     s = n.active_scintilla()
     n._senda(s, n.SCI_SETSEL, 0, 0)
     time.sleep(2.0)  # 等词法样式应用完再补发，开窗即发会被样式刷新覆盖
-    s = n.active_scintilla()
-    n._senda(s, 2052, 33, 0x221B16)  # SCI_STYLESETBACK 行号槽 #161b22
-    n._senda(s, 2051, 33, 0x9E948B)  # SCI_STYLESETFORE 行号字 #8b949e
+    for attempt in range(3):
+        s = n.active_scintilla()
+        n._senda(s, 2052, 33, 0x221B16)  # SCI_STYLESETBACK 行号槽 #161b22
+        n._senda(s, 2051, 33, 0x9E948B)  # SCI_STYLESETFORE 行号字 #8b949e
+        time.sleep(.3)
+        if (n._senda(s, 2482, 33, 0) & 0xFFFFFF) == 0x221B16:
+            return
+    raise RuntimeError("行号槽暗色补发三次未生效（读回 0x%06X），停止开拍"
+                       % (n._senda(s, 2482, 33, 0) & 0xFFFFFF))
 
 
 # ---------- 录制基元 ----------
