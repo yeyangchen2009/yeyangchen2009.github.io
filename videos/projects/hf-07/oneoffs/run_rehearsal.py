@@ -12,12 +12,15 @@ r"""hf-07 录前彩排（不注入键鼠，只跑 CLI＋像素断言）。
   python projects/hf-07/oneoffs/run_rehearsal.py
 """
 import json
+import os
 import shutil
 import subprocess
 import sys
 import time
 import urllib.request
 from pathlib import Path
+
+from PIL import Image
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
@@ -33,11 +36,11 @@ _timings = []
 
 # ---------- 基础 ----------
 
-def run(proj: Path, argv: list, timeout: int = 240):
+def run(proj: Path, argv: list, timeout: int = 240, env: dict | None = None):
     t0 = time.time()
     p = subprocess.run(HF + argv, cwd=str(proj),
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                       timeout=timeout)
+                       timeout=timeout, env=env)
     out = p.stdout.decode("utf-8", errors="replace")
     dt = time.time() - t0
     _timings.append((" ".join(argv[:2]), dt, p.returncode))
@@ -401,7 +404,51 @@ def c10(proj, log):
     return errs
 
 
-@case("11 grade-compare：三格成图（命令形态以本轮为准）")
+# active grading 在本机 headless hardware 模式必撞导航 10s 超时（UHD 620），
+# 必须 software 渲染（真机 ~29.5s/次），另给浏览器 render-ready 超时 30s。
+SW_ENV = {**os.environ, "PRODUCER_BROWSER_GPU_MODE": "software"}
+
+# 像素闸（0–255 口径，2×2 格位、跳过 46px 标签条）：no-op 三格全等＝全 0；
+# 教学可视档真机暖色 MAD=(11.8,1.8,10.2)/显著 94.3%，
+# 高亮 (13.7,10.9,8.3)/93.5%（显著＝任一通道差 >GRADE_DIFF_T）。
+# 阈值取半空档，留足余量。
+GRADE_MAD_MIN = 6.0       # 任一通道平均差须超过
+GRADE_FRAC_MIN = 0.25     # 显著像素占比须超过（实测 94%/94%）
+GRADE_DIFF_T = 6
+
+
+def grade_metrics(png: Path):
+    """2×2 grade 图：左上 original／右上暖色／左下高亮／右下留空。
+    暖色、高亮各对 original 算 (三通道 MAD, 显著像素占比)；跳过顶部
+    46px 标签条（三格标签文字不同，免得白字进差分）。"""
+    im = Image.open(png).convert("RGB")
+    W, H = im.size
+    hw, hh = W // 2, H // 2
+    boxes = {
+        "orig": (0, 46, hw, hh),
+        "warm": (hw, 46, W, hh),
+        "bright": (0, hh + 46, hw, H),
+    }
+    g = {k: list(im.crop(b).getdata()) for k, b in boxes.items()}
+    base = g["orig"]
+    out = []
+    for key in ("warm", "bright"):
+        px = g[key]
+        n = len(px)
+        s = [0, 0, 0]
+        hot = 0
+        for (r0, g0, b0), (r1, g1, b1) in zip(base, px):
+            d = (abs(r1 - r0), abs(g1 - g0), abs(b1 - b0))
+            s[0] += d[0]
+            s[1] += d[1]
+            s[2] += d[2]
+            if max(d) > GRADE_DIFF_T:
+                hot += 1
+        out.append((tuple(v / n for v in s), hot / n))
+    return out
+
+
+@case("11 grade-compare：三格成图＋active grading 像素闸（software 渲染）")
 def c11(proj, log):
     # c07 的 #nope 失败轮会清空 snapshots，先自备一张实拍帧（与录制 t08 同构）
     code, out, _ = run(proj, ["snapshot", "v1", "--at", "4",
@@ -412,23 +459,40 @@ def c11(proj, log):
     rel = "v1/snapshots/" + frame.name
     forms = [
         ["grade-compare", "--for", rel, "--grades", "grades.json",
-         "--out", "build/grade.png"],
+         "--out", "build/grade.png", "--timeout", "30000"],
         ["grade-compare", "--for", rel, "--grades", "grades.json",
-         "--project", "v1", "--out", "build/grade.png"],
+         "--project", "v1", "--out", "build/grade.png",
+         "--timeout", "30000"],
     ]
     errs = []
     winner = None
     for argv in forms:
-        code, out, dt = run(proj, argv)
+        code, out, dt = run(proj, argv, env=SW_ENV)
         log.write("--- grade form tail=%s exit=%s %.1fs ---\n%s\n"
                   % (argv[-4:], code, dt, out[-1500:]))
         png = proj / "build" / "grade.png"
-        if code == 0 and png.is_file() and png.stat().st_size > 10_000:
+        if not (code == 0 and png.is_file() and png.stat().st_size > 10_000):
+            continue
+        # 闸①：grading schema 不认时工具自报 inactive/no-op，三格全等
+        if "inactive/no-op" in out:
+            log.write("grade form 命中 inactive/no-op 警告，判失败\n")
+            continue
+        # 闸②：两档候选必须真的改了像素（CSS filter 串事故＝三格全等漏网根源）
+        metrics = grade_metrics(png)
+        log.write("grade metrics 暖色 MAD=(%.1f,%.1f,%.1f) hot=%.1f%% | "
+                  "高亮 MAD=(%.1f,%.1f,%.1f) hot=%.1f%%\n"
+                  % (metrics[0][0][0], metrics[0][0][1], metrics[0][0][2],
+                     metrics[0][1] * 100,
+                     metrics[1][0][0], metrics[1][0][1], metrics[1][0][2],
+                     metrics[1][1] * 100))
+        ok = all(max(m[0]) > GRADE_MAD_MIN and m[1] > GRADE_FRAC_MIN
+                 for m in metrics)
+        if ok:
             winner = argv
             break
     log.write("GRADE_WINNER>>> %s\n" % (" ".join(winner) if winner else None))
     if not winner:
-        errs.append("grade-compare 两种形态都失败")
+        errs.append("grade-compare 无形态过闸（exit/inactive/像素差异）")
     return errs
 
 

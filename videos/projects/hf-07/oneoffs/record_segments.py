@@ -107,7 +107,10 @@ KF_WAIT = 11            # 真机 7.7s：无参文本报告（3 items：#good/#cl
 SHOT_WAIT = 18          # 真机 13.4s：--shot #good 洋葱皮（默认硬 GPU，目录形态）
 SHOT_BAD_WAIT = 17      # 真机 13.0s：--shot #bad 硬 error（nothing animates）
 COMPARE_WAIT = 25       # 真机 19.2s：两 composition 各 seek 截图拼版
-GRADE_WAIT = 20         # 真机 15.2s
+GRADE_WAIT = 40         # active grading software 渲染彩排真机 33.8s（hardware 必挂导航超时）
+# active grading 仅在 software GPU 下过本机 headless（UHD 620）；cmd 内联 set
+# （&& 前勿留空格，否则变量名吞尾空格），prerun 走同源 env。
+SW_ENV = {**os.environ, "PRODUCER_BROWSER_GPU_MODE": "software"}
 FREEZE = 3.0            # 关键尾帧静场
 
 os.makedirs(REC_DIR, exist_ok=True)
@@ -125,11 +128,11 @@ def cli_argv(argv):
     return ["npx.cmd", "--yes", "hyperframes@0.8.107"] + argv
 
 
-def cli_run(argv, timeout=240):
+def cli_run(argv, timeout=240, env=None):
     t0 = time.time()
     p = subprocess.run(cli_argv(argv), cwd=PROJ,
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                       timeout=timeout)
+                       timeout=timeout, env=env)
     out = p.stdout.decode("utf-8", errors="replace")
     return p.returncode, out, time.time() - t0
 
@@ -165,9 +168,9 @@ def stop_server():
     time.sleep(1.0)
 
 
-def prerun(argv, label, timeout=240):
+def prerun(argv, label, timeout=240, env=None):
     """录制外同命令试跑：吞冷启＋真机确认 exit/文案/产物，打印墙钟供回填。"""
-    code, out, dt = cli_run(argv, timeout=timeout)
+    code, out, dt = cli_run(argv, timeout=timeout, env=env)
     tail = " | ".join(out.strip().splitlines()[-2:])[:220]
     print("[prerun %s] exit=%s %.1fs  %s" % (label, code, dt, tail), flush=True)
     return code, out, dt
@@ -732,8 +735,9 @@ def take_t07_compare():
 
 def take_t08_grade():
     open_rec_term()
-    # grade --for 需要一张实拍帧：录制外备帧（顺带热机）。命令形态以彩排
-    # winner 为准（是否要 --project v1），先按无 --project。
+    # grade --for 需要一张实拍帧：录制外备帧（顺带热机）。命令形态用彩排
+    # winner（无 --project 的 --for 相对路径形态，c11 首 form 即过）。
+    # active grading 必须 software 渲染＋--timeout 30000，见 GRADE_WAIT 注释。
     prerun(["snapshot", "v1", "--at", "4", "--no-end", "--no-browser-gpu"],
            "t08-seed", timeout=120)
     frames = sorted(glob.glob(os.path.join(
@@ -742,9 +746,11 @@ def take_t08_grade():
         raise RuntimeError("t08：备帧不存在")
     frame_rel = "v1/snapshots/" + os.path.basename(frames[0])
     grade_argv = ["grade-compare", "--for", frame_rel, "--grades", "grades.json",
-                  "--out", "build/grade.png"]
-    prerun(grade_argv, "t08", timeout=120)
-    grade_cmd = NPX + " " + " ".join(grade_argv)
+                  "--out", "build/grade.png", "--timeout", "30000"]
+    # active grading 在 hardware headless 必挂导航超时；prerun 与录制命令都走 software
+    prerun(grade_argv, "t08", timeout=180, env=SW_ENV)
+    grade_cmd = ("set PRODUCER_BROWSER_GPU_MODE=software&& "
+                 + NPX + " " + " ".join(grade_argv))
     term_cls()
     park_mouse()
 

@@ -6,7 +6,8 @@ r"""hf-07 录屏布景生成器：在公开沙盒（默认 F:\_hftest\hf07-frame
                        自掐表墙钟动画（4s 周期，不登记 timeline/WAAPI）
 - proj/v2/index.html   compare 变体：蓝块换绿、距离缩到 500，绿点/红块同 v1
 - proj/v3/index.html   边界实验：红块慢表 60s 一圈（第十秒补刀用）
-- proj/grades.json     grade-compare 两档候选（暖色/高亮，PROBE E7 实测串）
+- proj/grades.json     grade-compare 两档候选（暖色/高亮，adjust 对象档；
+                       active grading 须 software 渲染，见 GRADES_JSON 注释）
 - proj/hyperframes.json / package.json
 - backup/              视觉权威态冻结（v1/v2/v3＋根配置），restore 一键回冻、
                         verify 哈希闸（hf-04 坑②：视觉定稿必须先于任一 take 冻结）
@@ -60,10 +61,23 @@ PACKAGE_JSON = """{
 }
 """
 
-# PROBE E7 真机验证：grading 吃 CSS filter 串；original 基线由工具自动 prepend。
+# PROBE E7（2026-10-20 勘误）：grading **不认 CSS filter 串**——"sepia(0.6)"
+# 被当不存在的 preset id，adjust 全零，工具发
+# 「Warning: grading for "暖色" is inactive/no-op」三格全等（首录 t08 即此态，
+# c11 只断言成图大小未拦像素差异，溜过 12 次彩排）。正确 schema＝preset id
+# （warm-daylight 等）或 {adjust:{...}} 对象，键 exposure/contrast/
+# temperature/saturation 等，限值 ±1（exposure ±2）。力度取教学可视档
+# （2×2 格位/跳标签条，MAD 暖色 (11.8,1.8,10.2)、高亮 (13.7,10.9,8.3)，
+# 显著像素均 94%）。
+# 另：active grading 在本机 headless hardware 模式必撞
+# 「Navigation timeout of 10000ms exceeded」（UHD 620），必须
+# PRODUCER_BROWSER_GPU_MODE=software ＋ --timeout 30000（真机 ~29.5s）。
+# original 基线由工具自动 prepend。
 GRADES_JSON = json.dumps([
-    {"label": "暖色", "grading": "sepia(0.6)"},
-    {"label": "高亮", "grading": "brightness(1.25) saturate(1.2)"},
+    {"label": "暖色", "grading": {"adjust": {
+        "temperature": 0.45, "saturation": 0.25, "exposure": 0.05}}},
+    {"label": "高亮", "grading": {"adjust": {
+        "exposure": 0.45, "contrast": 0.15}}},
 ], ensure_ascii=False, indent=2) + "\n"
 
 # 文件名必须是 index.html：CLI 目录参数（check/preview/snapshot v1）只认
