@@ -5,7 +5,8 @@ b-roll 进 HyperFrames 片时，开拍前先读本文件。纯 HTML/SVG 动画�
 那条路走 snapshot/render 的确定性逐帧路径，见 `hyperframes-agent.md`。
 
 - 首个全量实战范本：`projects/hf-04/oneoffs/RECORD-NOTES.md`（12 take 台账、七坑
-  全部带定量证据）；彩排期机制实测见同目录 `REHEARSAL-NOTES.md`。
+  全部带定量证据）；彩排期机制实测见同目录 `REHEARSAL-NOTES.md`；终端命令类 take
+  范本见 hf-05/hf-06 同目录 RECORD-NOTES.md（第 10 节出处）。
 - 配套：仓库根 `tools/screen-rec.js`（零依赖 gdigrab 录制器）；项目 `oneoffs/` 放
   本片编排脚本——从 hf-04 复制改造：`guard.py`（身份闸）、`cdp_ctrl.py`（CDP 原语）、
   `record_segments.py`（take 编排）、`cut_shorts.py`（抽帧＋精切）。
@@ -108,12 +109,53 @@ python -m videopipe probe-fps projects/<片>/media/shorts      # 精切件：必
 
 - **sparse-keyframe 文件用 output seeking**：`-ss` 写在 `-i` **之后**才逐帧解码到点；
   写在 `-i` 前（input seeking）会退回前一个关键帧（hf-04 在 296s 抽帧退回 22.5s）。
+- **长片多点抽帧用混合 seeking（hf-05/hf-06 各踩一次纯 output 超时）**：纯 output
+  seeking 对 490s+ 终片每点从头解码，20–40 点必超时；改「输入侧 `-ss t-1.5` 落就近
+  关键帧 ＋ 输出侧 `-ss 1.5` 精确定位」，每点秒出、精度仍由 output seek 保。
+  公共件 `videos/tools/frames_at.py` 已固化此工艺，别再到各项目 oneoffs 里抄。
 - **批量循环加 `-nostdin`**，否则第二个迭代起 ffmpeg 吞掉循环的标准输入导致挂死/异常。
 - **`signalstats` 的 `metadata=print` 是 info 级日志**：配 `-loglevel error` 会被一起
   压光，取证时保持默认日志级别。ROI 量化模板：
   `crop=1000:130:280:185,signalstats,metadata=print -f null -`，读 YAVG 序列。
 - drawtext 滤镜的 `text=` 里冒号是过滤链分隔符，时间戳文本必须 `.replace(":", "\\:")`
-  （范本 `f2_contact_sheet.py`）。
+  （范本 `f2_contact_sheet.py`）；fontfile 不能带盘符冒号，字体复制到输出目录用纯
+  文件名相对路径。
+- 小坑三则：git-bash 无 `bc`，整数/浮点算术用 bash 自带 `$(( ))`；封面截图用的
+  chrome-headless-shell 不在 PATH，走 playwright 缓存目录全路径；后台长跑任务命令
+  尾巴别加 `| tail`，进度会被缓冲住不可见。
+
+## 10. 终端命令类 take 专项（hf-05/hf-06 实录）
+
+录「终端里敲命令、等结果」的 take 与录编辑器/浏览器不同，坑集中在**报文怎么入镜**：
+
+- **瞬刷输出要用滚轮 freeze 法（hf-06 首录 6 take 同病 NG 的修法）**：check 这类命令
+  的约 30 行输出是整屏**瞬时**刷出的，没有滚动中间态，可视区约 20 行装不下——排在前
+  面的报错段（恰是核心教学画面）从始至终不入镜。修法：报文稳定后**鼠标滚轮上滚
+  3 格**让前段入镜，freeze 取这一帧；下滚会过量自动停底，不影响后续。**Shift+PgUp
+  勿用**：wt 1.17+ 默认键绑定无 scrollUpPage，PgUp 被 cmd 的 doskey 吃成「历史上溯」，
+  录出来的是上一条命令。
+- **报文瞬刷窗仅约 0.5s**（hf-05 实测 t2b 25.9–26.4s）：3s 稀疏探针必漏，目验定位
+  用 0.3s 加密帧；成片里这类报文一律用 freeze PNG 定格呈现，不靠活动录屏去「赶」。
+- **片长必须按打字速率反推**（hf-05 t4d 废片教训）：term_cmd 逐字实测约 **0.07s/字**
+  （delay=.035 外加 keyup 开销），`sleep 33` 才开敲的 18 字命令打完约 38.8s，被 40s
+  片长整段切掉、零字入镜。编排时：打字开始时刻 ＋ 命令字数 ×0.07 ＋ 回显稳定余量
+  ≤ 片长。
+- **cmd 读退出码必须分两行敲**：`check & echo %ERRORLEVEL%` 同句执行时 echo 读的是
+  上一条命令的旧值，录出假 `0`。
+- **整块改行禁用系统剪贴板**（hf-05 t5b 废片）：录制期剪贴板会被后台程序抢占，整块
+  移动改用纯 Scintilla 消息（2142/2144 按 UTF-8 **字节位置**定选区、2620 整块上移）；
+  消息号查 Scintilla 头文件实数，勿凭记忆（2050 是 STYLECLEARALL 不是 SETFORE）。
+- **布景文件写盘钉死 LF**：Windows `Path.write_text` 默认把 `\n` 译成 CRLF，权威备份
+  多出的 `\r` 让字节位置全偏、Scintilla 选区立即错位——生成布景一律
+  `newline="\n"`，录前闸对备份做 CRLF bytes 检查。
+- **打字带出编辑器自动补全框要补 Esc**（hf-06 t3a）：补全框会遮挡定格帧，save 前先
+  Esc 关框。行号槽等外观设置做完**读回校验**（写入≠生效），不过则重试。
+- **同构 take 是设计出来的，切点才能批量复用**（hf-06 红利）：六条 check 系 run 在
+  编排时刻意做成同节奏（0.5–2s 提示符、3–5.5s 打字、15s 出 Checking、21s 起报文），
+  精切目验一条定切点 (1.5, 6.0)，全组六次复用。编排同构化省的是后期每一刀。
+- **目验对 MEDIA-FACTS 清单、不对感觉**：每 take 录前先写下「这条必须拍到什么」
+  （哪个报错原文、哪行 JSON、哪个状态字），录后逐条核。hf-06 首录 16 take 目验
+  10 过 6 NG，全靠这道闸拦住六个「画面里没有教学内容」的废镜头。
 
 ## 9. 运行环境与台账
 
