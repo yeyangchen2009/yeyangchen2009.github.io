@@ -21,18 +21,26 @@
       #good {
         top: 280px; left: 200px; background: #238636;
       }
-      /* 事故组：纯 CSS animation，4s 一轮循环，浏览器墙钟驱动，不可 seek */
+      /* 事故组：自掐表的墙钟动画（与 01 同构，4s 周期）；compare 两格
+         各停各的截图墙钟相位——暗线真实成立。 */
       #bad {
         top: 640px; left: 200px; background: #da3633;
-        animation: slide 4s linear infinite;
-      }
-      @keyframes slide {
-        from { transform: translateX(0); }
-        to   { transform: translateX(800px); }
       }
       #lg { top: 220px; left: 200px; }
       #lb { top: 580px; left: 200px; }
       #clock { top: 40px; right: 60px; color: #e6edf3; font-size: 26px; }
+      /* 合法居民（同 01）：纯 CSS 动画被 WAAPI 接管、体检在册 */
+      #legal {
+        position: absolute; top: 48px; left: 60px;
+        width: 24px; height: 24px; border-radius: 50%;
+        background: #3fb950;
+        animation: legalPulse 2s ease-in-out infinite alternate;
+      }
+      #ll { top: 44px; left: 104px; font-size: 24px; }
+      @keyframes legalPulse {
+        from { transform: scale(1); opacity: .55; }
+        to   { transform: scale(1.6); opacity: 1; }
+      }
     </style>
   </head>
   <body>
@@ -45,10 +53,12 @@
       data-height="1080"
     >
       <div id="clock" class="clip" data-start="0" data-duration="12" data-track-index="0">t=?</div>
+      <div id="legal" class="clip" data-start="0" data-duration="12" data-track-index="2"></div>
+      <div id="ll" class="label clip" data-start="0" data-duration="12" data-track-index="0">合法 CSS 动画（登记在册，seek 也管得住）</div>
       <div id="lg" class="label clip" data-start="0" data-duration="12" data-track-index="0">方案 B：移动距离缩短到 500</div>
       <div id="good" class="box clip" data-start="0" data-duration="12" data-track-index="1">OK</div>
-      <div id="lb" class="label clip" data-start="0" data-duration="12" data-track-index="0">CSS animation（墙钟驱动，seek 管不着）</div>
-      <div id="bad" class="box clip" data-start="0" data-duration="12" data-track-index="1">CSS</div>
+      <div id="lb" class="label clip" data-start="0" data-duration="12" data-track-index="0">自掐表动画（setInterval，墙钟驱动，seek 管不着）</div>
+      <div id="bad" class="box clip" data-start="0" data-duration="12" data-track-index="1">墙钟</div>
     </div>
     <script>
       const tl = gsap.timeline({ paused: true });
@@ -59,6 +69,13 @@
       tl.to("#clock", { duration: 12, ease: "none",
         onUpdate() { clock.textContent = "t=" + tl.time().toFixed(2) + "s"; } }, 0);
       tl.seek(0);
+      // 红块：setInterval 自掐表（同 01），周期 4s，不登记任何时间轴
+      const badEl = document.getElementById("bad");
+      let __wall = 0;
+      setInterval(function () {
+        __wall = (__wall + 0.016) % 4;
+        badEl.style.transform = "translateX(" + (__wall / 4 * 800) + "px)";
+      }, 16);
     </script>
   </body>
 </html>

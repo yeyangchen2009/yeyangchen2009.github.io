@@ -1,0 +1,272 @@
+# -*- coding: utf-8 -*-
+"""hf-07 录屏安全闸：键鼠/窗口动作前强制校验前台属于「隔离录制环境」。
+
+沿用 hf-04 误触事故后固化的铁律（hf-05/06 同）：每次键鼠注入前过闸，
+前台/落点必须属于本集隔离环境身份之一，否则立即 abort。hf-07 两身份
+（本集无 NPP 现场编辑段——三工程静态冻结）：
+
+  1. 隔离 Edge：监听 127.0.0.1:9222 的进程（--user-data-dir=F:\\_hftest\\edge-cdp）
+     裸 player tab 接 3021 后台 preview server；
+  2. 隔离终端：标题为 hf07-rec 的 WT 窗口（-w new 独立窗口，
+     --suppressApplicationTitle 锁名；绝不按 WindowsTerminal 进程名批量认
+     ——用户 WT 是另一个进程）。
+
+用户一回机把自己的窗口切前台，下一个注入立即 UnsafeForeground 中止。
+净复制自 hf-04 guard，只删 NPP 身份、改标题常量。
+"""
+import ctypes
+import subprocess
+import time
+from ctypes import wintypes
+
+u = ctypes.windll.user32
+k32 = ctypes.windll.kernel32
+
+CDP_PORT = 9222
+TERM_TITLE = "hf07-rec"
+_cdp_pid_cache = None
+
+
+class UnsafeForeground(RuntimeError):
+    pass
+
+
+# ---------- 两身份解析 ----------
+
+def cdp_pid():
+    """监听 CDP 端口的进程 pid（隔离 Edge 实例的权威身份）。"""
+    global _cdp_pid_cache
+    if _cdp_pid_cache:
+        return _cdp_pid_cache
+    # 中文 Windows 下 netstat 输出 GBK；PYTHONUTF8=1 时 text=True 按 utf-8
+    # 解码会抛 UnicodeDecodeError，按字节抓再容错解码。
+    # 不能加 -p TCP：隔离 Edge 的 CDP 只绑 IPv6 [::1]:9222，-p TCP 只列 v4，
+    # 会误判「Edge 未启动」；全量 netstat 同时含 TCPv6（hf-04 实测）。
+    out = subprocess.run(
+        ["netstat", "-ano"],
+        capture_output=True, timeout=10).stdout.decode("gbk", "replace")
+    pids = set()
+    for line in out.splitlines():
+        f = line.split()
+        if len(f) >= 5 and f[1].endswith(":%d" % CDP_PORT) and f[3] == "LISTENING":
+            pids.add(int(f[4]))
+    if not pids:
+        raise UnsafeForeground("找不到监听 %d 的进程，隔离 Edge 未启动" % CDP_PORT)
+    if len(pids) > 1:
+        raise UnsafeForeground("端口 %d 有多个监听 pid: %s" % (CDP_PORT, pids))
+    _cdp_pid_cache = pids.pop()
+    return _cdp_pid_cache
+
+
+def reset_cdp_cache():
+    """Edge 重启后调用（pid 会变）。"""
+    global _cdp_pid_cache
+    _cdp_pid_cache = None
+
+
+def _enum_windows():
+    """[(hwnd, class, title, pid)] 所有可见顶层窗。"""
+    rows = []
+
+    @ctypes.WINFUNCTYPE(ctypes.c_bool, wintypes.HWND, wintypes.LPARAM)
+    def cb(wnd, _):
+        if not u.IsWindowVisible(wnd):
+            return True
+        cn = ctypes.create_unicode_buffer(64)
+        u.GetClassNameW(wnd, cn, 64)
+        ln = u.GetWindowTextLengthW(wnd)
+        b = ctypes.create_unicode_buffer(ln + 1)
+        u.GetWindowTextW(wnd, b, ln + 1)
+        pid = wintypes.DWORD()
+        u.GetWindowThreadProcessId(wnd, ctypes.byref(pid))
+        rows.append((wnd, cn.value, b.value, pid.value))
+        return True
+
+    u.EnumWindows(cb, 0)
+    return rows
+
+
+def isolated_pids():
+    """当前隔离环境两身份 pid 集合（每动作现查，不缓存窗口归属）。"""
+    pids = set()
+    try:
+        pids.add(cdp_pid())
+    except UnsafeForeground:
+        pass  # Edge 没开时，终端段仍应可过闸
+    for _, cn, title, pid in _enum_windows():
+        if title.strip().startswith(TERM_TITLE):
+            pids.add(pid)
+    return pids
+
+
+def identify(pid):
+    """给报错用的人类可读身份串。"""
+    try:
+        if pid == cdp_pid():
+            return "隔离 Edge"
+    except UnsafeForeground:
+        pass
+    for _, cn, title, p in _enum_windows():
+        if p == pid:
+            if "WindowsTerminal" in cn or cn == "CASCADIA_HOSTING_WINDOW_CLASS":
+                return "非隔离终端（%s）" % title[:40]
+            return "%s（%s）" % (cn or "未知窗", title[:40])
+    return "pid=%s" % pid
+
+
+# ---------- 现场探测 ----------
+
+def fg_hwnd_pid():
+    hwnd = u.GetForegroundWindow()
+    pid = wintypes.DWORD()
+    u.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+    return hwnd, pid.value
+
+
+def window_pid_at(x, y):
+    class P(ctypes.Structure):
+        _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+    h = u.WindowFromPoint(P(int(x), int(y)))
+    # WindowFromPoint 可能命中子窗（Chrome_RenderWidgetHostHWND），取根 hwnd 的 pid
+    root = u.GetAncestor(h, 2) or h  # GA_ROOT = 2
+    pid = wintypes.DWORD()
+    u.GetWindowThreadProcessId(root, ctypes.byref(pid))
+    return pid.value, h, root
+
+
+# ---------- 白名单闸（Edge/终端） ----------
+
+def assert_fg_safe():
+    """键鼠动作前调用：前台必须是隔离两身份之一。"""
+    hwnd, pid = fg_hwnd_pid()
+    allow = isolated_pids()
+    if pid not in allow:
+        raise UnsafeForeground(
+            "前台 %s 不属于隔离录制环境（允许 pid=%s）——用户可能正在用机，全部动作中止"
+            % (identify(pid), sorted(allow)))
+    return hwnd
+
+
+def assert_point_safe(x, y):
+    """点击/拖拽前调用：落点窗口也必须属于隔离环境。"""
+    pid, child, root = window_pid_at(x, y)
+    allow = isolated_pids()
+    if pid not in allow:
+        raise UnsafeForeground(
+            "落点 (%d,%d) 命中 %s 而非隔离环境 pid=%s，中止"
+            % (x, y, identify(pid), sorted(allow)))
+    return root
+
+
+# ---------- Edge 专闸 ----------
+
+WM_CLOSE = 0x0010
+SW_RESTORE = 9
+
+
+def isolated_edge_windows():
+    """cdp pid 名下可见 Chrome_WidgetWin_1 顶层窗，按面积降序。
+
+    Edge 可能有扩展广告小窗（hf-04 实测 IDM Integration Module 472x342）
+    与主窗并存，标题同样写页面名，故只按 pid＋面积，不靠标题定位。
+    """
+    pid = cdp_pid()
+    rows = []
+    for hwnd, cn, title, wpid in _enum_windows():
+        if wpid == pid and cn == "Chrome_WidgetWin_1":
+            rc = wintypes.RECT()
+            u.GetWindowRect(hwnd, ctypes.byref(rc))
+            w, h = rc.right - rc.left, rc.bottom - rc.top
+            if w > 0 and h > 0:
+                rows.append((hwnd, title, w, h, w * h))
+    rows.sort(key=lambda x: -x[4])
+    return rows
+
+
+def force_isolated_edge_foreground(close_aux=True):
+    """按 cdp pid 定位隔离 Edge 主窗（面积最大者），关扩展广告小窗，
+    AttachThreadInput 破 Windows 前台锁强前置，成功返回主窗 hwnd。
+    """
+    want = cdp_pid()
+    wins = isolated_edge_windows()
+    if not wins:
+        raise UnsafeForeground("cdp pid=%s 名下没有可见浏览器窗" % want)
+    main_hwnd = wins[0][0]
+    # 辅助小窗：同 pid 下面积不到主窗 1/3 的（IDM「已添加」等）。
+    if close_aux:
+        for hwnd, title, w, h, area in wins[1:]:
+            if area < wins[0][4] / 3:
+                u.PostMessageW(hwnd, WM_CLOSE, 0, 0)
+                time.sleep(0.3)
+    if u.IsIconic(main_hwnd):
+        u.ShowWindow(main_hwnd, SW_RESTORE)
+    fg = u.GetForegroundWindow()
+    fg_tid = u.GetWindowThreadProcessId(fg, None)
+    cur_tid = k32.GetCurrentThreadId()
+    attached = u.AttachThreadInput(cur_tid, fg_tid, True) if fg_tid != cur_tid else False
+    try:
+        u.SetForegroundWindow(main_hwnd)
+        u.BringWindowToTop(main_hwnd)
+    finally:
+        if attached:
+            u.AttachThreadInput(cur_tid, fg_tid, False)
+    time.sleep(0.4)
+    _, fpid = fg_hwnd_pid()
+    if fpid != want:
+        raise UnsafeForeground(
+            "强前置后前台 %s 仍不是隔离 Edge pid=%s——用户可能正在用机，中止"
+            % (identify(fpid), want))
+    return main_hwnd
+
+
+def assert_fg_isolated():
+    """前台必须是隔离 Edge（CDP 9222 实例）。Edge 未开直接报错。"""
+    hwnd, pid = fg_hwnd_pid()
+    want = cdp_pid()
+    if pid != want:
+        raise UnsafeForeground(
+            "前台 %s 不是隔离 Edge pid=%s——用户可能正在用机，全部动作中止"
+            % (identify(pid), want))
+    return hwnd
+
+
+def assert_point_isolated(x, y):
+    """落点窗口必须属于隔离 Edge。"""
+    pid, child, root = window_pid_at(x, y)
+    want = cdp_pid()
+    if pid != want:
+        raise UnsafeForeground(
+            "落点 (%d,%d) 命中 %s 而非隔离 Edge pid=%s，中止"
+            % (x, y, identify(pid), want))
+    return root
+
+
+# ---------- 注入原语统一装闸 ----------
+
+GUARDED_PRIMITIVES = ("tap", "hotkey", "type_text", "paste",
+                      "mouse_move", "mouse_down", "mouse_up", "mouse_click")
+
+
+def install_input_guards(rec, checker=None):
+    """给 rec_automate 模块的八个注入原语统一套前台白名单闸（幂等）。
+
+    每击键/点击在「注入的那一瞬」复查前台：序列中途用户回机切窗，
+    下一个注入立即 UnsafeForeground 中止。activate、move(hwnd)、
+    screenshot、定向 SendMessage 不包——调用方须自己显式过闸。
+    """
+    if checker is None:
+        checker = assert_fg_safe
+    if getattr(rec, "_hf07_guards_installed", False):
+        return
+    for name in GUARDED_PRIMITIVES:
+        orig = getattr(rec, name)
+
+        def make(fn):
+            def guarded(*a, **k):
+                checker()
+                return fn(*a, **k)
+            guarded.__name__ = "guarded_" + fn.__name__
+            return guarded
+
+        setattr(rec, name, make(orig))
+    rec._hf07_guards_installed = True
