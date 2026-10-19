@@ -56,6 +56,19 @@ CSS 红块上**稳定失败**（四帧红全 0.3432 同位）。复核方法：�
 
 ---
 
+## ★ 2026-10-20 勘误（E7 grade-compare：CSS filter 串＝no-op；active grading 须 software）
+
+首录 t08 真机警告 `grading ... is inactive/no-op`、三格全等，旧 E7「CSS
+filter 实时生效」作废。根因＝grading 字段不认 filter 串（被当未知 preset
+→adjust 全零）；正确 schema 为 preset id 或 `{adjust:{...}}` 对象。另：
+active grading 在本机 headless **hardware 必挂导航 10s 超时**，须
+`PRODUCER_BROWSER_GPU_MODE=software` ＋ `--timeout 30000`（真机
+29.5s/次）。定稿两档（暖色/高亮 adjust 对象）、像素量化与彩排双闸补强
+详见下文 **E7**。布景 grades.json 已重建，c11 加 inactive 文案断言＋
+逐格 MAD 像素闸。
+
+---
+
 ## 0. 结论先行（分镜约束）
 
 > ⚠︎ 本节第 1/2 条已被文首勘误翻转：CSS 动画被 WAAPI seek 接管（合法居民），
@@ -152,10 +165,40 @@ CSS 红块上**稳定失败**（四帧红全 0.3432 同位）。复核方法：�
 - 红块两格各停各的墙钟相位——compare 同样让 CSS 动画露馅（可作教学暗线）。
 - labels 数量不符 exit 2；标签里写逗号被切成 4 段。
 
-### E7. grade-compare（build/grade.png）
+### E7. grade-compare（build/grade.png）　【⚠︎ 2026-10-20 勘误：不认 CSS filter 串；active grading 须 software 渲染】
 
-- grades.json 三格成品：original（自动基线）/暖色/高亮，CSS filter 实时
-  生效，2×2 末格留空。定位＝调色候选对照，正片一句话。
+- ~~grades.json 三格成品：original（自动基线）/暖色/高亮，CSS filter 实时
+  生效，2×2 末格留空。~~ **首录 t08 真机自检推翻此条**：终端实出
+  `Warning: grading for "暖色" is inactive/no-op — it will render ungraded`，
+  三格逐像素全等。
+- **schema 真相**（读 dist 源码定位）：grading 字段不认 CSS filter 串。
+  非 `{` 开头的字符串被包成 `{preset: <原文>}`，未知 preset → ADJUST_ZERO →
+  isHfColorGradingActive=false → 警告＋原样渲染。正确形态＝preset id
+  （neutral/warm-daylight/clean-studio 等）或对象
+  `{adjust:{exposure(±2),contrast,temperature,tint,vibrance,saturation(±1),
+  highlights,shadows,whites,blacks}, details:{vignette,grain}, ...}`。
+- 定稿两档（教学可视档，0–255 像素量化真机值，2×2 格位、跳过 46px 标签条）：
+  - 暖色 `{adjust:{temperature:.45,saturation:.25,exposure:.05}}`：
+    vs original MAD RGB=(11.8,1.8,10.2)，显著像素 94.3%，暗部染棕褐；
+  - 高亮 `{adjust:{exposure:.45,contrast:.15}}`：
+    MAD=(13.7,10.9,8.3)，显著像素 93.5%，黑底更沉、蓝块更亮。
+  - 口径：MAD＝格内全像素逐通道平均绝对差（0–255）；显著像素＝任一通道
+    差 >6 的占比。彩排真机渲染 33.8s/次。
+  - 翻饼留档：修复当日曾把成图误判为「三格横排」并按三等分列切格
+    （量得 13/52%、17.6/88% 一组错口径数），目验成图才发现是 2×2。
+    no-op 闸在错口径下仍有效——三格全等时怎么切差分都是 0；但指标
+    语义不能靠「闸碰巧能红」，切格代码必须先看图定布局。
+- **渲染坑**：active grading 在本机 headless **hardware** 模式必挂
+  `Navigation timeout of 10000 ms exceeded`（UHD 620；DOMContentLoaded
+  不触发，`--timeout` 管 render-ready 不管导航，
+  PRODUCER_PAGE_NAVIGATION_TIMEOUT_MS 放宽亦挂）。退路＝
+  `PRODUCER_BROWSER_GPU_MODE=software` ＋ `--timeout 30000`，
+  真机稳定 29.4–29.5s/次（no-op 旧档秒过，故彩排 12 轮未暴露）。
+- c11 漏网根源：旧彩排只断言成图 >10KB， inactive 警告与三格全等全溜过。
+  已补双闸——输出不含 `inactive/no-op`＋两格对 original 像素差异
+  （任一通道 MAD>6 且显著像素占比>25%）。
+- 成品布局：**2×2 末格留空**（左上 original／右上暖色／左下高亮），
+  1168×742、单格 584×371，original 自动 prepend。
 
 ### E8. snapshot 输出目录语义（hf-04 老经验精确化）
 

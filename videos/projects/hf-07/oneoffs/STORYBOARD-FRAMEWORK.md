@@ -31,7 +31,8 @@
 proj/
   hyperframes.json        paths.compositions=.
   package.json
-  grades.json             grade-compare 的两档候选（暖色/高亮），E7 实测 filter 串
+  grades.json             grade-compare 两档候选（暖色/高亮 adjust 对象档，
+                          E7 勘误：filter 串＝no-op；active grading 须 software）
   v1/index.html           主工程：蓝 GSAP seekable 0→800 ＋ 绿点合法 CSS
                           （legalPulse 2s，WAAPI 接管）＋ 红块 setInterval
                           自掐表 4s 一圈（黑户，check 0 error、seek 管不着）
@@ -80,7 +81,9 @@ backup/v1|v2|v3/          视觉权威态冻结拷贝（index.html＋gsap.min.js
     红/绿无残影（--selector 只画登记在册的 #good）；
   - **compare.png**：1212×372 两格（方案A·x800 蓝／方案B·x500 绿）；
     两格红块格内质心差≈0.002（近似同相，旧「暗线」说法已作废）；
-  - **grade.png**：original/暖色/高亮三格，filter 可辨；
+  - **grade.png**：2×2 末格留空（original/暖色/高亮），1168×742，
+    adjust 档真机可辨（暖色 MAD=(11.8,1.8,10.2)/显著像素 94%，
+    高亮 (13.7,10.9,8.3)/94%；旧 filter 串三格全等 no-op 已作废）；
   - 断言全部落进 `run_rehearsal.py`（蓝/绿同位容差 .006、红 distinct≥3、
     cssKeyframes 在册 legalPulse/#legal、#bad 报告隐身＋--shot exit 1）。
 
@@ -99,9 +102,11 @@ backup/v1|v2|v3/          视觉权威态冻结拷贝（index.html＋gsap.min.js
 | t05-zoom | 静态 | 两条连敲：`snapshot v1 --at 4 --zoom "#bad" --no-end …`（504×504 局部裁图）；`… --zoom "#nope" …`（选择器不命中硬 error，文案 `✗ Snapshot failed: --zoom selector matched no element: #nope`）。真机报文仅 7 行一屏装得下，**纯 freeze 不上滚** | 53 | artifacts/t05：录后非录态补跑成功轮产 zoom 裁图归位；error 尾帧在录屏里 |
 | t06-keyframes | 静态 | 三条连敲：①`keyframes v1`（无参报告 **3 items**：#good/#clock/legalPulse #legal，#bad 隐身）；②`keyframes v1 --shot build/onion-good.png --selector #good`（★目录形态为彩排 SHOT_WINNER，Saved 行 freeze）；③`keyframes v1/index.html --shot build/onion-bad.png --selector #bad`（exit 1 无图：`--shot: nothing animates under '#bad'. Nearest animated elements: #good, #clock, #legal.`，2 行一屏装得下，纯 freeze） | 72 | artifacts/t06：只归位 onion-good.png；报告帧/error 帧在录屏里 |
 | t07-compare | 静态 | `compare v1 v2 --at 4 --labels 方案A·x800,方案B·x500 --out build/compare.png`（真机 19.7s 成 1212×372；标签内禁逗号，数量不符真机 **exit 1** 文案 `--labels count (1) must match path count (2)`；中文标签段走 paste） | 36 | artifacts/t07：compare.png |
-| t08-grade | 备帧在 | 录制外先 `snapshot v1 --at 4 --no-end` 备帧；`grade-compare --for v1/snapshots/<帧>.png --grades grades.json --out build/grade.png`（彩排 GRADE_WINNER＝**无 --project**；original 基线自动 prepend，三格） | 31 | artifacts/t08：grade.png |
+| t08-grade | 备帧在 | 录制外先 `snapshot v1 --at 4 --no-end --no-browser-gpu` 备帧；终端敲 `set PRODUCER_BROWSER_GPU_MODE=software&& npx hyperframes grade-compare --for v1/snapshots/<帧>.png --grades grades.json --out build/grade.png --timeout 30000`（无 --project 形态；active grading 在 hardware headless 必挂导航超时，software 真机 29.5–33.8s，WAIT 40；original 基线自动 prepend，2×2 三格 1168×742 末格留空） | 51 | artifacts/t08：grade.png（布景重建后 software 重生成） |
 
-净素材 321s ≈ 5.4 min；无 NPP 冷启、无多态 restore，take 间隔只有
+净素材设计 341s ≈ 5.7 min（t08 修复后规格 51s；★实际母带为修复前
+31.3s 旧录——no-op 警告入镜但粗切只取打字段，三格 freeze 用布景重建后
+software 重生成的 PNG，故 t08 不重录）；无 NPP 冷启、无多态 restore，take 间隔只有
 终端/Edge 切换与产物归位，单次全推估 15–25 min；按 **1–1.5h 占机**留 NG
 缓冲（真人离机，开始前必须与用户确认时段）。
 
@@ -128,7 +133,7 @@ present 不录（src 一句话带过，幕内给小卡）。DevTools seek 矩阵
 | m14 | keyframes 体检：在册的三家逐户登记，报告 3 items | t06 报告段 freeze（#good/#clock/legalPulse #legal） | t06 |
 | m15 | 红得扎眼的 #bad 报告里没有户口；--shot 点它直接硬 error「nothing animates」；洋葱皮只画得出登记过的运动 | onion-good freeze（蓝轨迹、红绿无残影）＋#bad 报错 freeze＋C8「在册才被时间轴管」卡 | t06 freeze＋卡 |
 | m16 | compare：两变体一排，编号标签，最多四个；标签逗号小脾气 | t07 打字段＋compare.png freeze | t07 |
-| m17 | grade-compare 调色选片；present 演讲模式，都不是查帧 | t08 短打字段＋grade.png freeze；present 一句小卡 | t08＋卡 |
+| m17 | grade-compare 调色选片；present 演讲模式，都不是查帧（★局部重录可加料：grading 不认 CSS filter 串、写错档＝inactive/no-op 白烤一遍，机器会发警告） | t08 短打字段＋grade.png freeze（新 adjust 档三格）；present 一句小卡 | t08＋卡 |
 | m18 | 三句话：管感受/管事实；能被 seek 管住的才配进烤片；拿不准拍照片 | C9 金句 recap | 卡 |
 | m19 | 行动件：frames 拍五张＋--shot 洋葱皮；自己掐表跑的墙钟元素趁早换 seekable（CSS 放心用） | C10 行动卡 | 卡 |
 | m20 | 下集 render 预告＋道别 | C11 render 预告（无头浏览器烤 MP4）＋片尾 | 卡 |
@@ -147,8 +152,10 @@ present 不录（src 一句话带过，幕内给小卡）。DevTools seek 矩阵
 2. 所有命令真实跑、报错文案逐字以彩排/实拍真机为准，终端不许造文案；
    contact-sheet/onion/compare/grade 全部真机产出物，不后期伪造。
 3. snapshot 一律 `--no-browser-gpu`（SwiftShader 保确定性）；
-   compare/grade-compare/keyframes --shot 默认硬 GPU（无开关），照实录、
-   不强求像素逐帧可复现（教学点是几何/时间标，不是像素同）。
+   compare/keyframes --shot 默认硬 GPU（无开关），照实录、不强求像素逐帧
+   可复现（教学点是几何/时间标，不是像素同）。**grade-compare 例外**：
+   active grading 在 hardware headless 必挂导航超时，强制 software
+   （内联 `set PRODUCER_BROWSER_GPU_MODE=software&&`＋`--timeout 30000`）。
 4. keyframes 体检报告口播念「GSAP／CSS／Anime 都查得出来」是能力陈述：
    v1 真布 GSAP（#good/#clock）＋合法 CSS（#legal）两类，真机报告
    3 items 即支撑「在册的都查得到」，不引第三库 anime（免 vendor 与未探
