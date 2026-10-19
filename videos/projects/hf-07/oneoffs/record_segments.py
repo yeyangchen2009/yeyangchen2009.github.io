@@ -403,7 +403,7 @@ def _screen_blocks():
     probe = os.path.join(FRAME_DIR, "_player-probe.png")
     r.screenshot(probe, 1920, 1080)
     from PIL import Image
-    with Image.open(probe) as im:
+    with Image.open(probe).convert("RGB") as im:
         return _count_blocks(im, 100 / 1920, 700 / 1920, 220 / 1080, 780 / 1080)
 
 
@@ -480,7 +480,7 @@ def setup_player():
 
 # ---------- 产物归位（snapshot 下轮自清扫，录完立即拷） ----------
 
-def harvest(take, patterns):
+def harvest(take, *patterns):
     dst = os.path.join(ARTIFACT_DIR, take)
     if os.path.isdir(dst):
         shutil.rmtree(dst)
