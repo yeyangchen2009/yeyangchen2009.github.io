@@ -21,18 +21,33 @@
       #good {
         top: 280px; left: 200px; background: #1f6feb;
       }
-      /* 事故组：纯 CSS animation，4s 一轮循环，浏览器墙钟驱动，不可 seek */
+      /* 事故组：自掐表的墙钟动画（脚本里 setInterval 累加自己的表）。
+         不注册 __timelines、不走 WAAPI，snapshot/player 的时间轴虚拟化
+         （GSAP seek＋WAAPI currentTime）对它没有抓手；同秒四连帧四位置。
+         注意：纯 CSS animation 反而会被 snapshot seek 到 at 相位
+         （0.8.107 真机，2026-10-19 勘误 PROBE-NOTES 旧结论），不能当主角；
+         裸 rAF / Date.now 则被 StaticGuard 判 error，唯有「setInterval＋
+         自有计数器」既过 check 又不听时间轴。 */
       #bad {
         top: 640px; left: 200px; background: #da3633;
-        animation: slide 4s linear infinite;
-      }
-      @keyframes slide {
-        from { transform: translateX(0); }
-        to   { transform: translateX(800px); }
       }
       #lg { top: 220px; left: 200px; }
       #lb { top: 580px; left: 200px; }
       #clock { top: 40px; right: 60px; color: #e6edf3; font-size: 26px; }
+      /* 合法居民：纯 CSS animation 在 0.8.107 里会被 snapshot 经 WAAPI
+         虚拟化到时间轴（seek 到 at 相位、四连帧同位），体检报告 cssKeyframes
+         在册——与 #bad 的自掐表恰好构成「登记在册 vs 黑户」对照。 */
+      #legal {
+        position: absolute; top: 48px; left: 60px;
+        width: 24px; height: 24px; border-radius: 50%;
+        background: #3fb950;
+        animation: legalPulse 2s ease-in-out infinite alternate;
+      }
+      #ll { top: 44px; left: 104px; font-size: 24px; }
+      @keyframes legalPulse {
+        from { transform: scale(1); opacity: .55; }
+        to   { transform: scale(1.6); opacity: 1; }
+      }
     </style>
   </head>
   <body>
@@ -45,10 +60,12 @@
       data-height="1080"
     >
       <div id="clock" class="clip" data-start="0" data-duration="12" data-track-index="0">t=?</div>
+      <div id="legal" class="clip" data-start="0" data-duration="12" data-track-index="2"></div>
+      <div id="ll" class="label clip" data-start="0" data-duration="12" data-track-index="0">合法 CSS 动画（登记在册，seek 也管得住）</div>
       <div id="lg" class="label clip" data-start="0" data-duration="12" data-track-index="0">GSAP seekable（snapshot 该走到哪走到哪）</div>
       <div id="good" class="box clip" data-start="0" data-duration="12" data-track-index="1">OK</div>
-      <div id="lb" class="label clip" data-start="0" data-duration="12" data-track-index="0">CSS animation（墙钟驱动，seek 管不着）</div>
-      <div id="bad" class="box clip" data-start="0" data-duration="12" data-track-index="1">CSS</div>
+      <div id="lb" class="label clip" data-start="0" data-duration="12" data-track-index="0">自掐表动画（setInterval，墙钟驱动，seek 管不着）</div>
+      <div id="bad" class="box clip" data-start="0" data-duration="12" data-track-index="1">墙钟</div>
     </div>
     <script>
       const tl = gsap.timeline({ paused: true });
@@ -59,6 +76,16 @@
       tl.to("#clock", { duration: 12, ease: "none",
         onUpdate() { clock.textContent = "t=" + tl.time().toFixed(2) + "s"; } }, 0);
       tl.seek(0);
+      // 红块：setInterval 里累加自己的表，周期 4s。不读 Date.now()/
+      // performance.now()（StaticGuard non_deterministic_code 硬 error），
+      // 不用 requestAnimationFrame（StaticGuard 墙钟契约硬 error）。
+      // 它的时间只随现实墙钟走，snapshot seek 多少次都不搭理。
+      const badEl = document.getElementById("bad");
+      let __wall = 0;
+      setInterval(function () {
+        __wall = (__wall + 0.016) % 4;
+        badEl.style.transform = "translateX(" + (__wall / 4 * 800) + "px)";
+      }, 16);
     </script>
   </body>
 </html>

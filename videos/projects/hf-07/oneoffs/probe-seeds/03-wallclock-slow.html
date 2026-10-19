@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px; height: 1080px; overflow: hidden;
+        background: #0d1117;
+        font-family: Consolas, ui-monospace, monospace;
+      }
+      .label { position: absolute; color: #8b949e; font-size: 30px; }
+      .box {
+        position: absolute; width: 120px; height: 120px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 28px; color: #fff;
+      }
+      /* 对照组：GSAP seekable，0–8s 从左 200 滑到 1000 */
+      #good {
+        top: 280px; left: 200px; background: #1f6feb;
+      }
+      /* 边界实验：自掐表动画换成 60s 一圈的慢表。snapshot seek 到第 10 秒，
+         蓝块早已在终点（8s 走完），红块的表才走了六分之一、还贴在起点附近
+         （0.8.107 真机三跑：red≈0.146 稳定，blue=0.5516）。
+         周期取 60s 的理由：headless 截图墙钟在导航后约 8–15s，若周期 4s，
+         红块相位随机、可能恰在右半，画面讲不清「还在起点」；60s 周期下
+         任意截图时刻 translateX≤200px，红必在左半。观众只见终端命令与
+         输出帧、不见源码周期，口播「把它的表调慢到一分钟一圈」与此一致。 */
+      #bad {
+        top: 640px; left: 200px; background: #da3633;
+      }
+      #lg { top: 220px; left: 200px; }
+      #lb { top: 580px; left: 200px; }
+      #clock { top: 40px; right: 60px; color: #e6edf3; font-size: 26px; }
+      /* 合法居民（同 01/02）：纯 CSS 动画被 WAAPI 接管、体检在册。
+         at=10 恰为 2s 周期整数倍，绿点停在 alternate 终点相位（亮、大）。 */
+      #legal {
+        position: absolute; top: 48px; left: 60px;
+        width: 24px; height: 24px; border-radius: 50%;
+        background: #3fb950;
+        animation: legalPulse 2s ease-in-out infinite alternate;
+      }
+      #ll { top: 44px; left: 104px; font-size: 24px; }
+      @keyframes legalPulse {
+        from { transform: scale(1); opacity: .55; }
+        to   { transform: scale(1.6); opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-9hlr" id="root" data-composition-id="main" data-start="0" data-duration="12" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-u7jr" id="clock" class="clip" data-start="0" data-duration="12" data-track-index="0">t=?</div>
+      <div id="legal" class="clip" data-start="0" data-duration="12" data-track-index="2"></div>
+      <div id="ll" class="label clip" data-start="0" data-duration="12" data-track-index="0">合法 CSS 动画（登记在册，seek 也管得住）</div>
+      <div data-hf-id="hf-14kr" id="lg" class="label clip" data-start="0" data-duration="12" data-track-index="0">GSAP seekable（snapshot 该走到哪走到哪）</div>
+      <div data-hf-id="hf-7j3y" id="good" class="box clip" data-start="0" data-duration="12" data-track-index="1">OK</div>
+      <div data-hf-id="hf-v92i" id="lb" class="label clip" data-start="0" data-duration="12" data-track-index="0">自掐表动画，慢表一分钟一圈（seek 照样管不着）</div>
+      <div data-hf-id="hf-p6o3" id="bad" class="box clip" data-start="0" data-duration="12" data-track-index="1">慢表</div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#good", { x: 0 }, { x: 800, duration: 8, ease: "none" }, 0);
+      window.__timelines["main"] = tl;
+      // clock 文本跟随 seek：证明渲染器确实在逐帧 seek
+      const clock = document.getElementById("clock");
+      tl.to("#clock", { duration: 12, ease: "none",
+        onUpdate() { clock.textContent = "t=" + tl.time().toFixed(2) + "s"; } }, 0);
+      tl.seek(0);
+      // 红块：setInterval 自掐表，60s 一圈（慢表）。不注册 timeline、
+      // 不走 WAAPI、不读时间 API——check 0 error，时间轴虚拟化够不着它。
+      const badEl = document.getElementById("bad");
+      let __wall = 0;
+      setInterval(function () {
+        __wall = (__wall + 0.016) % 60;
+        badEl.style.transform = "translateX(" + (__wall / 60 * 800) + "px)";
+      }, 16);
+    </script>
+  </body>
+</html>

@@ -6,7 +6,61 @@
 > 沙盒工程：`F:\_hftest\hf07-probe\`（仓库外，不入库；种子 HTML 见
 > `oneoffs/probe-seeds/`）。Node v24.6.0 / npx hyperframes@0.8.107 / UHD620。
 
+---
+
+## ★ 2026-10-19 勘误（重大翻转：主角不是 CSS，是「自掐表」黑户）
+
+下文 E2/E3/E4/E5（CSS 段）/E6（暗线段）的原结论**系对原档的误读，已作废**，
+保留原文仅作探侦过程留档。翻转起因：第五次彩排 c03 断言「红四帧异位」在
+CSS 红块上**稳定失败**（四帧红全 0.3432 同位）。复核方法：不重跑历史，
+直接对沙盒残留原档 `F:\_hftest\hf07-probe\build\probe1–4\*.png` 用 PIL
+条带采样量红蓝质心——probe3 四帧红全 0.3432（同位）、probe4 at=10 红在
+终点 0.5516（随 seek），与台账文本记载恰好相反。
+
+**五级实现矩阵（2026-10-19 真机，同一红蓝对照工程逐一替换红块实现）**：
+
+| 红块实现 | check | 四连帧（同 at） | 结论 |
+|---|---|---|---|
+| CSS `animation`（infinite/forwards 任意时长） | pass | **同位** | snapshot 经 **WAAPI 把 CSS 动画虚拟化到时间轴**，seek 到 at 相位；player 里 getComputedStyle 实测暂停冻结、seek(6)→translateX(400)。CSS 是合法居民 |
+| 裸 `requestAnimationFrame` | **硬 error** | （四位置，拿不到帧） | StaticGuard：`requestAnimationFrame runs on wall-clock time, not the GSAP timeline...` |
+| `setInterval`＋读 `Date.now()` | **硬 error** | （四位置） | non_deterministic_code：`Fix: Use GSAP timeline position instead of wall-clock time` |
+| **`setInterval`＋闭包内自有计数器**（不碰任何时间 API、不注册 `__timelines`、不走 rAF） | **pass** | **四帧四位置**（两轮可复现，轮间相位不同）、不理 at | ★真正主角：自掐表黑户 |
+| 同上，周期改 60s（v3 慢表） | pass | at=10 三跑 red≈0.146 稳定贴左、blue=0.5516 在终点 | 第十秒补刀镜头 |
+
+**体检可见性（keyframes，新主角下真机重测）**：
+
+- 无参报告对自掐表**完全隐身**：v1 现有 3 items＝#good（fromTo/flat @0→8s）、
+  #clock（to/flat @0→12s）、`@keyframes legalPulse css #legal`，无 #bad；
+  `--json` 里 #bad 既不在 tweens.targets 也不在 cssKeyframes.selectors。
+- `keyframes v1/index.html --shot build/x.png --selector #bad`：**exit 1
+  不出图**，文案 `--shot: nothing animates under '#bad'. Nearest animated
+  elements: #good, #clock, #legal.`——机器连它在动都不知道。
+- 布景因此在三工程左上角加入**合法 CSS 居民 #legal**（绿点 legalPulse 2s
+  alternate；四连帧绿点质心四帧全 0.0373 同位），与蓝块一起构成
+  「登记在册＝seek 管得住」的正衬，红块是唯一黑户。
+- 旧 E5「CSS 检出≠驱动、onion 残影推几何时间标乱序」一并作废：0.8.107
+  对 CSS 是**既检得出也驱得动**（WAAPI）；--shot 只对登记在册的元素出图。
+
+**compare 暗线修正（旧 E6）**：两格自掐表实例在同一浏览器实例内近乎同时
+导航/截图，相位被启动时差锁死，格内质心差实测 ≈0.002–0.006（几乎同相），
+「两格各停各墙钟」**不成立**；事故证据只认同一命令 `--at 2,2,2,2` 的
+四连帧（c03）。compare 仍正常出 1212×372 两格图，教学点回到「两方案一排」。
+
+**其它勘误**：compare `--labels` 数量不符真机 **exit 1**（非旧表 exit 2），
+文案 `--labels count (1) must match path count (2)`。
+
+新叙事一句话：**check 0 error 的工程里，没登记时间轴、自己 setInterval
+掐表跑的动画，preview 里顺滑无痕，snapshot 同秒连拍四张四个样，体检报告
+里连户口都没有。** 种子已替换：01＝自掐表 4s、02＝同构 x500 变绿、
+03＝自掐表 60s 慢表（旧 03-css-forwards.html 已删），三页均带 #legal 绿点。
+
+---
+
 ## 0. 结论先行（分镜约束）
+
+> ⚠︎ 本节第 1/2 条已被文首勘误翻转：CSS 动画被 WAAPI seek 接管（合法居民），
+> 真正不可 seek 的是 setInterval 自掐表黑户；第 2 条「检出≠驱动」对 CSS
+> 不成立。以下原文留档，以文首五级矩阵为准。
 
 1. **核心事故成立且比预想更尖锐**：CSS animation 无论 `infinite` 还是
    `forwards`、无论时长是否与 composition 对齐，snapshot/烤片时**只认浏览器
@@ -29,7 +83,7 @@
 
 | 命令 | 关键事实 |
 |---|---|
-| `preview [DIR]` | 默认端口 **3002**；`--port/--force-new/--background/--foreground/--status/--stop/--list/--kill-all/--open(默认true)/--lint-verbose`。后台日志 `C:\Users\yyb44\.local\state\hyperframes\previews\<hash>.log`。子目录工程的 Studio URL 形如 `http://127.0.0.1:3021/#project/v1`。 |
+| `preview [DIR]` | 默认端口 **3002**；`--port/--force-new/--background/--foreground/--status/--stop/--list/--kill-all/--open(默认true)/--lint-verbose`。后台日志 `C:\Users\<用户>\.local\state\hyperframes\previews\<hash>.log`。子目录工程的 Studio URL 形如 `http://127.0.0.1:3021/#project/v1`。 |
 | `snapshot [DIR]` | **位置参数只收目录**，传单 HTML 报 `Not a directory`；目录里只有 index.html（无 hyperframes.json/meta.json）也能跑。`--frames N`（默认5，**均分**，3 帧实测 0/6/11.64s）、`--at a,b,c`（可重复同值不去重，文件名仍 frame-0X-at-2s.png）、`--end`（默认 true 尾帧）、`-o`（目录自建）、`--zoom '<sel>'\|'x,y,w,h'`（选择器命中不了是 error）、`--zoom-scale 3`、`--angle`、`--against <video>`（参考视频 pair sheet）、`--describe`（有 GEMINI_API_KEY 才跑 vision）、`--no-browser-gpu`（SwiftShader 确定性）。 |
 | `keyframes [TARGET]` | TARGET 可收目录或单个 composition HTML。`--runtime gsap\|css\|anime\|all`、`--json`、`--shot=<out.png>`（**必须带值给输出路径**，当布尔开关用不出图、只打印 tip）、`--samples 9`、`--layout path(默认)\|strip`（strip 真像素 filmstrip 仅 SVG 选择器；DOM 元素＝1 live frame＋矢量 marker）、`--from/--to/--angle/--fit/--ghost/--selector`。 |
 | `compare [PATH]` | 「2+ paths」：传多个 composition HTML（或项目目录）。`--at <秒>`（单点）、`--labels a,b`（**逗号分隔，标签内禁逗号**，数量不符直接 exit 2）、`--out ./compare.png`、`--cols`（≤4）、`--json`、`--timeout`。 |
@@ -56,26 +110,26 @@
   snapshot 四帧蓝块全趴起点、clock 停 `t=?`。
 - 换本地 gsap.min.js（正式工程惯例）即恢复。**录屏布景铁律：gsap 必须本地**。
 
-### E2. 四时点 seek（infinite 版，--at 1,4,8,11）
+### E2. 四时点 seek（infinite 版，--at 1,4,8,11）　【⚠︎ 已勘误，见文首】
 
 - 蓝块：x ≈ 100/400/800/800，严格随 seek（单帧目验 11s 精确停终点）。
 - 红块：前三帧贴左（截图都在页面加载后 1s 内），**11s 帧漂到
   translateX ≈ 628**——与时间码无关，只与该帧截获时的墙钟有关。
 
-### E3. ★同点连抓（--at 2,2,2,2，build/probe3/contact-sheet.jpg）
+### E3. ★同点连抓（--at 2,2,2,2，build/probe3/contact-sheet.jpg）　【⚠︎ 已勘误：原档四帧红同位 0.3432，见文首】
 
 - 四帧角标全是 **t=2.00s**；蓝块四帧像素级同一位置；
   **红块四帧四个位置**（translateX ≈ 50 / 170 / 215 / 105px）。
 - 这是本集最硬一帧证据：同一 t、同一输入，CSS 动画给四张不同的图。
 - 截图原档：沙盒 `build/probe3/`。
 
-### E4. forwards 边界（v3，--at 2,2,2,10,10，build/probe4）
+### E4. forwards 边界（v3，--at 2,2,2,10,10，build/probe4）　【⚠︎ 已勘误：原档 at=10 红在终点 0.5516；v3 已换 60s 自掐表慢表，见文首】
 
 - 8s linear forwards、声明与时间轴等长：t=2 三帧红块仍微差；
   **t=10 两帧红块都在左侧**（截图离页面加载约 1s 墙钟，动画才走 1/8），
   蓝块已在终点。有限时长/forwards/对齐时长**都不构成适配**，结论无豁免。
 
-### E5. keyframes 体检：检出 ≠ 驱动
+### E5. keyframes 体检：检出 ≠ 驱动　【⚠︎ 已勘误：本节 CSS 观察作废；新事实＝自掐表完全隐身＋--shot #bad 硬 error，见文首】
 
 - `--json`：GSAP tween 全结构化（id/target/method/start/end/keyframes/path）；
   CSS 动画在 `cssKeyframes` 数组里静态可见（name=slide、selectors=#bad、
@@ -90,7 +144,7 @@
   `SyntaxError: 'dwell/hold' is not a valid selector` 崩掉。
   dummy tween 挂真实元素（#clock）规避。正式工程几乎不会踩，探针已排。
 
-### E6. compare 变体对照（build/compare.png）
+### E6. compare 变体对照（build/compare.png）　【⚠︎ 暗线已勘误：两格红近似同相，质心差≈0.002–0.006；另 labels exit 1 非 2】
 
 - v1（x800 蓝）与 v2（sed 改 x500 绿）`compare ... --at 4
   --labels 方案A·x800,方案B·x500`：一张横排两格 PNG，左上自带
@@ -125,6 +179,10 @@
   hf-04 旧坑仍按 screen-rec.md §6 处理。
 
 ## 3. 对分镜/录屏的约束（喂 STORYBOARD）
+
+> ⚠︎ 本节第 1/2 条随文首翻转更新：三件套现为 GSAP 蓝块＋合法 CSS 绿点
+> （登记在册、seek 管得住）＋自掐表红块（黑户）；preview 里顺滑的是
+> 自掐表红块。最终口径以 STORYBOARD-FRAMEWORK.md（v1）为准。
 
 1. 事故演示三件套同屏：GSAP 蓝块＋CSS 红块＋t= 时钟，一个工程讲完
    「谁听 seek」。E3 的 `--at 2,2,2,2` 接触表是高潮镜头。
