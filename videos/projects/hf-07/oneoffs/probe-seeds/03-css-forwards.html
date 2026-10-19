@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px; height: 1080px; overflow: hidden;
+        background: #0d1117;
+        font-family: Consolas, ui-monospace, monospace;
+      }
+      .label { position: absolute; color: #8b949e; font-size: 30px; }
+      .box {
+        position: absolute; width: 120px; height: 120px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 28px; color: #fff;
+      }
+      /* 对照组：GSAP seekable，0–8s 从左 200 滑到 1000 */
+      #good {
+        top: 280px; left: 200px; background: #1f6feb;
+      }
+      /* 事故组：纯 CSS animation，4s 一轮循环，浏览器墙钟驱动，不可 seek */
+      #bad {
+        top: 640px; left: 200px; background: #da3633;
+        animation: slide 8s linear forwards;
+      }
+      @keyframes slide {
+        from { transform: translateX(0); }
+        to   { transform: translateX(800px); }
+      }
+      #lg { top: 220px; left: 200px; }
+      #lb { top: 580px; left: 200px; }
+      #clock { top: 40px; right: 60px; color: #e6edf3; font-size: 26px; }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-9hlr" id="root" data-composition-id="main" data-start="0" data-duration="12" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-u7jr" id="clock" class="clip" data-start="0" data-duration="12" data-track-index="0">t=?</div>
+      <div data-hf-id="hf-14kr" id="lg" class="label clip" data-start="0" data-duration="12" data-track-index="0">GSAP seekable（snapshot 该走到哪走到哪）</div>
+      <div data-hf-id="hf-7j3y" id="good" class="box clip" data-start="0" data-duration="12" data-track-index="1">OK</div>
+      <div data-hf-id="hf-v92i" id="lb" class="label clip" data-start="0" data-duration="12" data-track-index="0">CSS animation（墙钟驱动，seek 管不着）</div>
+      <div data-hf-id="hf-p6o3" id="bad" class="box clip" data-start="0" data-duration="12" data-track-index="1">CSS</div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#good", { x: 0 }, { x: 800, duration: 8, ease: "none" }, 0);
+      window.__timelines["main"] = tl;
+      // clock 文本跟随 seek：证明渲染器确实在逐帧 seek
+      const clock = document.getElementById("clock");
+      tl.to("#clock", { duration: 12, ease: "none",
+        onUpdate() { clock.textContent = "t=" + tl.time().toFixed(2) + "s"; } }, 0);
+      tl.seek(0);
+    </script>
+  </body>
+</html>
