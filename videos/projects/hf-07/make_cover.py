@@ -2,10 +2,11 @@
 """hf-07 · 封面生成器（暗色工作室金/蓝，与 hf-05/06 同视觉系）。
 
 本集主题是「逐帧验收」：右窗＝本集灵魂镜头的概念化复刻——同一秒连拍
-四张（snapshot --at 2,2,2,2）的胶片条：蓝块（GSAP seekable）四帧纹丝
-不动，红块（CSS 墙钟动画）四帧四个位置，每帧角标 t=2.00s。位置比例取
-探针真机 E3（蓝在 25%，红 ≈ 6%/21%/27%/13%，见 oneoffs/PROBE-NOTES）。
-窗底一行 snapshot 命令。圆徽章＝相机快门（snapshot＝拍照）。
+四张（snapshot --at 2,2,2,2）的胶片条：蓝块（GSAP seekable）与绿点
+（CSS 喘气动画，WAAPI 接管）四帧纹丝不动，红块（setInterval 闭包黑户、
+自己掐表的墙钟动画）四帧四个位置，每帧角标 t=2.00s。位置为示意比例
+（蓝在 25%，红 ≈ 6%/21%/27%/13%）。窗底一行 snapshot 命令。
+圆徽章＝相机快门（snapshot＝拍照）。
 封面是设计资产（概念插画，同 hf-06 波形柱），真机取证在正片。
 
 截图：
@@ -28,6 +29,8 @@ RED_X = (50, 170, 215, 105)
 FW, FH = 168, 100          # 迷你帧尺寸
 BOX = 15                   # 方块边长
 BLUE_Y, RED_Y = 18, 60
+# 绿点（CSS 动画）：四帧同位置同相位，圆点，落在蓝红两行之间右侧空位
+GREEN_X, GREEN_Y = 136, 39
 
 
 def frame(i):
@@ -37,6 +40,7 @@ def frame(i):
     <div class="frame">
       <span class="tcode">t=2.00s</span>
       <span class="box blue" style="left:{bx}px;top:{BLUE_Y}px"></span>
+      <span class="box green" style="left:{GREEN_X}px;top:{GREEN_Y}px"></span>
       <span class="box red" style="left:{rx}px;top:{RED_Y}px"></span>
       <span class="fno">#{i+1}</span>
     </div>"""
@@ -105,12 +109,15 @@ html = """<!DOCTYPE html>
     border-radius:3px; }
   .box.blue { background:#1f6feb; box-shadow:0 0 12px rgba(31,111,235,.55); }
   .box.red { background:#da3633; box-shadow:0 0 12px rgba(218,54,51,.55); }
+  .box.green { width:13px; height:13px; border-radius:50%;
+    background:#3fb950; box-shadow:0 0 12px rgba(63,185,80,.6); }
 
-  #legend { display:flex; gap:34px; margin-top:22px; font-size:19px;
-    color:#8b949e; }
+  #legend { display:flex; gap:14px; margin-top:22px; font-size:17px;
+    white-space:nowrap; color:#8b949e; }
   #legend .sw { display:inline-block; width:14px; height:14px; border-radius:3px;
     margin-right:9px; vertical-align:-1px; }
   #legend .same { color:#58a6ff; } #legend .drift { color:#f85149; }
+  #legend .sameg { color:#7ee787; }
 
   #cmdline { margin-top:20px; padding-top:20px; border-top:2px solid #30363d;
     font-size:21px; color:#8b949e; line-height:1.6; }
@@ -164,7 +171,8 @@ html = """<!DOCTYPE html>
       <div id="filmstrip">__FRAMES__</div>
       <div id="legend">
         <span class="same"><span class="sw" style="background:#1f6feb"></span>GSAP seekable · 四帧同位</span>
-        <span class="drift"><span class="sw" style="background:#da3633"></span>CSS 墙钟 · 四帧四位置</span>
+        <span class="sameg"><span class="sw" style="background:#3fb950;border-radius:50%"></span>CSS 动画 · 四帧同位</span>
+        <span class="drift"><span class="sw" style="background:#da3633"></span>setInterval 墙钟 · 四帧四位置</span>
       </div>
       <div id="cmdline">F:\\_hftest\\hf07-probe&gt; <span class="cmd">hyperframes snapshot</span> v1 <span class="opt">--at 2,2,2,2</span></div>
     </div>
