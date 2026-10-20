@@ -33,5 +33,5 @@ videos/**/.venv/
 **/.chanjing.env
 **/.feishu.env
 
-# bili-pub 投稿日志
-/upload.log
+# bili-pub 投稿日志（biliup 在运行 cwd 写 upload.log，子目录发布也会产生）
+upload.log
