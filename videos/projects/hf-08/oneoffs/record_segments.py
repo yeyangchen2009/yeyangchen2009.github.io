@@ -15,7 +15,9 @@ open_rec_term 幂等发 chcp 65001（UTF-8，否则日志的 ◇/· 在 GBK 下�
 more 分页镜头统一 quit_pager() 收尾（q 后空 ENTER 同步，防 cd 丢键）。
 
 takes（ALL_TAKES 顺序不可换；t0 必须是冷态第一条，之前禁跑任何 render；
-每个 take 开录前先过 wait_render_idle 完成门控）：
+每个 take 开录前先过 wait_render_idle 完成门控，再 prepare_term 把
+hf08-rec 窗显式置前过 HWND 闸——具名单跑任意 take 也安全，不隐式依赖
+t0；2026-10-22 None 句柄事故见 RECORD-NOTES 第十节）：
   t0-sw        av-sync-calib 软件路冷跑（全链约 141s；母带 160s）
   t1-hw        同窗接跑硬件路（job 52.4s，热态；母带 77.5s）
   t2-hash      hashes/ 内 PowerShell Get-FileHash 六连，exit 回 cmd
@@ -41,6 +43,7 @@ import shutil
 import subprocess
 import sys
 import time
+import traceback
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HF03_ONEOFFS = os.path.join(HERE, "..", "..", "hf-03", "oneoffs")
@@ -168,6 +171,22 @@ def open_rec_term(cwd=CALIB):
     return _term_hwnd
 
 
+def prepare_term(cwd=CALIB):
+    """每个 take 开录前的就位闸：终端窗存在、几何就位、在前台、过 HWND 闸。
+
+    2026-10-22 热录事故根因：具名 `... t1-hw ...` 起跑不经过 take_t0_sw，
+    全局 _term_hwnd 保持 None，activate(None) 静默失败（前台仍是跑
+    Claude Code 的 WT 窗）；guard 当年按 PID 认窗又被「同 WT 进程多窗口」
+    洞穿，打字静直流向错误窗口。open_rec_term 对已存在窗口是幂等复用
+    （不重开 wt、不动 Chrome 热态），chcp 在开录前敲入不入镜，故每个
+    take 必调；返回时前台必须就是 hf08-rec 那个具体顶层窗。
+    """
+    open_rec_term(cwd)
+    r.activate(_term_hwnd)
+    guard.assert_fg_safe()
+    return _term_hwnd
+
+
 def quit_pager():
     """q 退 more 后空回车同步提示符。
 
@@ -232,13 +251,21 @@ def record(name, duration, action):
          "-t", str(duration)],
         cwd=r"F:\Data\gmeek-site",
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    time.sleep(1.0)
-    action()
-    rest = duration - (time.time() - t0) - 1.2
-    if rest > 0:
-        time.sleep(rest)
-    proc.wait(timeout=duration + 30)
-    print(proc.stdout.read().strip()[-300:])
+    try:
+        time.sleep(1.0)
+        action()
+        rest = duration - (time.time() - t0) - 1.2
+        if rest > 0:
+            time.sleep(rest)
+        proc.wait(timeout=duration + 30)
+    except BaseException:
+        # action/等待异常时 node 与 ffmpeg 不会自退（ffmpeg 要跑满 -t 定时），
+        # 不杀树就成孤儿继续写废片（2026-10-22 事故：77.5s 孤儿废片实证）。
+        # /T 连 node 拉起的 ffmpeg 一起杀。
+        subprocess.run(["taskkill", "/PID", str(proc.pid), "/T", "/F"],
+                       capture_output=True)
+        raise
+    print((proc.stdout.read() or "").strip()[-300:])
     extract_frames(name)
     return out
 
@@ -315,6 +342,10 @@ def grab_freeze(freeze_name):
 
 def _render_take(name, cwd, cmd, wait, dur_type):
     def act():
+        # behind 是 NOACTIVATE，必须先显式把终端拉到前台再垫黑幕，
+        # 否则黑幕垫了、终端没来（2026-10-22 None 事故的顺序根因）
+        r.activate(_term_hwnd)
+        guard.assert_fg_safe()
         _mat.behind(_term_hwnd)
         guard.assert_fg_safe()
         term_cd(cwd)
@@ -328,19 +359,25 @@ def _render_take(name, cwd, cmd, wait, dur_type):
 
 
 def take_t0_sw():
-    open_rec_term(CALIB)
+    prepare_term(CALIB)
     park_mouse()
     # ★ 冷态第一条：本 take 之前整个会话不许跑过 render
     return _render_take("t0-sw", CALIB, CMD_SW, WAIT["sw"], 0.0)
 
 
 def take_t1_hw():
-    # 同窗接跑＝热态；不重开 wt（重开反而改变终端热态，Chrome 组件缓存仍在）
+    # 同窗接跑＝热态；prepare_term 对已存在终端是幂等复用（不重开 wt、
+    # 不动 Chrome 热态），只把它重新置前并过 HWND 闸
+    prepare_term(CALIB)
     return _render_take("t1-hw", CALIB, CMD_HW, WAIT["hw"], TYPE_RENDER)
 
 
 def take_t2_hash():
+    prepare_term(CALIB)
+
     def act():
+        r.activate(_term_hwnd)
+        guard.assert_fg_safe()
         _mat.behind(_term_hwnd)
         guard.assert_fg_safe()
         term_cd(DIR_HASHES)
@@ -356,16 +393,19 @@ def take_t2_hash():
 
 
 def take_t3_badlint():
+    prepare_term(CALIB)
     return _render_take("t3-badlint", DIR_BADLINT, CMD_T3,
                         WAIT["t3"], TYPE_RENDER)
 
 
 def take_t4_strict():
+    prepare_term(CALIB)
     return _render_take("t4-strict", DIR_BADLINT, CMD_T4,
                         WAIT["t4"], TYPE_RENDER)
 
 
 def take_t5_missing():
+    prepare_term(CALIB)
     return _render_take("t5-missing", DIR_MISSING, CMD_T5,
                         WAIT["t5"], TYPE_RENDER)
 
@@ -541,6 +581,7 @@ def main():
     global _mat
     args = sys.argv[1:] or ["all"]
     _mat = BlackMat()
+    failed = False
     try:
         if args == ["all"]:
             for name in ALL_TAKES:
@@ -562,13 +603,22 @@ def main():
                 print("\n===== take %s =====" % name, flush=True)
                 wait_render_idle()
                 TAKES[name]()
-    except BaseException:
-        raise
+    except BaseException as exc:
+        # 2026-10-22 事故：except: raise 后 finally 里的 os._exit(0) 抢在
+        # 解释器打印 traceback 之前终止进程，异常现场彻底消失、只留下孤儿
+        # 录屏，排查走了一整轮弯路。这里显式把完整栈打出来再走 os._exit。
+        failed = True
+        print("\n[record_segments] 中止于 %s: %s"
+              % (type(exc).__name__, exc), file=sys.stderr, flush=True)
+        traceback.print_exc()
+        sys.stderr.flush()
     finally:
         _mat.close()
         sys.stdout.flush()
         sys.stderr.flush()
-        os._exit(0)
+        # 仍须 os._exit：解释器自然退出会在非 Tk 线程销毁 Tcl 解释器，
+        # tcl86t.dll 抛 0x80000003 硬崩溃（2026-10-22 WER 实证，退出码 3）
+        os._exit(1 if failed else 0)
 
 
 if __name__ == "__main__":

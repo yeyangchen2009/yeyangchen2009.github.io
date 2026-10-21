@@ -10,8 +10,13 @@
     用户日常 NPP 不会开着 npx 缓存里的 chunk，永不命中）；
  2. 隔离终端：标题为 hf08-rec 的 WT 窗口（-w new 独立窗口，--title hf08-rec
     --suppressApplicationTitle；t2 的 PowerShell 是 cmd 内敲入的子进程而非
-    第二 tab，标题恒锁；绝不按 WindowsTerminal 进程名批量认——用户 WT 是
-    另一个进程）。
+    第二 tab，标题恒锁；绝不按 WindowsTerminal 进程名批量认）。
+
+⚠️ 白名单按**具体顶层窗 HWND** 认，不按 PID（2026-10-22 热录事故实证）：
+`wt -w new` 的新窗口与用户主 WT 同属一个 WindowsTerminal.exe 进程，
+若按 PID 放白名单，hf08-rec 窗存在期间，同一进程里跑 Claude Code 的
+另一窗口也会被判为隔离环境——activate 落空时打字会静直流向错误窗口。
+HWND 精确到「标题匹配的那个窗」，同进程的邻居窗不在白名单。
 
 用户一回机把自己的窗口切前台，下一个注入立即 UnsafeForeground 中止。
 """
@@ -52,19 +57,28 @@ def _enum_windows():
     return rows
 
 
-def isolated_pids():
-    """当前隔离环境两身份 pid 集合（每动作现查，不缓存窗口归属）。"""
-    pids = set()
-    for _, cn, title, pid in _enum_windows():
+def isolated_windows():
+    """当前隔离环境白名单：{hwnd: (class, title, pid)}，每动作现查不缓存。
+
+    认窗不认进程：WT 的 -w new 新窗与用户主窗同 PID，按 PID 判会把
+    同进程的 Claude Code 窗一起放行（2026-10-22 洞穿事故）。
+    """
+    win = {}
+    for hwnd, cn, title, pid in _enum_windows():
         if cn == "Notepad++" and NPP_TITLE_NEEDLE in title:
-            pids.add(pid)
+            win[hwnd] = (cn, title, pid)
         if title.strip().startswith(TERM_TITLE):
-            pids.add(pid)
-    return pids
+            win[hwnd] = (cn, title, pid)
+    return win
+
+
+def isolated_pids():
+    """白名单窗所属 pid 集合（仅日志/排查用；判定一律走 HWND）。"""
+    return {info[2] for info in isolated_windows().values()}
 
 
 def identify(pid):
-    """给报错用的人类可读身份串。"""
+    """给报错用的人类可读身份串（按 pid 反查，同 pid 多窗取首个）。"""
     for _, cn, title, p in _enum_windows():
         if p == pid:
             if cn == "Notepad++":
@@ -73,6 +87,18 @@ def identify(pid):
                 return "非隔离终端（%s）" % title[:40]
             return "%s（%s）" % (cn or "未知窗", title[:40])
     return "pid=%s" % pid
+
+
+def identify_hwnd(hwnd):
+    """给报错用：hwnd 的 class/标题/pid 精确身份串。"""
+    for h, cn, title, p in _enum_windows():
+        if h == hwnd:
+            kind = ("非隔离 NPP" if cn == "Notepad++"
+                    else "非隔离终端" if "WindowsTerminal" in cn
+                    or cn == "CASCADIA_HOSTING_WINDOW_CLASS"
+                    else cn or "未知窗")
+            return "%s hwnd=%s pid=%s「%s」" % (kind, hwnd, p, title.strip()[:50])
+    return "hwnd=%s（已隐藏或销毁）" % hwnd
 
 
 # ---------- 现场探测 ----------
@@ -97,23 +123,26 @@ def window_pid_at(x, y):
 # ---------- 白名单闸（NPP/终端） ----------
 
 def assert_fg_safe():
-    """键鼠动作前调用：前台必须是隔离两身份之一。"""
+    """键鼠动作前调用：前台窗必须就是隔离白名单里那个具体 HWND。"""
     hwnd, pid = fg_hwnd_pid()
-    allow = isolated_pids()
-    if pid not in allow:
+    allow = isolated_windows()
+    if hwnd not in allow:
         raise UnsafeForeground(
-            "前台 %s 不属于隔离录制环境（允许 pid=%s）——用户可能正在用机，全部动作中止"
-            % (identify(pid), sorted(allow)))
+            "前台 %s 不是隔离录制窗（允许 hwnd=%s）——用户可能正在用机或"
+            "activate 落空，全部动作中止"
+            % (identify_hwnd(hwnd),
+               sorted("%s「%s」" % (h, (t or "").strip()[:30])
+                      for h, (_, t, _) in allow.items())))
     return hwnd
 
 
 def assert_point_safe(x, y):
-    """点击/拖拽前调用：落点窗口也必须属于隔离环境。"""
+    """点击/拖拽前调用：落点根窗也必须是隔离白名单 HWND。"""
     pid, child, root = window_pid_at(x, y)
-    allow = isolated_pids()
-    if pid not in allow:
+    allow = isolated_windows()
+    if root not in allow:
         raise UnsafeForeground(
-            "落点 (%d,%d) 命中 %s 而非隔离环境 pid=%s，中止"
+            "落点 (%d,%d) 命中 %s 而非隔离录制窗 hwnd=%s，中止"
             % (x, y, identify(pid), sorted(allow)))
     return root
 
