@@ -1,0 +1,20 @@
+{
+  "_说明": "hf-08 借音规则。正字稿 hf-08-src.txt → 借音稿 hf-08-tts.txt；由全局 skill chanjing-tts/scripts/make_tts.py 四闸派生。英文标识符整词保留（蝉镜英文词库，字幕兜底，hf 系列惯例）；只拆符号、连字符与含数字词。",
+  "replaces": [
+    {"from": "--debug", "to": "横杠横杠 debug", "expect": 3},
+    {"from": "--strict", "to": "横杠横杠 strict", "expect": 1},
+    {"from": "-w", "to": "横杠 w", "expect": 1},
+    {"from": "data-no-timeline", "to": "data no timeline", "expect": 1},
+    {"from": "cloudrun", "to": "cloud run", "expect": 1},
+    {"from": "iframe", "to": "i frame", "expect": 1},
+    {"from": "MP4", "to": "M P 四", "expect": 6}
+  ],
+  "count_expect": {
+    "行": 6, "得": 5, "地": 1, "还": 7, "重": 3, "长": 4, "数": 12,
+    "中": 4, "当": 1, "量": 2, "档": 1, "处": 2, "相": 3, "转": 2,
+    "调": 1, "间": 9, "为": 4, "卡": 2, "种": 3, "好": 7, "少": 5,
+    "只": 3, "分": 4, "给": 10, "系": 2, "切": 2, "干": 3, "降": 1,
+    "解": 2, "更": 2, "挑": 4, "要": 9, "没": 4
+  },
+  "cjk_strict": true
+}
