@@ -327,7 +327,10 @@ def take_t5_missing():
 FREEZE_PLAYS = [
     # dir 尾屏：末段帧号＋「390 个文件」统计行，零滚动即含计数
     ("frames-dir", DIR_DEBUG, "dir captured-frames", 1.5, 0, 0, ""),
-    ("debug-tree", STAGE, "tree /F debug | more", 2.0, 0, 0, "q"),
+    # tree 经管道给 more 时固定按系统 OEM(GBK) 出制表字节，65001 解成
+    # ◊◊、chcp 437 解成 └┬ñ┌ñ（2026-10-21 录制日两案皆验挂）；/A 用纯
+    # ASCII（+--、|、\）画树，任何代码页都不乱
+    ("debug-tree", STAGE, "tree /F /A debug | more", 2.0, 0, 0, "q"),
     ("perf-ledger", DIR_DEBUG, "more +24 perf-summary.json", 1.2, 0, 0, "q"),
     ("pngseq-dir", STAGE, "dir seq", 1.5, 0, 0, ""),
     ("gate-multi", STAGE,
@@ -419,13 +422,16 @@ def close_any_npp():
 
 
 def freeze_src_blackbar():
-    """NPP 开 chunk-3WG63KFW.js，搜 vertical black slabs 定位黑条注释段。
+    """NPP 开 chunk-3WG63KFW.js 直跳 10933 行拍黑条注释段。
 
-    minified 单巨行，Ctrl+G 行号无效，只能搜索定位；Wrap 须 off（便携默认）。
-    七行注释自带真实换行，命中后视图居中；Esc 关 Find 栏保留命中再截。
+    首版用 Ctrl+F 搜 vertical black slabs：2026-10-21 正式录制日实证非模态
+    Find 对话框吃键不稳（ENTER/ESC 落到编辑器，查找未执行、框不关，还改脏
+    文件）。文件实为 17,152 物理行（注释七行自带真实换行），check_anchors
+    钉死注释在 10933–10937，直接命令行 -n10933 跳行：零对话框零键入。
+    Wrap 须 off（便携默认）。
     """
     close_any_npp()
-    subprocess.Popen([NPP_EXE, "-multiInst", "-nosession", CHUNK_3W])
+    subprocess.Popen([NPP_EXE, "-multiInst", "-nosession", "-n10933", CHUNK_3W])
     t0 = time.time()
     npp_hwnd = None
     while time.time() - t0 < 20:
@@ -437,20 +443,12 @@ def freeze_src_blackbar():
     if not npp_hwnd:
         raise RuntimeError("等不到 chunk NPP 窗")
     r.move(npp_hwnd, WND_X, WND_Y, WND_W, WND_H)
-    time.sleep(2.0)  # 大文件加载＋词法着色
+    time.sleep(2.5)  # 大文件加载＋词法着色＋跳行
     r.activate(npp_hwnd)
     guard.assert_fg_safe()
-    r.hotkey("CTRL", "f")
-    time.sleep(.5)
-    r.type_text("vertical black slabs", delay=.04)
     time.sleep(.3)
-    r.tap("ENTER")
-    time.sleep(.6)
-    r.tap("ESC")           # 关 Find 栏，命中视图位置保留
-    time.sleep(.6)
     # NPP 是浅色窗，(12,884) 的箭头会落在水平滚动条上显形（彩排实证）；
     # park 到录区物理区 (0,0,1600,920) 外右下，grab crop 必然不含指针
-    guard.assert_fg_safe()
     r.mouse_move(1650, 950)
     time.sleep(.8)
     grab_freeze("src-blackbar")
