@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 r"""hf-08《render》正式录屏编排：6 take，1600×920@30 gdigrab。
 
-主角是 render（烤一次 52–68s，坏工程还各带两轮 45000ms 死等），母带少而
-长；另拍 9 张终端回放 freeze＋1 张 NPP chunk 源码 freeze，3 张尾帧直接从
-母带抽，redblock contact 走 PIL（make_redblock_contact.py）。
+主角是 render（冷态首跑全链真机约 141s，热态 60s 上下，坏工程还各带
+两轮 45000ms 死等），母带少而长；另拍 9 张终端回放 freeze＋1 张 NPP
+chunk 源码 freeze，3 张尾帧直接从母带抽，redblock contact 走 PIL
+（make_redblock_contact.py）。take 间不靠固定 sleep 衔接，一律
+wait_render_idle() 完成门控（命令行含 hyperframes 的 node 与
+chrome-headless-shell 双判空），防命令在前台 render 运行时进输入缓冲。
 
 机位（RECORD-NOTES 第一节）：一个锁标题 wt（hf08-rec，--suppressApplication
 Title）；t2 不另开 tab——cmd 内敲 `powershell -NoProfile -NoLogo` 进子进程
@@ -11,10 +14,11 @@ Title）；t2 不另开 tab——cmd 内敲 `powershell -NoProfile -NoLogo` 进�
 open_rec_term 幂等发 chcp 65001（UTF-8，否则日志的 ◇/· 在 GBK 下乱码）；
 more 分页镜头统一 quit_pager() 收尾（q 后空 ENTER 同步，防 cd 丢键）。
 
-takes（ALL_TAKES 顺序不可换；t0 必须是冷态第一条，之前禁跑任何 render）：
-  t0-sw        av-sync-calib 软件路冷跑（尾报 1m 8.1s）
-  t1-hw        同窗接跑硬件路（52.4s，热态）
-  t2-hash      hashes/ 内 PowerShell Get-FileHash 六连
+takes（ALL_TAKES 顺序不可换；t0 必须是冷态第一条，之前禁跑任何 render；
+每个 take 开录前先过 wait_render_idle 完成门控）：
+  t0-sw        av-sync-calib 软件路冷跑（全链约 141s；母带 160s）
+  t1-hw        同窗接跑硬件路（job 52.4s，热态；母带 77.5s）
+  t2-hash      hashes/ 内 PowerShell Get-FileHash 六连，exit 回 cmd
   t3-badlint   bad-lint 默认 render（真机 141.2s；2 error＋Continuing，
                中段两轮 45000ms 等待整段弃，poll45 命中 2 次）
   t4-strict    bad-lint --strict（真机 12.6s；Aborting，exit1）
@@ -85,14 +89,20 @@ CMD_T5 = NPX + " render . -o out.mp4"
 CMD_HASH = ("Get-FileHash soft-a.mp4,soft-b.mp4,1015-old.mp4,w1.mp4,hw-a.mp4,"
             "hw-b.mp4 -Algorithm SHA256 | Format-Table Path,Hash -AutoSize")
 
-# ---------- 等待/时长（2026-10-21 run_rehearsal 真机回填） ----------
-# sw 冷态目标尾报 68.1s（录制日冷态第一条，WAIT 留到 70）；hw 热态 52.4s。
-# t3 真机 141.2s：两轮 45000ms 等待都发生（poll45 命中 2 次），WAIT=140
-# 配 TYPE_RENDER 4.5＝sleep 144.5 盖住全程；母带 149.5。
-# t4 真机 12.6s（lint 编译期拦，无等待）；t5 真机 15.6s——缺音轨在 mix 期
-# 即拦、不进 45s 等待（早先两轮等待的预估作废）。
-WAIT = {"sw": 70.0, "hw": 54.5, "hash": 6.0, "t3": 140.0,
-        "t4": 13.0, "t5": 17.0}
+# ---------- 等待/时长（2026-10-21 正式录制日首录事故后重定） ----------
+# 首录实证：探针 68.1s 是 render 内部 Timing 口径（尾报 rendered in），漏了
+# CLI 层——重启后首跑 npx/node 冷启＋Checking browser 冷启 chrome 实测
+# ENTER 后约 66s job 才开跑（job trace：calibration 187ms/frame p95、
+# capture_disk 41.2s、encode start elapsedMs 60.6），全链约 141s。旧值
+# WAIT=70 母带没盖住，后一条命令在 render 占前台时进控制台输入缓冲，六
+# take 边界全错位作废（详见 RECORD-NOTES「首录时序事故」）。
+# 新模型：母带盖住全链＋take 间 wait_render_idle() 完成门控双保险。
+# sw 155：ENTER 约在录制 9s，母带 160s 盖到 ENTER+151（全链 141＋余 10）；
+# hw 68：热态 CLI 约 8s＋job 52.4，母带 77.5s 余 7.5；
+# t3 150：墙钟 141.2（rehearsal 口径已含 npx 启动），尾报入镜方便尾帧抽点；
+# t4 14（strict 12.6）／t5 19（missing 15.6）；hash 9（六连秒回）。
+WAIT = {"sw": 155.0, "hw": 68.0, "hash": 9.0, "t3": 150.0,
+        "t4": 14.0, "t5": 19.0}
 TYPE_RENDER = 4.5      # render 命令约 80 字符
 TYPE_HASH = 6.0       # 130 字符
 REC_EXTRA = 7.0       # 垫幕 1.2＋打字＋尾帧余量
@@ -242,6 +252,45 @@ def extract_frames(name, every=2):
     print("frames:", name)
 
 
+# ---------- take 间完成门控（首录事故后新增） ----------
+
+def render_busy():
+    """系统里是否还有 hyperframes render 链路进程（True＝前台仍被占）。
+
+    判忙两条，命中任一即忙：
+      1. 命令行含 hyperframes 的 node.exe——npx 父进程与 CLI 子进程命令行
+         都含该字样；录屏器 screen-rec.js 自身虽是 node，命令行不含
+         hyperframes，不会误伤；
+      2. chrome-headless-shell.exe 仍存活（render 退出即随之退出）。
+    """
+    ps = ("(Get-CimInstance Win32_Process | Where-Object { "
+          "($_.Name -eq 'node.exe' -and $_.CommandLine -like '*hyperframes*') "
+          "-or $_.Name -eq 'chrome-headless-shell.exe' }).Count")
+    out = subprocess.run(["powershell", "-NoProfile", "-Command", ps],
+                         capture_output=True, text=True, timeout=20)
+    return int((out.stdout or "").strip() or "0") > 0
+
+
+def wait_render_idle(timeout=300.0):
+    """下一 take 打字前，等上一条 render 链路彻底退出、cmd 提示符可用。
+
+    固定 sleep 模型在冷态首跑被证伪（CLI 层 66s 未计入）：母带停录时
+    render 可能仍在前台，后续命令进控制台输入缓冲排队、字符在 spinner
+    刷新间隙碎行回显，take 边界整体错位。门控连续两轮（4s）判空才放行，
+    避开进程退出间隙的误判；超时直接 raise——render 挂死时绝不能再敲
+    命令重演缓冲事故。t0 之前也调一次，兼作开机零残留核验。
+    """
+    t0 = time.time()
+    quiet = 0
+    while time.time() - t0 < timeout:
+        quiet = 0 if render_busy() else quiet + 1
+        if quiet >= 2:
+            return
+        time.sleep(2.0)
+    raise RuntimeError("等 render 链路退出超时（%ss），手动排查后再续"
+                       % timeout)
+
+
 def tail_freeze(take, at, freeze_name):
     """从母带指定秒抽单帧到 freezes/（hash6/strict-abort/missing-audio）。"""
     src = os.path.join(REC_DIR, take + ".mp4")
@@ -299,6 +348,9 @@ def take_t2_hash():
         time.sleep(.5)
         term_cmd("powershell -NoProfile -NoLogo", post=2.0)
         term_cmd(CMD_HASH, post=WAIT["hash"])
+        # 必须显式 exit 回 cmd：否则 t3 起的 cd/cls/render 全落进 PowerShell
+        # 子进程（cd /d 在 PS 报错、目录切不成，render 跑错工程）
+        term_cmd("exit", post=1.0)
         park_mouse()
     return record("t2-hash", 4.0 + 3.0 + TYPE_HASH + WAIT["hash"] + 3.0, act)
 
@@ -458,11 +510,13 @@ def freeze_src_blackbar():
 # ---------- 母带尾帧 3 张（take 录完即抽；时长彩排回填后校 at） ----------
 
 def do_tail_freeze():
-    # 报文落屏秒＝打字 4.5＋真机 render（t4 12.6／t5 15.6），at 留 2–4s 余量；
-    # t2 hash 表秒回取 14.0。cut_shorts 目验后如需微调直接重跑本命令改 at。
-    tail_freeze("t2-hash", 14.0, "hash6-run")
-    tail_freeze("t4-strict", 19.0, "strict-abort")
-    tail_freeze("t5-missing", 22.0, "missing-audio")
+    # ENTER 实测在录制 ~8.8s（垫幕后 cd/cls/打字串行），报文落屏＝8.8＋真机
+    # 墙钟（t4 12.6→约21.4／t5 15.6→约24.4），at 取落屏后 1s 稳定帧；
+    # t2 hash 命令 ENTER≈13.8s、表在 15–23s 在屏取 17.0。cut_shorts 目验后
+    # 如需微调直接重跑本命令改 at。
+    tail_freeze("t2-hash", 17.0, "hash6-run")
+    tail_freeze("t4-strict", 22.0, "strict-abort")
+    tail_freeze("t5-missing", 26.0, "missing-audio")
 
 
 TAKES = {
@@ -491,6 +545,7 @@ def main():
         if args == ["all"]:
             for name in ALL_TAKES:
                 print("\n===== take %s =====" % name, flush=True)
+                wait_render_idle()
                 TAKES[name]()
         elif args[0] == "freeze":
             for name in args[1:]:
@@ -505,6 +560,7 @@ def main():
         else:
             for name in args:
                 print("\n===== take %s =====" % name, flush=True)
+                wait_render_idle()
                 TAKES[name]()
     except BaseException:
         raise
