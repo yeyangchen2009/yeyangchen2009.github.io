@@ -297,3 +297,58 @@ Capturing；硬件路 workerCount 1、措辞 Streaming；不带 `--no-browser-gp
 的默认 render 真机即 d3d11（`--use-angle=d3d11`）；非 GSAP 工程触发
 fast capture screenshot fallback（drawElement inversion，与 hf-07
 勘误同因）。
+
+## 十、2026-10-22 热录静默退出事故（具名 t1 起跑秒退＋孤儿录屏）
+
+**现象**：不重启方案下具名跑
+`python record_segments.py t1-hw t2-hash t3-badlint t4-strict t5-missing`，
+输出仅一行 `===== take t1-hw =====` 进程即退（退出码经 `| tail` 被掩盖）；
+t1-hw.mp4 母带全程（孤儿录满 77.5s，1.9MB）是 Claude Code 所在 WT 窗的
+静止 TUI，8s/帧×10 无一切窗、无 cd/cls/打字；t2–t5 未执行（旧片未动）；
+node screen-rec＋ffmpeg gdigrab 成孤儿跑满定时。
+
+**取证**：
+- 抽帧 `fps=1/8`：画面从未离开 TUI，且 16s 后帧里已是 agent 的诊断输出，
+  证明录屏启动后 act 的切窗从未发生；
+- 窗口枚举：hf08-rec（hwnd 67290）与 Claude Code 窗（hwnd 131348）是
+  **同一 WindowsTerminal.exe（PID 8332）的两个顶级窗口**（`wt -w new`
+  不开新进程）；
+- Windows 事件日志：Application Error 1000，python 3.12 崩于
+  **tcl86t.dll / 异常码 0x80000003**——即 `Tcl_AsyncDelete: async handler
+  deleted by the wrong thread`，Tcl 解释器跨线程销毁的 C 层硬崩溃
+  （诊断脚本自然退出复现，退出码 3）；事故当时无此事件，说明事故进程
+  走的是 Python 异常→finally `os._exit(0)` 路径（抢在 Tcl panic 前退）。
+
+**根因四连**：
+1. **`_term_hwnd=None`**：`open_rec_term()` 只在 t0/freeze 路径调用，
+   具名从 t1 起跑时全局句柄保持初值 None；`activate(None)` 对空 hwnd
+   SetForegroundWindow 静默失败，前台始终是 Claude Code 窗；
+2. **guard 按 PID 认窗被洞穿**：白名单聚合到 PID，hf08-rec 与 Claude 窗
+   同属 WT PID 8332，于是「前台是 Claude 窗」也判定安全（诊断实锤
+   `assert_fg_safe → ok 131348`），打字将静直流向错误窗口；
+3. **异常被吞**：main 的 `except BaseException: raise` 之后
+   `finally: os._exit(0)` 抢在解释器打印 traceback 前终止进程，无输出、
+   退出码 0，异常现场彻底消失，排查绕了一整轮；
+4. **录屏孤儿**：`record()` 的 Popen 无人回收，异常路径不杀 node/ffmpeg，
+   ffmpeg 按 `-t` 跑满 77.5s 写废片。
+
+**修复（PR 随本台账）**：
+- guard 白名单改认**具体顶层窗 HWND**（`isolated_windows()`）：同 WT
+  进程的邻居窗不在白名单；报错给 hwnd/class/标题精确身份；
+- 新增 `prepare_term()`：每个 take 开录前幂等 `open_rec_term`（已存在
+  只复用，不重开 wt、不动 Chrome 热态，chcp 开录前敲入不入镜）＋
+  activate＋HWND 闸；五个 take（含 t0）统一调用；
+- 两处 act 顺序改「先 activate＋闸，再 behind＋闸」（behind 是
+  NOACTIVATE，旧顺序在终端非前台时垫了黑幕却没把窗拉来）；
+- main 异常路径显式 `traceback.print_exc()` 后 `os._exit(1)`（正常路径
+  仍 `os._exit(0)` 压 Tcl 析构硬崩溃）；
+- `record()` try/except：act/等待异常即 `taskkill /PID node /T /F`
+  连 ffmpeg 一起杀，异常照常上抛。
+
+**验证**（build/ 干跑脚本，不录 render）：Claude 窗前台时新闸拒绝、
+白名单仅 67290；prepare_term 后前台即 hf08-rec；act 故意异常时 1.4s
+返回、无 node/ffmpeg 残留、废片自删；假 freeze 名触发 KeyError 时
+traceback 完整、退出码 1。
+
+**规程影响**：具名跑任意子集 take 均安全（不再隐式依赖 t0 先跑）；
+冷态纪律不变——t0-sw 仍须是重启后第一条 render。
