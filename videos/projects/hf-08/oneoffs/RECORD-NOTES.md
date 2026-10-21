@@ -14,7 +14,7 @@
 |---|---|---|---|
 | 终端 cmd | `wt.exe -w new --title hf08-rec --suppressApplicationTitle -d <proj> cmd /k <env>` | startswith `hf08-rec` | render 全跑、日志/目录回放 |
 | PowerShell | **不另开 tab**：cmd 内敲 `powershell -NoProfile -NoLogo` 进子进程，跑完 `exit` 回 cmd（本机无 pwsh7，只有 Windows PowerShell 5.1） | 窗口标题恒锁 hf08-rec，guard 零风险 | Get-FileHash 六连（t2） |
-| 便携 NPP | `F:\_hftest\npp-local\notepad++.exe -multiInst -nosession <chunk.js>` | 类名 Notepad++ 且标题含 `chunk-3WG63KFW.js` | 仅 src-blackbar 一张 freeze |
+| 便携 NPP | `F:\_hftest\npp-local\notepad++.exe -multiInst -nosession -n10933 <chunk.js>` | 类名 Notepad++ 且标题含 `chunk-3WG63KFW.js` | 仅 src-blackbar 一张 freeze（命令行直跳行，不开查找框） |
 
 - 录区：gdigrab 物理 **(0,0,1600,920)@30**；系统 DPI 150%，坐标全是物理像素。
 - 右边 12px 透明带、BlackMat 垫窗、鼠标 park (12,884)——同 hf-06。
@@ -104,19 +104,27 @@ WAIT 已按 2026-10-21 run_rehearsal 真机回填）：
    （`_ensure_utf8`，随后 cls 清回显）；对 render/findstr/dir 无副作用。
 3. **浅色窗鼠标穿帮**：NPP 水平滚动条上箭头显形；src-blackbar 单独
    park 到录区物理区外 `(1650,950)`（grab crop 0,0,1600,920 必然不含）。
+4. **tree 代码页两案皆挂（录制日）**：tree 经管道给 more 时固定按系统
+   OEM(GBK) 出画框字节——65001 解成整屏 `◊◊`，局部 `chcp 437` 解成
+   `└┬ñ┌ñ`。定稿 `tree /F /A`：纯 ASCII（`+--`/`|`/`\`），任何代码页
+   都不乱，下一张镜头 open_rec_term 照常幂等 chcp 65001。
+5. **NPP 查找对话框吃键（录制日）**：Ctrl+F 的非模态 Find 框在录制日把
+   ENTER/ESC 漏给编辑器（查找未执行、框不关，ENTER 还改脏文件，标签页
+   出圆点）。文件实为 17,152 **物理行**（minified 巨行之外注释七行自带
+   真换行），定稿命令行 `-n10933` 直跳：零对话框零键入，标签页干净。
 
 | 文件 | 出处 | 拍摄命令（工作区相对） | 彩排目验结果 |
 |---|---|---|---|
 | freezes/hash6-run.png | t2 尾帧 tail-freeze@14.0 | — | 六行 Hash 全 `2057D037…C6C5A83`（大写），六个 Path；at 录后按 contact 微调 |
 | freezes/frames-dir.png | debug/captured-frames | `dir captured-frames`，零滚动 | ✓ 尾屏＝frame_000375–389＋**390 个文件 5,069,220 字节**＋2 个目录 |
-| freezes/debug-tree.png | STAGE 根 | `tree /F debug \| more`，截完 q | ✓ 首屏：6 个根文件＋capture-attempt-0/worker-0…2＋capture-calibration＋captured-frames/frame_000000–001（More 贴底） |
+| freezes/debug-tree.png | STAGE 根 | `tree /F /A debug \| more`，截完 q | ✓ 首屏：6 个根文件（`\|` 前缀）＋`+---capture-attempt-0`/worker-0…2（末个 `\---`）＋capture-calibration＋captured-frames/frame_000000–001（More 贴底）；ASCII 树零乱码 |
 | freezes/perf-ledger.png | debug/ | `more +24 perf-summary.json`，q | ✓ resolution 1920×1080/videoCount 0/audioCount 1＋**stages 十键全在**：compileOnly 218/probe 126/compile 361/audio 547/capture 32851/captureFrame 28045/setup 4806/encode 12245/assemble 1817（行 31–43，+24 定点） |
 | freezes/pngseq-dir.png | STAGE 根 | `dir seq`，零滚动 | ✓ frame_000376–390＋**391 个文件 3,335,581 字节**（390 PNG＋audio.m4a） |
 | freezes/gate-multi.png | logs/run-a.log | `findstr /C:"streaming-encode gate" logs\run-a.log` | ✓ 254 字符软折 4 物理行：enabled:false/multi_worker/configFlag:true/workerCount:3/durationSeconds:13/maxDurationSeconds:240 全可读 |
 | freezes/gate-stream.png | logs/hw-a.log（**备料**，分镜未消费，docstring 挂 m09） | 彩排改双 findstr `&&`：`findstr /C:"streaming-encode gate" logs\hw-a.log && findstr /C:"drawelement capture" logs\hw-a.log`，q 不用 | ✓ 一屏齐＝gate（enabled:true/single_worker/workerCount:1）＋尾报 `drawelement capture · hardware gpu … capture 40.5s · encode (during capture) 40.5s · assemble 1.6s`。原三串 OR 实测连 checkpoint 心跳共 5+ 条超一屏、gate 滚出顶，弃 |
 | freezes/hf07-timing.png | **仓库** projects/hf-07/build/render.log（行号硬闸：41m43.3 在 7313–7316） | `more +7312 "<绝对路径>"`，quit_pager 收尾（仅 3 行 more 自动退出） | ✓ UTF-8 后 `◇` 路径行＋`53.1 MB · 9m 19.2s video · rendered in 41m 43.3s`＋capture/encode 39m 9.4s、assemble 1m 6.4s |
 | freezes/worker-sizing.png | debug/perf-summary.json | `more perf-summary.json`（首屏），q | ✓ 11/12 字段可见：workers 3/boundBy contention/effectiveMax 6/cpu 6/mem 5/frame 13/heap 5/heapLimitMb 4288/totalMemoryMb 16278/cpuCount 8/multiplier 1；第 12 个 exceedsHeapAdvisory 被 More 行翻到次页（非教学点，接受） |
-| freezes/src-blackbar.png | **chunk-3WG63KFW.js**（黑条注释＋24576 同文件；computeWorkerSizing 在 chunk-D5EJCP26.js） | NPP `-multiInst -nosession`（CHUNK_3W 钉死 npx hash 目录），Ctrl+F 搜 `vertical black slabs`，Esc 关栏，鼠标 park (1650,950) 再截 | ✓ 10933–10937 注释七行全、命中高亮、标题栏路径、状态栏 17,152 行/Ln 10933；鼠标已出框 |
+| freezes/src-blackbar.png | **chunk-3WG63KFW.js**（黑条注释＋24576 同文件；computeWorkerSizing 在 chunk-D5EJCP26.js） | NPP `-multiInst -nosession -n10933`（CHUNK_3W 钉死 npx hash 目录）直跳行，鼠标 park (1650,950) 再截。**不用 Ctrl+F**：录制日非模态 Find 框吃键改脏文件（教训 5） | ✓ 10933–10937 注释七行全（16GB/vertical black/0.7.52/Single-worker DE/floor）、标题栏路径、状态栏 17,152 行/Ln 10933、标签干净；鼠标已出框 |
 | freezes/strict-abort.png | t4 尾帧 tail-freeze@19.0（或 logs/bad-lint-strict.log 回放兜底） | — | `Aborting render due to lint issues`，rc=1；at 录后微调 |
 | freezes/missing-audio.png | t5 尾帧 tail-freeze@22.0（或 logs/mm-be.log 回放兜底） | — | `Render blocked by 1 correctness warning … audio_processing_failed: Audio mix failed; output would be video-only`，rc=1；at 录后微调 |
 | freezes/no-timeline-warn.png | logs/bad-lint-default.log | `findstr /C:"not registered after 45000ms" logs\bad-lint-default.log` | ✓ 行47/74 两条 334 字符全文同屏（含 data-no-timeline skip 建议），各折 4 行 |
