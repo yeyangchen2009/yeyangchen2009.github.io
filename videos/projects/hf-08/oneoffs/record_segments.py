@@ -19,13 +19,15 @@ takes（ALL_TAKES 顺序不可换；t0 必须是冷态第一条，之前禁跑�
 hf08-rec 窗显式置前过 HWND 闸——具名单跑任意 take 也安全，不隐式依赖
 t0；2026-10-22 None 句柄事故见 RECORD-NOTES 第十节）：
   t0-sw        av-sync-calib 软件路冷跑（全链约 141s；母带 160s）
-  t1-hw        同窗接跑硬件路（job 52.4s，热态；母带 77.5s）
+  t1-hw        同窗接跑硬件路（无录屏 job 48.2s／录制中 54.2s，热态；
+               母带 87.8s；录制中前置约 20s，跳过 t0 须先暖场）
   t2-hash      hashes/ 内 PowerShell Get-FileHash 六连，exit 回 cmd
-  t3-badlint   bad-lint 默认 render（真机 141.2s；2 error＋Continuing，
+  t3-badlint   bad-lint 默认 render（真机 2m8.0s；2 error＋Continuing，
                中段两轮 45000ms 等待整段弃，poll45 命中 2 次）
-  t4-strict    bad-lint --strict（真机 12.6s；Aborting，exit1）
-  t5-missing   missing-media 默认 render（真机 15.6s；缺音轨 mix 期即拦、
-               无 45s 等待；audio_processing_failed，exit1）
+  t4-strict    bad-lint --strict（横幅≈19s＋45s readiness；红句≈ENTER+60s，
+               母带 80.3s；Aborting，exit1）
+  t5-missing   missing-media 默认 render（录制中 ENTER→红句约 19s；缺音轨
+               mix 期即拦、无 45s 等待；audio_processing_failed，exit1）
 
 用法：
   python record_segments.py t0-sw
@@ -101,11 +103,21 @@ CMD_HASH = ("Get-FileHash soft-a.mp4,soft-b.mp4,1015-old.mp4,w1.mp4,hw-a.mp4,"
 # take 边界全错位作废（详见 RECORD-NOTES「首录时序事故」）。
 # 新模型：母带盖住全链＋take 间 wait_render_idle() 完成门控双保险。
 # sw 155：ENTER 约在录制 9s，母带 160s 盖到 ENTER+151（全链 141＋余 10）；
-# hw 68：热态 CLI 约 8s＋job 52.4，母带 77.5s 余 7.5；
-# t3 150：墙钟 141.2（rehearsal 口径已含 npx 启动），尾报入镜方便尾帧抽点；
-# t4 14（strict 12.6）／t5 19（missing 15.6）；hash 9（六连秒回）。
-WAIT = {"sw": 155.0, "hw": 68.0, "hash": 9.0, "t3": 150.0,
-        "t4": 14.0, "t5": 19.0}
+# hw 78：口径必须按「录制中」真机——gdigrab 抢资源使 CLI/setup 前置翻倍：
+#   无录屏暖场 ENTER→chrome 8.9s、全退 66.9s；录制中 ENTER≈10.6s、横幅
+#   ≈29s、job start≈37s（trace elapsedMs 反推）、job 48.2s 两连稳定，
+#   尾报≈ENTER+74.4＝母带 85s；母带 87.5s 余 2.5（2026-10-22 第三轮
+#   真机，前两轮 68/71 分别差 47s/4s，详见 RECORD-NOTES 第十一节）；
+#   ⚠️ 另一前提是「同会话已有 render 暖过场」——跳过 t0 直接录 t1 时，
+#   t1 成会话首 render，冷态前置实测 118s（npx 本身只 6.5s，冷耗在
+#   Chrome/系统冷缓存链路），母带整段空屏；
+# t3 150：墙钟 128（2026-10-22 真机 2m8.0s 含前置），尾报入镜方便抽点；
+# t4 70.5：strict 不是 12.6s——横幅前置就 ~14s，之后还要吃满一次
+#   45000ms sub-composition readiness timeout 才出红×/Aborting（真机
+#   红句约 ENTER+60s＝母带 ~69s），旧值 14 只盖到横幅（第十一节）；
+# t5 19（missing 15.6，mix 期即拦无 45s 等待）；hash 9（六连秒回）。
+WAIT = {"sw": 155.0, "hw": 78.0, "hash": 9.0, "t3": 150.0,
+        "t4": 70.5, "t5": 19.0}
 TYPE_RENDER = 4.5      # render 命令约 80 字符
 TYPE_HASH = 6.0       # 130 字符
 REC_EXTRA = 7.0       # 垫幕 1.2＋打字＋尾帧余量
@@ -550,13 +562,15 @@ def freeze_src_blackbar():
 # ---------- 母带尾帧 3 张（take 录完即抽；时长彩排回填后校 at） ----------
 
 def do_tail_freeze():
-    # ENTER 实测在录制 ~8.8s（垫幕后 cd/cls/打字串行），报文落屏＝8.8＋真机
-    # 墙钟（t4 12.6→约21.4／t5 15.6→约24.4），at 取落屏后 1s 稳定帧；
-    # t2 hash 命令 ENTER≈13.8s、表在 15–23s 在屏取 17.0。cut_shorts 目验后
-    # 如需微调直接重跑本命令改 at。
-    tail_freeze("t2-hash", 17.0, "hash6-run")
-    tail_freeze("t4-strict", 22.0, "strict-abort")
-    tail_freeze("t5-missing", 26.0, "missing-audio")
+    # at 全部按 2026-10-22 真机母带 contact sheet 回填（旧值取自彩排热透
+    # 口径，实录失配，详见 RECORD-NOTES 第十一节）：
+    # t2 hash 命令 ENTER≈12.5s，六行表 22s 成形、24s 后才 exit，取 23.0；
+    # t4 重录母带 80s：ENTER≈9s、横幅≈23s、45000ms readiness timeout
+    #   后红句≈69s，先取 71.0，抽帧目验后再校；
+    # t5 ENTER≈8s、Continuing 26s 仍在滚、红句 27–28.5s 在屏，取 27.5。
+    tail_freeze("t2-hash", 23.0, "hash6-run")
+    tail_freeze("t4-strict", 71.0, "strict-abort")
+    tail_freeze("t5-missing", 27.5, "missing-audio")
 
 
 TAKES = {

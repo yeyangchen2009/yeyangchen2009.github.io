@@ -11,23 +11,24 @@ gitignored 目录（不入 git）：
   mkdir videos\\projects\\hf-08\\media
   copy F:\\_hftest\\hf08-rec\\takes\\*.mp4 videos\\projects\\hf-08\\media\\
 
-切点设计（与 make_video.py VIDEOS 的 data-media-start 严格配套）：
-sw/hw 两段 clip 共用一个文件、各取源内区间——short 必须从母带 0 点整段切，
-data-media-start 直接是母带源内秒（不是 short 内偏移）：
-  sw-render.mp4   ← t0-sw  0.0–66.0  含 rec-sw1 源内 1.0–6.2（打字段）
-                                    ＋rec-sw2 源内 60.5–65.3（尾报前的
-                                    Timing 进行段，不是结论行）
-  hw-render.mp4   ← t1-hw  0.0–52.0  含 rec-hw1 源内 5.0–9.8
-                                    ＋rec-hw2 源内 44.5–51.3（streaming）
-  hash6-run.mp4   ← t2-hash 0.0–9.2  rec-hash6 源内 0.8–8.7
-  badlint-run.mp4 ← t3-badlint 0.0–9.5 rec-badlint 源内 0.5–8.8
-中间不播的大段（sw 渲染 54s、t3 中段 45s 死等）留在文件里无妨，clip 只播
+切点设计（与 make_video.py VIDEOS 的 data-media-start 严格配套，2026-10-22
+录制日真机回填；sw 待冷态 t0）：short 必须从母带 0 点整段切，data-media-start
+直接是母带源内秒（不是 short 内偏移）：
+  sw-render.mp4   ← t0-sw  0.0–146.0 rec-sw1 源内 ≈8.0（打字段，冷态 sheet 校）
+                                    ＋rec-sw2 源内 ≈144.0（尾报前进行段，校）
+  hw-render.mp4   ← t1-hw  0.0–83.5  rec-hw1 源内 8.0–12.8（cls→打字→回车）
+                                    ＋rec-hw2 源内 73.0–79.8（52%→92%
+                                    Streaming 245→357/390；尾报 85s＝54.2s）
+  hash6-run.mp4   ← t2-hash 0.0–25.2 rec-hash6 源内 16.0–23.9（PS 提示→
+                                    打字→21.8s 六行同值表全出）
+  badlint-run.mp4 ← t3-badlint 0.0–28.5 rec-badlint 源内 18.5–26.8（命令→
+                                    横幅→Lint 2 error 1 warning/Continuing
+                                    →25% capture 照烤；尾报 157s＝2m8.0s）
+中间不播的大段（hw npx 前置、t3 两轮 45s 死等）留在文件里无妨，clip 只播
 data-media-start 起 data-duration 的区间。
 
-二切按真机尾报秒 T 反推（尾报精确数字不进动态录屏，口播钉死值由布景日志
-freeze 作证）：sw 取 [T−7.6, T−2.8]（探针 T=68.1 对到 60.5–65.3）、
-hw 取 [T−7.9, T−1.1]（T=52.4 对到 44.5–51.3）；区间必须全是滚动计时行、
-无静止提示符，data-media-start 偏差 ≤0.1s。
+区间必须全是设计画面（打字/横幅/滚动计时/结果表）、无意外残屏，
+data-media-start 偏差 ≤0.1s。
 
 freeze 不在本脚本抽：3 张母带尾帧（hash6-run/strict-abort/missing-audio）
 由 record_segments.py tail-freeze 出，11 张回放/NPP freeze 由 freeze/freeze
@@ -49,29 +50,35 @@ FRAMES = ROOT / "build" / "frames"
 SHORTS = MEDIA / "shorts"
 
 # ---- 第一轮：稀疏时间地图（母带到齐后跑；目验后按需加密）----
-# 母带时长＝record(...) 实参（2026-10-21 彩排真机回填 WAIT）：
-# t0-sw 75.0／t1-hw 64.0／t2-hash 22.0／t3-badlint 149.5／t4-strict 22.5／
-# t5-missing 26.5（t4/t5 全程弃视频，尾帧 freeze 由 tail-freeze 抽，不布点）。
-# t3 render 真机 141.2s（两轮 45000ms 等待，poll45×2），Continuing 尾报约在
-# 源内 145.7s；成片只取头 8.8s，尾部点只为确认尾报已落屏。
+# 母带时长＝2026-10-22 录制日真机（RECORD-NOTES 第十一节）：
+# t1-hw 87.8（第三轮，尾报 85–86s＝rendered in 54.2s）／t2-hash 25.3
+# （表 21–24s）／t3-badlint 159.7（横幅≈19–23s，尾报 128–132s＝2m8.0s）／
+# t4-strict 80.3、t5-missing 28.8 不出 short（尾帧走 tail-freeze）。
+# t0-sw 冷态未录（重启后第一件事补），布点保留，母带缺位时 frames 自动跳过。
 PROBE = {
-    "t0-sw":    [0.3, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 8, 10, 30, 55, 60,
-                 61.5, 63, 64.5, 66, 70, 73],
-    "t1-hw":    [0.3, 2, 4, 5.5, 7, 8.5, 9.8, 12, 30, 43, 45, 47, 49,
-                 50.5, 52, 55, 60],
-    "t2-hash":  [0.3, 1.5, 3, 4.5, 6, 7.5, 8.7, 10, 12, 14, 16, 18, 20],
-    "t3-badlint": [0.3, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5,
-                   138, 142, 145, 147],
+    "t0-sw":    [0.3, 2, 4, 6, 7, 8, 9, 10, 11, 12, 30, 60, 90, 120,
+                 130, 134, 137, 139, 141, 143, 145, 148, 152, 156],
+    "t1-hw":    [0.3, 2, 4, 6, 7, 8, 9, 10, 11, 12,
+                 27, 28, 29, 30, 31, 32,
+                 44, 48, 52, 56, 60, 64, 68, 70, 72, 74, 76, 78, 80,
+                 82, 83, 84, 85, 86, 87],
+    "t2-hash":  [0.3, 2, 4, 5, 6, 7, 8, 15, 16, 17, 18, 18.8, 19.5,
+                 20.2, 20.8, 21.3, 21.8, 22.3, 22.8, 23.3, 23.8,
+                 24.3, 24.8],
+    "t3-badlint": [0.3, 2, 4, 6, 8, 10, 12, 14, 16, 17.5, 18.5, 19.5,
+                   20.5, 21.5, 22.5, 23.5, 24.5, 25.5, 26.5, 27.5,
+                   126, 128, 130, 132, 134, 140, 150, 157],
 }
 
-# ---- 第二轮：定稿切点（代录 contact sheet 目验后回填微调）----
+# ---- 第二轮：定稿切点（stamped sheet 目验后回填微调）----
 # id: (take, 源内起, 源内止)。均从母带 0 点切（data-media-start 用源内秒）。
-# 止点预留 0.5–0.7s 余量，二切再收紧（data-media-start 偏差 ≤0.1s）。
+# data-duration 是与口播音频对齐的定稿值不动，只平移 data-media-start。
+# 止点包住最长播放窗口＋余量；sw 待冷态 t0（二切窗口预计 137–143s）。
 CUTS = {
-    "sw-render":   ("t0-sw", 0.0, 66.0),
-    "hw-render":   ("t1-hw", 0.0, 52.0),
-    "hash6-run":   ("t2-hash", 0.0, 9.2),
-    "badlint-run": ("t3-badlint", 0.0, 9.5),
+    "sw-render":   ("t0-sw", 0.0, 146.0),
+    "hw-render":   ("t1-hw", 0.0, 83.5),
+    "hash6-run":   ("t2-hash", 0.0, 25.2),
+    "badlint-run": ("t3-badlint", 0.0, 28.5),
 }
 
 
@@ -131,6 +138,10 @@ def phase_cut():
     for cid, (take, s, e) in CUTS.items():
         src = MEDIA / (take + ".mp4")
         out = SHORTS / (cid + ".mp4")
+        if not src.exists():
+            print("跳过 %s（母带 %s 缺位——sw 等冷态 t0 重录后补切）"
+                  % (cid, src.name))
+            continue
         # -vf fps=30 强制 CFR 并重建 PTS：gdigrab 源帧时间戳抖动，不重建则
         # hyperframes 据 avg_frame_rate 误判 VFR（hf-03/hf-04 实证）。
         # -g 30 每秒一个 IDR 消 sparse keyframes warning。

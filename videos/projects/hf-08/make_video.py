@@ -4,8 +4,12 @@
 20 幕严格首尾相接（611.51s 母带，293 句 cues），GitHub Dark 蓝主色
 事实集（与 hf-07 同视觉系，金＝指纹/金句）。每幕拍点锚 cues 实测词戳。
 真机素材 18 个文件、19 个 clip 引用（4 段录屏母带切 6 short＋13 张
-freeze 回放帧＋1 张 contact 拼图），cards-only 已过 check（0 error，
-基线 22 warning），媒体到位后去 --cards-only 再正式渲染。
+freeze 回放帧＋1 张 contact 拼图）。正式版已过 check（0 error，基线
+22 warning）；唯一缺位 sw-render.mp4 是冷态 t0（开机首 render），
+两 clip 自动降级注释占位，正式 render 前归位重生成即可。
+
+音频用 media/hf-08-yeyang-patched.wav（oneoffs/patch_audio_54.py：
+入镜尾报 54.2s，句级补丁把「五十二秒」换成「五十四秒」，窗外不动）。
 
 真机素材位（#609 代录清单，拍法见 oneoffs/RECORD-NOTES.md）：
   media/shorts/hash6-run.mp4    m02 Get-FileHash 六连
@@ -14,9 +18,9 @@ freeze 回放帧＋1 张 contact 拼图），cards-only 已过 check（0 error�
   media/freezes/debug-tree.png  m06 --debug 目录树
   media/freezes/perf-ledger.png m06/m16 perf-summary 阶段账本
   media/freezes/pngseq-dir.png  m07 png-sequence 产物
-  media/shorts/sw-render.mp4    m09 软件路真机 68s 全跑（头尾各取一段）
+  media/shorts/sw-render.mp4    m09 软件路真机 68s 全跑（★冷态 t0 待录）
   media/freezes/gate-multi.png  m09 multi_worker streaming gate 关
-  media/shorts/hw-render.mp4    m09 硬件路真机 52s 全跑（头尾各取一段）
+  media/shorts/hw-render.mp4    m09 硬件路真机 54.2s 全跑（头尾各取一段）
   media/freezes/gate-stream.png m09 capture_streaming + drawelement
   media/freezes/hf07-timing.png m10 hf-07 长片 Timing（16777/41m43）
   media/freezes/worker-sizing.png m11 workerSizing 日志字段
@@ -574,9 +578,10 @@ Scene("sc-bye", 608.90, 611.51, """
 if CARDS_ONLY:
     VIDEOS = "      <!-- --cards-only：录屏/真机图 clip 待媒体到位后填入 -->"
 else:
-    VIDEOS = """      <!-- m02 1.24–29.42：Get-FileHash 六连真机 10.6–18.5，freeze 到 24.0 -->
+    VIDEOS = """      <!-- m02 1.24–29.42：Get-FileHash 六连真机 10.6–18.5，freeze 到 24.0。
+           源内 16.0–23.9：PS 空提示→打字→21.8s 六行表全出（2026-10-22 母带） -->
       <video id="rec-hash6" class="clip term" data-start="10.60"
-             data-duration="7.90" data-track-index="2" data-media-start="0.8"
+             data-duration="7.90" data-track-index="2" data-media-start="16.0"
              src="media/shorts/hash6-run.mp4" muted playsinline preload="auto"></video>
       <img id="img-hash6" class="clip term" data-start="18.50"
            data-duration="5.50" src="media/freezes/hash6-run.png" alt="">
@@ -595,22 +600,23 @@ else:
       <img id="img-pngseq" class="clip term" data-start="193.50"
            data-duration="6.70" src="media/freezes/pngseq-dir.png" alt="">
 
-      <!-- m09 软件路：启动行 216.8–222（源内 1–6.2）；Timing 226.2–231（源内 61–66） -->
-      <video id="rec-sw1" class="clip term" data-start="216.80"
-             data-duration="5.20" data-track-index="2" data-media-start="1.0"
-             src="media/shorts/sw-render.mp4" muted playsinline preload="auto"></video>
+      <!-- m09 软件路：启动行 216.8–222；Timing 226.2–231。
+           data-media-start 待冷态 t0 真机 sheet 回填（预计 sw1≈8.0 打字段、
+           sw2≈144–149 尾报前进行段；尾报≈ENTER+141）。sw-render.mp4 缺位时
+           （冷态 t0 未录）两 clip 降级为注释，check 保持 0 error，画面落
+           m09 场景表格卡；文件归位后重跑 make_video 自动入镜 -->
+__SW_CLIP_1__
       <img id="img-gate-multi" class="clip term" data-start="222.00"
            data-duration="4.20" src="media/freezes/gate-multi.png" alt="">
-      <video id="rec-sw2" class="clip term" data-start="226.20"
-             data-duration="4.80" data-track-index="2" data-media-start="60.5"
-             src="media/shorts/sw-render.mp4" muted playsinline preload="auto"></video>
+__SW_CLIP_2__
 
-      <!-- m09 硬件路：probe 行 238.2–243（源内 5–9.8）；Timing＋streaming 244.8–251.6 -->
+      <!-- m09 硬件路：probe 行 238.2–243（源内 8–12.8 打字）；streaming
+           244.8–251.6（源内 73–79.8＝52%→92% Streaming 245→357/390） -->
       <video id="rec-hw1" class="clip term" data-start="238.20"
-             data-duration="4.80" data-track-index="2" data-media-start="5.0"
+             data-duration="4.80" data-track-index="2" data-media-start="8.0"
              src="media/shorts/hw-render.mp4" muted playsinline preload="auto"></video>
       <video id="rec-hw2" class="clip term" data-start="244.80"
-             data-duration="6.80" data-track-index="2" data-media-start="44.5"
+             data-duration="6.80" data-track-index="2" data-media-start="73.0"
              src="media/shorts/hw-render.mp4" muted playsinline preload="auto"></video>
 
       <!-- m10 278.3–291.2：hf-07 长片 Timing 真机日志 -->
@@ -625,9 +631,11 @@ else:
       <img id="img-blackbar" class="clip term" data-start="365.40"
            data-duration="11.50" src="media/freezes/src-blackbar.png" alt="">
 
-      <!-- m14 坏工程：lint 照烤录屏 406.2–414.5；双帧 contact 419.5–429.5；strict 437–441.5 -->
+      <!-- m14 坏工程：lint 照烤录屏 406.2–414.5（源内 18.5–26.8＝命令→横幅→
+           Lint 2 error 1 warning＋Continuing→25% capture）；双帧 contact
+           419.5–429.5；strict 437–441.5 -->
       <video id="rec-badlint" class="clip term" data-start="406.20"
-             data-duration="8.30" data-track-index="2" data-media-start="0.5"
+             data-duration="8.30" data-track-index="2" data-media-start="18.5"
              src="media/shorts/badlint-run.mp4" muted playsinline preload="auto"></video>
       <img id="img-redblock" class="clip shot" data-start="419.50"
            data-duration="10.00" src="media/artifacts/redblock-30-150.png" alt="">
@@ -639,6 +647,27 @@ else:
            data-duration="14.00" src="media/freezes/missing-audio.png" alt="">
       <img id="img-notimeline" class="clip term" data-start="476.50"
            data-duration="8.70" src="media/freezes/no-timeline-warn.png" alt="">"""
+
+# sw 冷态降级：sw-render.mp4 必须是开机后首个 render（冷态真机），未录前
+# 两 clip 出注释占位；归位后重跑本脚本即自动入镜（正式 render 前必须归位）。
+_sw_src = Path(__file__).resolve().parent / "media/shorts/sw-render.mp4"
+if _sw_src.exists():
+    _sw1 = ('      <video id="rec-sw1" class="clip term" data-start="216.80"\n'
+            '             data-duration="5.20" data-track-index="2" '
+            'data-media-start="8.0"\n'
+            '             src="media/shorts/sw-render.mp4" muted playsinline '
+            'preload="auto"></video>')
+    _sw2 = ('      <video id="rec-sw2" class="clip term" data-start="226.20"\n'
+            '             data-duration="4.80" data-track-index="2" '
+            'data-media-start="144.0"\n'
+            '             src="media/shorts/sw-render.mp4" muted playsinline '
+            'preload="auto"></video>')
+else:
+    _note = ("sw-render.mp4 缺位：冷态 t0 未录（开机首 render），"
+             "此处落 m09 表格卡，正式 render 前须归位重生成")
+    _sw1 = "      <!-- rec-sw1 " + _note + " -->"
+    _sw2 = "      <!-- rec-sw2 " + _note + " -->"
+VIDEOS = VIDEOS.replace("__SW_CLIP_1__", _sw1).replace("__SW_CLIP_2__", _sw2)
 
 # ---------- 场景专属 CSS ----------
 PROJECT_CSS = """
@@ -1236,7 +1265,9 @@ frag = char_track(cues, chars, THEME.accent, time_offset=0.29)
 
 # ---------- 组装 ----------
 body = "\n".join([
-    audio_tag("media/hf-08-yeyang.wav", total),
+    # patched 母带：oneoffs/patch_audio_54.py 句级替换「五十二→五十四秒」
+    # （入镜母带尾报 54.2s），窗外逐样本不动，total/offset 不变。
+    audio_tag("media/hf-08-yeyang-patched.wav", total),
     "",
     '      <div id="bg-grid"></div>',
     '      <div id="bg-glow"></div>',
