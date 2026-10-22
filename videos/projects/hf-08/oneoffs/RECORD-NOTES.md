@@ -352,3 +352,70 @@ traceback 完整、退出码 1。
 
 **规程影响**：具名跑任意子集 take 均安全（不再隐式依赖 t0 先跑）；
 冷态纪律不变——t0-sw 仍须是重启后第一条 render。
+
+## 十一、2026-10-22 热录批目验：t1 会话冷态长尾废片＋t4 时长不足（第三、四起）
+
+热录五 take（修复后）REC_EXIT=0、无异常无孤儿，但 2s/帧＋1fps contact
+sheet 目验证实两条母带不达标：
+
+| take | 母带 | 目验结果 |
+|---|---|---|
+| t1-hw | 78.0s | **作废重录**：0–6s strict 残屏边界正确，7–9s 自己的 cd/cls/打字，**10–77s 整段只有命令文本＋行首光标，横幅/进度/尾报全不入镜**；hw 尾报反而完整落在 t2 母带 0–3.5s |
+| t2-hash | 25.3s | **合格**：0–3.5s 白拍到 hw 尾报（`rendered in 48.2s` 全计时行），自己的 cd/PS/hash 命令齐，六连表 22s 成形（全 `2057D0377A07FBFD32E01…`），24s 后 exit |
+| t3-badlint | 159.7s | **合格**：hash 残屏→自己命令→横幅（ENTER+约13s）→满屏 trace＋两轮 45000ms/90001ms 黄警告→绿勾 `rendered in 2m 8.0s`（screenshot capture·hardware gpu，setup 52.1/capture 1m15.2）全段入镜 |
+| t4-strict | 23.8s | **作废重录**：自己命令约 18.5s 回车，**横幅 23s 才出**，母带 23.8s 即止；strict 还要吃满一次 45000ms readiness timeout，红×/Aborting 约 ENTER+60s，整段缺失 |
+| t5-missing | 28.8s | **合格**：命令/Lint 3 error 2 warning/Continuing 在 26s 前，`✗ Render failed`＋`audio_processing_failed … Source not found for audio element hf-audio-0` 红句 27–28.5s 完整在屏 |
+
+**t1 时间线硬证据**（stat mtime 反推）：t1 母带 07:05:39→07:06:57；
+ENTER≈07:05:48；hw.mp4 mtime **07:08:34**，job 内 48.2s → job 约
+07:07:46 才启动＝**ENTER 后前置 118s**；t2 07:08:45 才开录，take 间隔
+108s（`wait_render_idle` 忙等约 98s）——**门控成功挡住串台**（没有重演
+首录缓冲事故），但 WAIT hw=68 按热态前置约 8–13s 定值，被长尾打穿。
+
+**t1 长尾定性＝会话首 render 冷态**：本批跳过 t0，t1 由「同窗热态第二
+跑」变成会话第一条 render，独自吃掉冷启动链路。对照实测：`npx --yes
+hyperframes@0.8.107 --version` 仅 6.4/6.8s（包解析不是瓶颈），同批 t3/t4
+横幅均在 ENTER+13–14s（Chrome/缓存全热）；长尾只打第一条，性质同首录
+事故的 sw 冷态 66s CLI 前置（本次更久，冷耗细分未再解剖，暖场绕开）。
+
+**t4 口径修正**：彩排「strict 真机 12.6s」是热透口径且漏算 readiness
+timeout；bad-lint 工程 main sub-composition 不注册 timeline，strict 在
+横幅后等满 **45000ms** 才报 `sub_timeline_readiness_timeout` →
+requestanimationframe 红×＋missing_data 黄⚠＋Aborting。红句≈ENTER+60s。
+
+**处置与三轮实录**：
+- 重录前先跑 build/warm_and_probe.py（不录像跑一次 hw 路，打点
+  ENTER→node→chrome→全退；等价正式流程 t0 给 t1 暖场）。第一版探针
+  踩坑：open_rec_term 对已存在窗只复用**不切 cwd**，终端停在 t5 的
+  missing-media 目录，暖场误跑缺音轨工程 251.5s（0 字节、mix 期失败，
+  现场无害）；修法＝显式 term_cd(CALIB)。第二版实测热态无录屏：
+  ENTER→node/chrome 8.9s、全退 66.9s、warm.mp4 **61145B**（确定性）；
+  另测 `npx … --version` 仅 6.4/6.8s，包解析不是长尾环节；
+- **t1 三轮才成**：第一轮 WAIT hw=68（母带 77.5s）＝冷态废片（上表）；
+  第二轮暖场后 WAIT=71（80.5s），横幅/进度全入镜但尾报差 4s——
+  **gdigrab 录制抢资源使前置翻倍**：无录屏 ENTER→chrome 8.9s，录制中
+  横幅≈29s、job start≈37s（78s 帧 trace elapsedMs 41.3s 反推）；
+  第三轮 WAIT=**78**（母带 87.8s）定稿，尾报 85–86s 完整入镜；
+- **录制中 job 也变慢**：第三轮尾报 `rendered in 54.2s`（无录屏
+  48.2s；setup 9.4/capture **41.1**/assemble 1.9，jobId fd7f26fa、
+  totalElapsedMs 54145，drawelement/workerCount:1/psnrDb inf 不变）。
+  **入镜画面数字＝54.2，口播与字幕按「五十四秒」回填**，不能用无录屏
+  口径的 48.2；hw.mp4 内容仍 61145B 确定性；
+- WAIT t4 14→**70.5**（母带 80.3s）重录一次定稿：横幅≈19s，lint 红✗
+  在横幅后即刷，readiness 45s 等满后红句 Aborting 落屏，78s 帧提示符
+  已回（终屏静止）；
+- tail-freeze at 按真机 sheet 回填并重抽三张目验合格（1600×920）：
+  hash 17.0→**23.0**（表 22s 成形、24s 才 exit；六行全
+  `2057D0377A07FBFD32E01…` 单行不折行）、strict 22.0→**71.0**
+  （红✗ requestAnimationFrame 全文＋黄⚠「polls … up to 45 seconds
+  … adding 45 s to every render」＋红句）、missing 26.0→**27.5**
+  （26s 仍在 Continuing，27.5s 红 ✗ Render failed 全文）；
+- t2/t3/t5 母带保留不重录。
+
+**规程影响**：① 门控只防串台、不防长尾——任何「会话首条 render」一律
+按冷态定时长（sw 155 模型），跳过 t0 必须先暖场；② **等待常量必须在
+「录制中」实测**：gdigrab 同机抢资源，CLI 前置 9s→20s、capture
+31.4s→41.1s，无录屏探针口径会系统性偏短；③ 失败类镜头时长＝前置＋
+固定 timeout（readiness 45s）＋尾报，不能用热彩排口径；④ freeze 的 at
+与母带时长都得以真机 sheet 回填为准，彩排值只给首轮量级；⑤ 复用已存在
+终端窗的脚本一律显式 cd，open_rec_term 不保证 cwd。
