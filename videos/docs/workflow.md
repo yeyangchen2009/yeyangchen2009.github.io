@@ -159,7 +159,7 @@ python make_cover.py                  # 生成 cover.html
 ```bash
 # 仓库根
 node tools/cdp-shot.js \
-  "file:///F:/Data/gmeek-site/videos/projects/damo/cover.html" \
+  "file:///F:/Data/Code/gmeek-site/videos/projects/damo/cover.html" \
   "videos/projects/damo/snapshots/cover-final.png" \
   1920 1080 --scale 1 --settle 4500
 ```
@@ -506,7 +506,7 @@ npx hyperframes@0.8.107 snapshot --at=<各幕中点,逗号分隔> --no-end --no-
 npx hyperframes@0.8.107 render                                  # → renders/<片>_<时间戳>.mp4
 # snapshot 已删封面，最后重截一次：
 python make_cover.py
-node /f/Data/gmeek-site/tools/cdp-shot.js "file:///…/cover.html" \
+node /f/Data/Code/gmeek-site/tools/cdp-shot.js "file:///…/cover.html" \
      "projects/<片>/snapshots/cover-final.png" 1920 1080 --scale 1 --settle 4500
 cd ../..
 python -m videopipe finalize projects/<片> --body "projects/<片>/renders/<片>_<时间戳>.mp4"

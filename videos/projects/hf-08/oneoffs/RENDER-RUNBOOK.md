@@ -47,7 +47,7 @@ npx hyperframes@0.8.107 render
 strict-abort 436.9、missing-audio 455、片尾 609。
 
 ```bash
-cd /f/Data/gmeek-site/videos
+cd /f/Data/Code/gmeek-site/videos
 python tools/frames_at.py projects/hf-08/renders/hf-08_<时间>.mp4 \
     2=cover 14.5=hash6 219.4=sw1 228.6=sw2 240.6=hw1 248.2=hw2 \
     410.4=badlint 436.9=strict 455=missing 609=bye \

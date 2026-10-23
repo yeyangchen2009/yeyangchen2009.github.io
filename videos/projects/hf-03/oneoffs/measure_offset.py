@@ -11,7 +11,7 @@ import subprocess
 import bisect
 from pathlib import Path
 
-P = Path(r"F:\Data\gmeek-site\videos\projects\hf-03")
+P = Path(__file__).resolve().parents[1]  # videos/projects/hf-03（随仓库位置自适应）
 cue_s = [c["s"] for c in
          json.load(open(P / "cues/cues.json", encoding="utf-8"))["cues"]]
 

@@ -5,8 +5,9 @@
 同一段开头：msyh.ttc / consola.ttf 注册、GitHub Dark 色板，存盘后再人肉
 找日志里的 "Glyph missing"。收口为两件颜色/字体常量 ＋ 三个函数：
 
-    import sys
-    sys.path.insert(0, r"F:/Data/gmeek-site/videos/tools")
+    import sys, pathlib
+    # 从 videos/projects/<片>/oneoffs/ 下的脚本引用（位置无关）：
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
     from review_fig import setup_dark, save_fig, font_cjk, font_mono, BG, PANEL
 
     setup_dark()                                          # 暗色 rcParams

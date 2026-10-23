@@ -28,7 +28,7 @@ F1≈715–779/F2≈750–830 接 ŋ 尾（F1 落 217、F2 保持 770），是 h
 
     node ../../../tools/cj-web-tts.js q1.txt build/verify/patch/q1.wav \\
         C-df5d6f1a95904a91a8e086b6f2fd8a53 \\
-        --profile /f/Data/gmeek-site/Temp/cj-profile
+        --profile /f/Data/Code/gmeek-site/Temp/cj-profile
 
 q1.txt 内容（行→航，整句合成以保自然语调，脚本只切其中两字）::
 
