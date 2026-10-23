@@ -15,7 +15,7 @@ F1≈450–760/F2≈700–870 接 ŋ 尾，xíng 的 i 韵腹 F2 在 2500 以上
 
     node ../../../tools/cj-web-tts.js qN.txt build/verify/patch/qN.wav \\
         C-df5d6f1a95904a91a8e086b6f2fd8a53 \\
-        --profile /f/Data/gmeek-site/Temp/cj-profile
+        --profile /f/Data/Code/gmeek-site/Temp/cj-profile
 
 qN.txt 内容（行→航）::
 

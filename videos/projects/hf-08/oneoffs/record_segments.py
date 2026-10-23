@@ -76,7 +76,9 @@ HF07_LOG = os.path.join(str(S.PROJECTS), "hf-07", "build", "render.log")
 REC_DIR = r"F:\_hftest\hf08-rec\takes"
 FREEZE_DIR = r"F:\_hftest\hf08-rec\freezes"
 FRAME_DIR = r"F:\_hftest\hf08-rec\frames"
-SCREEN_REC = r"F:\Data\gmeek-site\tools\screen-rec.js"
+# 仓库根＝HERE（videos/projects/<片>/oneoffs）上溯四级，随仓库位置自适应
+REPO_ROOT = os.path.normpath(os.path.join(HERE, "..", "..", "..", ".."))
+SCREEN_REC = os.path.join(REPO_ROOT, "tools", "screen-rec.js")
 NPP_EXE = r"F:\_hftest\npp-local\notepad++.exe"
 CHUNK_3W = (r"F:\npm-cache\_npx\82df529928acbd64\node_modules\hyperframes"
             r"\dist\chunk-3WG63KFW.js")
@@ -265,7 +267,7 @@ def record(name, duration, action):
         ["node", SCREEN_REC, out,
          "--width", "1600", "--height", "920", "--x", "0", "--y", "0",
          "-t", str(duration)],
-        cwd=r"F:\Data\gmeek-site",
+        cwd=REPO_ROOT,
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     try:
         time.sleep(1.0)

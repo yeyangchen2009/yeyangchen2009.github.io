@@ -31,7 +31,8 @@ import subprocess
 import sys
 import time
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
 import rec_automate as r
 import npp_ops as n
 from blackmat import BlackMat
@@ -44,7 +45,9 @@ CLEAN_BAK = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                          "backup", "hf03-index.clean.bak")
 REC_DIR = r"F:\_hftest\hf03-rec\takes"
 FRAME_DIR = r"F:\_hftest\hf03-rec\frames"
-SCREEN_REC = r"F:\Data\gmeek-site\tools\screen-rec.js"
+# 仓库根＝HERE（videos/projects/<片>/oneoffs）上溯四级，随仓库位置自适应
+REPO_ROOT = os.path.normpath(os.path.join(HERE, "..", "..", "..", ".."))
+SCREEN_REC = os.path.join(REPO_ROOT, "tools", "screen-rec.js")
 
 EDGE_HWND = 0x111d0
 PLAY_X, PLAY_Y = 775, 487
@@ -314,7 +317,7 @@ def record(name, duration, action):
         ["node", SCREEN_REC, out,
          "--width", "1600", "--height", "920", "--x", "0", "--y", "0",
          "-t", str(duration)],
-        cwd=r"F:\Data\gmeek-site",
+        cwd=REPO_ROOT,
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     time.sleep(1.0)  # 等 ffmpeg 起抓
     action()

@@ -64,7 +64,9 @@ REC_ROOT = r"F:\_hftest\hf07-rec"
 REC_DIR = os.path.join(REC_ROOT, "takes")
 FRAME_DIR = os.path.join(REC_ROOT, "frames")
 ARTIFACT_DIR = os.path.join(REC_ROOT, "artifacts")
-SCREEN_REC = r"F:\Data\gmeek-site\tools\screen-rec.js"
+# 仓库根＝HERE（videos/projects/<片>/oneoffs）上溯四级，随仓库位置自适应
+REPO_ROOT = os.path.normpath(os.path.join(HERE, "..", "..", "..", ".."))
+SCREEN_REC = os.path.join(REPO_ROOT, "tools", "screen-rec.js")
 
 # 录区物理 (0,0,1600,920)（gdigrab，1920×1080@150%）。外框几何同 hf-04/05/06：
 # Win11 右缘 12px 圆角透明带，窗口摆 (-12,0,1624,928) 实体右缘正好 1600。
@@ -185,7 +187,7 @@ def record(name, duration, action):
         ["node", SCREEN_REC, out,
          "--width", "1600", "--height", "920", "--x", "0", "--y", "0",
          "-t", str(duration)],
-        cwd=r"F:\Data\gmeek-site",
+        cwd=REPO_ROOT,
         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     time.sleep(1.0)
     action()

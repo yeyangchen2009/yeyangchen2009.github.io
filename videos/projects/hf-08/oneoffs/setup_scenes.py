@@ -14,8 +14,9 @@ r"""hf-08 录屏布景生成器：在公开沙盒（默认 F:\_hftest\hf08-media
   stage-manifest.json  布景台账
 
 av-sync-calib 工程**不 copy**：录屏终端 cwd 直接在仓库真名路径
-F:\Data\gmeek-site\videos\projects\av-sync-calib（render 自报路径入镜，工程名
-是真名；该路径无用户名）。渲染输出一律 -o 到 F:\_hftest\hf08-rec，不污染仓库。
+F:\Data\Code\gmeek-site\videos\projects\av-sync-calib（render 自报路径入镜，工程名
+是真名；该路径无用户名。成片录制于 2026-10-23 仓库迁移前，片里入镜的旧路径为
+F:\Data\gmeek-site\videos\projects\av-sync-calib）。渲染输出一律 -o 到 F:\_hftest\hf08-rec，不污染仓库。
 
 用法（在 videos/ 下）：
     python projects/hf-08/oneoffs/setup_scenes.py init            # 全建＋现跑 --debug（约 70s，非沙箱）

@@ -12,11 +12,12 @@ NPP 录制窗口与 Edge/终端一样摆 (0,0,1600,920)，gdigrab 固定录该�
 """
 import ctypes
 from ctypes import wintypes
+import os
 import subprocess
 import sys
 import time
 
-sys.path.insert(0, r"F:\Data\gmeek-site\videos\projects\hf-03\oneoffs")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import rec_automate as r
 
 # 隔离实例＝用户本机已安装的 NPP 7.8.8 整目录复制到 F:\_hftest\npp-local

@@ -14,8 +14,9 @@ CLI：
         -o build/f2 --sheet
     → build/f2/000.png 001.png …（帧左上盖「标签 秒数」）＋ sheet-1.png…
 
-库用法：
-    import sys; sys.path.insert(0, r"F:/Data/gmeek-site/videos/tools")
+库用法（从 videos/projects/<片>/oneoffs/ 下的脚本，位置无关）：
+    import sys, pathlib
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
     from frames_at import Point, extract_points, make_sheets
 
 铁律（videos/docs/screen-rec.md §8 全部内化）：
