@@ -32,6 +32,16 @@
      （实测单 worker 全面更快），并行 router 被 24GB 内存地板关在门外。
    - 13s 小工程墙钟：软件首跑 68.1s（校准占 16.4s）／软件热跑 55.7s／
      硬件 52.4s。小工程差异被校准/启动吃掉，**长片才见路径差距**（引 hf-07 账）。
+   - 【hf-08 入镜口径 2026-10-23】分镜软件路两段录屏（rec-sw1/2）取自**热态
+     演录**母带（连续开机 26h 后，用户拍板不重启）：ENTER≈11s、banner≈30s、
+     calibration 134–152s、worker 配置 153–158s，母带 160s 停录时正式 capture
+     未开始，**尾报不入镜**。口播「首跑六十八秒／开浏览器试截几帧十六秒」
+     仍以上行冷态探针台账（68.1s／setup 16.4s）为事实依据，数字与文案不动；
+     热态母带只承担操作过程重演（代录重演体例）。rec-sw2 窗口 153.8–158.6s
+     给出 workerCount:3／streaming-encode gate enabled:false reason
+     multi_worker／forceScreenshot:true／useStreamingEncode:false／
+     0/3 ready／swiftshader launched 的字面证据，与「三家交活再统一编码、
+     不能边截边编是门控」逐句对应。
 4. **worker 数是算出来的，不是拍的**（dist 源码）：auto 取
    min(CPU 核−2, 内存50%÷1536MB, 帧数÷30, heap 账) 再被 contention 规则压；
    本机 16GB／8 核 → cpu6／mem5／frame13／heap5，13s 工程 contention 压到 **3**。

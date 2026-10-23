@@ -1,64 +1,29 @@
-# hf-08 冷态 t0 → 正式 render → finalize 一条龙
+# hf-08 正式 render → finalize 一条龙
 
-唯一硬前置：**t0-sw 必须是开机后第一个 render**。冷态＝npx 包解析＋Chrome/
-系统冷缓存全在这一条上（实测跳过 t0 时，会话首 render 前置长尾 118s）。
-录之前机器不得跑任何 node/npx/Chrome。
+所有 render/ffmpeg/npx 命令必须**非沙箱**（沙箱限内存 4K，libx264
+malloc failed）。cwd 均为 `videos/projects/hf-08`，除标注 `cd videos` 外。
 
-所有 render/ffmpeg/npx/录屏命令必须**非沙箱**（沙箱限内存 4K，libx264
-malloc failed）。cwd 均为 `videos/projects/hf-08`。
+## 阶段 0–2 · 已完成（2026-10-23，热态演录口径）
 
-## 阶段 0 · 冷态录 t0（用户重启后第一件事，约 4 分钟）
+用户拍板不重启：t0-sw 在连续开机 26h 后热态演录（冷态 68.1s 尾报口径以
+探针彩排台账为准，见 PROBE-NOTES 第 3 节「hf-08 入镜口径」注记）。
 
-用户重启进系统后，不打开任何 node/npx/Chrome/浏览器，直接通知开工：
-
-```bash
-python oneoffs/record_segments.py t0-sw
-```
-
-WAIT sw=155s（含冷态前置），gdigrab 母带落 `F:\_hftest\hf08-rec\takes\t0-sw.mp4`，
-覆盖首录事故废片（552238B）。具名跑自带 prepare_term 置前过 HWND 闸。
-
-## 阶段 1 · 母带归位＋真机读数
-
-```bash
-cp /f/_hftest/hf08-rec/takes/t0-sw.mp4 media/t0-sw.mp4
-cd /f/Data/gmeek-site/videos
-PYTHONPATH=. python -m videopipe probe-fps projects/hf-08/media/t0-sw.mp4
-# 期望 exit 2（gdigrab 原始 VFR）
-cd projects/hf-08
-python oneoffs/cut_shorts.py frames     # t0 布点已在 PROBE，自动补抽
-```
-
-看 `build/frames/sheet-t0-sw-0.png`（stamped 接触表带黄字时间戳），读三件事：
-
-1. **尾报 rendered in ??s**——口播「软件路首跑**六十八**秒」。若真机不是
-   68.x：追加第二条音频补丁（`patch_audio_54.py` 的 PATCHES 加一行，同工艺
-   重取整句），并回填 src/tts/draft/cues 数字；若 68.x 则不动。
-2. **sw1 打字段真机秒**（暂定 data-media-start 8.0：cd→cls→命令打字）。
-3. **sw2 尾报前进行段真机秒**（暂定 144.0：Streaming/尾报前）。
-   读数与暂定偏差 >0.3s 则回填 make_video.py 两处 data-media-start。
-
-## 阶段 2 · 切 short＋重生成＋门控
-
-```bash
-python oneoffs/cut_shorts.py cut        # 产出 media/shorts/sw-render.mp4
-cd /f/Data/gmeek-site/videos
-PYTHONPATH=. python -m videopipe probe-fps projects/hf-08/media/shorts
-# 期望 exit 0（四条 short 全 CFR）
-cd projects/hf-08
-python make_video.py                    # sw 两 clip 自动从注释降级切回真机
-npx hyperframes@0.8.107 check           # 期望 0 error / 22 warning
-```
-
-snapshot 目验两 sw 位（216.8–222 中点 219.4、226.2–231 中点 228.6）：
-
-```bash
-npx hyperframes@0.8.107 snapshot --at 219.4,228.6 --no-browser-gpu
-```
-
-**注意 snapshot 会清空 snapshots/**——封面图有备份 `build/cover-final.png`
-（2026-10-22 已截，533524B，1920×1080 六指纹表），finalize 用 `--cover
-build/cover-final.png` 即可，勿依赖 snapshots/ 那份。
+- 阶段 0：`python oneoffs/record_segments.py t0-sw`——母带 161.4s
+  （F:\_hftest\hf08-rec\takes\t0-sw.mp4，6226779B），已归位 media/t0-sw.mp4。
+  实测：打字 6.5–11s／ENTER≈11s／banner≈30s／calibration 134–152s／
+  worker 配置 153–158s；160s 停录时正式 capture 未开始，尾报天然不入镜。
+- 阶段 1：`probe-fps media/t0-sw.mp4` exit 2（VFR avg 19.02，双闸第一闸过）；
+  `cut_shorts frames` 接触表读数（sheet-t0-sw-0.png＋sheet-t0-sw-tail.png）。
+  真机秒与暂定偏差 >0.3s，已回填：sw1 8.0→**6.8**、sw2 144.0→**153.8**。
+  尾报不是 68.x 是预期（热态），**不打第二条音频补丁**——68 秒口径锚定
+  冷态探针日志，热态母带不取尾报。
+- 阶段 2：`cut_shorts cut` 出 media/shorts/sw-render.mp4（0–159.8s）；
+  `probe-fps media/shorts` exit 0（四条全 CFR，双闸第二闸过）；
+  make_video.py 两 clip 已定稿 6.8／153.8（文件存在性降级机制已移除——
+  缺资产应由 check 直接报错）；`check` **0 error / 22 warning**；
+  snapshot 219.4/228.6 目验通过（打字段命令可读；sw2 一屏集齐
+  workerCount:3／gate enabled:false multi_worker／forceScreenshot／
+  useStreamingEncode:false／0/3 ready／swiftshader，尾报秒数不在屏）。
 
 ## 阶段 3 · 正式 render（非沙箱，预计 45–50 分钟）
 
@@ -95,13 +60,15 @@ PYTHONPATH=. python -m videopipe finalize projects/hf-08 \
 #   报名「我是叶扬」在片尾；终片 ffprobe 应 ≈613.51s）
 ```
 
-finalize 内部断言封面头恰 2.000000s。
+finalize 内部断言封面头恰 2.000000s。封面用 `build/cover-final.png`
+（2026-10-22 已截，533524B，1920×1080 六指纹表），勿依赖 snapshots/ 那份
+——每次 snapshot 会清空整个 snapshots/。
 
 ## 阶段 5 · 终片 F2
 
 - 视觉：阶段 4 接触表全尺寸补帧，五录屏位/sw 双位/三 freeze/字幕轨在位；
-- 声音：`build/f2/pronounce-check.mp3` 38 点已过人耳（2026-10-22）；
-  若阶段 1 触发 68 秒第二补丁，补切该窗 ±0.6s 人耳复听；
+- 声音：`build/f2/pronounce-check.mp3` 38 点已过人耳（2026-10-22/23）；
+  热态演录不触发 68 秒第二补丁，无新增补听窗；
 - patched 母带窗外逐样本不动已断言；终片音频轴＝正片时间轴。
 
 过了之后进 #612：终片/素材 PR、计时账、速读＋深读复盘、审稿站配图同步。
