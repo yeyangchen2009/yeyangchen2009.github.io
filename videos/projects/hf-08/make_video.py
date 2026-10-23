@@ -327,7 +327,7 @@ Scene("sc-time", 254.82, 292.22, """
             <div class="time-rows">
               <div class="tr" id="tr-1"><span class="tr-name">软件路 · 首跑</span><span class="tr-val red-t">68 秒</span><span class="tr-note">光开浏览器、试截几帧就花掉 16 秒</span></div>
               <div class="tr" id="tr-2"><span class="tr-name">软件路 · 第二回</span><span class="tr-val amber-t">56 秒以内</span><span class="tr-note">浏览器热了</span></div>
-              <div class="tr" id="tr-3"><span class="tr-name">硬件路</span><span class="tr-val green-t">52 秒</span><span class="tr-note">编码和抓帧重叠在一起</span></div>
+              <div class="tr" id="tr-3"><span class="tr-name">硬件路</span><span class="tr-val green-t">54 秒</span><span class="tr-note">编码和抓帧重叠在一起</span></div>
             </div>
             <div class="solve-note" id="tr-note">小工程谁也快不到哪去，启动成本摊不开 —— 长片才见真章</div>
           </div>
@@ -824,7 +824,7 @@ PROJECT_CSS = """
 
       /* m10 时间账 */
       .time-rows { width:1300px; margin:10px auto 0; }
-      .tr { display:grid; grid-template-columns:300px 220px 1fr; align-items:center;
+      .tr { display:grid; grid-template-columns:300px 260px 1fr; align-items:center;
         background:#161b22; border:2px solid #30363d; border-radius:14px;
         padding:22px 32px; margin:18px 0; text-align:left; }
       .tr-name { font-size:36px; color:#e6edf3; }
@@ -1082,7 +1082,7 @@ SCENE_JS = """
       tl.from('#c9-hw-1',{x:60,opacity:0,duration:.55,ease:'back.out(1.2)'},247.7);
       tl.to('#sc-paths > .scene-inner',{opacity:0,duration:.4},254.42);
 
-      /* m10 254.82–292.22：68 258/16秒 260.12/56 265.97/52 267.26 →
+      /* m10 254.82–292.22：68 258/16秒 260.12/56 265.97/54 267.26（卡片对齐句级补丁＝入镜尾报 54.2s；探针无竞争 52.4s 仅留台账） →
          长片 275.12 → 16777 278.31/39分 281.94/41分 284.04/7帧 286.32 */
       tl.fromTo('#sc-time > .scene-inner',{opacity:0},{opacity:1,duration:.5},254.82);
       tl.from('#m10-small .kicker-static',{y:18,opacity:0,duration:.5},255.2);
