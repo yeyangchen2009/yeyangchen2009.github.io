@@ -419,3 +419,29 @@ requestanimationframe 红×＋missing_data 黄⚠＋Aborting。红句≈ENTER+60
 固定 timeout（readiness 45s）＋尾报，不能用热彩排口径；④ freeze 的 at
 与母带时长都得以真机 sheet 回填为准，彩排值只给首轮量级；⑤ 复用已存在
 终端窗的脚本一律显式 cd，open_rec_term 不保证 cwd。
+
+## 十二、2026-10-23 t0-sw 热态演录（不重启拍板，尾报避开）
+
+t0 原设计是「开机首 render」冷态镜头（WAIT sw=155 模型保留，将来冷态
+重录仍可用）。正式开拍时机器已连续开机 26h、node/npx/Chrome 缓存全热，
+用户拍板**不重启、热态演录**：冷态 68.1s 尾报口径以探针彩排台账为事实
+依据（PROBE-NOTES 第 3 节），母带只承担操作过程重演，尾报不入镜。
+
+- 命令仍是具名单跑 `python oneoffs/record_segments.py t0-sw`，
+  prepare_term/wait_render_idle 闸全过，无异常无孤儿；母带 161.4s／
+  6226779B（覆盖首录 552238B 废片）。
+- 真机时间线（sheet-t0-sw-0＋tail 两接触表，24＋31 帧）：
+  打字 6.5–11s（ENTER≈11s）／banner≈30s／60–126s spinner 单行动态
+  （抽帧近空白，不可用）／calibration 134–152s（test frame 1/5→5/5，
+  253ms/frame p95，recommended workers 3）／153–158s worker 配置与
+  gate／158s 三个 page.goto start／160s 停录时正式 capture 未开始。
+- 切点回填（暂定→真机）：rec-sw1 8.0→**6.8**（窗口 6.8–12.0 完整打字，
+  `--no-browser-gpu` 可读）；rec-sw2 144.0→**153.8**（窗口
+  153.8–158.6：workerCount:3 → `streaming-encode gate enabled:false
+  reason multi_worker` → forceScreenshot:true/useStreamingEncode:false
+  → capture_disk totalFrames 390 → 25% Starting browsers 0/3 ready →
+  Browser launched swiftshader → 三个 page.goto，与卡片「三家交活再
+  统一编码／并行截图不能边截边编」逐句对应）；CUTS 止点 146.0→159.8。
+- snapshot 219.4/228.6 目验通过；check 0 error/22 warning；
+  双闸 VFR exit 2／shorts 全 CFR exit 0。
+- 不触发 68 秒第二条音频补丁（尾报不在母带，文案锚点＝冷态日志）。

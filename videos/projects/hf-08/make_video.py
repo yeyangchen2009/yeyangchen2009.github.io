@@ -601,14 +601,20 @@ else:
            data-duration="6.70" src="media/freezes/pngseq-dir.png" alt="">
 
       <!-- m09 软件路：启动行 216.8–222；Timing 226.2–231。
-           data-media-start 待冷态 t0 真机 sheet 回填（预计 sw1≈8.0 打字段、
-           sw2≈144–149 尾报前进行段；尾报≈ENTER+141）。sw-render.mp4 缺位时
-           （冷态 t0 未录）两 clip 降级为注释，check 保持 0 error，画面落
-           m09 场景表格卡；文件归位后重跑 make_video 自动入镜 -->
-__SW_CLIP_1__
+           2026-10-23 热态演录 sheet 回填：sw1 源内 6.8–12.0（打字实测
+           6.5–11s，--no-browser-gpu 命令可读）；sw2 源内 153.8–158.6
+           （workerCount:3→streaming-encode gate enabled:false multi_worker
+           →forceScreenshot/useStreamingEncode:false→0/3 ready→swiftshader
+           launched→三个 page.goto）。热态母带 160s 停录时正式 capture
+           未开始，尾报秒数天然不入镜；冷态 68.1s 口径以探针彩排台账为准 -->
+      <video id="rec-sw1" class="clip term" data-start="216.80"
+             data-duration="5.20" data-track-index="2" data-media-start="6.8"
+             src="media/shorts/sw-render.mp4" muted playsinline preload="auto"></video>
       <img id="img-gate-multi" class="clip term" data-start="222.00"
            data-duration="4.20" src="media/freezes/gate-multi.png" alt="">
-__SW_CLIP_2__
+      <video id="rec-sw2" class="clip term" data-start="226.20"
+             data-duration="4.80" data-track-index="2" data-media-start="153.8"
+             src="media/shorts/sw-render.mp4" muted playsinline preload="auto"></video>
 
       <!-- m09 硬件路：probe 行 238.2–243（源内 8–12.8 打字）；streaming
            244.8–251.6（源内 73–79.8＝52%→92% Streaming 245→357/390） -->
@@ -647,27 +653,6 @@ __SW_CLIP_2__
            data-duration="14.00" src="media/freezes/missing-audio.png" alt="">
       <img id="img-notimeline" class="clip term" data-start="476.50"
            data-duration="8.70" src="media/freezes/no-timeline-warn.png" alt="">"""
-
-# sw 冷态降级：sw-render.mp4 必须是开机后首个 render（冷态真机），未录前
-# 两 clip 出注释占位；归位后重跑本脚本即自动入镜（正式 render 前必须归位）。
-_sw_src = Path(__file__).resolve().parent / "media/shorts/sw-render.mp4"
-if _sw_src.exists():
-    _sw1 = ('      <video id="rec-sw1" class="clip term" data-start="216.80"\n'
-            '             data-duration="5.20" data-track-index="2" '
-            'data-media-start="8.0"\n'
-            '             src="media/shorts/sw-render.mp4" muted playsinline '
-            'preload="auto"></video>')
-    _sw2 = ('      <video id="rec-sw2" class="clip term" data-start="226.20"\n'
-            '             data-duration="4.80" data-track-index="2" '
-            'data-media-start="144.0"\n'
-            '             src="media/shorts/sw-render.mp4" muted playsinline '
-            'preload="auto"></video>')
-else:
-    _note = ("sw-render.mp4 缺位：冷态 t0 未录（开机首 render），"
-             "此处落 m09 表格卡，正式 render 前须归位重生成")
-    _sw1 = "      <!-- rec-sw1 " + _note + " -->"
-    _sw2 = "      <!-- rec-sw2 " + _note + " -->"
-VIDEOS = VIDEOS.replace("__SW_CLIP_1__", _sw1).replace("__SW_CLIP_2__", _sw2)
 
 # ---------- 场景专属 CSS ----------
 PROJECT_CSS = """

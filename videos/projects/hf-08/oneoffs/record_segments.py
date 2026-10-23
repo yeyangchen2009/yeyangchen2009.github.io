@@ -19,6 +19,10 @@ takes（ALL_TAKES 顺序不可换；t0 必须是冷态第一条，之前禁跑�
 hf08-rec 窗显式置前过 HWND 闸——具名单跑任意 take 也安全，不隐式依赖
 t0；2026-10-22 None 句柄事故见 RECORD-NOTES 第十节）：
   t0-sw        av-sync-calib 软件路冷跑（全链约 141s；母带 160s）
+               2026-10-23 实际为热态演录（开机 26h，用户拍板不重启）：
+               ENTER≈11s／banner≈30s／160s 停录时正式 capture 未开始，
+               尾报不入镜；68 秒口径锚冷态探针台账，切点 6.8/153.8，
+               详见 PROBE-NOTES 第 3 节入镜口径注记
   t1-hw        同窗接跑硬件路（无录屏 job 48.2s／录制中 54.2s，热态；
                母带 87.8s；录制中前置约 20s，跳过 t0 须先暖场）
   t2-hash      hashes/ 内 PowerShell Get-FileHash 六连，exit 回 cmd
