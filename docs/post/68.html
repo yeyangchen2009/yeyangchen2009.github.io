@@ -206,17 +206,17 @@ Finished in 2.988 seconds
 <li>手机端搜索面板自动铺满全屏。</li>
 </ol>
 <p>弹窗用的是 Pagefind 自带 UI，但它默认是浅色变量。博客有明暗三态主题（B08 做的），暗色适配靠覆写它暴露的 CSS 变量，照 GitHub Dark 的色板来：</p>
-<div class="highlight highlight-source-css"><pre class="notranslate">[<span class="pl-c1">data-color-mode</span><span class="pl-c1">=</span><span class="pl-s">"dark"</span>] .<span class="pl-c1">pagefind-ui</span> {
-    <span class="pl-s1">--pagefind-ui-text</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>e6edf3</span>;
-    <span class="pl-s1">--pagefind-ui-background</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>161b22</span>;
-    <span class="pl-s1">--pagefind-ui-border</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>30363d</span>;
-    <span class="pl-s1">--pagefind-ui-primary</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>58a6ff</span>;
-    <span class="pl-s1">--pagefind-ui-tag</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>21262d</span>;
-}
-[<span class="pl-c1">data-color-mode</span><span class="pl-c1">=</span><span class="pl-s">"dark"</span>] .<span class="pl-c1">pagefind-ui</span> <span class="pl-ent">mark</span> {
-    <span class="pl-c1">background</span><span class="pl-kos">:</span> <span class="pl-en">rgba</span>(<span class="pl-c1">56</span><span class="pl-kos">,</span><span class="pl-c1">139</span><span class="pl-kos">,</span><span class="pl-c1">253</span><span class="pl-kos">,</span><span class="pl-c1">.4</span>);
-    <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>e6edf3</span>;
-}</pre></div>
+<div class="highlight highlight-source-css"><pre class="notranslate">[<span class="pl-c1">data-color-mode</span><span class="pl-c1">=</span><span class="pl-s">"dark"</span>] <span class="pl-kos">.</span><span class="pl-c1">pagefind-ui</span> <span class="pl-kos">{</span>
+    <span class="pl-c1">--pagefind-ui-text</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>e6edf3</span><span class="pl-kos">;</span>
+    <span class="pl-c1">--pagefind-ui-background</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>161b22</span><span class="pl-kos">;</span>
+    <span class="pl-c1">--pagefind-ui-border</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>30363d</span><span class="pl-kos">;</span>
+    <span class="pl-c1">--pagefind-ui-primary</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>58a6ff</span><span class="pl-kos">;</span>
+    <span class="pl-c1">--pagefind-ui-tag</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>21262d</span><span class="pl-kos">;</span>
+<span class="pl-kos">}</span>
+[<span class="pl-c1">data-color-mode</span><span class="pl-c1">=</span><span class="pl-s">"dark"</span>] <span class="pl-kos">.</span><span class="pl-c1">pagefind-ui</span> <span class="pl-ent">mark</span> <span class="pl-kos">{</span>
+    <span class="pl-c1">background</span><span class="pl-kos">:</span> <span class="pl-en">rgba</span><span class="pl-kos">(</span><span class="pl-c1">56</span><span class="pl-kos">,</span><span class="pl-c1">139</span><span class="pl-kos">,</span><span class="pl-c1">253</span><span class="pl-kos">,</span><span class="pl-c1">.4</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>e6edf3</span><span class="pl-kos">;</span>
+<span class="pl-kos">}</span></pre></div>
 <p>界面文案也通过参数换成中文（「搜索文章…」「正在搜索…」「找到 13 篇和 "阿赖耶" 相关的文章」「找不到和 xxx 相关的文章」）。这里有个细节值得一说：官方自带的中文翻译文件其实已经覆盖了全部 26 个界面状态，直接引用就不会出现「界面一半中文一半英文」——只有想自定义措辞时才逐项覆写。另外摘要长度默认偏短、中文片段容易切碎，调 <code class="notranslate">excerptLength: 22</code> 后读起来正常多了。</p>
 <p><a target="_blank" rel="noopener noreferrer" href="/screenshots/pagefind-dark.png"><img src="/screenshots/pagefind-dark.png" alt="pagefind 暗色搜索弹窗" style="max-width: 100%;"></a></p>
 <p><a target="_blank" rel="noopener noreferrer" href="/screenshots/pagefind-mobile.png"><img src="/screenshots/pagefind-mobile.png" alt="pagefind 手机端搜索" style="max-width: 100%;"></a></p>

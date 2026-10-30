@@ -226,7 +226,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <h3>绕行：禁 JSON.parse，从原始文本里正则提 ID</h3>
 <p>知道了根因，绕行方案也就明确了：<strong>绝不让长 ID 经过 Number 转换，全程当字符串处理。</strong></p>
 <p>脚本直接请求草稿箱列表 API，但不取 JSON——取<strong>原始响应文本</strong>，然后用正则表达式把 ID 一段段"抠"出来。正则匹配的结果天然是字符串，十九位数字一个字符都不会少：</p>
-<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-s1">t</span> <span class="pl-c1">=</span> <span class="pl-k">await</span> <span class="pl-kos">(</span><span class="pl-k">await</span> <span class="pl-en">fetch</span><span class="pl-kos">(</span>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-s1">t</span> <span class="pl-c1">=</span> <span class="pl-en">await</span> <span class="pl-kos">(</span><span class="pl-k">await</span> <span class="pl-en">fetch</span><span class="pl-kos">(</span>
     <span class="pl-s">'/api/articles/my_drafts?limit=10&amp;offset=0'</span><span class="pl-kos">,</span>
     <span class="pl-kos">{</span> <span class="pl-c1">credentials</span>: <span class="pl-s">'include'</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">text</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>        <span class="pl-c">// 注意是 .text()，不是 .json()</span>
 <span class="pl-c">// 每个草稿对象以 "content_length" 字段开头，按它切块</span>

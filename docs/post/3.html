@@ -139,30 +139,30 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>最后在盒子尾部追加一个 "Top" 链接，点击平滑滚动回页面顶部。</p>
 <h3>二、用 fixed 定位把目录"钉"在正文右侧</h3>
 <p>目录盒子的定位是整个插件最巧妙的一段 CSS。正文容器在页面中居中，目录要贴在它右边，于是先移动到页面中线，再向右平移半个正文宽度多一点：</p>
-<div class="highlight highlight-source-css"><pre class="notranslate">.<span class="pl-c1">toc</span> {
-    <span class="pl-c1">position</span><span class="pl-kos">:</span> fixed;
-    <span class="pl-c1">top</span><span class="pl-kos">:</span> <span class="pl-c1">130<span class="pl-smi">px</span></span>;
-    <span class="pl-c1">left</span><span class="pl-kos">:</span> <span class="pl-c1">50<span class="pl-smi">%</span></span>;
-    <span class="pl-c1">transform</span><span class="pl-kos">:</span> <span class="pl-en">translateX</span>(<span class="pl-c1">50<span class="pl-smi">%</span></span>) <span class="pl-en">translateX</span>(<span class="pl-c1">320<span class="pl-smi">px</span></span>);
-    <span class="pl-c1">width</span><span class="pl-kos">:</span> <span class="pl-c1">200<span class="pl-smi">px</span></span>;
-    <span class="pl-c1">max-height</span><span class="pl-kos">:</span> <span class="pl-c1">70<span class="pl-smi">vh</span></span>;
-    <span class="pl-c1">overflow-y</span><span class="pl-kos">:</span> auto;
-}</pre></div>
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-kos">.</span><span class="pl-c1">toc</span> <span class="pl-kos">{</span>
+    <span class="pl-c1">position</span><span class="pl-kos">:</span> fixed<span class="pl-kos">;</span>
+    <span class="pl-c1">top</span><span class="pl-kos">:</span> <span class="pl-c1">130<span class="pl-smi">px</span></span><span class="pl-kos">;</span>
+    <span class="pl-c1">left</span><span class="pl-kos">:</span> <span class="pl-c1">50<span class="pl-smi">%</span></span><span class="pl-kos">;</span>
+    <span class="pl-c1">transform</span><span class="pl-kos">:</span> <span class="pl-en">translateX</span><span class="pl-kos">(</span><span class="pl-c1">50<span class="pl-smi">%</span></span><span class="pl-kos">)</span> <span class="pl-en">translateX</span><span class="pl-kos">(</span><span class="pl-c1">320<span class="pl-smi">px</span></span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+    <span class="pl-c1">width</span><span class="pl-kos">:</span> <span class="pl-c1">200<span class="pl-smi">px</span></span><span class="pl-kos">;</span>
+    <span class="pl-c1">max-height</span><span class="pl-kos">:</span> <span class="pl-c1">70<span class="pl-smi">vh</span></span><span class="pl-kos">;</span>
+    <span class="pl-c1">overflow-y</span><span class="pl-kos">:</span> auto<span class="pl-kos">;</span>
+<span class="pl-kos">}</span></pre></div>
 <p><code class="notranslate">position: fixed</code> 让它不随页面滚动；<code class="notranslate">max-height: 70vh</code> 加上 <code class="notranslate">overflow-y: auto</code>，标题再多也只会在盒子内部滚动，不会撑爆屏幕。</p>
 <h3>三、响应式：窄屏自动收为正文内块</h3>
 <p>宽屏挂右侧，手机上右边没有空间怎么办？一行媒体查询解决——屏幕宽度小于 1249px 时，目录从固定定位变回普通文档流，显示在文章开头：</p>
-<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-k">@media</span> (<span class="pl-c1">max-width</span><span class="pl-kos">:</span> <span class="pl-c1">1249<span class="pl-smi">px</span></span>) {
-    .<span class="pl-c1">toc</span> {
-        <span class="pl-c1">position</span><span class="pl-kos">:</span> static;
-        <span class="pl-c1">transform</span><span class="pl-kos">:</span> none;
-        <span class="pl-c1">margin-bottom</span><span class="pl-kos">:</span> <span class="pl-c1">20<span class="pl-smi">px</span></span>;
-    }
-}</pre></div>
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-k">@media</span> <span class="pl-kos">(</span><span class="pl-c1">max-width</span><span class="pl-kos">:</span> <span class="pl-c1">1249<span class="pl-smi">px</span></span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-kos">.</span><span class="pl-c1">toc</span> <span class="pl-kos">{</span>
+        <span class="pl-c1">position</span><span class="pl-kos">:</span> static<span class="pl-kos">;</span>
+        <span class="pl-c1">transform</span><span class="pl-kos">:</span> none<span class="pl-kos">;</span>
+        <span class="pl-c1">margin-bottom</span><span class="pl-kos">:</span> <span class="pl-c1">20<span class="pl-smi">px</span></span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+<span class="pl-kos">}</span></pre></div>
 <h3>四、暗色模式零成本适配</h3>
 <p>插件没有写死任何颜色，全部引用 GitHub Primer 设计系统的 CSS 变量，比如：</p>
-<div class="highlight highlight-source-css"><pre class="notranslate">.<span class="pl-c1">toc</span> <span class="pl-ent">a</span><span class="pl-kos">:</span><span class="pl-c1">hover</span> {
-    <span class="pl-c1">background-color</span><span class="pl-kos">:</span> <span class="pl-en">var</span>(<span class="pl-s1">--color-select-menu-tap-focus-bg</span>);
-}</pre></div>
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-kos">.</span><span class="pl-c1">toc</span> <span class="pl-ent">a</span><span class="pl-kos">:</span><span class="pl-c1">hover</span> <span class="pl-kos">{</span>
+    <span class="pl-c1">background-color</span><span class="pl-kos">:</span> <span class="pl-en">var</span><span class="pl-kos">(</span><span class="pl-s1">--color-select-menu-tap-focus-bg</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-kos">}</span></pre></div>
 <p>Gmeek 的明暗主题切换本质上就是切换这套变量，所以目录的配色自动跟着站点主题走，插件自己一行暗色适配都不用写。</p>
 <p>另外那个 "Top" 按钮默认隐藏，监听滚动事件：页面向下滚动超过 20px 时才显示，回到顶部附近又自动隐藏。</p>
 <h2>接入全过程：三步</h2>

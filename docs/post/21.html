@@ -88,15 +88,15 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </blockquote>
 <h2>小屏上的目录现状</h2>
 <p>先纠正一个想当然的误会。叶扬一开始以为"手机上没有目录"，读了 GmeekTOC 的源码才发现不是——它自带一条媒体查询：</p>
-<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-k">@media</span> (<span class="pl-c1">max-width</span><span class="pl-kos">:</span> <span class="pl-c1">1249<span class="pl-smi">px</span></span>) {
-    .<span class="pl-c1">toc</span> {
-        <span class="pl-c1">position</span><span class="pl-kos">:</span> static;   <span class="pl-c">/* 从右侧固定定位退化成普通文档流 */</span>
-        <span class="pl-c1">top</span><span class="pl-kos">:</span> auto;
-        <span class="pl-c1">left</span><span class="pl-kos">:</span> auto;
-        <span class="pl-c1">transform</span><span class="pl-kos">:</span> none;
-        <span class="pl-c1">margin-bottom</span><span class="pl-kos">:</span> <span class="pl-c1">20<span class="pl-smi">px</span></span>;
-    }
-}</pre></div>
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-k">@media</span> <span class="pl-kos">(</span><span class="pl-c1">max-width</span><span class="pl-kos">:</span> <span class="pl-c1">1249<span class="pl-smi">px</span></span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-kos">.</span><span class="pl-c1">toc</span> <span class="pl-kos">{</span>
+        <span class="pl-c1">position</span><span class="pl-kos">:</span> static<span class="pl-kos">;</span>   <span class="pl-c">/* 从右侧固定定位退化成普通文档流 */</span>
+        <span class="pl-c1">top</span><span class="pl-kos">:</span> auto<span class="pl-kos">;</span>
+        <span class="pl-c1">left</span><span class="pl-kos">:</span> auto<span class="pl-kos">;</span>
+        <span class="pl-c1">transform</span><span class="pl-kos">:</span> none<span class="pl-kos">;</span>
+        <span class="pl-c1">margin-bottom</span><span class="pl-kos">:</span> <span class="pl-c1">20<span class="pl-smi">px</span></span><span class="pl-kos">;</span>
+    <span class="pl-kos">}</span>
+<span class="pl-kos">}</span></pre></div>
 <p>也就是说，屏幕窄于 1250px 时，右侧常驻目录会变成一块普通卡片，插在<strong>文章正文的最前面</strong>。它确实能用，但读长文的体验是：读到第六节想跳回第二节？先把文章滑回顶部，找到目录，点一下，再滑下来。目录从"随时可用的导航"退化成了"文章开头的一个大纲"。</p>
 <p>理想形态是手机 App 常见的那种：右下角一颗圆形 ☰ 按钮，随时呼出浮层目录，选完即走。官方仓库恰好有这么一个插件。</p>
 <h2>官方 articletoc：Tiengming 的圆形按钮</h2>
@@ -117,22 +117,22 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <h2>审源码：为什么官方只让二选一</h2>
 <h3>冲突一：类名同名，样式连坐</h3>
 <p>两个插件给各自浮层起的类名<strong>都叫 <code class="notranslate">.toc</code></strong>，articletoc 的样式表是无差别命中的：</p>
-<div class="highlight highlight-source-css"><pre class="notranslate">.<span class="pl-c1">toc</span> {
-    <span class="pl-c1">position</span><span class="pl-kos">:</span> fixed;
-    <span class="pl-c1">bottom</span><span class="pl-kos">:</span> <span class="pl-c1">60<span class="pl-smi">px</span></span>;
-    <span class="pl-c1">right</span><span class="pl-kos">:</span> <span class="pl-c1">20<span class="pl-smi">px</span></span>;
-    <span class="pl-c1">opacity</span><span class="pl-kos">:</span> <span class="pl-c1">0</span>;              <span class="pl-c">/* ← 麻烦在这 */</span>
-    <span class="pl-c1">visibility</span><span class="pl-kos">:</span> hidden;     <span class="pl-c">/* ← 还有这 */</span>
-    <span class="pl-c1">transform</span><span class="pl-kos">:</span> <span class="pl-en">translateY</span>(<span class="pl-c1">20<span class="pl-smi">px</span></span>) <span class="pl-en">scale</span>(<span class="pl-c1">0.9</span>);
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-kos">.</span><span class="pl-c1">toc</span> <span class="pl-kos">{</span>
+    <span class="pl-c1">position</span><span class="pl-kos">:</span> fixed<span class="pl-kos">;</span>
+    <span class="pl-c1">bottom</span><span class="pl-kos">:</span> <span class="pl-c1">60<span class="pl-smi">px</span></span><span class="pl-kos">;</span>
+    <span class="pl-c1">right</span><span class="pl-kos">:</span> <span class="pl-c1">20<span class="pl-smi">px</span></span><span class="pl-kos">;</span>
+    <span class="pl-c1">opacity</span><span class="pl-kos">:</span> <span class="pl-c1">0</span><span class="pl-kos">;</span>              <span class="pl-c">/* ← 麻烦在这 */</span>
+    <span class="pl-c1">visibility</span><span class="pl-kos">:</span> hidden<span class="pl-kos">;</span>     <span class="pl-c">/* ← 还有这 */</span>
+    <span class="pl-c1">transform</span><span class="pl-kos">:</span> <span class="pl-en">translateY</span><span class="pl-kos">(</span><span class="pl-c1">20<span class="pl-smi">px</span></span><span class="pl-kos">)</span> <span class="pl-en">scale</span><span class="pl-kos">(</span><span class="pl-c1">0.9</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
     <span class="pl-c">/* ... */</span>
-}
-.<span class="pl-c1">toc</span>.<span class="pl-c1">show</span> { <span class="pl-c1">opacity</span><span class="pl-kos">:</span> <span class="pl-c1">1</span>; <span class="pl-c1">visibility</span><span class="pl-kos">:</span> visible; }</pre></div>
+<span class="pl-kos">}</span>
+<span class="pl-kos">.</span><span class="pl-c1">toc</span><span class="pl-kos">.</span><span class="pl-c1">show</span> <span class="pl-kos">{</span> <span class="pl-c1">opacity</span><span class="pl-kos">:</span> <span class="pl-c1">1</span><span class="pl-kos">;</span> <span class="pl-c1">visibility</span><span class="pl-kos">:</span> visible<span class="pl-kos">;</span> <span class="pl-kos">}</span></pre></div>
 <p>如果两个插件同时加载，页面上会有两个 <code class="notranslate">&lt;div class="toc"&gt;</code>：GmeekTOC 那个（桌面右侧常驻目录）和 articletoc 那个（浮层）。articletoc 的样式表后注入 <code class="notranslate">&lt;head&gt;</code>，同特异性选择器按源顺序胜出——于是<strong>桌面常驻目录被 <code class="notranslate">opacity:0;visibility:hidden</code> 一起藏掉了</strong>。这就是"二选一"的技术根因：不是功能互斥，是命名空间撞车。</p>
 <h3>冲突二：暗色主题靠系统偏好，与站点三态主题失配</h3>
 <p>articletoc 的暗色方案是：</p>
-<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-k">@media</span> (<span class="pl-c1">prefers-color-scheme</span><span class="pl-kos">:</span> dark) {
-    <span class="pl-kos">:</span><span class="pl-c1">root</span> { <span class="pl-s1">--toc-bg</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>2d333b</span>; <span class="pl-s1">--toc-border</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>444c56</span>; <span class="pl-c">/* ... */</span> }
-}</pre></div>
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-k">@media</span> <span class="pl-kos">(</span><span class="pl-c1">prefers-color-scheme</span><span class="pl-kos">:</span> dark<span class="pl-kos">)</span> <span class="pl-kos">{</span>
+    <span class="pl-kos">:</span><span class="pl-c1">root</span> <span class="pl-kos">{</span> <span class="pl-c1">--toc-bg</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>2d333b</span><span class="pl-kos">;</span> <span class="pl-c1">--toc-border</span><span class="pl-kos">:</span> <span class="pl-pds"><span class="pl-kos">#</span>444c56</span><span class="pl-kos">;</span> <span class="pl-c">/* ... */</span> <span class="pl-kos">}</span>
+<span class="pl-kos">}</span></pre></div>
 <p>这个坑本系列在 <a href="/post/14.html">G08</a> 已经踩过并记录在官方 <a href="https://github.com/Meekdai/Gmeek/issues/196" data-hovercard-type="issue" data-hovercard-url="/Meekdai/Gmeek/issues/196/hovercard">issue #196</a>：站点主题是"亮色 → 暗色 → 跟随系统"三态切换，存 localStorage。读者<strong>手动选了暗色、但系统是亮色</strong>时，媒体查询判定为亮色，浮层就是白底配深色页面；反之亦然。结论早已确立：本站插件一律用 Primer CSS 变量（<code class="notranslate">--color-canvas-default</code> 这一族），让浮层跟随同一个 <code class="notranslate">html[data-color-mode]</code> 钩子，零媒体查询。</p>
 <h3>冲突三：健壮性缺口</h3>
 <p>对照 GmeekTOC 再细看，articletoc 原版还有几处小缺口：</p>

@@ -181,37 +181,37 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <h2>意外之喜：Primer 把数字分页的样式全包了</h2>
 <p>动手写 CSS 之前，叶扬先把站点引的 Primer 21 样式表整份拉下来翻了一遍——然后发现：<strong>数字分页需要的一切样式 Primer 早就写好了</strong>，框架的"上一页/下一页"只是恰好只用上了其中两个类。关键规则（删掉压缩格式后整理如下）：</p>
 <div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-c">/* 所有分页子元素都是 32px 最小宽度的小方块按钮 */</span>
-.<span class="pl-c1">pagination</span> <span class="pl-ent">a</span><span class="pl-kos">,</span> .<span class="pl-c1">pagination</span> <span class="pl-ent">span</span><span class="pl-kos">,</span> .<span class="pl-c1">pagination</span> <span class="pl-ent">em</span> {
-  <span class="pl-c1">min-width</span><span class="pl-kos">:</span> <span class="pl-c1">32<span class="pl-smi">px</span></span>; <span class="pl-c1">padding</span><span class="pl-kos">:</span> <span class="pl-c1">5<span class="pl-smi">px</span></span> <span class="pl-c1">10<span class="pl-smi">px</span></span>;
-  <span class="pl-c1">border</span><span class="pl-kos">:</span> <span class="pl-c1">1<span class="pl-smi">px</span></span> solid transparent; <span class="pl-c1">border-radius</span><span class="pl-kos">:</span> <span class="pl-c1">6<span class="pl-smi">px</span></span>;
-  <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-en">var</span>(<span class="pl-s1">--fgColor-default</span><span class="pl-kos">,</span> <span class="pl-en">var</span>(<span class="pl-s1">--color-fg-default</span>));
-  <span class="pl-c1">text-align</span><span class="pl-kos">:</span> center; <span class="pl-c1">cursor</span><span class="pl-kos">:</span> pointer;
-}
+<span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-ent">a</span><span class="pl-kos">,</span> <span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-ent">span</span><span class="pl-kos">,</span> <span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-ent">em</span> <span class="pl-kos">{</span>
+  <span class="pl-c1">min-width</span><span class="pl-kos">:</span> <span class="pl-c1">32<span class="pl-smi">px</span></span><span class="pl-kos">;</span> <span class="pl-c1">padding</span><span class="pl-kos">:</span> <span class="pl-c1">5<span class="pl-smi">px</span></span> <span class="pl-c1">10<span class="pl-smi">px</span></span><span class="pl-kos">;</span>
+  <span class="pl-c1">border</span><span class="pl-kos">:</span> <span class="pl-c1">1<span class="pl-smi">px</span></span> solid transparent<span class="pl-kos">;</span> <span class="pl-c1">border-radius</span><span class="pl-kos">:</span> <span class="pl-c1">6<span class="pl-smi">px</span></span><span class="pl-kos">;</span>
+  <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-en">var</span><span class="pl-kos">(</span><span class="pl-s1">--fgColor-default</span><span class="pl-kos">,</span> <span class="pl-en">var</span><span class="pl-kos">(</span><span class="pl-s1">--color-fg-default</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+  <span class="pl-c1">text-align</span><span class="pl-kos">:</span> center<span class="pl-kos">;</span> <span class="pl-c1">cursor</span><span class="pl-kos">:</span> pointer<span class="pl-kos">;</span>
+<span class="pl-kos">}</span>
 <span class="pl-c">/* 当前页：蓝底白字，:hover 也保持（选择器自带 :hover） */</span>
-.<span class="pl-c1">pagination</span> .<span class="pl-c1">current</span><span class="pl-kos">,</span>
-.<span class="pl-c1">pagination</span> [<span class="pl-c1">aria-current</span>]<span class="pl-kos">:</span><span class="pl-c1">not</span>([<span class="pl-c1">aria-current</span><span class="pl-c1">=</span><span class="pl-s">false</span>]) {
-  <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-en">var</span>(<span class="pl-s1">--fgColor-onEmphasis</span>);
-  <span class="pl-c1">background-color</span><span class="pl-kos">:</span> <span class="pl-en">var</span>(<span class="pl-s1">--bgColor-accent-emphasis</span>);
-}
+<span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-kos">.</span><span class="pl-c1">current</span><span class="pl-kos">,</span>
+<span class="pl-kos">.</span><span class="pl-c1">pagination</span> [<span class="pl-c1">aria-current</span>]<span class="pl-kos">:</span><span class="pl-c1">not</span><span class="pl-kos">(</span>[<span class="pl-c1">aria-current</span><span class="pl-c1">=</span><span class="pl-s">false</span>]<span class="pl-kos">)</span> <span class="pl-kos">{</span>
+  <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-en">var</span><span class="pl-kos">(</span><span class="pl-s1">--fgColor-onEmphasis</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+  <span class="pl-c1">background-color</span><span class="pl-kos">:</span> <span class="pl-en">var</span><span class="pl-kos">(</span><span class="pl-s1">--bgColor-accent-emphasis</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-kos">}</span>
 <span class="pl-c">/* 省略号：禁用色、无边框、默认光标 */</span>
-.<span class="pl-c1">pagination</span> .<span class="pl-c1">gap</span><span class="pl-kos">,</span> .<span class="pl-c1">pagination</span> [<span class="pl-c1">aria-disabled</span><span class="pl-c1">=</span><span class="pl-s">true</span>] {
-  <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-en">var</span>(<span class="pl-s1">--fgColor-disabled</span>); <span class="pl-c1">cursor</span><span class="pl-kos">:</span> default;
-}</pre></div>
+<span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-kos">.</span><span class="pl-c1">gap</span><span class="pl-kos">,</span> <span class="pl-kos">.</span><span class="pl-c1">pagination</span> [<span class="pl-c1">aria-disabled</span><span class="pl-c1">=</span><span class="pl-s">true</span>] <span class="pl-kos">{</span>
+  <span class="pl-c1">color</span><span class="pl-kos">:</span> <span class="pl-en">var</span><span class="pl-kos">(</span><span class="pl-s1">--fgColor-disabled</span><span class="pl-kos">)</span><span class="pl-kos">;</span> <span class="pl-c1">cursor</span><span class="pl-kos">:</span> default<span class="pl-kos">;</span>
+<span class="pl-kos">}</span></pre></div>
 <p>更妙的是它连<strong>响应式显隐</strong>都内建了，靠的是子元素位置而不是类名：</p>
-<div class="highlight highlight-source-css"><pre class="notranslate">.<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-ent"><span class="pl-c1">*</span></span> { <span class="pl-c1">display</span><span class="pl-kos">:</span> none; }                 <span class="pl-c">/* 默认全藏 */</span>
-.<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">first-child</span><span class="pl-kos">,</span>
-.<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">last-child</span><span class="pl-kos">,</span>
-.<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> .<span class="pl-c1">previous_page</span><span class="pl-kos">,</span>
-.<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> .<span class="pl-c1">next_page</span> { <span class="pl-c1">display</span><span class="pl-kos">:</span> inline-block; } <span class="pl-c">/* 只露首尾：上一页、下一页 */</span>
-<span class="pl-k">@media</span> (<span class="pl-c1">min-width</span><span class="pl-kos">:</span> <span class="pl-c1">544<span class="pl-smi">px</span></span>) {
-  .<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">nth-child</span>(<span class="pl-c1">2</span>)<span class="pl-kos">,</span>
-  .<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">nth-last-child</span>(<span class="pl-c1">2</span>)<span class="pl-kos">,</span>
-  .<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> .<span class="pl-c1">current</span><span class="pl-kos">,</span>
-  .<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> .<span class="pl-c1">gap</span> { <span class="pl-c1">display</span><span class="pl-kos">:</span> inline-block; }     <span class="pl-c">/* 平板再露首尾页码、当前页、省略号 */</span>
-}
-<span class="pl-k">@media</span> (<span class="pl-c1">min-width</span><span class="pl-kos">:</span> <span class="pl-c1">768<span class="pl-smi">px</span></span>) {
-  .<span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-ent"><span class="pl-c1">*</span></span> { <span class="pl-c1">display</span><span class="pl-kos">:</span> inline-block; }        <span class="pl-c">/* 桌面全显 */</span>
-}</pre></div>
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-ent"><span class="pl-c1">*</span></span> <span class="pl-kos">{</span> <span class="pl-c1">display</span><span class="pl-kos">:</span> none<span class="pl-kos">;</span> <span class="pl-kos">}</span>                 <span class="pl-c">/* 默认全藏 */</span>
+<span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">first-child</span><span class="pl-kos">,</span>
+<span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">last-child</span><span class="pl-kos">,</span>
+<span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">.</span><span class="pl-c1">previous_page</span><span class="pl-kos">,</span>
+<span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">.</span><span class="pl-c1">next_page</span> <span class="pl-kos">{</span> <span class="pl-c1">display</span><span class="pl-kos">:</span> inline-block<span class="pl-kos">;</span> <span class="pl-kos">}</span> <span class="pl-c">/* 只露首尾：上一页、下一页 */</span>
+<span class="pl-k">@media</span> <span class="pl-kos">(</span><span class="pl-c1">min-width</span><span class="pl-kos">:</span> <span class="pl-c1">544<span class="pl-smi">px</span></span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+  <span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">nth-child</span><span class="pl-kos">(</span><span class="pl-c1">2</span><span class="pl-kos">)</span><span class="pl-kos">,</span>
+  <span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">:</span><span class="pl-c1">nth-last-child</span><span class="pl-kos">(</span><span class="pl-c1">2</span><span class="pl-kos">)</span><span class="pl-kos">,</span>
+  <span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">.</span><span class="pl-c1">current</span><span class="pl-kos">,</span>
+  <span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-kos">.</span><span class="pl-c1">gap</span> <span class="pl-kos">{</span> <span class="pl-c1">display</span><span class="pl-kos">:</span> inline-block<span class="pl-kos">;</span> <span class="pl-kos">}</span>     <span class="pl-c">/* 平板再露首尾页码、当前页、省略号 */</span>
+<span class="pl-kos">}</span>
+<span class="pl-k">@media</span> <span class="pl-kos">(</span><span class="pl-c1">min-width</span><span class="pl-kos">:</span> <span class="pl-c1">768<span class="pl-smi">px</span></span><span class="pl-kos">)</span> <span class="pl-kos">{</span>
+  <span class="pl-kos">.</span><span class="pl-c1">pagination</span> <span class="pl-c1">&gt;</span> <span class="pl-ent"><span class="pl-c1">*</span></span> <span class="pl-kos">{</span> <span class="pl-c1">display</span><span class="pl-kos">:</span> inline-block<span class="pl-kos">;</span> <span class="pl-kos">}</span>        <span class="pl-c">/* 桌面全显 */</span>
+<span class="pl-kos">}</span></pre></div>
 <p>以第 5 页/共 10 页为例，同一段 DOM 在三种屏幕上的效果：</p>
 <markdown-accessiblity-table><table role="table">
 <thead>
