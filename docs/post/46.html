@@ -165,6 +165,24 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>✅</td>
 </tr>
 <tr>
+<td>A06</td>
+<td><a href="/post/205.html">npm 包里只有 4 个文件：cdp-shot 怎样从截图脚本变成公开命令</a></td>
+<td>旧调用兼容、Windows 临时目录、tarball 白名单、registry 独立验收</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>A07</td>
+<td><a href="/post/206.html">53 项测试全绿，首发当天还是崩了：xf-video 从 5 个脚本到 0.1.2</a></td>
+<td>五脚本收敛、login 测试缺口、alive 回退、进度与授权报错、凭证边界</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>A08</td>
+<td><a href="/post/207.html">25 分钟没有报错，也没有结果：xf-lark 给浏览器下载链路上看门狗</a></td>
+<td>扩展契约、异步迁移、service worker 竞速、看门狗与原子落盘</td>
+<td>✅</td>
+</tr>
+<tr>
 <td>候选</td>
 <td>本地 whisper.cpp 部署手记</td>
 <td>模型选型、显存、中文识别质量、批量转写</td>
@@ -175,12 +193,33 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>候选池不承诺顺序、不承诺全写；有真实数据和真实坑了才升级成正式编号。</p>
 <h2>四、发布日志</h2>
 <ul>
-<li><strong>2026-09-18 · <a href="/post/43.html">A01 字幕清洗战</a></strong>：65 个字幕文件、47762 文本行、136 条规则、命中 1230 次修正全部脚本复核；Software 1.0/2.0 选型框架、长短语规则排序坑、UTF-8 报告绕开 GBK 控制台。当晚按 Karpathy 风格重写过一版。</li>
-<li><strong>2026-09-18 · <a href="/post/44.html">A02 字幕下载记</a></strong>：两次「假成功」破案——合集 URL 对 29 个同名分 P 只产出一个 <code class="notranslate">NA</code> 文件却退出码 0、36/39 集缺三集逐集证伪；SESSDATA 凭据三纪律（只计数不读内容、用完即删、不进同步目录）、<code class="notranslate">--sleep-requests</code> 防 412；李元祥 30 集（BV1dt4y1m7FK）只有弹幕，留给 A03。</li>
-<li><strong>2026-09-19 · A00 系列总览</strong>：本文。</li>
-<li><strong>2026-09-21 · <a href="/post/66.html">A03 补档实战</a></strong>：飞书妙记补转 P02/P04/P27 三集；18,432 个零宽字符、无时间码 txt、跨 cue 切断；fix_subs.py 三轮扩五轮、规则约 200→约 500；一次性任务选型（不自建 ASR）；下游变现番外一/二＋C04 补十事。</li>
-<li><strong>2026-09-22 · <a href="/post/67.html">A04 记忆工程</a></strong>：旧 32 张卡全部停在 Bloom 第一层的诊断；五类深化卡（分界辨析/推理链填空/反方质询/类比破洞/题眼）；SQLite 三表真源＋genanki 渲染，全库 152 notes→246 cards；间隔重复从 SM-2 到 FSRS（S/D/R 三状态、FSRS-6 21 参数、个人复习史拟合参数）；复习失败回流。个人保留率数据待几个月真实复习后补。</li>
-<li><strong>2026-09-27 · <a href="/post/77.html">A05 知乎草稿自动化</a></strong>：CDP 9222 驱动独立 Edge profile；用 DataTransfer 合成 paste（只带 text/plain）把 Markdown 注入 Draft.js，抓「确认并解析」浮条约一秒上下的竞态窗口；★血案——十九位草稿 ID 越过 2^53−1，被前端 JSON.parse 舍入（该量级 ULP=256），删除与编辑链接全打向错误 ID 返回 404，绕行办法是取 API 响应原始文本、按 content_length 切块正则抠出真实 ID 再 fetch DELETE；外链转纯文本、相对路径死链改文字说明；铁律是脚本只到草稿、发布永远人来点。列表接口偶发返回空的毛刺未根治，靠人工核对兜底。</li>
+<li>
+<p><strong>2026-09-18 · <a href="/post/43.html">A01 字幕清洗战</a></strong>：65 个字幕文件、47762 文本行、136 条规则、命中 1230 次修正全部脚本复核；Software 1.0/2.0 选型框架、长短语规则排序坑、UTF-8 报告绕开 GBK 控制台。当晚按 Karpathy 风格重写过一版。</p>
+</li>
+<li>
+<p><strong>2026-09-18 · <a href="/post/44.html">A02 字幕下载记</a></strong>：两次「假成功」破案——合集 URL 对 29 个同名分 P 只产出一个 <code class="notranslate">NA</code> 文件却退出码 0、36/39 集缺三集逐集证伪；SESSDATA 凭据三纪律（只计数不读内容、用完即删、不进同步目录）、<code class="notranslate">--sleep-requests</code> 防 412；李元祥 30 集（BV1dt4y1m7FK）只有弹幕，留给 A03。</p>
+</li>
+<li>
+<p><strong>2026-09-19 · A00 系列总览</strong>：本文。</p>
+</li>
+<li>
+<p><strong>2026-09-21 · <a href="/post/66.html">A03 补档实战</a></strong>：飞书妙记补转 P02/P04/P27 三集；18,432 个零宽字符、无时间码 txt、跨 cue 切断；fix_subs.py 三轮扩五轮、规则约 200→约 500；一次性任务选型（不自建 ASR）；下游变现番外一/二＋C04 补十事。</p>
+</li>
+<li>
+<p><strong>2026-09-22 · <a href="/post/67.html">A04 记忆工程</a></strong>：旧 32 张卡全部停在 Bloom 第一层的诊断；五类深化卡（分界辨析/推理链填空/反方质询/类比破洞/题眼）；SQLite 三表真源＋genanki 渲染，全库 152 notes→246 cards；间隔重复从 SM-2 到 FSRS（S/D/R 三状态、FSRS-6 21 参数、个人复习史拟合参数）；复习失败回流。个人保留率数据待几个月真实复习后补。</p>
+</li>
+<li>
+<p><strong>2026-09-27 · <a href="/post/77.html">A05 知乎草稿自动化</a></strong>：CDP 9222 驱动独立 Edge profile；用 DataTransfer 合成 paste（只带 text/plain）把 Markdown 注入 Draft.js，抓「确认并解析」浮条约一秒上下的竞态窗口；★血案——十九位草稿 ID 越过 2^53−1，被前端 JSON.parse 舍入（该量级 ULP=256），删除与编辑链接全打向错误 ID 返回 404，绕行办法是取 API 响应原始文本、按 content_length 切块正则抠出真实 ID 再 fetch DELETE；外链转纯文本、相对路径死链改文字说明；铁律是脚本只到草稿、发布永远人来点。列表接口偶发返回空的毛刺未根治，靠人工核对兜底。</p>
+</li>
+<li>
+<p><strong>2026-11-13 · <a href="/post/205.html">A06 cdp-shot 发布复盘</a></strong>：4 个 tarball 文件、29 项测试；旧入口兼容、Windows 临时 profile 先改名再删除、只清理自有进程树；npm、Tag、Release 分层验收。</p>
+</li>
+<li>
+<p><strong>2026-11-13 · <a href="/post/206.html">A07 xf-video 真实故障迭代</a></strong>：五个 Python 脚本收敛为 xfv；53→54→63 项测试；login 导出缺口、28 场 alive 标准 HLS 回退、99.4 分钟任务进度心跳、授权报错与本机代理凭证边界。</p>
+</li>
+<li>
+<p><strong>2026-11-13 · <a href="/post/207.html">A08 xf-lark 浏览器时序与收尾</a></strong>：299 行 Python 重写为 Node CLI；扩展 1.11.0 随包固定分发；异步迁移、service worker 三路竞速、25 分钟僵死后的超时看门狗、原子落盘；三份真实文档与旧版产物条目级等价。</p>
+</li>
 </ul>
 <h2>五、边界与读法</h2>
 <ul>
@@ -188,7 +227,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li>每篇独立可读，但按编号读体验最好——A03 的转写产物会直接接进 A01 的清洗规则，是同一条管线的上下游。</li>
 <li>叶扬是写前后端和数据库的程序员，类比默认面向同行；不写代码的读者记住每篇里那句大白话版即可，不影响主线。</li>
 </ul>
-<p>A05 已发布（<a href="/post/77.html">见此</a>）。下一篇待定：候选 <strong>本地 whisper.cpp 部署手记</strong>——等真有长期批量的转写需求再动手；几个月真实复习数据攒够之后，带个人保留率回来给 A04 补账。分发侧则按 A05 这套流程，把知乎其余文章逐系列填进草稿箱，仍由叶扬亲手发布。</p></div>
+<p>A06、A07、A08 已发布：<a href="/post/205.html">cdp-shot</a>、<a href="/post/206.html">xf-video</a>、<a href="/post/207.html">xf-lark</a>。这三篇组成 CLI 工具实战小组，分别记录交付契约、真实故障迭代和浏览器时序收尾。候选池仍不承诺顺序，等有真实数据和真实坑再升级成正式编号。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>

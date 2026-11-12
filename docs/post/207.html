@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='/GmeekVercount.js'></script><script src='/plugins/GmeekPagefind.js'></script>
+    <link rel="icon" href="https://yeyangchen2009.github.io/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> A 系 AI 工作流第 8 篇。">
+<meta property="og:title" content="A08｜25 分钟没有报错，也没有结果：xf-lark 给浏览器下载链路上看门狗">
+<meta property="og:description" content="> A 系 AI 工作流第 8 篇。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://yeyangchen2009.github.io/post/207.html">
+<meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
+<title>A08｜25 分钟没有报错，也没有结果：xf-lark 给浏览器下载链路上看门狗</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">A08｜25 分钟没有报错，也没有结果：xf-lark 给浏览器下载链路上看门狗</h1>
+<div class="title-right">
+    <a href="https://yeyangchen2009.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/yeyangchen2009/yeyangchen2009.github.io/issues/207" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>A 系 AI 工作流第 8 篇。这篇接着聊工具产品化，但问题从视频换到了飞书云文档：一个 299 行的 Python 下载脚本，重写成 <code class="notranslate">xf-lark</code> 时，真正难处理的是浏览器时序和失败收尾。</p>
+</blockquote>
+<p>有一次下载过程中，CDP 调用僵住了。终端没有报错，也没有成品，进程裸挂了约 25 分钟。</p>
+<p>CDP 是浏览器远程控制协议，Node.js 靠它驱动 Edge。平时点击、读取、保存都很顺，一旦某次调用没有回应，没有超时预算的 <code class="notranslate">await</code> 就会一直等下去。<code class="notranslate">xf-lark</code> 后来的看门狗，就是从这个现场长出来的。</p>
+<h2>299 行 Python，不能只做语法翻译</h2>
+<p>旧脚本能把本人有权访问的飞书文档下载成 Markdown 或 ZIP，依靠的不是一个公开下载接口，而是 Cloud Document Converter 浏览器扩展。</p>
+<p>扩展进入页面自己的 MAIN world，也就是页面脚本实际运行的环境，再调用文档引擎已有的导出函数。Node.js 负责启动有头 Edge、装载扩展、接收下载事件和验收文件，不能绕过扩展直接替代文档引擎。</p>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://raw.githubusercontent.com/yeyangchen2009/yeyangchen2009.github.io/main/static/npm-cli/xf-lark-architecture.png"><img src="https://raw.githubusercontent.com/yeyangchen2009/yeyangchen2009.github.io/main/static/npm-cli/xf-lark-architecture.png" alt="xf-lark 的 Node、CDP、扩展和页面导出链路" style="max-width: 100%;"></a></p>
+<p><code class="notranslate">xf-lark@0.1.1</code> 因此把扩展 <code class="notranslate">1.11.0</code> 的 27 个构建文件随包固定分发，并附第三方说明。这样做减少了对用户浏览器里“恰好装过哪个版本”的依赖，也把页面和扩展之间的兼容关系变成了项目自己要维护的契约。</p>
+<p>基本命令是：</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">npm install -g xf-lark
+xfl doctor
+xfl login <span class="pl-s"><span class="pl-pds">"</span>&lt;飞书文档链接&gt;<span class="pl-pds">"</span></span>
+xfl get <span class="pl-s"><span class="pl-pds">"</span>&lt;飞书文档链接&gt;<span class="pl-pds">"</span></span></pre></div>
+<p>只下载本人已有权限的文档，登录由本人在弹出的 Edge 中完成，不处理密码和验证码。</p>
+<h2>三种看起来等价，实际并不等价的写法</h2>
+<p>跨语言迁移最先暴露的是执行模型差异。Python 里顺次执行的调用，到了 Node.js 里可能返回 Promise；浏览器自动化库的 API 形态也不同。</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>迁移点</th>
+<th>出错写法或旧假设</th>
+<th>实际处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>启动持久浏览器</td>
+<td>漏掉 <code class="notranslate">launchPersistentContext</code> 前的 <code class="notranslate">await</code></td>
+<td>等浏览器上下文真正建立后再继续</td>
+</tr>
+<tr>
+<td>取第一个定位器</td>
+<td>把 <code class="notranslate">.first()</code> 当属性</td>
+<td>Node API 中它是方法，必须调用</td>
+</tr>
+<tr>
+<td>等页面稳定</td>
+<td>等 <code class="notranslate">networkidle</code></td>
+<td>页面长轮询让网络难有空闲，改为每 2 秒查一次按钮，最多 25 次</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>这些不是 JavaScript 语法难点，而是“什么时候才算准备好”的判断。尤其 <code class="notranslate">networkidle</code>，在普通静态页面上很好用，放到持续长轮询的文档页上，等来的往往是超时。</p>
+<h2>service worker 可能比你先醒来</h2>
+<p>Manifest V3 扩展的后台逻辑跑在 service worker 里。可以把它理解成按需唤醒的后台工作者：代码开始监听时，它可能已经注册并出现在浏览器上下文中；后挂的事件监听只负责后续注册，补取不到已经存在的对象。</p>
+<p>只等事件，会错过已经发生的那一次；只查当前列表，又可能查得太早。<code class="notranslate">xf-lark</code> 最后让三条路一起跑：</p>
+<p><a target="_blank" rel="noopener noreferrer nofollow" href="https://raw.githubusercontent.com/yeyangchen2009/yeyangchen2009.github.io/main/static/npm-cli/xf-lark-service-worker.png"><img src="https://raw.githubusercontent.com/yeyangchen2009/yeyangchen2009.github.io/main/static/npm-cli/xf-lark-service-worker.png" alt="service worker 的查存量、事件与轮询三路竞速" style="max-width: 100%;"></a></p>
+<p>先查有没有已经存在的 worker，同时挂事件监听，再每 250 毫秒主动轮询一次。三路进入 <code class="notranslate">Promise.race</code>，谁先给出有效结果就用谁，总预算 15 秒。</p>
+<p>这里的重点不是 <code class="notranslate">Promise.race</code> 这个 API，而是不再赌一种时序。浏览器事件的先后顺序不受脚本作者控制，等待逻辑必须同时容纳“已经发生”和“稍后发生”。</p>
+<h2>看门狗要守住下载，也要守住收尾</h2>
+<p>那次 25 分钟裸挂之后，跨浏览器、跨网络的等待开始逐项补预算。导航和点击有 30 秒上限，关闭有 10 秒上限；下载保存不再是单独等 <code class="notranslate">saveAs</code>，而是让保存结果、超时和中断信号一起竞速。</p>
+<p>超时的意义不是保证任务在几十秒内完成，而是失败时能把控制权拿回来。批量任务还要据此清理当前项、记录失败并继续后续条目，而不是让整批任务陪着一个僵死页面等下去。</p>
+<p>文件收尾同样按失败路径设计：</p>
+<ol>
+<li>浏览器产物先写同目录临时文件；</li>
+<li>ZIP 检查 <code class="notranslate">PK</code> 文件头和 EOCD 尾部目录，Markdown 检查 UTF-8 解码；</li>
+<li>校验通过才原子改名成正式文件；</li>
+<li>失败时清掉临时文件，不让坏文件占位后被下一批误跳过。</li>
+</ol>
+<p>Windows 的真实 Ctrl+C 还有一个平台限制：控制台可能在 Node.js 异步收尾完成前回收进程，临时 profile 不一定来得及删。<code class="notranslate">xf-lark</code> 因此没有把所有希望押在退出钩子上，每次启动还会清扫同前缀、超过 1 小时未变动的 <code class="notranslate">xfl-profile-</code> 残留，正在运行的新目录不受影响。</p>
+<h2>验收不只看进程退出码</h2>
+<p>默认测试入口有 61 项纯逻辑与编排测试通过，另有 3 项真实 Edge 门禁单列，共 64 项。<code class="notranslate">npm pack --dry-run</code> 核对出 45 个发布文件，其中 27 个是固定版本的扩展构建文件，测试和真实登录态不进包。</p>
+<p>更有说服力的是三份真实文档与 Python 版产物的逐项对照：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>文档</th>
+<th align="right">Node 版字节</th>
+<th align="right">Python 版字节</th>
+<th align="right">差值</th>
+<th align="right">ZIP 条目</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent Skills 锤炼营实战手册</td>
+<td align="right">35,581,933</td>
+<td align="right">35,581,937</td>
+<td align="right">4</td>
+<td align="right">127</td>
+</tr>
+<tr>
+<td>AI Agent 锻造师实战手册</td>
+<td align="right">57,206,713</td>
+<td align="right">57,206,714</td>
+<td align="right">1</td>
+<td align="right">176</td>
+</tr>
+<tr>
+<td>Workbuddy 铸造营实战手册</td>
+<td align="right">44,224,723</td>
+<td align="right">44,224,722</td>
+<td align="right">1</td>
+<td align="right">158</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>三份文档的 ZIP 条目数一致，1 到 4 字节差异来自 ZIP 元数据时间戳，内容等价。旧目录结构、命名截断和同名 SKIP 也刻意对齐，老输出目录可以接着重跑。</p>
+<p>还没有拿到的样本则单独记账：无图纯文本文档的真实端到端样本仍待补，严格 Markdown 解码分支目前靠单元测试和本地仿造链路覆盖。<code class="notranslate">0.1.1</code> 本身只统一了对外“飞书”文案，没有增加下载功能。</p>
+<p>从 299 行 Python 到公开 npm 命令，代码行数并没有说明难度。真正决定工具能不能交出去的是那些不太显眼的地方：事件早到了怎么办，浏览器不回话怎么办，文件只写了一半怎么办。把这些路径补齐以后，<code class="notranslate">xfl</code> 才算从“能导出”走到了“知道怎样失败”。</p>
+<p>项目地址：</p>
+<ul>
+<li>npm：<a href="https://www.npmjs.com/package/xf-lark" rel="nofollow">xf-lark</a></li>
+<li>GitHub：<a href="https://github.com/yeyangchen2009/xf-lark">xf-lark</a></li>
+</ul></div>
+<div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://yeyangchen2009.github.io">叶扬的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if("09/13/2026"!=""){
+    var startSite=new Date("09/13/2026");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","yeyangchen2009/yeyangchen2009.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script><script src='/plugins/GmeekCast.js'></script>
+
+</html>

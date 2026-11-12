@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://yeyangchen2009.github.io/post/67.html">
 <meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
 <title>A04｜246 张卡只考了背诵：从费曼定稿到间隔重复，把记忆做成一套工程</title>
-
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
 
 
 </head>
@@ -191,10 +191,9 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>早期卡存在两个 CSV 里，想改一处表述，得在表格里肉眼定位；想知道某张卡属于哪一讲，靠翻行；同一句话不小心导入两次，重复卡得复习时才发现。干过程序员的对这个症状太熟了——<strong>内容和表现焊在一起、没有唯一主键、没有幂等保证</strong>，数据量一小就乱，量一大必崩。</p>
 <p>重构的思路没有任何新意，是写了几十年的老模式：<strong>数据与表现分离</strong>。</p>
 <p><strong>真源用一个 SQLite 数据库，三张表：</strong></p>
-<pre lang="sql" class="notranslate"><code class="notranslate">notes (guid, deck, note_type, front, back, source, mix, link, source_post)
+<div class="highlight highlight-source-sql"><pre class="notranslate">notes (guid, deck, note_type, front, back, source, mix, link, source_post)
 tags  (id, name)
-note_tags (note_id, tag_id)   -- 多对多
-</code></pre>
+note_tags (note_id, tag_id)   <span class="pl-c"><span class="pl-c">--</span> 多对多</span></pre></div>
 <ul>
 <li><code class="notranslate">notes</code> 是卡片笔记本体：问答卡存正面背面，填空卡存带挖空标记的文本，外加出处、易混点、关联、来源篇目；</li>
 <li><code class="notranslate">tags</code> 与 <code class="notranslate">note_tags</code> 是多对多的标签关系——一张卡可以同时是"辨析卡"和"空义链"，删标签不影响笔记本体；</li>
@@ -279,19 +278,18 @@ note_tags (note_id, tag_id)   -- 多对多
 <p>两代算法摆在一起，差别就是程序员熟悉的那条路线分野：<strong>SM-2 是规则引擎（手写启发式乘数），FSRS 是数据驱动的状态空间模型（三个状态变量、可预测的概率、按个人数据拟合参数）。</strong> 不是玄学之争，是软件工程里见过很多次的同一种换代。</p>
 <h2>六、整条闭环长什么样</h2>
 <p>从下载到复习，整条流水线现在第一次连成了环：</p>
-<pre lang="mermaid" class="notranslate"><code class="notranslate">%%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'15px'}}}%%
-flowchart TD
-    A02["A02 下载&lt;br/&gt;yt-dlp 逐集取回"] --&gt; A03["A03 补档&lt;br/&gt;缺字轨的三集自己转写"]
-    A03 --&gt; A01["A01 清洗&lt;br/&gt;规则把脏文本洗干净"]
-    A01 --&gt; TXT["干净文本"]
-    TXT --&gt; FM["费曼输出&lt;br/&gt;用自己的话写成学习笔记&lt;br/&gt;分界 / 推理链 / 类比都在这里完成"]
-    FM --&gt; FIVE["五类深化卡&lt;br/&gt;辨析 · 推理链 · 质询 · 破洞 · 题眼"]
-    FIVE --&gt; SQL["SQLite 卡库&lt;br/&gt;guid 幂等 · 三表真源"]
-    SQL --&gt; PKG["genanki 构建&lt;br/&gt;渲染成 .apkg"]
-    PKG --&gt; REP["Anki 复习&lt;br/&gt;FSRS 按保留率排下次间隔"]
-    REP --&gt;|"答不上来：理解有漏洞"| FM
-    REP --&gt;|"卡面有误：内容要修订"| FIVE
-</code></pre>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A02</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>A02 下载&lt;<span class="pl-ent">br</span>/&gt;yt-dlp 逐集取回<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">A03</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>A03 补档&lt;<span class="pl-ent">br</span>/&gt;缺字轨的三集自己转写<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">A03</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">A01</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>A01 清洗&lt;<span class="pl-ent">br</span>/&gt;规则把脏文本洗干净<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">A01</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">TXT</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>干净文本<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">TXT</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">FM</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>费曼输出&lt;<span class="pl-ent">br</span>/&gt;用自己的话写成学习笔记&lt;<span class="pl-ent">br</span>/&gt;分界 / 推理链 / 类比都在这里完成<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">FM</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">FIVE</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>五类深化卡&lt;<span class="pl-ent">br</span>/&gt;辨析 · 推理链 · 质询 · 破洞 · 题眼<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">FIVE</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">SQL</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>SQLite 卡库&lt;<span class="pl-ent">br</span>/&gt;guid 幂等 · 三表真源<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">SQL</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">PKG</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>genanki 构建&lt;<span class="pl-ent">br</span>/&gt;渲染成 .apkg<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">PKG</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">REP</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Anki 复习&lt;<span class="pl-ent">br</span>/&gt;FSRS 按保留率排下次间隔<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">REP</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"答不上来：理解有漏洞"</span><span class="pl-k">|</span> <span class="pl-ent">FM</span>
+    <span class="pl-ent">REP</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"卡面有误：内容要修订"</span><span class="pl-k">|</span> <span class="pl-ent">FIVE</span></pre></div>
 <p>注意最后两条回流边——它们是"闭环"和"流水线"的区别所在：<strong>复习不是终点，是巡检。</strong></p>
 <h2>七、一个程序员类比：卡是单元测试，间隔重复是定时 CI</h2>
 <p>这套东西用软件工程一打比方，每个零件都能对上号：</p>
