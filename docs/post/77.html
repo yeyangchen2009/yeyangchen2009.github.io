@@ -19,7 +19,7 @@
 <meta property="og:url" content="https://yeyangchen2009.github.io/post/77.html">
 <meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
 <title>A05｜不碰发布按钮：用 CDP 把博客自动填进知乎草稿箱（一个 2^53 的长 ID 坑）</title>
-
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
 
 
 </head>
@@ -43,7 +43,17 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     body {padding: 8px;}
     .postTitle{font-size:24px;}
 }
-
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
 </style>
 
 
@@ -100,8 +110,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>配套措施是给自动化单独准备一个 <strong>Edge profile</strong>（用户配置目录），在里面登录一次知乎，之后长期复用。脚本从不接触密码，登录态由浏览器自己保管；这个 profile 也跟叶扬日常浏览用的 profile 完全隔离，自动化脚本只能看到自己那摊东西。</p>
 <h2>二、请出浏览器真身：CDP 9222 的四个接口</h2>
 <p>要让浏览器听脚本指挥，得先以<strong>远程调试模式</strong>启动 Edge：</p>
-<pre lang="bash" class="notranslate"><code class="notranslate">msedge.exe --remote-debugging-port=9222 --user-data-dir="C:\...\edge-profile"
-</code></pre>
+<div class="highlight highlight-source-shell"><pre class="notranslate">msedge.exe --remote-debugging-port=9222 --user-data-dir=<span class="pl-s"><span class="pl-pds">"</span>C:\...\edge-profile<span class="pl-pds">"</span></span></pre></div>
 <p><code class="notranslate">--remote-debugging-port</code> 一开，Edge 就在本机 9222 端口提供一套 HTTP + WebSocket 接口，这套协议叫 <strong>CDP（Chrome DevTools Protocol）</strong>，Chrome 和 Edge 通用。脚本通过它能让浏览器执行任意 JS、截图、甚至派发"物理级"的鼠标键盘事件。</p>
 <p>工具脚本 <code class="notranslate">zhihu-draft.js</code> 只用到四个 HTTP 接口，都很朴素：</p>
 <markdown-accessiblity-table><table role="table">
@@ -146,13 +155,12 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </ul>
 <p>叶扬先拿标题框试手。最直觉的写法是 <code class="notranslate">textarea.value = '标题'</code>，结果页面毫无反应。原因是现代前端框架给表单元素挂了自己的事件监听，<strong>直接改 value 属性不会触发框架内部的状态更新</strong>——值确实写进 DOM 了，但框架"不知道"。</p>
 <p>标准解法是模拟真人输入的完整事件序列：用<strong>原生 setter</strong> 写值，再派发一个 <code class="notranslate">input</code> 事件：</p>
-<pre lang="javascript" class="notranslate"><code class="notranslate">const ta = document.querySelector('textarea');
-ta.focus();
-const setter = Object.getOwnPropertyDescriptor(
-    window.HTMLTextAreaElement.prototype, 'value').set;
-setter.call(ta, '一个 CLI 统管七十多种存储：rclone 备份同步完整实操');
-ta.dispatchEvent(new Event('input', { bubbles: true }));
-</code></pre>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-s1">ta</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'textarea'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">ta</span><span class="pl-kos">.</span><span class="pl-en">focus</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">const</span> <span class="pl-s1">setter</span> <span class="pl-c1">=</span> <span class="pl-v">Object</span><span class="pl-kos">.</span><span class="pl-en">getOwnPropertyDescriptor</span><span class="pl-kos">(</span>
+    <span class="pl-smi">window</span><span class="pl-kos">.</span><span class="pl-c1">HTMLTextAreaElement</span><span class="pl-kos">.</span><span class="pl-c1">prototype</span><span class="pl-kos">,</span> <span class="pl-s">'value'</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-c1">set</span><span class="pl-kos">;</span>
+<span class="pl-s1">setter</span><span class="pl-kos">.</span><span class="pl-en">call</span><span class="pl-kos">(</span><span class="pl-s1">ta</span><span class="pl-kos">,</span> <span class="pl-s">'一个 CLI 统管七十多种存储：rclone 备份同步完整实操'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">ta</span><span class="pl-kos">.</span><span class="pl-en">dispatchEvent</span><span class="pl-kos">(</span><span class="pl-k">new</span> <span class="pl-v">Event</span><span class="pl-kos">(</span><span class="pl-s">'input'</span><span class="pl-kos">,</span> <span class="pl-kos">{</span> <span class="pl-c1">bubbles</span>: <span class="pl-c1">true</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
 <p>标题这一关过了。正文才是真正的 Boss——对一个 Draft.js 编辑器，<code class="notranslate">innerText = '...'</code> 这种写法连 DOM 这一层都站不住，光标一点就现原形。要让 Draft.js 老老实实接收一大段富文本，得用编辑器唯一无条件信任的输入通道：<strong>粘贴</strong>。</p>
 <h2>四、第二回合：合成一次"以假乱真"的粘贴</h2>
 <p>人在网页上按 Ctrl+V 的时候，浏览器会往页面派发一个 <code class="notranslate">paste</code> 事件，事件里挂着一个 <code class="notranslate">clipboardData</code> 对象，里面是剪贴板内容（纯文本、HTML、图片……）。富文本编辑器监听这个事件、读取内容、写进自己的状态。</p>
@@ -162,25 +170,23 @@ ta.dispatchEvent(new Event('input', { bubbles: true }));
 <li>得真有一个地方放剪贴板内容——浏览器提供了 <code class="notranslate">DataTransfer</code> 对象（拖拽和剪贴板共用的数据容器）。</li>
 </ol>
 <p>组合起来，先把 Markdown 全文放进 <code class="notranslate">DataTransfer</code> 的 <code class="notranslate">text/plain</code>，再创建 <code class="notranslate">ClipboardEvent</code>，用 <code class="notranslate">Object.defineProperty</code> 把 <code class="notranslate">clipboardData</code> 强行挂上去：</p>
-<pre lang="javascript" class="notranslate"><code class="notranslate">const editor = document.querySelector('[contenteditable=true]');
-editor.focus();
-const dt = new DataTransfer();
-dt.setData('text/plain', markdown全文);
-const ev = new ClipboardEvent('paste', { bubbles: true, cancelable: true });
-// clipboardData 只读，靠 defineProperty 把 DataTransfer 塞进去
-Object.defineProperty(ev, 'clipboardData', { value: dt });
-editor.dispatchEvent(ev);
-</code></pre>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-s1">editor</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelector</span><span class="pl-kos">(</span><span class="pl-s">'[contenteditable=true]'</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">editor</span><span class="pl-kos">.</span><span class="pl-en">focus</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">const</span> <span class="pl-s1">dt</span> <span class="pl-c1">=</span> <span class="pl-k">new</span> <span class="pl-v">DataTransfer</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">dt</span><span class="pl-kos">.</span><span class="pl-en">setData</span><span class="pl-kos">(</span><span class="pl-s">'text/plain'</span><span class="pl-kos">,</span> <span class="pl-s1">markdown全文</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">const</span> <span class="pl-s1">ev</span> <span class="pl-c1">=</span> <span class="pl-k">new</span> <span class="pl-v">ClipboardEvent</span><span class="pl-kos">(</span><span class="pl-s">'paste'</span><span class="pl-kos">,</span> <span class="pl-kos">{</span> <span class="pl-c1">bubbles</span>: <span class="pl-c1">true</span><span class="pl-kos">,</span> <span class="pl-c1">cancelable</span>: <span class="pl-c1">true</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// clipboardData 只读，靠 defineProperty 把 DataTransfer 塞进去</span>
+<span class="pl-v">Object</span><span class="pl-kos">.</span><span class="pl-en">defineProperty</span><span class="pl-kos">(</span><span class="pl-s1">ev</span><span class="pl-kos">,</span> <span class="pl-s">'clipboardData'</span><span class="pl-kos">,</span> <span class="pl-kos">{</span> <span class="pl-c1">value</span>: <span class="pl-s1">dt</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">editor</span><span class="pl-kos">.</span><span class="pl-en">dispatchEvent</span><span class="pl-kos">(</span><span class="pl-s1">ev</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
 <p>事件一派发，Draft.js 的粘贴处理流程就被完整触发了——和叶扬本人按 Ctrl+V 走的是同一套代码路径。</p>
 <p>这里有个一度让人犹豫的岔路口：粘贴内容其实可以同时带 <code class="notranslate">text/html</code>，即把 Markdown 预先渲染成 HTML 再贴，这样排版一步到位。实测结论是<strong>不能用</strong>：<code class="notranslate">text/html</code> 贴进去格式确实漂亮，但 Draft.js 的 HTML 导入逻辑会<strong>把外链图片全部丢弃</strong>（出于安全，不允许从粘贴内容里直接引入第三方图片地址）。而只带 <code class="notranslate">text/plain</code> 让知乎自己解析 Markdown，文中的 <code class="notranslate">![](图片URL)</code> 会被知乎服务器主动抓取、转存到知乎自己的图床——这才是想要的效果：图片永久托管在平台侧，不依赖任何外链。</p>
 <h2>五、800 毫秒的浮条：赶在「确认并解析」消失之前</h2>
 <p>Markdown 贴进去，新状况出现：正文上方浮出一个临时浮条，大意为"检测到 Markdown 内容"，带两个按钮，其中一个是「<strong>确认并解析</strong>」。</p>
 <p>这是知乎给手动粘贴设计的确认环节——毕竟有人贴一段纯文本只是想原样保留。问题在于这个浮条<strong>只在页面上停留很短一段时间，大约几百毫秒到一秒出头，超时自动消失</strong>。人看到再点都得手快，脚本更不能等：粘贴并填好标题之后睡 800 毫秒，然后在页面里搜出那个按钮、点下去。</p>
-<pre lang="javascript" class="notranslate"><code class="notranslate">await new Promise(r =&gt; setTimeout(r, 800));
-const els = [...document.querySelectorAll('button,span,a,div')]
-    .filter(e =&gt; e.textContent.trim() === '确认并解析' &amp;&amp; e.children.length === 0);
-els[els.length - 1].click();
-</code></pre>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">await</span> <span class="pl-k">new</span> <span class="pl-v">Promise</span><span class="pl-kos">(</span><span class="pl-s1">r</span> <span class="pl-c1">=&gt;</span> <span class="pl-en">setTimeout</span><span class="pl-kos">(</span><span class="pl-s1">r</span><span class="pl-kos">,</span> <span class="pl-c1">800</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-k">const</span> <span class="pl-s1">els</span> <span class="pl-c1">=</span> <span class="pl-kos">[</span>...<span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-en">querySelectorAll</span><span class="pl-kos">(</span><span class="pl-s">'button,span,a,div'</span><span class="pl-kos">)</span><span class="pl-kos">]</span>
+    <span class="pl-kos">.</span><span class="pl-en">filter</span><span class="pl-kos">(</span><span class="pl-s1">e</span> <span class="pl-c1">=&gt;</span> <span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-c1">textContent</span><span class="pl-kos">.</span><span class="pl-en">trim</span><span class="pl-kos">(</span><span class="pl-kos">)</span> <span class="pl-c1">===</span> <span class="pl-s">'确认并解析'</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-s1">e</span><span class="pl-kos">.</span><span class="pl-c1">children</span><span class="pl-kos">.</span><span class="pl-c1">length</span> <span class="pl-c1">===</span> <span class="pl-c1">0</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-s1">els</span><span class="pl-kos">[</span><span class="pl-s1">els</span><span class="pl-kos">.</span><span class="pl-c1">length</span> <span class="pl-c1">-</span> <span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">.</span><span class="pl-en">click</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span></pre></div>
 <p>按钮一点，解析才真正发生：<code class="notranslate">##</code> 变成标题、表格变成表格、<code class="notranslate">![]()</code> 里的图片 URL 被依次抓取上传。图片转存是网络活，一篇带八张图的长文，得传十几秒。脚本的等法是<strong>轮询正文里的图片数量</strong>：每秒数一次，连续五次数字不变且图片数大于 0，才算上传完成（无图文章另走超时兜底）——而不是傻等一个拍脑袋的固定时长。</p>
 <p>到这里，"注入"这条链路就通了。工具的 <code class="notranslate">fill</code> 命令把全过程串了起来：新开写文章页 → 探编辑器 → 合成 paste → 点浮条 → 等图传完。第一次端到端跑通时，命令行输出干脆利落：</p>
 <pre lang="text" class="notranslate"><code class="notranslate">编辑器探查： {"hasTitle":true,"hasBody":true}
@@ -210,9 +216,8 @@ els[els.length - 1].click();
 </code></pre>
 <p>而知乎草稿的新 ID 是十九位，<strong>远超 2^53</strong>。超过这条线之后，并不是"数字不能用了"，而是精度开始一格一格地丢——相邻可表示的数字间距变成 256，落在格子之间的整数会被自动"吸"到最近的可表示值上。</p>
 <p>草稿箱页面加载列表时，服务器返回的 JSON 里 ID 本来是精确的，但前端一 <code class="notranslate">JSON.parse</code>，ID 就变成了 JS Number，精度当场丢失。可以在 Node 里一行复现：</p>
-<pre lang="javascript" class="notranslate"><code class="notranslate">console.log(2087485493244179789);
-// 输出：2087485493244179700
-</code></pre>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-smi">console</span><span class="pl-kos">.</span><span class="pl-en">log</span><span class="pl-kos">(</span><span class="pl-c1">2087485493244179789</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// 输出：2087485493244179700</span></pre></div>
 <p>真实 ID 结尾是 <code class="notranslate">...79789</code>，parse 一遍变成 <code class="notranslate">...79700</code>——<strong>末三位被悄悄改写</strong>。</p>
 <p>三种状态同屏对比，失真发生在 parse 那一瞬间：</p>
 <p><a target="_blank" rel="noopener noreferrer" href="/screenshots/a05-id-round.png"><img src="/screenshots/a05-id-round.png" alt="长 ID 的三种状态：精确 → 舍入 → 404" style="max-width: 100%;"></a>列表项上的删除、编辑链接全是用这个舍入后的 ID 拼出来的，请求打到服务器上，对应草稿不存在，404。</p>
@@ -221,27 +226,25 @@ els[els.length - 1].click();
 <h3>绕行：禁 JSON.parse，从原始文本里正则提 ID</h3>
 <p>知道了根因，绕行方案也就明确了：<strong>绝不让长 ID 经过 Number 转换，全程当字符串处理。</strong></p>
 <p>脚本直接请求草稿箱列表 API，但不取 JSON——取<strong>原始响应文本</strong>，然后用正则表达式把 ID 一段段"抠"出来。正则匹配的结果天然是字符串，十九位数字一个字符都不会少：</p>
-<pre lang="javascript" class="notranslate"><code class="notranslate">const t = await (await fetch(
-    '/api/articles/my_drafts?limit=10&amp;offset=0',
-    { credentials: 'include' })).text();        // 注意是 .text()，不是 .json()
-// 每个草稿对象以 "content_length" 字段开头，按它切块
-const marks = [...t.matchAll(/"content_length"\s*:\s*(\d+)/g)];
-// seg = 两个相邻 content_length 锚点之间的文本块（示例取第一块）
-const seg = t.slice(marks[0].index, marks[1] ? marks[1].index : t.length);
-// 在块内正则提 ID —— 匹配结果是字符串，精度完好
-const id = seg.match(/"id"\s*:\s*(\d+)/)[1];
-</code></pre>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-s1">t</span> <span class="pl-c1">=</span> <span class="pl-en">await</span> <span class="pl-kos">(</span><span class="pl-k">await</span> <span class="pl-en">fetch</span><span class="pl-kos">(</span>
+    <span class="pl-s">'/api/articles/my_drafts?limit=10&amp;offset=0'</span><span class="pl-kos">,</span>
+    <span class="pl-kos">{</span> <span class="pl-c1">credentials</span>: <span class="pl-s">'include'</span> <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">)</span><span class="pl-kos">.</span><span class="pl-en">text</span><span class="pl-kos">(</span><span class="pl-kos">)</span><span class="pl-kos">;</span>        <span class="pl-c">// 注意是 .text()，不是 .json()</span>
+<span class="pl-c">// 每个草稿对象以 "content_length" 字段开头，按它切块</span>
+<span class="pl-k">const</span> <span class="pl-s1">marks</span> <span class="pl-c1">=</span> <span class="pl-kos">[</span>...<span class="pl-s1">t</span><span class="pl-kos">.</span><span class="pl-en">matchAll</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-s">"</span><span class="pl-s">c</span><span class="pl-s">o</span><span class="pl-s">n</span><span class="pl-s">t</span><span class="pl-s">e</span><span class="pl-s">n</span><span class="pl-s">t</span><span class="pl-s">_</span><span class="pl-s">l</span><span class="pl-s">e</span><span class="pl-s">n</span><span class="pl-s">g</span><span class="pl-s">t</span><span class="pl-s">h</span><span class="pl-s">"</span><span class="pl-cce">\s</span><span class="pl-c1">*</span><span class="pl-s">:</span><span class="pl-cce">\s</span><span class="pl-c1">*</span><span class="pl-kos">(</span><span class="pl-cce">\d</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-c1">/</span>g</span><span class="pl-kos">)</span><span class="pl-kos">]</span><span class="pl-kos">;</span>
+<span class="pl-c">// seg = 两个相邻 content_length 锚点之间的文本块（示例取第一块）</span>
+<span class="pl-k">const</span> <span class="pl-s1">seg</span> <span class="pl-c1">=</span> <span class="pl-s1">t</span><span class="pl-kos">.</span><span class="pl-en">slice</span><span class="pl-kos">(</span><span class="pl-s1">marks</span><span class="pl-kos">[</span><span class="pl-c1">0</span><span class="pl-kos">]</span><span class="pl-kos">.</span><span class="pl-c1">index</span><span class="pl-kos">,</span> <span class="pl-s1">marks</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span> ? <span class="pl-s1">marks</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">.</span><span class="pl-c1">index</span> : <span class="pl-s1">t</span><span class="pl-kos">.</span><span class="pl-c1">length</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// 在块内正则提 ID —— 匹配结果是字符串，精度完好</span>
+<span class="pl-k">const</span> <span class="pl-s1">id</span> <span class="pl-c1">=</span> <span class="pl-s1">seg</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-s">"</span><span class="pl-s">i</span><span class="pl-s">d</span><span class="pl-s">"</span><span class="pl-cce">\s</span><span class="pl-c1">*</span><span class="pl-s">:</span><span class="pl-cce">\s</span><span class="pl-c1">*</span><span class="pl-kos">(</span><span class="pl-cce">\d</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-c1">/</span></span><span class="pl-kos">)</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">;</span></pre></div>
 <p>这里还藏着一个实现细节：切块的锚点选的是 <code class="notranslate">"content_length"</code> 而不是 <code class="notranslate">"id"</code>。因为 ID 字段在每个草稿对象的<strong>后半部分</strong>，对象里还嵌套着带 <code class="notranslate">id</code> 的子结构，按 <code class="notranslate">id</code> 切块会把对象切乱；按每个对象开头的 <code class="notranslate">content_length</code> 切块，再在块内找 <code class="notranslate">id</code>，位置就准了。</p>
 <p>拿到真实 ID，删除就是一句直白的 <code class="notranslate">fetch</code>：</p>
-<pre lang="javascript" class="notranslate"><code class="notranslate">const xsrf = document.cookie.match(/(?:^|;\s*)_xsrf=([^;]+)/)[1];
-const r = await fetch(
-    'https://zhuanlan.zhihu.com/api/articles/2087485493244179789/draft', {
-        method: 'DELETE',
-        headers: { 'x-xsrftoken': decodeURIComponent(xsrf) },
-        credentials: 'include',
-    });
-// r.status === 200，删掉了
-</code></pre>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-s1">xsrf</span> <span class="pl-c1">=</span> <span class="pl-smi">document</span><span class="pl-kos">.</span><span class="pl-c1">cookie</span><span class="pl-kos">.</span><span class="pl-en">match</span><span class="pl-kos">(</span><span class="pl-pds"><span class="pl-c1">/</span><span class="pl-kos">(?:</span><span class="pl-cce">^</span><span class="pl-c1">|</span><span class="pl-s">;</span><span class="pl-cce">\s</span><span class="pl-c1">*</span><span class="pl-kos">)</span><span class="pl-s">_</span><span class="pl-s">x</span><span class="pl-s">s</span><span class="pl-s">r</span><span class="pl-s">f</span><span class="pl-s">=</span><span class="pl-kos">(</span><span class="pl-kos">[</span><span class="pl-c1">^</span><span class="pl-c1">;</span><span class="pl-kos">]</span><span class="pl-c1">+</span><span class="pl-kos">)</span><span class="pl-c1">/</span></span><span class="pl-kos">)</span><span class="pl-kos">[</span><span class="pl-c1">1</span><span class="pl-kos">]</span><span class="pl-kos">;</span>
+<span class="pl-k">const</span> <span class="pl-s1">r</span> <span class="pl-c1">=</span> <span class="pl-k">await</span> <span class="pl-en">fetch</span><span class="pl-kos">(</span>
+    <span class="pl-s">'https://zhuanlan.zhihu.com/api/articles/2087485493244179789/draft'</span><span class="pl-kos">,</span> <span class="pl-kos">{</span>
+        <span class="pl-c1">method</span>: <span class="pl-s">'DELETE'</span><span class="pl-kos">,</span>
+        <span class="pl-c1">headers</span>: <span class="pl-kos">{</span> <span class="pl-s">'x-xsrftoken'</span>: <span class="pl-en">decodeURIComponent</span><span class="pl-kos">(</span><span class="pl-s1">xsrf</span><span class="pl-kos">)</span> <span class="pl-kos">}</span><span class="pl-kos">,</span>
+        <span class="pl-c1">credentials</span>: <span class="pl-s">'include'</span><span class="pl-kos">,</span>
+    <span class="pl-kos">}</span><span class="pl-kos">)</span><span class="pl-kos">;</span>
+<span class="pl-c">// r.status === 200，删掉了</span></pre></div>
 <p><code class="notranslate">_xsrf</code> 是知乎防跨站请求伪造的令牌，服务器用它确认"这个请求确实来自用户自己的页面"，cookie 里就能读到。状态码 <strong>200</strong>，折腾了一整晚的重复草稿，应声而删。</p>
 <h2>七、分发适配三笔小账</h2>
 <p>除了编辑器本身，把博客稿改成知乎稿还有三笔适配账，都不大，但漏了就出洋相：</p>
@@ -337,7 +340,7 @@ if("09/13/2026"!=""){
 </script></div>
 </body>
 <script>
-var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
 var utterancesLoad=0;
 
 let themeSettings={
@@ -411,7 +414,70 @@ function iFrameLoading(){
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
 
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
 
 </script>
 <script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script><script src='/plugins/GmeekCast.js'></script>
