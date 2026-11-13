@@ -183,6 +183,24 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <td>✅</td>
 </tr>
 <tr>
+<td>A09</td>
+<td><a href="/post/208.html">从第一张 PNG 到元素级取景：cdp-shot 完整使用手册</a></td>
+<td>视口/整页/元素截图、倍率、暗色、持久 profile 与验收</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>A10</td>
+<td><a href="/post/209.html">从登录到批量归档：xf-video 完整使用手册</a></td>
+<td>环境预检、登录、单条与 JSON 批量、续传、验收和故障分类</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>A11</td>
+<td><a href="/post/210.html">从一篇到一整月：xf-lark 文档下载、清单与重跑手册</a></td>
+<td>单篇/多篇、双格式清单、月份过滤、SKIP、报告与超时处理</td>
+<td>✅</td>
+</tr>
+<tr>
 <td>候选</td>
 <td>本地 whisper.cpp 部署手记</td>
 <td>模型选型、显存、中文识别质量、批量转写</td>
@@ -220,6 +238,15 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li>
 <p><strong>2026-11-13 · <a href="/post/207.html">A08 xf-lark 浏览器时序与收尾</a></strong>：299 行 Python 重写为 Node CLI；扩展 1.11.0 随包固定分发；异步迁移、service worker 三路竞速、25 分钟僵死后的超时看门狗、原子落盘；三份真实文档与旧版产物条目级等价。</p>
 </li>
+<li>
+<p><strong>2026-11-13 · <a href="/post/208.html">A09 cdp-shot 完整使用手册</a></strong>：视口、整页与元素截图；倍率、动作顺序、暗色机制、持久 profile、本地 CSS 与 PNG 验收。</p>
+</li>
+<li>
+<p><strong>2026-11-13 · <a href="/post/209.html">A10 xf-video 完整使用手册</a></strong>：环境预检、命名登录态、单条与 JSON 批量、offset/limit、MP4 安全续传、正式文件不覆盖与真实验收边界。</p>
+</li>
+<li>
+<p><strong>2026-11-13 · <a href="/post/210.html">A11 xf-lark 文档下载与重跑手册</a></strong>：单篇与多篇直传、Markdown/JSON 双格式清单、月份过滤、SKIP、报告、临时文件和超时处理。</p>
+</li>
 </ul>
 <h2>五、边界与读法</h2>
 <ul>
@@ -227,7 +254,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <li>每篇独立可读，但按编号读体验最好——A03 的转写产物会直接接进 A01 的清洗规则，是同一条管线的上下游。</li>
 <li>叶扬是写前后端和数据库的程序员，类比默认面向同行；不写代码的读者记住每篇里那句大白话版即可，不影响主线。</li>
 </ul>
-<p>A06、A07、A08 已发布：<a href="/post/205.html">cdp-shot</a>、<a href="/post/206.html">xf-video</a>、<a href="/post/207.html">xf-lark</a>。这三篇组成 CLI 工具实战小组，分别记录交付契约、真实故障迭代和浏览器时序收尾。候选池仍不承诺顺序，等有真实数据和真实坑再升级成正式编号。</p></div>
+<p>A06–A08 是 CLI 工具的发布与故障复盘，A09–A11 是配套的详细使用手册。三篇教程已发布：<a href="/post/208.html">A09 cdp-shot</a>、<a href="/post/209.html">A10 xf-video</a>、<a href="/post/210.html">A11 xf-lark</a>。复盘回答“为什么这样做”，教程回答“日常怎样用、失败怎样收尾”。候选池仍不承诺顺序，等有真实数据和真实坑再升级成正式编号。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;">✍️ 原创文章，转载请注明出处～叶扬谢谢你来过 ❤️</div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
