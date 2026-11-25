@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://yeyangchen2009.github.io/post/44.html">
 <meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
 <title>A02｜退出码 0，但硬盘上只有一个文件：65 集 AI 字幕下载记</title>
-<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
 
 
 </head>
@@ -123,7 +123,8 @@ Stream #0:1 Audio: aac 44100 Hz stereo
 <p>这又是"任务的形状决定工具"：先花两分钟看清数据在哪，省得对着 ffmpeg 调一下午。</p>
 <h2>二、第一次查询就被骗：未登录的假阴性</h2>
 <p>装好 yt-dlp，叶扬先按惯例查一眼这集有哪些字幕：</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate">yt-dlp --list-subs <span class="pl-s"><span class="pl-pds">"</span>https://www.bilibili.com/video/BV1vewnzqEuA/?p=8<span class="pl-pds">"</span></span></pre></div>
+<pre lang="bash" class="notranslate"><code class="notranslate">yt-dlp --list-subs "https://www.bilibili.com/video/BV1vewnzqEuA/?p=8"
+</code></pre>
 <p>返回里只有一行 <code class="notranslate">danmaku xml</code>，外加一条警告：<code class="notranslate">Subtitles are only available when logged in</code>。</p>
 <p>这里有个高频误判：<strong>未登录时 B 站不返回字幕轨清单，这不等于没有字幕。</strong> <code class="notranslate">danmaku</code> 是弹幕——观众发的评论，不是讲课内容。接口的行为是"不给你看清单"，不是"清单是空的"。做过接口的都熟悉这种语义：401 和 404 是两回事，把"没权限看"读成"资源不存在"，后面所有决策全歪。</p>
 <p>要看真实清单，必须带登录态。</p>
@@ -132,9 +133,10 @@ Stream #0:1 Audio: aac 44100 Hz stereo
 <p>第一种是直接从浏览器读：<code class="notranslate">--cookies-from-browser edge</code>。但浏览器运行时会<strong>独占锁住 cookie 数据库</strong>，叶扬实测五个 msedge 进程在后台挂着，读取直接报 <code class="notranslate">Could not copy Chrome cookie database</code>。注意 Edge/Chrome 默认允许后台常驻，点窗口右上角的 × 不够，要确认任务管理器里进程全部消失——为了下个字幕把浏览器整个关掉，代价也大了点。</p>
 <p>第二种、也是最终采用的方式：用 "Get cookies.txt LOCALLY" 一类扩展，在 bilibili.com 页面导出 Netscape 格式的 <code class="notranslate">cookies.txt</code>，用 <code class="notranslate">--cookies cookies.txt</code> 传入。浏览器照常开，互不打扰。</p>
 <p>文件到手后只做计数校验，<strong>不打印内容</strong>：</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate">head -1 cookies.txt        <span class="pl-c"><span class="pl-c">#</span> 应为 # Netscape HTTP Cookie File</span>
-grep -c bilibili cookies.txt   <span class="pl-c"><span class="pl-c">#</span> 应有若干行</span>
-grep -c SESSDATA cookies.txt   <span class="pl-c"><span class="pl-c">#</span> 必须为 1</span></pre></div>
+<pre lang="bash" class="notranslate"><code class="notranslate">head -1 cookies.txt        # 应为 # Netscape HTTP Cookie File
+grep -c bilibili cookies.txt   # 应有若干行
+grep -c SESSDATA cookies.txt   # 必须为 1
+</code></pre>
 <p><code class="notranslate">SESSDATA</code> 这一条就是登录态本体，等价于账号密码：拿到的人可以直接操作这个 B 站账号。所以纪律有三条：校验只计数不 cat、用完立刻删除、绝不放在会同步网盘的目录里。这和生产环境对待 token 的方式没有区别——凭据的价值和文件名保不保露无关。</p>
 <p>带 cookie 再查一次，真正的清单出来了：</p>
 <pre class="notranslate"><code class="notranslate">Language  Formats
@@ -143,12 +145,13 @@ ai-zh     srt      ← 有这行，零算力直取
 </code></pre>
 <h2>四、合集 A：一条命令，和一次 HTTP 412</h2>
 <p>第一个目标合集 <code class="notranslate">BV1vewnzqEuA</code>，39 集，每集一小时上下，标题各不相同。这种"正常合集"一条命令就能遍历：</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate">yt-dlp --cookies cookies.txt \
+<pre lang="bash" class="notranslate"><code class="notranslate">yt-dlp --cookies cookies.txt \
   --skip-download \
   --write-subs --sub-langs ai-zh \
   --sleep-requests 2 \
-  -o <span class="pl-s"><span class="pl-pds">"</span>%(playlist_index)02d - %(title)s.%(ext)s<span class="pl-pds">"</span></span> \
-  <span class="pl-s"><span class="pl-pds">"</span>https://www.bilibili.com/video/BV1vewnzqEuA/<span class="pl-pds">"</span></span></pre></div>
+  -o "%(playlist_index)02d - %(title)s.%(ext)s" \
+  "https://www.bilibili.com/video/BV1vewnzqEuA/"
+</code></pre>
 <p>参数没有一个是多余的：</p>
 <markdown-accessiblity-table><table role="table">
 <thead>
@@ -194,8 +197,9 @@ ai-zh     srt      ← 有这行，零算力直取
 <p><code class="notranslate">--sleep-requests 2</code> 不是礼貌加分项，是硬约束。叶扬实测连续快速打约 30 个请求后，服务器开始回 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/412" rel="nofollow">HTTP 412 Precondition Failed</a>——风控的明确信号：你不像人，像脚本。加上两秒间隔，三十多集约两分钟跑完，字幕总体积只有 2–3 MB。</p>
 <p>跑完第一次清点，怪事来了：<strong>39 集，只产出 36 个 srt，缺 02、04、27。</strong></p>
 <p>命令全程没报错。怎么办？逐集单查：</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate">yt-dlp --cookies cookies.txt --no-playlist --list-subs \
-  <span class="pl-s"><span class="pl-pds">"</span>https://www.bilibili.com/video/BV1vewnzqEuA/?p=2<span class="pl-pds">"</span></span></pre></div>
+<pre lang="bash" class="notranslate"><code class="notranslate">yt-dlp --cookies cookies.txt --no-playlist --list-subs \
+  "https://www.bilibili.com/video/BV1vewnzqEuA/?p=2"
+</code></pre>
 <p>三集查完，清单里真的没有 <code class="notranslate">ai-zh</code>——是<strong>平台本身没给这三集跑字幕</strong>，yt-dlp 静默跳过了。下载失败和资源不存在，必须用独立查询区分开，否则你会把平台的缺口当成自己的故障，反复重跑一个永远不会成功的命令。</p>
 <h2>五、合集 B：退出码 0，文件只有一个</h2>
 <p>真正的主菜是第二个合集 <code class="notranslate">BV1DBto6DEvY</code>。命令几乎一样，跑完终端一片祥和，退出码 0。叶扬去目录里一看——</p>
@@ -207,38 +211,41 @@ ai-zh     srt      ← 有这行，零算力直取
 <h3>同名，是第二个坑</h3>
 <p>就算让遍历生效，29 个分 P 的标题还<strong>完全相同</strong>，都叫"印度佛教史"。输出模板里的 <code class="notranslate">%(title)s</code> 无法区分它们，文件互相覆盖——一个文件名被写 29 遍，最后只剩一集内容。</p>
 <p>最终解法：绕开合集遍历，shell 循环逐集直打 <code class="notranslate">?p=N</code>，编号用 <code class="notranslate">printf '%02d'</code> 手动注入：</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-k">for</span> <span class="pl-smi">p</span> <span class="pl-k">in</span> <span class="pl-s"><span class="pl-pds">$(</span>seq 1 29<span class="pl-pds">)</span></span><span class="pl-k">;</span> <span class="pl-k">do</span>
-  n=<span class="pl-s"><span class="pl-pds">$(</span>printf <span class="pl-s"><span class="pl-pds">'</span>%02d<span class="pl-pds">'</span></span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-smi">$p</span><span class="pl-pds">"</span></span><span class="pl-pds">)</span></span>
+<pre lang="bash" class="notranslate"><code class="notranslate">for p in $(seq 1 29); do
+  n=$(printf '%02d' "$p")
   yt-dlp --cookies cookies.txt --no-playlist --skip-download \
     --write-subs --sub-langs ai-zh --sleep-requests 2 \
-    -o <span class="pl-s"><span class="pl-pds">"</span><span class="pl-smi">$n</span> - %(title)s.%(ext)s<span class="pl-pds">"</span></span> \
-    <span class="pl-s"><span class="pl-pds">"</span>https://www.bilibili.com/video/BV1DBto6DEvY/?p=<span class="pl-smi">$p</span><span class="pl-pds">"</span></span>
-<span class="pl-k">done</span></pre></div>
+    -o "$n - %(title)s.%(ext)s" \
+    "https://www.bilibili.com/video/BV1DBto6DEvY/?p=$p"
+done
+</code></pre>
 <p>两个关键开关：<code class="notranslate">--no-playlist</code> 强制把每个 URL 当单集处理（配合循环，恰好与合集 A 的用法相反——同一个参数，两种场景，方向完全反过来）；两位序号解决同名覆盖。跑完 29 个文件齐全，抽查内容各不相同：01 集 219 条 cue、15 集 297 条、29 集 292 条。</p>
 <p>整条决策链画成图：</p>
-<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#15px<span class="pl-pds">'</span></span>}}}</span>%%
-<span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
-    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>拿到 B 站合集链接<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>带 cookies.txt 查 --list-subs<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>清单里有什么？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
-    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"只有 danmaku + 登录警告"</span><span class="pl-k">|</span> <span class="pl-ent">Z</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>没有 AI 字幕&lt;<span class="pl-ent">br</span>/&gt;走 ASR 支线：抽音频→语音识别<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"有 ai-zh"</span><span class="pl-k">|</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>分 P 标题能区分吗？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
-    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"标题各异"</span><span class="pl-k">|</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>合集 URL 一条命令遍历&lt;<span class="pl-ent">br</span>/&gt;--sleep-requests 2<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"29 集全同名"</span><span class="pl-k">|</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>for 循环逐集 ?p=N&lt;<span class="pl-ent">br</span>/&gt;--no-playlist + printf 编号注入<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>验收：文件数 / cue 数 /&lt;<span class="pl-ent">br</span>/&gt;末尾时间戳 对 视频时长<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span>
-    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"缺集"</span><span class="pl-k">|</span> <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>逐集 --list-subs 单查<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">H</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"平台缺轨"</span><span class="pl-k">|</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>登记缺口，无法补救<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
-    <span class="pl-ent">H</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"轨还在"</span><span class="pl-k">|</span> <span class="pl-ent">E</span>
-    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"全绿"</span><span class="pl-k">|</span> <span class="pl-ent">J</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>65 个 srt 入库&lt;<span class="pl-ent">br</span>/&gt;接 A01 的 136 条规则清洗管线<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<pre lang="mermaid" class="notranslate"><code class="notranslate">%%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'#15px'}}}%%
+flowchart TD
+    A["拿到 B 站合集链接"] --&gt; B["带 cookies.txt 查 --list-subs"]
+    B --&gt; C{"清单里有什么？"}
+    C --&gt;|"只有 danmaku + 登录警告"| Z["没有 AI 字幕&lt;br/&gt;走 ASR 支线：抽音频→语音识别"]
+    C --&gt;|"有 ai-zh"| D{"分 P 标题能区分吗？"}
+    D --&gt;|"标题各异"| E["合集 URL 一条命令遍历&lt;br/&gt;--sleep-requests 2"]
+    D --&gt;|"29 集全同名"| F["for 循环逐集 ?p=N&lt;br/&gt;--no-playlist + printf 编号注入"]
+    E --&gt; G["验收：文件数 / cue 数 /&lt;br/&gt;末尾时间戳 对 视频时长"]
+    F --&gt; G
+    G --&gt;|"缺集"| H["逐集 --list-subs 单查"]
+    H --&gt;|"平台缺轨"| I["登记缺口，无法补救"]
+    H --&gt;|"轨还在"| E
+    G --&gt;|"全绿"| J["65 个 srt 入库&lt;br/&gt;接 A01 的 136 条规则清洗管线"]
+</code></pre>
 <h2>六、验收：报成功不等于下全</h2>
 <p>两次"假成功"教会叶扬一件事：<strong>批量下载必须带验收，而且验收数据要来自独立于下载工具的源头。</strong></p>
 <p>每集的检查有两项：cue 条数、最后一条 cue 的末尾时间戳。后者要对得上视频实际时长：</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-k">for</span> <span class="pl-smi">f</span> <span class="pl-k">in</span> <span class="pl-k">*</span>.srt<span class="pl-k">;</span> <span class="pl-k">do</span>
-  <span class="pl-c1">printf</span> <span class="pl-s"><span class="pl-pds">"</span>%s | %s 条 | 末尾 %s\n<span class="pl-pds">"</span></span> \
-    <span class="pl-s"><span class="pl-pds">"</span><span class="pl-smi">$f</span><span class="pl-pds">"</span></span> \
-    <span class="pl-s"><span class="pl-pds">"</span><span class="pl-s"><span class="pl-pds">$(</span>grep -c <span class="pl-s"><span class="pl-pds">'</span> --&gt; <span class="pl-pds">'</span></span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-smi">$f</span><span class="pl-pds">"</span></span><span class="pl-pds">)</span></span><span class="pl-pds">"</span></span> \
-    <span class="pl-s"><span class="pl-pds">"</span><span class="pl-s"><span class="pl-pds">$(</span>grep <span class="pl-s"><span class="pl-pds">'</span> --&gt; <span class="pl-pds">'</span></span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-smi">$f</span><span class="pl-pds">"</span></span> <span class="pl-k">|</span> tail -1 <span class="pl-k">|</span> cut -d<span class="pl-s"><span class="pl-pds">'</span> <span class="pl-pds">'</span></span> -f3<span class="pl-pds">)</span></span><span class="pl-pds">"</span></span>
-<span class="pl-k">done</span></pre></div>
+<pre lang="bash" class="notranslate"><code class="notranslate">for f in *.srt; do
+  printf "%s | %s 条 | 末尾 %s\n" \
+    "$f" \
+    "$(grep -c ' --&gt; ' "$f")" \
+    "$(grep ' --&gt; ' "$f" | tail -1 | cut -d' ' -f3)"
+done
+</code></pre>
 <p>以第 8 集为例：939 条 cue，末尾 <code class="notranslate">00:56:15,150</code>，视频时长 56:18——差三秒，完整覆盖。</p>
 <p>但这里有个反向陷阱：末尾时间戳"偏早"不一定是截断。A 合集的 25、28 集本身就短，只有 15:39、19:43，字幕末尾与时长一致，是完整的短集。判断"截断"之前，你必须先知道视频有多长——这就是为什么验收要引用独立数据源：yt-dlp 自己报的成功不算数，文件自己的末尾时间戳也只能算半个证据，三者对上才闭环。这和写测试一个道理：断言里的期望值不能由被测函数自己生成。</p>
 <p>顺带一提，这批字幕后来还查出一个更隐蔽的"元数据级意外"：39 集那套第 25 讲之后是重录版，多集对应前面的内容——这种结构问题只有把语料整体拉通才看得见，细节在 A01 里讲过。</p>
