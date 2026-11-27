@@ -25,7 +25,7 @@
 <meta property="og:url" content="https://yeyangchen2009.github.io/post/30.html">
 <meta property="og:image" content="https://yeyangchen2009.github.io/og.png">
 <title>B00｜地基篇总览：18 秒搭起 Gmeek，先认识 Issues、Actions 和 Pages 三块基石</title>
-
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
 
 
 </head>
@@ -49,7 +49,17 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     body {padding: 8px;}
     .postTitle{font-size:24px;}
 }
-
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
 </style>
 
 
@@ -112,23 +122,22 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>Pages 是 GitHub 的静态网站托管服务：仓库里的 HTML 文件，直接通过 <code class="notranslate">https://用户名.github.io</code> 这个地址对外访问，自带 HTTPS 和全球 CDN，免费、无流量费（只要不违法乱纪）。Gmeek 构建出来的 <code class="notranslate">docs/</code> 目录就是整个网站的全部文件，Actions 把它打包成 artifact 交给 Pages 发布。</p>
 <p><a target="_blank" rel="noopener noreferrer" href="/screenshots/b00-result-home.png"><img src="/screenshots/b00-result-home.png" alt="成品：读者看到的首页，暗色主题" style="max-width: 100%;"></a></p>
 <p>三块基石怎么接力，一张图看懂：</p>
-<pre lang="mermaid" class="notranslate"><code class="notranslate">%%{init: {'theme':'dark','themeVariables':{'background':'#0d1117','primaryColor':'#1f6feb','primaryTextColor':'#ffffff','primaryBorderColor':'#79c0ff','secondaryColor':'#21262d','tertiaryColor':'#30363d','lineColor':'#8b949e','textColor':'#e6edf3','clusterBkg':'#161b22','clusterBorder':'#58a6ff','edgeLabelBackground':'#21262d','fontSize':'15px'}}}%%
-flowchart LR
-    W[你在 Issues 写 Markdown&lt;br/&gt;至少打一个标签] --&gt;|"opened / edited 事件 → runOne"| A{{GitHub Actions&lt;br/&gt;build Gmeek}}
-    T[手动 Run workflow&lt;br/&gt;每日北京时间 0 点定时] -.-&gt;|全局构建 runAll| A
-    A --&gt; R
-    subgraph R [云端 Ubuntu 构建机 /opt/Gmeek]
-        direction TB
-        C1[克隆上游引擎&lt;br/&gt;按 GMEEK_VERSION 切版本] --&gt; C2[python Gmeek.py&lt;br/&gt;用 PyGithub 拉取 issue]
-        C2 --&gt; C3[Markdown 转 HTML&lt;br/&gt;Jinja2 套四个模板]
-        C3 --&gt; C4[(docs/ 产物&lt;br/&gt;页面 + postList.json + rss.xml)]
-    end
-    C4 --&gt; G[自动 commit 并 push&lt;br/&gt;docs/ backup/ blogBase.json]
-    C4 --&gt; P[打包 artifact 部署]
-    G --&gt; REP[(你的博客仓库)]
-    P --&gt; PG[GitHub Pages&lt;br/&gt;HTTPS + 全球 CDN]
-    PG --&gt; U[读者访问&lt;br/&gt;用户名.github.io]
-</code></pre>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate">%%<span class="pl-s1">{init<span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>theme<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>dark<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>themeVariables<span class="pl-pds">'</span></span><span class="pl-k">:</span>{<span class="pl-s"><span class="pl-pds">'</span>background<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#0d1117<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#1f6feb<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryTextColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#ffffff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>primaryBorderColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#79c0ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>secondaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>tertiaryColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#30363d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>lineColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#8b949e<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>textColor<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#e6edf3<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBkg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#161b22<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>clusterBorder<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#58a6ff<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>edgeLabelBackground<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>#21262d<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>fontSize<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>15px<span class="pl-pds">'</span></span>}}}</span>%%
+<span class="pl-k">flowchart</span> <span class="pl-c1">LR</span>
+    <span class="pl-ent">W</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>你在 Issues 写 Markdown&lt;<span class="pl-ent">br</span>/&gt;至少打一个标签<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">"opened / edited 事件 → runOne"</span><span class="pl-k">|</span> <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{{</span></span>GitHub Actions&lt;<span class="pl-ent">br</span>/&gt;build Gmeek<span class="pl-pds"><span class="pl-sg">}}</span></span></span>
+    <span class="pl-ent">T</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>手动 Run workflow&lt;<span class="pl-ent">br</span>/&gt;每日北京时间 0 点定时<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">-.-&gt;</span><span class="pl-k">|</span><span class="pl-s">全局构建 runAll</span><span class="pl-k">|</span> <span class="pl-ent">A</span>
+    <span class="pl-ent">A</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">R</span>
+    <span class="pl-k">subgraph</span> <span class="pl-en">R</span> <span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>云端 Ubuntu 构建机 /opt/Gmeek<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-k">direction</span> <span class="pl-c1">TB</span>
+        <span class="pl-ent">C1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>克隆上游引擎&lt;<span class="pl-ent">br</span>/&gt;按 GMEEK_VERSION 切版本<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>python Gmeek.py&lt;<span class="pl-ent">br</span>/&gt;用 PyGithub 拉取 issue<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">C2</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C3</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>Markdown 转 HTML&lt;<span class="pl-ent">br</span>/&gt;Jinja2 套四个模板<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+        <span class="pl-ent">C3</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C4</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[(</span></span>docs/ 产物&lt;<span class="pl-ent">br</span>/&gt;页面 + postList.json + rss.xml<span class="pl-pds"><span class="pl-sg">)]</span></span></span>
+    <span class="pl-k">end</span>
+    <span class="pl-ent">C4</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>自动 commit 并 push&lt;<span class="pl-ent">br</span>/&gt;docs/ backup/ blogBase.json<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C4</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">P</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>打包 artifact 部署<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">REP</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[(</span></span>你的博客仓库<span class="pl-pds"><span class="pl-sg">)]</span></span></span>
+    <span class="pl-ent">P</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">PG</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>GitHub Pages&lt;<span class="pl-ent">br</span>/&gt;HTTPS + 全球 CDN<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">PG</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">U</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>读者访问&lt;<span class="pl-ent">br</span>/&gt;用户名.github.io<span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
 <p>注意图里两个出口：构建产物<strong>一边 push 回你自己的仓库</strong>（所以网站源码在仓库里永远有一份完整副本），<strong>一边走 artifact 部署到 Pages</strong>。这是 Gmeek 工作流和 GitHub Pages 两种部署模式的混合用法，B06 会拆开讲。</p>
 <h2>三、18 秒四步走：官方安装流程全貌</h2>
 <p>动手之前，先看一眼官方 <a href="https://github.com/Meekdai/Gmeek#%E5%AE%89%E8%A3%85">README</a> 给出的完整流程，心里有个全貌（B01 会带着你逐步操作，并把每一步的坑标出来）：</p>
@@ -453,7 +462,7 @@ if("09/13/2026"!=""){
 </script></div>
 </body>
 <script>
-var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
 var utterancesLoad=0;
 
 let themeSettings={
@@ -527,7 +536,70 @@ function iFrameLoading(){
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
 
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
 
 </script>
 <script src='/plugins/GmeekSEO.js'></script><script src='/plugins/GmeekTocBot.js'></script><script src='/plugins/lightbox.js'></script><script src='/plugins/GmeekPrevNext.js'></script><script src='/plugins/GmeekReadTime.js'></script><script src='/plugins/GmeekArchive.js'></script><script src='/plugins/GmeekExternal.js'></script><script src='/plugins/articletoc.js'></script><script src='/plugins/GmeekMermaid.js'></script><script src='/plugins/GmeekCast.js'></script>
